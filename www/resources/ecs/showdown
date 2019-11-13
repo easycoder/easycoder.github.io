@@ -1,0 +1,45 @@
+  script Showdown
+  
+  import div Container
+
+  callback DecoratorCallback
+  a Link
+  variable Markup
+  variable Payload
+  variable LinkCount
+  variable Index
+  variable Data
+  variable ECPayload
+
+  load showdown
+  
+  rest get ECPayload from `/resources/fragment/ec`
+  
+  on DecoratorCallback go to Decorate
+  on message
+  begin
+  	put the message into Markup
+    put 0 into LinkCount
+    set the content of Container to showdown decode Markup with DecoratorCallback
+    set the elements of Link to LinkCount
+    put 0 into Index
+    while Index is less than LinkCount
+    begin
+      index Link to Index
+      attach Link to `ec-link-` cat Index
+      add 1 to Index
+    end
+    on click Link
+    begin
+      put attribute `data-id` of Link into Data
+      send Data to parent
+    end
+  end
+  set ready
+  stop
+
+Decorate:
+  put the payload of DecoratorCallback into Payload
+  if Payload is `ec` put ECPayload into Payload
+  set the payload of DecoratorCallback to Payload
+  stop

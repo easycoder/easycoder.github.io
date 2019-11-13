@@ -1,0 +1,181 @@
+!	EasyCoder Main
+
+	script Main
+    
+!    div Tracer
+    div Body
+    div Main
+    div Header
+    div Sidebar
+    div Document
+    img Banner
+    ul ButtonList
+    li ButtonItem
+    button HomeButton
+    button IntroButton
+    button AboutButton
+    button PhilosophyButton
+    button CodexButton
+    hr Rule
+    module ShowdownModule
+    module HomeModule
+    module IntroModule
+    module AboutModule
+    module PhilosophyModule
+    module CurrentModule
+    variable Script
+    variable ButtonStyle
+    variable Message
+    
+!    create Tracer
+!    set attribute `id` of Tracer to `easycoder-tracer`
+    create Body
+    if mobile
+		set the style of Body to `width:100%`
+	else
+		set the style of Body to `width:100%;max-width:1200px;margin:0 auto`
+    
+    on message
+    begin
+    	put the message into Message
+        if Message is `hide`
+        begin
+        	send `pause` to CurrentModule
+        	set style `display` of Body to `none`
+        end
+        else if Message is `restore`
+        begin
+        	set style `display` of Body to `block`
+            send `resume` to CurrentModule
+        end
+    end
+    
+BuildPage:
+    create Header in Body
+    if mobile
+	    set the style of Header to `text-align:center`
+	else
+		set the style of Header to `margin:0 2em;text-align:center`
+    
+    create Banner in Header
+    if not mobile set the style of Banner to `width:70%;margin:0 auto`
+    set attribute `src` of Banner to `resources/img/banner.png`
+    
+    create Rule in Body
+    
+    create Main in Body
+    if not mobile
+    begin
+    	set style `display` of Main to `flex`
+    end
+    
+    if mobile
+    begin
+        create Document in Main
+        create Sidebar in Main
+    end
+    else
+    begin
+        create Sidebar in Main
+    	set the style of Sidebar to `width:250px;margin-right:2em`
+        create Document in Main
+        set the style of Document to `flex:1`
+    end
+
+    rest get Script from `/resources/ecs/showdown`
+    run Script with Document as ShowdownModule
+ 	rest get Script from `/resources/ecs/home`
+    run Script with ShowdownModule as HomeModule
+  	rest get Script from `/resources/ecs/intro`
+    run Script with ShowdownModule as IntroModule
+  	rest get Script from `/resources/ecs/about`
+    run Script with ShowdownModule as AboutModule
+  	rest get Script from `/resources/ecs/philosophy`
+    run Script with ShowdownModule as PhilosophyModule
+
+    alias CurrentModule to HomeModule
+    send to HomeModule
+
+    create ButtonList in Sidebar
+    set the style of ButtonList to `margin-left:0px;padding-left:0px;list-style-type:none`
+    
+    put `width:100%;height:2em;margin-bottom:0.5em;font-size:110%` into ButtonStyle
+
+	create ButtonItem in ButtonList
+	create HomeButton in ButtonItem
+    set the style of HomeButton to ButtonStyle
+    set style `background` of HomeButton to `darkgray`
+    if not mobile set style `margin-top` of HomeButton to `4em`
+    set the text of HomeButton to `Home`
+    on click HomeButton
+    begin
+    	gosub to DeselectAllButtons
+        set style `background` of HomeButton to `darkgray`
+    	send `pause` to CurrentModule
+        alias CurrentModule to HomeModule
+    	send to HomeModule
+    end
+    
+	create ButtonItem in ButtonList
+    create IntroButton in ButtonItem
+    set the style of IntroButton to ButtonStyle
+    set style `margin-top` of IntroButton to `1em`
+    set the text of IntroButton to `Introduction`
+    on click IntroButton
+    begin
+    	gosub to DeselectAllButtons
+        set style `background` of IntroButton to `darkgray`
+    	send `pause` to CurrentModule
+        alias CurrentModule to IntroModule
+    	send to IntroModule
+    end
+    
+	create ButtonItem in ButtonList
+    create AboutButton in ButtonItem
+    set the style of AboutButton to ButtonStyle
+    set style `margin-top` of AboutButton to `0.25em`
+    set the text of AboutButton to `About EasyCoder`
+    on click AboutButton
+    begin
+    	gosub to DeselectAllButtons
+        set style `background` of AboutButton to `darkgray`
+    	send `pause` to CurrentModule
+        alias CurrentModule to AboutModule
+    	send to AboutModule
+    end
+    
+	create ButtonItem in ButtonList
+    create PhilosophyButton in ButtonItem
+    set the style of PhilosophyButton to ButtonStyle
+    set style `margin-top` of PhilosophyButton to `0.25em`
+    set the text of PhilosophyButton to `Philosophy`
+    on click PhilosophyButton
+    begin
+    	gosub to DeselectAllButtons
+        set style `background` of PhilosophyButton to `darkgray`
+    	send `pause` to CurrentModule
+        alias CurrentModule to PhilosophyModule
+    	send to PhilosophyModule
+    end
+
+	create ButtonItem in ButtonList
+	create CodexButton in ButtonItem
+    set the style of CodexButton to ButtonStyle
+    set style `margin-top` of CodexButton to `0.25em`
+    set the text of CodexButton to `Codex`
+    on click CodexButton
+    begin
+      load plugin `codemirror`
+      rest get Script from `/resources/ecs/codex`
+      send `pause` to CurrentModule
+      set style `display` of Body to `none`
+      run Script
+    end
+	stop
+
+DeselectAllButtons:
+	set style `background` of HomeButton to ``
+    set style `background` of IntroButton to ``
+    set style `background` of AboutButton to ``
+    set style `background` of PhilosophyButton to ``
+    return

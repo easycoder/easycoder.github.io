@@ -1,0 +1,77 @@
+{
+  "commands": {
+    "json shuffle": {
+      "syntax": "json shuffle {list}",
+      "description": "Shuffles the contents of a list into random order.",
+      "examples": "json shuffle MyList"
+    },
+    "json add": {
+      "syntax": "json add {item} to {array}",
+      "description": "This adds an element to a JSON array.",
+      "examples": "json add `Egypt` to Countries"
+    },
+    "json delete": {
+      "syntax": "json delete property {name} from/of {object}%0ajson delete element {index} from/of {object}",
+      "description": "This deletes the named property, or the element at a specific index, from the JSON array given.",
+      "examples": "json delete property `name` from PersonalDetails%0ajson delete element 5 of TheArray"
+    },
+    "json format": {
+      "syntax": "json format {item}",
+      "description": "~m:json format~ deals with badly-formatted JSON strings that contain redundant spacing and line breaks. It uses the internal ~m:JSON.parse~ and ~m:JSON.stringify~ to get the item into a standard format.",
+      "examples": "json format MyData"
+    },
+    "json parse": {
+      "syntax": "json parse {url} as {variable}",
+      "description": "This parses a URL, splitting it up into its component parts so they can be easily worked on. In the example above, the result in ~m:ParsedValue~ would be%0a%0a~m:{<br />~%0a~m:&nbsp;&nbsp;&quot;protocol&quot;:&quot;https&quot;,<br />~%0a~m:&nbsp;&nbsp;&quot;domain&quot;:&quot;easycoder.software&quot;,<br />~%0a~m:&nbsp;&nbsp;&quot;arg&quot;:&quot;value=56&quot;<br />~%0a~m:}~",
+      "examples": "json parse `https://easycoder.software/?value=56` as ParsedValue"
+    },
+    "json rename": {
+      "syntax": "json rename {property} to {new name} in {object}",
+      "description": "This renames a property in a JSON object.",
+      "examples": "json rename `mail` to `email` in Details"
+    },
+    "rest get": {
+      "syntax": "rest get {variable} from {endpoint} [or ...]",
+      "description": "This issues a REST GET request to the named ~m:endpoint~, giving it the ~l:variable|k|core~ to receive the contents of the request. If there is an error and the ~m:or~ clause has been provided this will be executed, allowing you to take appropriate actions, otherwise the error will be unrecoverable and the program will stop. See also ~l:rest post~.%0a%0aThe REST server comes with a selection of useful endpoints but in many cases you will need to add new ones for the tables you add to the database. The server has an extension mechanism; you will find a file called ~m:rest-local.php~ in the top-level ~m:resources~ folder of your WordPress installation. Use this to add functionality; don~sq~t alter the main REST server as it will be overwritten in a future update to _**EasyCoder**_.",
+      "examples": "rest get Record from `_/ec_users/25 or%0abegin%0a&nbsp;&nbsp;alert `Couldn~sq~t retrieve data`%0a&nbsp;&nbsp;stop%0aend"
+    },
+    "rest post": {
+      "syntax": "rest post [{value}] to {endpoint} [giving {variable}] [or ...]",
+      "description": "This issues a REST POST request to the named ~m:endpoint~, giving it the ~m:value~ as a JSON string. You can optionally collect the response from the server by using ~m:giving~. If there is an error and the ~m:or~ clause has been provided this will be executed, allowing you to take appropriate actions, otherwise the error will be unrecoverable and the program will stop. See also ~l:rest get~.%0a%0aIf the request is entirely contained in the URL you can omit the ~m:{value}~.%0a%0aThe REST server comes with a selection of useful endpoints and you can add new ones for extra tables you add to the database. The server has an extension mechanism; you will find a file called ~m:rest-local.php~ in the top-level ~m:resources~ folder of your WordPress installation. Use this to add functionality; don~sq~t alter the main REST server as it will be overwritten in future updates to _**EasyCoder**_.",
+      "examples": "rest post MyData to `_/ec_markers` giving Response%0aor begin%0a&nbsp;&nbsp;alert the error%0a&nbsp;&nbsp;step%0aend%0arest post to `_/ec_test/dummy`"
+    },
+    "json sort": {
+      "syntax": "json sort {list}",
+      "description": "Sorts the contents of a list into ascending alphabetical order.",
+      "examples": "json sort MyList"
+    }
+  },
+  "values": {
+    "": {
+      "syntax": "",
+      "description": "",
+      "examples": ""
+    },
+    "json keys": {
+      "syntax": "[the] json keys of {object}",
+      "description": "Returns the keys of all the properties in the JSON object as a JSON array.",
+      "examples": "put the json keys of PersonalDetails into MyArray"
+    },
+    "json count": {
+      "syntax": "[the] json count of {array}",
+      "description": "Returns the number of elements in the specified array. See also ~l:json size~, which does the same thing.",
+      "examples": "put the json count of Rows into NRows"
+    },
+    "json size": {
+      "syntax": "[the] json size of {array}",
+      "description": "Returns the number of elements in the specified array. See also ~l:json count~, which does the same thing.",
+      "examples": "put the json size of Rows into NRows"
+    },
+    "json index": {
+      "syntax": "[the] json index of {item} in {array}",
+      "description": "",
+      "examples": "put the json index of `August` in Months into Index"
+    }
+  },
+  "conditions": {}
+}

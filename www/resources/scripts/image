@@ -1,0 +1,22 @@
+!   The Golden Gate
+
+    div Container
+    img Image
+    p Title
+    
+    create Container
+    set the style of Container to
+        `text-align:center;margin:1em;padding:1em;`
+        cat `border:1px solid gray;background:#ffe`
+    
+    create Image in Container
+    set the style of Image to `width:70%`
+    set attribute `src` of Image to
+        `resources/img/goldengate.jpg`
+    
+    create Title in Container
+    set the content of Title to `The Golden Gate Bridge,`
+        cat break cat `San Francisco, California`
+        cat break cat break
+        cat `Photo by Gerson Repreza on Unsplash`
+    stop

@@ -1,0 +1,92 @@
+!	Home
+
+	script Home
+    
+    import module Showdown
+    
+    button ShowMeButton
+    button CodexButton
+    variable Script
+    variable Item
+    variable Codex
+    variable ShowMe
+    variable Message
+    variable Color
+    variable Value
+    variable Animate
+    variable UpDown
+    
+    rest get Script from `/resources/md/home.md`
+    if mobile
+    begin
+    	replace `/SIDEBAR/` with `below` in Script
+    end
+    else
+    begin
+    	replace `/SIDEBAR/` with `on the left` in Script
+    end
+    rest get Item from `/resources/fragment/home/0`
+    replace `/0/` with `<span style="font-family:mono;color:darkred">` cat Item cat `</span>` in Script
+    replace `/SHOWME/` with `<button style="margin-left:3em" id="showme">Show Me</button>` in Script
+    replace `/CODEX/` with `<div style="text-align:center"><button id="codex">Codex</button></div>` in Script
+    
+    on message
+    begin
+    	put the message into Message
+        if Message is `restore` send Message to parent
+        else if Message is `pause` clear Animate
+        else go to Start
+    end
+    set ready
+    stop
+
+Start:
+    send Script to Showdown
+
+	clear ShowMe
+    attach ShowMeButton to `showme`
+    set style `border-radius` of ShowMeButton to `0.5em`
+    set style `padding` of ShowMeButton to `1em`
+    on click ShowMeButton
+    begin
+    	if ShowMe set style `background` of ShowMeButton to ``
+        else set style `background` of ShowMeButton to `pink`
+        toggle ShowMe
+    end
+    attach CodexButton to `codex`
+    set style `font-size` of CodexButton to `1.5em`
+    set style `border-radius` of CodexButton to `0.5em`
+    set style `padding` of CodexButton to `1em`
+    on click CodexButton go to RunCodex
+
+! Animate the 'Tell Me More' button
+	set Animate
+    set UpDown
+    put 128 into Value
+    while Animate
+    begin
+        wait 1 tick
+        multiply Value by 256 giving Color
+        add Value to Color
+        multiply Color by 256
+        add 255 to Color
+        set style `background-color` of CodexButton to color Color
+        if UpDown
+        begin
+            if Value is 255 clear UpDown
+            else add 1 to Value
+        end
+        else
+        begin
+            if Value is 128 set UpDown
+            else take 1 from Value
+        end
+    end
+    stop
+
+RunCodex:
+    load plugin `codemirror`
+    rest get Codex from `/resources/ecs/codex`
+    send `hide` to parent
+    run Codex
+    stop
