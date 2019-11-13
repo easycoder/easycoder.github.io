@@ -1,0 +1,397 @@
+! Solitaire
+
+  script Solitaire
+
+! The map of the board.
+
+  variable Map
+  set Map to
+    0 0 2 2 2 0 0
+    0 0 2 2 2 0 0
+    2 2 2 2 2 2 2
+    2 2 2 1 2 2 2
+    2 2 2 2 2 2 2
+    0 0 2 2 2 0 0
+    0 0 2 2 2 0 0
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Variables.
+
+  div Container
+  div Board
+  div GameOver
+  div Grey
+  div Red
+  variable Width
+  variable N
+  variable M
+  variable X
+  variable Y
+  variable R
+  variable C
+  variable S
+  variable Size
+  variable Offset
+  variable Selected
+  variable Row
+  variable Column
+  variable Valid
+  variable Index
+  variable Up
+  variable Down
+  variable Left
+  variable Right
+  variable PickPos
+  variable DragPos
+  variable Lefts
+  variable Tops
+  variable Destination
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Create all the elements.
+  create Board
+
+  set the elements of Grey to 49
+  set the elements of Red to 49
+  set the elements of Lefts to 49
+  set the elements of Tops to 49
+
+  if mobile
+  begin
+    put the width of Board into Width
+    multiply Width by 90
+    divide Width by 100
+    set style `touch-action` of Board to `none`;
+  end
+  else
+  begin
+    put 500 into Width
+  end
+  set style `width` of Board to Width cat `px`
+  set style `height` of Board to Width cat `px`
+  set style `background-size` of Board to Width cat `px`
+  set style `margin` of Board to `2em auto 0 auto`
+  set style `border` of Board to `1px solid #888`
+  set style `border-radius` of Board to `50%`
+  set style `background-image` of Board to
+  	`url('https://easycoder.software/public/skybg.jpg')`
+
+  create Container in Board
+  set the style of Container to
+  	`position:relative;width:100%,height:100%;margin:5%`
+  
+  multiply Width by 90
+  divide Width by 100
+  divide Width by 7 giving S
+  divide S by 7 giving Size
+  multiply Size by 6
+  multiply Size by 7 giving Offset
+  take Offset from Width giving Offset
+  divide Offset by 14
+      
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Draw the initial board layout.
+  put 0 into N
+  while N is less than 49
+  begin
+    index Map to N
+    if Map is not 0
+    begin
+      divide N by 7 giving Row
+      multiply Row by S giving Y
+      add Offset to Y
+      index Tops to N
+      put Y into Tops
+      put N modulo 7 into Column
+      multiply Column by S giving X
+      add Offset to X
+      index Lefts to N
+      put X into Lefts
+      index Grey to N
+      create Grey in Container
+      set the style of Grey to `position:absolute;left:` cat X cat `;top:` cat Y
+		cat `;width:` cat Size cat `;height:` cat Size cat `;background:gray`
+        cat `;border:1px solid darkgray;border-radius:50%`
+      index Red to N
+      create Red in Container
+      set the style of Red to `position:absolute;left:` cat X cat `;top:` cat Y
+		cat `;width:` cat Size cat `;height:` cat Size cat `;background:red`
+        cat `;border:1px solid darkred;border-radius:50%`
+      if Map is 1 set style `opacity` of Red to `0`
+    end
+    add 1 to N
+  end
+  on pick Red go to Pick
+  on drag go to Drag
+  on drop go to Drop
+  stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Pick a peg
+Pick:
+  clear Valid
+  put the pick position into PickPos
+  put the index of Red into Index
+  put -1 into Left
+  put -1 into Right
+  put -1 into Up
+  put -1 into Down
+! Get the row
+  put Index modulo 7 into R
+! Must be > 1 to be able to go left
+  if R is greater than 1
+  begin
+    take 2 from Index giving N
+    index Map to N
+    if Map is 1
+    begin
+      add 1 to N giving M
+      index Map to M
+      if Map is 2 put N into Left
+    end
+  end
+! Must be < 5 to be able to go right
+  if R is less than 5
+  begin
+  	add 2 to Index giving N
+    index Map to N
+    if Map is 1
+    begin
+	  take 1 from N giving M
+      index Map to M
+      if Map is 2 put N into Right
+    end
+  end
+  take 14 from Index giving N
+! N must be >= 0 to go up
+  if N is not less than 0
+  begin
+  	index Map to N
+    if Map is 1
+    begin
+      add 7 to N giving M
+      index Map to M
+      if Map is 2 put N into Up
+    end
+  end
+  add 14 to Index giving N
+! N must be < 49 to go down
+  if N is less than 49
+  begin
+  	index Map to N
+    if Map is 1
+    begin
+      take 7 from N giving M
+      index Map to M
+      if Map is 2 put N into Down
+    end
+  end
+! If any move is possible select this peg
+  if Left is not -1 goto Select
+  if Right is not -1 goto Select
+  if Up is not -1 goto Select
+  if Down is not -1 goto Select
+  stop
+
+Select:
+  set style `z-index` of Red to 10
+  set style `background` of Red to `orange`
+  put the index of Red into Selected
+  stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Drag the peg
+Drag:
+  if not Selected stop
+  put the drag position into DragPos
+  put property `x` of DragPos into X
+  put property `y` of DragPos into Y
+  take property `x` of PickPos from X
+  take property `y` of PickPos from Y
+  index Lefts to Selected
+  index Tops to Selected
+  add Lefts to X
+  add Tops to Y
+  set style `left` of Red to X
+  set style `top` of Red to Y
+  if Left is not -1
+  begin
+	index Grey to Left
+    if element Grey contains DragPos go to ShowValid
+  end
+  if Right is not -1
+  begin
+	index Grey to Right
+    if element Grey contains DragPos go to ShowValid
+  end
+  if Up is not -1
+  begin
+	index Grey to Up
+    if element Grey contains DragPos go to ShowValid
+  end
+  if Down is not -1
+  begin
+	index Grey to Down
+    if element Grey contains DragPos go to ShowValid
+  end
+  clear Valid
+  set style `background` of Grey to `gray`
+  stop
+
+ShowValid:
+  put the index of Grey into Destination
+  set style `background` of Grey to `yellow`
+  set Valid
+  stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Drop the peg
+Drop:
+  if not Selected stop
+  if Valid
+  begin
+    index Lefts to Selected
+    index Tops to Selected
+    set style `left` of Red to Lefts
+    set style `top` of Red to Tops
+    put Selected into N
+    gosub to Remove
+  	index Red to Destination
+    index Lefts to Destination
+    index Tops to Destination
+    set style `left` of Red to Lefts
+    set style `top` of Red to Tops
+    put Destination into N
+    gosub to Place
+    add Destination to Selected giving N
+    divide N by 2
+    gosub to Remove
+  end
+  else
+  begin
+  	put Selected into N
+    index Lefts to N
+    index Tops to N
+    set style `left` of Red to Lefts
+    set style `top` of Red to Tops
+    gosub to Place
+  end
+  set style `z-index` of Red to 1
+  clear Selected
+  go to CheckIfFinished
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Place a peg
+Place:
+  index Map to N
+  index Red to N
+  index Grey to N
+  put 2 into Map
+  set style `opacity` of Red to `1`
+  set style `background` of Red to `red`
+  set style `background` of Grey to `gray`
+  return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Remove a peg
+Remove:
+   index Map to N
+   index Red to N
+   put 1 into Map
+   set style `opacity` of Red to `0`
+   return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Check if there are any moves left.
+CheckIfFinished:
+  put 0 into N
+  while N is less than 49
+  begin
+    index Map to N
+    if Map is 2
+    begin
+      divide N by 7 giving Row
+      put N modulo 7 into Column
+      ! Try the left
+      take 1 from Column giving C
+      if C is not less than 0
+      begin
+        multiply Row by 7 giving M
+        add C to M
+        index Map to M
+        if Map is 2
+        begin
+          take 1 from C
+          if C is not less than 0
+          begin
+            multiply Row by 7 giving M
+            add C to M
+            index Map to M
+            if Map is 1 stop
+          end
+        end
+      end
+      ! Try the right
+      add 1 to Column giving C
+      if C is less than 7
+      begin
+        multiply Row by 7 giving M
+        add C to M
+        index Map to M
+        if Map is 2
+        begin
+          add 1 to C
+          if C is less than 7
+          begin
+            multiply Row by 7 giving M
+            add C to M
+            index Map to M
+            if Map is 1 stop
+          end
+        end
+      end
+      ! Try up
+      take 1 from Row giving R
+      if R is not less than 0
+      begin
+        multiply R by 7 giving M
+        add Column to M
+        index Map to M
+        if Map is 2
+        begin
+          take 1 from R
+          if R is not less than 0
+          begin
+            multiply R by 7 giving M
+            add Column to M
+            index Map to M
+            if Map is 1 stop
+          end
+        end
+      end
+      ! Try down
+      add 1 to Row giving R
+      if R is less than 7
+      begin
+        multiply R by 7 giving M
+        add Column to M
+        index Map to M
+        if Map is 2
+        begin
+          add 1 to R
+          if R is less than 7
+          begin
+            multiply R by 7 giving M
+            add Column to M
+            index Map to M
+            if Map is 1 stop
+          end
+        end
+      end
+    end
+    add 1 to N
+  end
+  create GameOver
+  set the style of GameOver to `text-align:center`
+  set the content of GameOver to `Game over - no more moves are possible`
+  stop

@@ -1,0 +1,331 @@
+	script Stories
+
+	import div ParentDiv and variable Record and variable MyEmail
+
+	div ContainerDiv
+	div EditorDiv
+	div TextFieldsDiv
+	div TitleDiv
+	div TagsDiv
+	div PrivateDiv
+	div StoryDiv
+	div AuthorDiv
+	div ButtonsDiv
+	h3 TitleHeader
+	label TitleLabel
+	label TagsLabel
+	label PrivateLabel
+	label Label
+	input TitleInput
+	input TagsInput
+	input PrivateCheckbox
+	span Status
+	span Text
+	img DeleteIcon
+	img FolderIcon
+	img SaveIcon
+	img ViewIcon
+	a EditorLink
+	a AuthorLink
+	a TagLink
+	a Link
+	module FileManager
+	variable ID
+	variable Author
+	variable Email
+	variable Latitude
+	variable Longitude
+	variable Zoom
+	variable Title
+	variable Tags
+	variable Private
+	variable Story
+	variable TextBoxWidth
+	variable Script
+	variable FileManagerRunning
+	variable Message
+	variable Record2
+	variable SavedTitle
+	variable SavedTags
+	variable SavedStory
+	variable TagCount
+	variable N
+	variable Flag
+	variable State
+
+	create ContainerDiv in ParentDiv
+	set the style of ContainerDiv to
+		`display:none;border:1px solid lightgray;margin-top:0.5em;padding:0.5em`
+
+	on message
+	begin
+		if the message is `hide`
+		begin
+			set style `display` of ContainerDiv to `none`
+		end
+	end
+
+	on message go to ShowStory
+	set ready
+	stop
+
+ShowStory:
+  if not Record stop
+	put property `id` of Record into ID
+	put property `email` of Record into Email
+	put property `latitude` of Record into Latitude
+	put property `longitude` of Record into Longitude
+	put property `zoom` of Record into Zoom
+	put decode property `title` of Record into Title
+	rest get Record2 from `_/ec_markers/story/` cat ID or
+	begin
+		alert `The data for this pin failed to load. Please try again.` cat newline cat newline
+			cat `The reported error message was:` cat newline cat the error
+	end
+	put property `author` of Record2 into Author
+	put property `tags` of Record2 into Tags
+	put decode property `story` of Record2 into Story
+	put Title into SavedTitle
+	put Story into SavedStory
+	put the json count of Tags into TagCount
+	put `` into SavedTags
+	clear Flag
+	put 0 into N
+	while N is less than TagCount
+	begin
+		if Flag put SavedTags cat `,` into SavedTags
+		put SavedTags cat element N of Tags into SavedTags
+		set Flag
+		add 1 to N
+	end
+
+	set style `display` of ContainerDiv to `block`
+
+View:
+	clear ContainerDiv
+
+	if MyEmail is Email
+	begin
+		create EditorLink in ContainerDiv
+		set the style of EditorLink to `float:right`
+		set the content of EditorLink to `Go to Editor`
+		on click EditorLink go to Editor
+	end
+
+	create TitleHeader in ContainerDiv
+	set the style of TitleHeader to `color:blue`
+	set the content of TitleHeader to Title
+
+	create AuthorDiv in ContainerDiv
+	set the style of AuthorDiv to `font-size:80%`
+	set the content of AuthorDiv to `Author: `
+	create AuthorLink in AuthorDiv
+	set the style of AuthorLink to `font-size:1em`
+	set the content of AuthorLink to Author
+	set attribute `title` of AuthorLink to `Show only pins from this author`
+	on click AuthorLink
+	begin
+		put `{}` into Message
+		set property `request` of Message to `select`
+		set property `select` of Message to `author`
+		set property `author` of Message to Author
+		set property `email` of Message to Email
+		send Message to parent
+	end
+
+	put the json count of Tags into TagCount
+	if TagCount is greater than 0
+	begin
+		create TagsDiv in ContainerDiv
+		set the style of TagsDiv to `margin-bottom:0.5em;font-size:80%`
+		set the content of TagsDiv to `Tags: `
+		set the elements of TagLink to TagCount
+		clear Flag
+		put 0 into N
+		while N is less than TagCount
+		begin
+			index TagLink to N
+			if Flag
+			begin
+				create Text in TagsDiv
+				set the content of Text to `, `
+			end
+			create TagLink in TagsDiv
+			set the style of TagLink to `font-size:1em`
+			set the content of TagLink to element N of Tags
+			set attribute `title` of TagLink to `Show only pins with this tag`
+			set Flag
+			add 1 to N
+		end
+		on click TagLink
+		begin
+			put `{}` into Message
+			set property `request` of Message to `select`
+			set property `select` of Message to `tag`
+			set property `tag` of Message to the content of TagLink
+			set property `email` of Message to Email
+			send Message to parent
+		end
+	end
+
+	create StoryDiv in ContainerDiv
+	set the content of StoryDiv to Story
+	stop
+
+Editor:
+	clear ContainerDiv
+	create EditorDiv in ContainerDiv
+	create ButtonsDiv in EditorDiv
+	set the style of ButtonsDiv to `float:right;text-align:right`
+
+	create Status in ButtonsDiv
+	set the style of Status to `color:green;padding-right:1em;margin-bottom:1em`
+	create Link in ButtonsDiv
+	create DeleteIcon in Link
+	set the style of DeleteIcon to `width:25px;margin-right:10px`
+	set attribute `src` of DeleteIcon to
+		`https://dev.hereonthemap.com/resources/system/delete.png`
+	set attribute `title` of DeleteIcon to `Delete this pin`
+	on click DeleteIcon go to Delete
+	create FolderIcon in Link
+	set the style of FolderIcon to `width:25px;margin-right:10px`
+	set attribute `src` of FolderIcon to
+		`https://dev.hereonthemap.com/resources/system/media.png`
+	set attribute `title` of FolderIcon to `Image manager`
+	on click FolderIcon go to FileMan
+	create Link in ButtonsDiv
+	create SaveIcon in Link
+	set the style of SaveIcon to `width:25px;margin-right:10px`
+	set attribute `src` of SaveIcon to
+		`https://dev.hereonthemap.com/resources/system/save.png`
+	set attribute `title` of SaveIcon to `Save changes`
+	on click SaveIcon go to Save
+	create Link in ButtonsDiv
+	create ViewIcon in Link
+	set the style of ViewIcon to `width:25px`
+	set attribute `src` of ViewIcon to
+		`https://dev.hereonthemap.com/resources/system/binoculars.png`
+	set attribute `title` of ViewIcon to `View article`
+	on click ViewIcon
+	begin
+		put the text of TitleInput into Title
+		put the text of TagsInput into Tags
+		replace `'` with `` in Tags
+		replace `"` with `` in Tags
+		ckeditor get Story from StoryDiv
+		if Title is not SavedTitle go to NotSaved
+		if Tags is not SavedTags go to NotSaved
+		if Story is not SavedStory go to NotSaved
+		go to View
+	end
+	create Label in ButtonsDiv
+	set the content of Label to `<br />Z:` cat Zoom
+
+	create TextFieldsDiv in EditorDiv
+	put 40 into TextBoxWidth
+
+	create TitleDiv in TextFieldsDiv
+	set the style of TitleDiv to `display:flex;height:1.5em;margin:0.2em 0 0.5em 0`
+	create TitleLabel in TitleDiv
+	set the style of TitleLabel to `width:7em;padding-top:0.2em`
+	set the content of TitleLabel to `Title:`
+	create TitleInput in TitleDiv
+	set the size of TitleInput to TextBoxWidth
+	set the content of TitleInput to Title
+
+	create TagsDiv in TextFieldsDiv
+	set the style of TagsDiv to `display:flex;height:1.5em;margin-bottom:0.5em`
+	create TagsLabel in TagsDiv
+	set the style of TagsLabel to `width:7em;padding-top:0.2em`
+	set the content of TagsLabel to `Tags:`
+	create TagsInput in TagsDiv
+	set the size of TagsInput to TextBoxWidth
+	put the json count of Tags into TagCount
+	set the content of TagsInput to SavedTags
+
+	create PrivateDiv in TextFieldsDiv
+	set the style of PrivateDiv to `display:flex;height:1.5em;margin-bottom:0.5em`
+	create PrivateLabel in PrivateDiv
+	set the style of PrivateLabel to `width:7em;padding-top:0.2em`
+	set the content of PrivateLabel to `Private:`
+	create PrivateCheckbox in PrivateDiv
+	set attribute `type` of PrivateCheckbox to `checkbox`
+	if Private set attribute `checked` of PrivateCheckbox
+	else remove attribute `checked` of PrivateCheckbox
+
+	create StoryDiv in ContainerDiv
+	ckeditor attach to StoryDiv
+	wait 50 ticks
+	ckeditor set StoryDiv to Story
+	stop
+
+NotSaved:
+	alert `The data is not saved.`
+	stop
+
+FileMan:
+	if not FileManagerRunning
+	begin
+		rest get Script from `https://raw.githubusercontent.com/gtanyware/EasyCoder/master/`
+			cat `scripts/hereonthemap/fileman.easycoder` or
+		begin
+			alert `Failed to load the file manager script. Please try again.` cat newline cat newline
+				cat `The reported error message was:` cat newline cat the error
+		end
+		run Script as FileManager
+		set FileManagerRunning
+	end
+
+	on restore close FileManager
+
+	history set
+	history push
+	send to FileManager
+	stop
+
+Save:
+	put the text of TitleInput into Title
+	put the text of TagsInput into Tags
+	put attribute `checked` of PrivateCheckbox into Private
+	replace `'` with `` in Tags
+	replace `"` with `` in Tags
+	ckeditor get Story from StoryDiv
+	put `{}` into Record
+	set property `id` of Record to ID
+	set property `title` of Record to encode Title
+	set property `tags` of Record to lowercase encode Tags
+	set property `private` of Record to Private
+	set property `story` of Record to encode Story
+	rest post Record to `_/ec_markers/update/` cat ID or
+	begin
+		alert `The save failed. Please try again.` cat newline cat newline
+			cat `The reported error message was:` cat newline cat the error
+	end
+
+	put Title into SavedTitle
+	put Tags into SavedTags
+	put Story into SavedStory
+	set the content of Status to `Story saved`
+	wait 3
+	set the content of Status to ``
+	stop
+
+Delete:
+	if confirm `Please confirm you want to delete marker '`
+		cat property `title` of Record cat `'`
+	begin
+		put `{}` into Record
+		set property `id` of Record to ID
+		set property `email` of Record to Email
+		rest post Record to `_/ec_markers/delete` or
+		begin
+			alert `The delete failed. Please try again.` cat newline cat newline
+				cat `The reported error message was:` cat newline cat the error
+		end
+		clear ContainerDiv
+		put `{}` into Message
+		set property `request` of Message to `refresh`
+		send Message to parent
+	end
+	stop
+

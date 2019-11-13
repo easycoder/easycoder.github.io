@@ -1,0 +1,426 @@
+	script HereOnTheMap
+
+	div Document
+	div SplashDiv
+	div MapDiv
+	div ViewingDiv
+	div StoryDiv
+	div TextDiv
+	span ZoomSpan
+	button OKButton
+	gmap Map
+	marker Marker
+	module UserModule
+	module StoryModule
+	a Link
+	a ViewAllLink
+	variable Args
+	variable RequestedID
+	variable Revisit
+	variable LoggedIn
+	variable Script
+	variable Latitude
+	variable Longitude
+	variable Zoom
+	variable Type
+	variable Position
+	variable Title
+	variable Email
+	variable Story
+	variable Tag
+	variable Message
+	variable Request
+	variable Select
+	variable SelectedName
+	variable SelectedTag
+	variable SelectedEmail
+	variable Record
+	variable Bounds
+	variable Markers
+	variable Counter
+	variable Counting
+	variable Index
+	variable NMarkers
+	variable Minus
+	variable N
+	variable State
+	variable ID
+	variable URL
+	variable Key
+	variable Splash
+
+! Parse the URL
+	json parse url the location as Args
+	put property `arg` of Args into Request
+	if Request is not empty
+	begin
+		put the position of `-` in Request into N
+		if N is greater than 0
+		begin
+			put left N of Request into Request
+		end
+		put Request into RequestedID
+	end
+
+	get Latitude from storage as `latitude`
+	get Longitude from storage as `longitude`
+	get Zoom from storage as `zoom`
+	get Type from storage as `type`
+
+	clear LoggedIn
+	put 2 into Minus
+
+	if Latitude is empty
+	begin
+		put `0.0` into Latitude
+		put Latitude into storage as `latitude`
+	end
+	if Longitude is empty
+	begin
+		put `0.0` into Longitude
+		put Longitude into storage as `longitude`
+	end
+	if Zoom is empty
+	begin
+		put 1 into Zoom
+		put Zoom into storage as `zoom`
+	end
+	if Type is empty
+	begin
+		put `roadmap` into Type
+		put Type into storage as `type`
+	end
+
+	put `` into State
+	set property `id` of State to 0
+	set property `script` of State to `HereOnTheMap`
+	attach Document to `ec-document`
+
+	get Splash from storage as `splash`
+	if Splash is empty
+	begin
+		create SplashDiv in Document
+		set the style of SplashDiv to `margin-bottom:2em`
+		create TextDiv in SplashDiv
+		set the style of TextDiv to `text-align:center;font-size:300%;font-weight:bold;color:blue`
+		set the content of TextDiv to `Welcome to Here On The Map`
+		create TextDiv in SplashDiv
+		set the style of TextDiv to `text-align:center;font-size:200%;color:lightblue`
+		set the content of TextDiv to `Tell us about your world`
+		create TextDiv in SplashDiv
+		set the style of TextDiv to `margin-top:1.5em;font-size:150%;color:blue`
+		set the content of TextDiv to
+			`Zoom and pan the map and click the yellow pins, which reveal stories `
+			cat `people have written about places.<br><br>`
+			cat `We invite you to write stories about your own favorite places. `
+			cat `They can be anywhere, from an entire country down to a park bench; `
+			cat `just somewhere you'd like to tell others about. `
+			cat `You can add photos and video, too, using our handy editor.<br><br>`
+			cat `To find out more, click `
+		create Link in TextDiv
+		set the style of Link to `font-size:95%;font-weight:bold`
+		set the content of Link to `here`
+		on click Link location `https://hereonthemap.com/about`
+		create OKButton in SplashDiv
+		set the style of OKButton to `margin-top:1em`
+		set the text of OKButton to `Thank you - don't show me this again`
+		on click OKButton
+		begin
+			set style `display` of SplashDiv to `none`
+			put `done` into storage as `splash`
+		end
+	end
+
+! Set up the map
+	create MapDiv in Document
+	set the style of MapDiv to `width:100%;height:40vh`
+	create Map in MapDiv
+	rest get Key from `ec_data/name/key`
+	set the key of Map to Key
+	set the latitude of Map to Latitude
+	set the longitude of Map to Longitude
+	set the zoom of Map to Zoom
+	set the type of Map to Type
+	show Map
+
+	on click Map
+	begin
+		put the click position of Map into Position
+		if LoggedIn go to NewMarker
+	end
+
+	on move Map
+	begin
+		put the latitude of Map into storage as `latitude`
+		put the longitude of Map into storage as `longitude`
+		go to ReselectMarkers
+	end
+
+	on zoom Map
+	begin
+		put the zoom of Map into Zoom
+		put Zoom into storage as `zoom`
+		if ZoomSpan exists
+		begin
+			set the content of ZoomSpan to `Z:` cat Zoom
+			go to ReselectMarkers
+		end
+	end
+
+	on type Map
+	begin
+		put the type of Map into storage as `type`
+	end
+
+	history set state `{"id":0,"script":"HereOnTheMap"}`
+	create ViewingDiv in Document
+	set the style of ViewingDiv to `display:none;margin-top:0.5em`
+
+! Set up the user and the story
+	create StoryDiv in Document
+	rest get Script from `https://raw.githubusercontent.com/gtanyware/EasyCoder/master/`
+		cat `scripts/hereonthemap/users.easycoder` or
+	begin
+		alert `Failed to load the user script. Please try again.` cat newline cat newline
+			cat `The reported error message was:` cat newline cat the error
+	end
+	run Script with StoryDiv as UserModule
+	rest get Script from `https://raw.githubusercontent.com/gtanyware/EasyCoder/master/`
+		cat `scripts/hereonthemap/stories.easycoder` or
+	begin
+		alert `Failed to load the stories script. Please try again.` cat newline cat newline
+			cat `The reported error message was:` cat newline cat the error
+	end
+	run Script with StoryDiv and Record and Email as StoryModule
+
+	on message
+	begin
+		put the message into Message
+		put property `request` of Message into Request
+		if Request is `refresh` go to ScanMarkers
+		else if Request is `login`
+		begin
+			put property `email` of Message into Email
+			attach ZoomSpan to property `zoom` of Message
+			set LoggedIn
+			go to ScanMarkers
+		end
+		else if Request is `logout`
+		begin
+			put `` into Email
+			attach ZoomSpan to property `zoom` of Message
+			send `hide` to StoryModule
+			clear LoggedIn
+			go to ScanMarkers
+		end
+		else if Request is `select`
+		begin
+			put property `select` of Message into Select
+			if Select is `author`
+			begin
+				put property `author` of Message into SelectedName
+				put property `email` of Message into SelectedEmail
+				put `` into SelectedTag
+				go to ScanMarkers
+			end
+			else if Select is `tag`
+			begin
+				put `` into SelectedName
+				put `` into SelectedEmail
+				put property `tag` of Message into SelectedTag
+				go to ScanMarkers
+			end
+		end
+	end
+
+	if RequestedID
+	begin
+		rest get Record from `_/ec_markers/id/` cat RequestedID or
+			print `Failed to load the requested pin.  Error:` cat the error
+		if property `id` of Record is not 0
+		begin
+			set the latitude of Map to property `latitude` of Record
+			set the longitude of Map to property `longitude` of Record
+			set the zoom of Map to property `zoom` of Record
+			update Map
+			fork to ShowStory
+		end
+	end
+
+	send to UserModule
+
+! Look for markers when the map moves or zooms
+ScanMarkers:
+	put 0 into Counter
+	set Counting
+
+LookForMarkers:
+	while Counting
+	begin
+LookForMarkers2:
+		if Counter is 0
+		begin
+			put the bounds of Map into Bounds
+			if Bounds
+			begin
+				remove markers from Map
+				set property `zoom` of Bounds to the zoom of Map
+				set property `minus` of Bounds to Minus
+				 set property `mymail` of Bounds to Email
+				if SelectedEmail
+				begin
+					set property `email` of Bounds to SelectedEmail
+					set the content of ViewingDiv to `Viewing pins by "` cat SelectedName cat `"`
+					create ViewAllLink in ViewingDiv
+					set the style of ViewAllLink to `margin-left:1em`
+					set the content of ViewAllLink to `View All`
+					set attribute `title` of ViewAllLink to `View all pins`
+					on click ViewAllLink
+					begin
+						put `` into SelectedName
+						put `` into SelectedEmail
+						go to ScanMarkers
+					end
+					set style `display` of ViewingDiv to `block`
+				end
+				else if SelectedTag
+				begin
+					set property `tag` of Bounds to SelectedTag
+					set the content of ViewingDiv to `Viewing pins with tag "` cat SelectedTag cat `"`
+					create ViewAllLink in ViewingDiv
+					set the style of ViewAllLink to `margin-left:1em`
+					set the content of ViewAllLink to `View All`
+					set attribute `title` of ViewAllLink to `View all pins`
+					on click ViewAllLink
+					begin
+						put `` into SelectedTag
+						go to ScanMarkers
+					end
+					set style `display` of ViewingDiv to `block`
+				end
+				else set style `display` of ViewingDiv to `none`
+				rest get Markers from `_/ec_markers/get/` cat Bounds or
+				begin
+					print `Failed to load the pins.  Error:` cat the error
+					go to LookForMarkers2
+				end
+				put the json count of Markers into NMarkers
+				set the elements of Record to NMarkers
+				set the elements of Marker to NMarkers
+				put 0 into Index
+				while Index is less than NMarkers
+				begin
+					index Record to Index
+					index Marker to Index
+					put element Index of Markers into Record
+					create Marker in Map
+					put `{}` into Position
+					set property `latitude` of Position to
+						property `latitude` of Record
+					set property `longitude` of Position to
+						property `longitude` of Record
+					set the position of Marker to Position
+					set the title of Marker to property `title` of Record
+					if property `email` of Record is Email
+						set the color of Marker to `#00ff00`
+					else set the color of Marker to `#ffdd00`
+					add 1 to Index
+				end
+				clear Counting
+				on click Marker
+				begin
+					put `` into SelectedName
+					put `` into SelectedTag
+					put `` into SelectedEmail
+					index Record to the index of Marker
+					go to ShowStory
+				end
+			end
+			else wait 10 ticks
+		end
+		else
+		begin
+			take 1 from Counter
+			wait 10 ticks
+		end
+	end
+
+	on restore
+	begin
+		put the history state into State
+		put property `id` of State into ID
+		if ID
+		begin
+			put 0 into Index
+			while Index is less than NMarkers
+			begin
+				index Record to Index
+				if property `id` of Record is ID
+				begin
+					put `{}` into State
+					set property `id` of State to ID
+					set property `script` of State to `HereOnTheMap`
+					put property `title` of Record into Title
+					replace ` ` with `-` in Title
+					replace `,` with `` in Title
+					replace `;` with `` in Title
+					put `?` cat ID cat `-` cat encode Title into URL
+					set property `url` of State to URL
+					history set url URL state State
+					send to StoryModule
+					stop
+				end
+				add 1 to Index
+			end
+		end
+		send `hide` to StoryModule
+	end
+	stop
+
+ShowStory:
+	put property `id` of Record into ID
+	put property `title` of Record into Title
+	replace ` ` with `-` in Title
+	replace `,` with `` in Title
+	replace `;` with `` in Title
+	put `` into State
+	set property `id` of State to ID
+	set property `script` of State to `HereOnTheMap`
+	put `?` cat ID cat `-` cat encode Title into URL
+	set property `url` of State to URL
+	history push url URL state State
+	send to StoryModule
+	stop
+
+ReselectMarkers:
+	put 10 into Counter
+	if not Counting
+	begin
+		set Counting
+		go to LookForMarkers
+	end
+	stop
+
+NewMarker:
+	put prompt `Please supply a title for your new marker` with `title` into Title
+	if Title is not empty
+	begin
+		create Marker in Map
+		set the position of Marker to Position
+		set the title of Marker to Title
+		set the zoom of Map to Zoom
+		put `` into Record
+		set property `email` of Record to Email
+		set property `latitude` of Record to property `latitude` of Position
+		set property `longitude` of Record to property `longitude` of Position
+		set property `zoom` of Record to Zoom
+		set property `title` of Record to Title
+		set property `story` of Record to ``
+		rest post Record to `_/ec_markers/set` or
+		begin
+			alert `Failed to create a new pin. Please try again.` cat newline cat newline
+				cat `The reported error message was:` cat newline cat the error
+		end
+		go to ScanMarkers
+	end
+	stop

@@ -1,0 +1,110 @@
+  require `https://cors.io/?https://raw.githubusercontent.com/gtanyware/EasyCoder/master/demo/words.js`
+  require `https://cors.io/?https://raw.githubusercontent.com/gtanyware/EasyCoder/master/demo/anagrams.js`
+
+  div Root
+  div InputDiv
+  div ResultsDiv
+  div ResultDiv
+  div Label
+  div Padding
+  input Text
+  button RunButton
+  button ClearButton
+  variable Anagrams
+  variable Line
+  variable Words
+  variable Index
+  variable Running
+  variable Results
+  variable Keys
+
+  attach Root to `ec-anagrams`
+  if mobile set the style of Root to `width:100%`
+  else set the style of Root to `width:100%;margin:1em auto`
+
+  create InputDiv in Root
+  if mobile set the style of InputDiv to `display:flex;margin: 0.5em`
+  else set the style of InputDiv to `display:flex;margin-top:1em`
+
+  create Padding in InputDiv
+  set the style of Padding to `flex:2`
+
+  create Text in InputDiv
+  set the style of Text to `flex:76;padding-left:0.5em`
+  get Line from storage as `anagram-text`
+  set the text of Text to Line
+
+  create Padding in InputDiv
+  set the style of Padding to `flex:2`
+
+  create RunButton in InputDiv
+  set the style of RunButton to `flex:10`
+  set the text of RunButton to `Run`
+  on click RunButton go to Run
+
+  create Padding in InputDiv
+  set the style of Padding to `flex:2`
+
+  create ClearButton in InputDiv
+  set the style of ClearButton to `flex:10`
+  set the text of ClearButton to `Clear`
+  on click ClearButton
+  begin
+    clear ResultsDiv
+    clear Results
+  end
+
+  create Label in Root
+  set the style of Label to `margin: 0.5em 0.5em 0 0.5em`
+  set the content of Label to `No anagrams found (yet):`
+
+  create ResultsDiv in Root
+  set the style of ResultsDiv to `margin: 0.5em 0.5em 0 0.5em`
+
+  stop
+
+Run:
+  json set Results to object
+Continue:
+  put Text into storage as `anagram-text`
+  set the text of RunButton to `Stop`
+  on click RunButton go to Stop
+  set Running
+  while Running
+  begin
+    put anagrams of Text into Anagrams
+    if property `status` of Anagrams is `found`
+    begin
+      put property `words` of Anagrams into Words
+      json sort Words
+      put empty into Line
+      put 0 into Index
+      while Index is less than the json count of Words
+      begin
+        put Line cat element Index of Words cat ` ` into Line
+        add 1 to Index
+      end
+      if property Line of Results is empty
+      begin
+        set property Line of Results to true
+        put the json keys of Results into Keys
+        json sort Keys
+        set the content of Label to the json count of Keys cat ` anagrams found:`
+        clear ResultsDiv
+        put 0 into Index
+        while Index is less than the json count of Keys
+        begin
+          create ResultDiv in ResultsDiv
+          set the content of ResultDiv to element Index of Keys
+          add 1 to Index
+        end
+      end
+    end
+    wait 2 ticks
+  end
+  stop
+
+Stop:
+  clear Running
+  set the text of RunButton to `Continue`
+  on click RunButton go to Continue

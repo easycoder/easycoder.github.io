@@ -1,0 +1,195 @@
+! The HTML editor
+
+  script HTMLEditor
+
+  input NameEditor
+  button Open
+  button Save
+  button Delete
+  a OpenID
+  a NameLink
+  div NameList
+  div NameTemplate
+  div Editor
+  span Status
+  variable List
+  variable Name
+  variable CurrentName 
+  variable Content
+  variable Current
+  variable N
+  variable Count
+  variable Names
+  variable Password
+  variable Valid
+
+! The media browser
+  div Overlay
+  div Scroller
+  div Media
+  div FileListing
+  div FileRow
+  button CloseButton
+  img Image
+  a FileName
+  variable Alpha
+  variable Separator
+  variable FileList
+  variable FileCount
+  variable File
+  variable Type
+
+  get Password from storage as `password`
+  rest get Valid from `_verify/` cat Password
+    or alert `Unable to verify password - please try again.`
+  if Valid is not `yes` location `https://new.rembrandt.ie`
+
+  attach Open to `ec-open`
+  attach Save to `ec-save`
+  attach Delete to `ec-delete`
+  attach Status to `ec-status`
+  attach NameEditor to `ec-name`
+  put empty into Content
+  attach Editor to `ec-content`
+  ckeditor attach to Editor
+  put empty into List
+  put empty into Current
+
+  on click Save
+  begin
+    put the content of NameEditor into Name
+    if Name is empty
+    begin
+      alert `No script name given.`
+      stop
+    end
+    replace ` ` with `_` in Name
+    ckeditor get Content from Editor
+    if Content is not Current
+    begin
+      rest post Content to `rem_html/set/name/` cat Name
+      put Content into Current
+      set the content of Status to `Script '` cat Name cat `' saved`
+      go to ResetStatus
+    end
+    else
+    begin
+      set the content of Status to `Nothing has changed`
+      go to ResetStatus
+    end
+  end
+
+  on click Open go to DoOpen
+
+  on click Delete
+  begin
+    put the content of NameEditor into Name
+    if Name is empty
+    begin
+      alert `Nothing to delete.`
+      stop
+    end
+    if confirm `Are you sure you want to delete '` cat Name cat `'?`
+    begin
+      rest post to `rem_html/delete/` cat Name
+      set the content of Status to `Script '` cat Name cat `' deleted`
+      set the content of NameEditor to empty
+      put empty into Content
+      ckeditor set Editor to Content
+      put Content into Current
+      go to ResetStatus
+    end
+  end
+  stop
+
+DoOpen:
+  ckeditor get Content from Editor
+  if Content is not Current
+  begin
+    if confirm `Content has changed. Do you want to save it?`
+    begin
+      put the content of NameEditor into Name
+      rest post Content to `rem_html/set/name/` cat Name
+      set the content of Status to `Script '` cat Name cat `' saved`
+      fork to ResetStatus
+    end
+  end
+
+  attach Overlay to `ec-overlay`
+  set style `display` of Overlay to `block`
+
+! Animate the background
+  put 0 into Alpha
+  while Alpha is less than 8
+  begin
+    set style `background-color` of Overlay to `rgba(0,0,0,0.` cat Alpha cat `)`
+    wait 4 ticks
+    add 1 to Alpha
+  end
+  wait 20 ticks
+
+! Make the browser panel visible
+  attach Media to `ec-media`
+  set style `display` of Media to `inline-block`
+  attach FileListing to `ec-file-listing`
+  set style `display` of FileListing to `inline-block`
+
+! Fill the browser with content from the server
+  rest get Content from `rem_html/names/0/1000`
+  put empty into FileList
+  put the json count of Content into FileCount
+  set the elements of File to FileCount
+  set the elements of FileName to FileCount
+! Add a row for each file
+  put 0 into N
+  while N is less than FileCount
+  begin
+    index File to N
+    index FileName to N
+    attach FileRow to `ec-file-row`
+    put the content of FileRow into File
+    replace `INDEX` with N in File
+    if N is even replace `ODDEVEN` with `ec-even` in File
+    else replace `ODDEVEN` with `ec-odd` in File
+    put FileList cat File into FileList
+    add 1 to N
+  end
+  attach Scroller to `ec-scroller`
+  set the content of Scroller to FileList
+! Add the document names
+  put 0 into N
+  while N is less than FileCount
+  begin
+    index File to N
+    index FileName to N
+    put element N of Content into File
+    attach FileRow to `ec-file-row-` cat N
+    attach FileName to `ec-file-name-` cat N
+    set the content of FileName to File
+    if N is even set style `background` of FileRow to `#eee`
+    on click FileName go to SelectFile
+    add 1 to N
+  end
+  attach CloseButton to `ec-close-media-button`
+  on click CloseButton go to CloseBrowser
+  stop
+
+SelectFile:
+  index File to the index of FileName
+  set the content of NameEditor to File
+  rest get Content from `rem_html/name/` cat File
+  set the content of Status to `Script '` cat File cat `' loaded`
+  fork to ResetStatus
+  ckeditor set Editor to Content
+  put Content into Current
+
+CloseBrowser:
+  set style `background-color` of Overlay to `rgba(0,0,0,0.0)`
+  set style `display` of Overlay to `none`
+  set style `display` of Media to `none`
+  stop
+
+ResetStatus:
+  wait 2
+  set the content of Status to ``
+  stop

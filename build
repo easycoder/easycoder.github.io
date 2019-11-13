@@ -1,0 +1,23 @@
+#!/bin/sh
+
+mkdir -p ~/temp/lib
+rm -rf ~/temp/lib
+cd ~/Dropbox/Code/VisualStudio/EasyCoder/
+
+echo "easycoder: running babel"
+npx babel --plugins transform-object-rest-spread js --out-dir ~/temp/lib
+echo "easycoder: babel finished"
+
+npx browserify ~/temp/lib/EasyCoder.js -o ~/EasyCoder/easycoder.js
+echo "easycoder: browserify finished"
+
+java -jar compiler.jar --js ~/EasyCoder/easycoder.js --js_output_file ~/EasyCoder/easycoder-min.js
+echo "easycoder: closure finished"
+
+cp js/easycoder/plugins-sample.js ~/EasyCoder
+cp js/plugins/* ~/EasyCoder/plugins
+cp server/* ~/EasyCoder
+echo "Files copied"
+
+rm -rf ~/temp/lib
+echo "All done"

@@ -1,0 +1,594 @@
+  script DocMan
+
+  import div Container
+  
+  div ContentDiv
+  div EditorDiv
+  div ButtonsDiv
+  div FormDiv
+  div RowDiv
+  div ColumnDiv
+  div PaddingDiv
+  div SyntaxDiv
+  div DescriptionDiv
+  div ExamplesDiv
+  div TitleDiv
+  div PackageButtonsDiv
+  div Div
+  div Tracer
+  label Label
+  label Status
+  select PackageList
+  select KeywordList
+  textarea SyntaxInput
+  textarea DescriptionInput
+  textarea ExamplesInput
+  button NewPackageButton
+  button RenameButton
+  button DeleteButton
+  button NewKeywordButton
+  button ViewerButton
+  button EditorButton
+  button SaveButton
+  button TutorialButton
+  button CommandsButton
+  button ValuesButton
+  button ConditionsButton
+  button PreviousButton
+  button NextButton
+  module ShowdownModule
+  variable ReadOnly
+  variable Packages
+  variable Package
+  variable PackageName
+  variable Keywords
+  variable KeywordKeys
+  variable Record
+  variable Keyword
+  variable Value
+  variable Condition
+  variable Syntax
+  variable Description
+  variable Examples
+  variable TextBoxWidth
+  variable Group
+  variable NewGroup
+  variable Index
+  variable Mode
+  variable Script
+  variable Password
+  variable Valid
+  variable Message
+  variable Content
+  variable Item
+  variable Name
+  variable N
+
+! Properties file only exists if the site is writable
+  put empty into Script
+  clear ReadOnly
+  rest get Script from `/properties.txt` or set ReadOnly
+
+  get PackageName from storage as `.docman-package`
+  if PackageName is empty put `core` into PackageName
+  get Group from storage as `.docman-` cat PackageName cat `-group`
+  if Group is empty
+  begin
+    put `commands` into Group
+    put Group into storage as `.docman-` cat PackageName cat `-group`
+  end
+  get Keyword from storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  get Mode from storage as `.docman-mode`
+  if Mode is empty
+  begin
+    put `view` into Mode
+    put Mode into storage as `.docman-mode`
+  end
+  load plugin `showdown`
+  rest get Script from `/resources/ecs/showdown`
+  run Script with DescriptionDiv and Description as ShowdownModule
+
+  put `[]` into Packages
+  put `[]` into Content
+  append `browser.json` to Content
+  append `ckeditor.json` to Content
+  append `core.json` to Content
+  append `gmap.json` to Content
+  append `json.json` to Content
+  append `rest.json` to Content
+  append `showdown.json` to Content
+  append `svg.json` to Content
+  append `ui.json` to Content
+  put 0 into Index
+  while Index is less than the json count of Content
+  begin
+	put element Index of Content into Name
+    if the position of `-` in Name is -1
+    begin
+      put the position of `.` in Name into N
+      json add left N of Name to Packages
+    end
+    add 1 to Index
+  end
+  json sort Packages
+  set ready
+
+Restart:
+  clear Container
+  create Tracer in Container
+  set attribute `id` of Tracer to `easycoder-tracer`
+  rest get Package from `/resources/doc/` cat PackageName cat `.json`
+  if Group is empty
+  begin
+    put `commands` into Group
+    put Group into storage as `.docman-` cat PackageName cat `-group`
+  end
+  put property Group of Package into Keywords
+  put 40 into TextBoxWidth
+
+  create ButtonsDiv in Container
+  set the style of ButtonsDiv to
+    `text-align:right;padding-bottom:0.5em`
+
+  create Label in ButtonsDiv
+  set the style of Label to `float:left;font-size:120%;font-weight:bold`
+  set the text of Label to `Programmers' Reference`
+
+  create Status in ButtonsDiv
+  set the style of Status to `color:green;margin-right:1em`
+
+  create SaveButton in ButtonsDiv
+  set the style of SaveButton to `margin-right:1em`
+  set the text of SaveButton to `Save`
+  on click SaveButton gosub to SavePackage
+
+  create ViewerButton in ButtonsDiv
+  set the style of ViewerButton to `margin-right:1em`
+  set the text of ViewerButton to `Viewer`
+  on click ViewerButton
+  begin
+    gosub to SaveKeyword
+    go to Viewer
+  end
+
+  if not ReadOnly
+  begin
+    create EditorButton in ButtonsDiv
+    set the style of EditorButton to `margin-right:1em`
+    set the text of EditorButton to `Editor`
+    on click EditorButton
+    begin
+      get Password from storage as `.password`
+      if Password is empty
+        put prompt `Please type the admin password` with `` into Password
+      rest get Valid from `_verify/` cat Password or put `no` into Valid
+      if Valid is `yes`
+      begin
+        put Password into storage as `.password`
+        go to Editor
+      end
+    end
+  end
+
+  create TutorialButton in ButtonsDiv
+  set the style of TutorialButton to `margin-right:1em`
+  set the text of TutorialButton to `Tutorial`
+  on click TutorialButton send `tutorial` to parent
+
+  create RowDiv in Container
+  set the style of RowDiv to
+  	`clear:both;border-top:1px solid gray;display:flex;height:2em;margin:0.2em 0 1em 0;padding-top:1em`
+  create Label in RowDiv
+  set the style of Label to `width:8em;padding-top:0.5em`
+  set the content of Label to `Package:`
+  create ColumnDiv in RowDiv
+  set the style of ColumnDiv to `display:flex;width:100%`
+  create PackageList in ColumnDiv
+  set the style of PackageList to `flex:26;height:100%`
+  json set PackageList from Packages
+  set the default of PackageList to PackageName
+  on change PackageList go to SelectPackage
+
+  create PaddingDiv in ColumnDiv
+  set the style of PaddingDiv to `flex:3`
+  create PackageButtonsDiv in ColumnDiv
+  set the style of PackageButtonsDiv to `flex:71;display:flex;height:2em`
+  create NewPackageButton in PackageButtonsDiv
+  set the style of NewPackageButton to `flex:25;height:100%;margin:0`
+  set the content of NewPackageButton to `New Package`
+  on click NewPackageButton go to NewPackage
+
+  create ButtonsDiv in Container
+  set the style of ButtonsDiv to `display:flex;margin:0.2em 0 1em 0`
+
+  create Label in ButtonsDiv
+  set the style of Label to `width:8em;padding-top:1em`
+  set the content of Label to `Groups:`
+  create ColumnDiv in ButtonsDiv
+  set the style of ColumnDiv to `display:flex;width:100%`
+  create CommandsButton in ColumnDiv
+  set the style of CommandsButton to `flex:1`
+  set the text of CommandsButton to `Commands`
+  on click CommandsButton go to SelectCommands
+  create ValuesButton in ColumnDiv
+  set the style of ValuesButton to `flex:1`
+  set the text of ValuesButton to `Values`
+  on click ValuesButton go to SelectValues
+  create ConditionsButton in ColumnDiv
+  set the style of ConditionsButton to `flex:1`
+  set the text of ConditionsButton to `Conditions`
+  on click ConditionsButton go to SelectConditions
+
+  on message
+  begin
+     put the message into Message
+     put the position of `|` in Message into N
+     if N is less than 0 
+     begin
+       put Message into Keyword
+     end
+     else
+     begin
+       put left N of Message into Keyword
+       add 1 to N
+       put from N of Message into Message
+       put left 1 of Message into Group
+       if Group is `k` put `commands` into Group
+       else if Group is `v` put `values` into Group
+       else if Group is `c` put `conditions` into Group
+       put Group into storage as `.docman-` cat PackageName cat `-group`
+       put the position of `|` in Message into N
+       if N is greater than 0
+       begin
+         add 1 to N
+         put from N of Message into PackageName
+         put PackageName into storage as `.docman-package`
+         put Keyword into storage as `.docman-` cat PackageName
+           cat `-` cat Group cat `-keyword`
+         go to Restart
+       end
+    end
+    get Group from storage as `.docman-` cat PackageName cat `-group`
+    put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+    put property Group of Package into Keywords
+    go to Groups
+  end
+
+  create ContentDiv in Container
+
+Groups:
+  if Group is `commands`
+  begin
+    set style `background` of CommandsButton to `gray`
+    set style `background` of ValuesButton to ``
+    set style `background` of ConditionsButton to ``
+  end
+  else if Group is `values`
+  begin
+    set style `background` of CommandsButton to ``
+    set style `background` of ValuesButton to `gray`
+    set style `background` of ConditionsButton to ``
+  end
+  else if Group is `conditions`
+  begin
+    set style `background` of CommandsButton to ``
+    set style `background` of ValuesButton to ``
+    set style `background` of ConditionsButton to `gray`
+  end
+  if Mode is `edit` go to Editor
+
+Viewer:
+  put `view` into Mode
+  put Mode into storage as `.docman-mode`
+  set style `visibility` of PackageButtonsDiv to `hidden`
+  set style `display` of SaveButton to `none`
+  set style `display` of ViewerButton to `none`
+  if not ReadOnly set style `display` of EditorButton to `inline`
+  get Group from storage as `.docman-` cat PackageName cat `-group`
+  get Keyword from storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  put property Keyword of Keywords into Record
+  put decode property `syntax` of Record into Syntax
+  put decode property `description` of Record into Description
+  put decode property `examples` of Record into Examples
+  replace newline with break in Syntax
+  replace newline with break in Examples
+
+  clear ContentDiv
+  create RowDiv in ContentDiv
+  set the style of RowDiv to
+    `display:flex;margin:1em 0 1em 0;border-top:1px solid gray;padding-top:0.5em`
+
+  create Label in RowDiv
+  set the style of Label to
+    `flex:39;padding-top:0.2em;font-size:2em;font-weight:bold;font-family:mono;color:#800`
+  set the content of Label to Keyword
+
+  create PaddingDiv in RowDiv
+  set the style of PaddingDiv to `flex:2`
+
+  create Div in RowDiv
+  set the style of Div to `flex:20`
+  create PreviousButton in Div
+  set the style of PreviousButton to `width:100%;height:2em`
+  set the text of PreviousButton to `Previous`
+  on click PreviousButton go to Previous
+
+  create PaddingDiv in RowDiv
+  set the style of PaddingDiv to `flex:2`
+
+  create Div in RowDiv
+  set the style of Div to `flex:20`
+  create NextButton in Div
+  set the style of NextButton to `width:100%;height:2em`
+  set the text of NextButton to `Next`
+  on click NextButton go to Next
+
+  create PaddingDiv in RowDiv
+  set the style of PaddingDiv to `flex:2`
+
+  create KeywordList in RowDiv
+  set the style of KeywordList to `flex:15;height:2em`
+  put the json keys of Keywords into KeywordKeys
+  json set KeywordList from KeywordKeys
+  set the default of KeywordList to Keyword
+  on change KeywordList go to SelectViewKeyword
+
+  create TitleDiv in ContentDiv
+  set the style of TitleDiv to `margin-top:1em;font-weight:bold`
+  set the content of TitleDiv to `Syntax:`
+  create SyntaxDiv in ContentDiv
+  set the style of SyntaxDiv to `color:#800;font-family:mono`
+  set the content of SyntaxDiv to Syntax
+  create TitleDiv in ContentDiv
+  set the style of TitleDiv to `margin-top:1em;font-weight:bold`
+  set the content of TitleDiv to `Examples:`
+  create ExamplesDiv in ContentDiv
+  set the style of ExamplesDiv to `color:#800;font-family:mono`
+  set the content of ExamplesDiv to Examples
+  create TitleDiv in ContentDiv
+  set the style of TitleDiv to `margin-top:1em;font-weight:bold`
+  set the content of TitleDiv to `Description:`
+  create DescriptionDiv in ContentDiv
+  send to ShowdownModule
+
+  put the json index of Keyword in KeywordKeys into Index
+  take 1 from Index
+  if Index is less than 0 add the json count of KeywordKeys to Index
+  set the text of PreviousButton to element Index of KeywordKeys
+  add 2 to Index
+  if Index is not less than the json count of KeywordKeys
+    take the json count of KeywordKeys from Index
+  set the text of NextButton to element Index of KeywordKeys
+  stop
+
+SelectViewKeyword:
+  put KeywordList into Keyword
+  put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  go to Viewer
+
+Previous:
+  put the text of PreviousButton into Keyword
+  put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  go to Viewer
+
+Next:
+  put the text of NextButton into Keyword
+  put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  go to Viewer
+
+Editor:
+  put `edit` into Mode
+  put Mode into storage as `.docman-mode`
+  set style `visibility` of PackageButtonsDiv to `visible`
+  set style `display` of SaveButton to `inline`
+  set style `display` of ViewerButton to `inline`
+  if not ReadOnly set style `display` of EditorButton to `none`
+  clear ContentDiv
+  create FormDiv in ContentDiv
+
+  create RowDiv in FormDiv
+  set the style of RowDiv to `display:flex;height:2em;margin:0.2em 0 1em 0`
+  create Label in RowDiv
+  set the style of Label to `width:8em;padding-top:0.2em`
+  set the content of Label to `Keyword:`
+
+  create ColumnDiv in RowDiv
+  set the style of ColumnDiv to `display:flex;width:100%`
+  create KeywordList in ColumnDiv
+  set the style of KeywordList to `flex:26;height:100%`
+  put the json keys of Keywords into KeywordKeys
+  json set KeywordList from KeywordKeys
+  get Keyword from storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  set the default of KeywordList to Keyword
+  on change KeywordList go to SelectEditKeyword
+  create PaddingDiv in ColumnDiv
+  set the style of PaddingDiv to `flex:3`
+  create RenameButton in ColumnDiv
+  set the style of RenameButton to `flex:20;height:100%;margin:0`
+  set the text of RenameButton to `Rename`
+  on click RenameButton go to RenameKeyword
+  create PaddingDiv in ColumnDiv
+  set the style of PaddingDiv to `flex:3`
+  create DeleteButton in ColumnDiv
+  set the style of DeleteButton to `flex:20;height:100%;margin:0`
+  set the text of DeleteButton to `Delete`
+  on click DeleteButton go to DeleteKeyword
+  create PaddingDiv in ColumnDiv
+  set the style of PaddingDiv to `flex:3`
+  create NewKeywordButton in ColumnDiv
+  set the style of NewKeywordButton to `flex:25;height:100%;margin:0`
+  set the text of NewKeywordButton to `New Keyword`
+  on click NewKeywordButton go to NewKeyword
+
+  create RowDiv in FormDiv
+  set the style of RowDiv to `display:flex;height:4em;margin:0.2em 0 1em 0`
+  create Label in RowDiv
+  set the style of Label to `width:8em;padding-top:0.2em`
+  set the content of Label to `Syntax:`
+  create SyntaxInput in RowDiv
+  set the style of SyntaxInput to `width:100%;height:100%`
+
+  create RowDiv in FormDiv
+  set the style of RowDiv to `display:flex;height:8em;margin:0.2em 0 1em 0`
+  create Label in RowDiv
+  set the style of Label to `width:8em;padding-top:0.2em`
+  set the content of Label to `Examples:`
+  create ExamplesInput in RowDiv
+  set the style of ExamplesInput to `width:100%;height:100%`
+
+  create RowDiv in FormDiv
+  set the style of RowDiv to `display:flex;height:20em;margin:0.2em 0 1em 0`
+  create Label in RowDiv
+  set the style of Label to `width:8em;padding-top:0.2em`
+  set the content of Label to `Description:`
+  create DescriptionInput in RowDiv
+  set the style of DescriptionInput to `width:100%;height:100%`
+
+  put property Keyword of Keywords into Record
+  put property `syntax` of Record into Syntax
+  put property `description` of Record into Description
+  put property `examples` of Record into Examples
+
+  set the content of SyntaxInput to decode Syntax
+  set the content of DescriptionInput to decode Description
+  set the content of ExamplesInput to decode Examples
+
+  set style `display` of ViewerButton to `inline`
+  if not ReadOnly set style `display` of EditorButton to `none`
+  stop
+
+SelectPackage:
+  put PackageList into PackageName
+  put PackageName into storage as `.docman-package`
+  get Group from storage as `.docman-` cat PackageName cat `-group`
+  get Keyword from storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  go to Restart
+
+  rest get Package from `/resources/doc/` cat PackageName cat `.json`
+  if Package is empty
+  begin
+    put `` into Package
+    put `` into Keywords
+  end
+  else put property Group of Package into Keywords
+  go to Editor
+
+SelectCommands:
+  put `commands` into NewGroup
+  go to SelectGroup
+
+SelectValues:
+  put `values` into NewGroup
+  go to SelectGroup
+
+SelectConditions:
+  put `conditions` into NewGroup
+
+SelectGroup:
+  if Mode is `edit` gosub to SaveKeyword
+  set property Group of Package to Keywords
+  put NewGroup into Group
+  put property Group of Package into Keywords
+  put Group into storage as `.docman-` cat PackageName cat `-group`
+  go to Groups
+
+SelectEditKeyword:
+  gosub to SaveKeyword
+  put KeywordList into Keyword
+  put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  go to Editor
+
+NewPackage:
+  gosub to SaveKeyword
+  put prompt `Type the new package name:` with `new` into PackageName
+  if PackageName
+  begin
+    rest get Content from `/resources/doc/`
+    put 0 into Index
+    while Index is less than the json count of Content
+    begin
+      put element Index of Content into Item
+      if property `type` of Item is `json`
+      begin
+        put property `name` of Item into Name
+        if Name is PackageName cat `.json`
+        begin
+          alert `Package '` cat PackageName cat `' already exists.`
+          stop
+        end
+      end
+      add 1 to Index
+    end
+  end
+  put `{"commands":{},"values":{},"conditions":{}}` into Record
+  rest post Record to `_save/doc~` cat PackageName cat `.json`
+  json add PackageName to Packages
+  put empty into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+  go to Restart
+
+NewKeyword:
+  gosub to SaveKeyword
+  put prompt `Type the new keyword:` with `new` into Keyword
+  if Keyword
+  begin
+    put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+    put `` into Value
+    set property `syntax` of Value to ``
+    set property `description` of Value to ``
+    set property `examples` of Value to ``
+    set property Keyword of Keywords to Value
+    put `` into Syntax
+    put `` into Description
+    put `` into Examples
+    go to Editor
+  end
+  stop
+
+RenameKeyword:
+  gosub to SaveKeyword
+  put prompt `New name for '` cat Keyword cat `':` with Keyword into Value
+  if Value
+  begin
+    json rename Keyword to Value in Keywords
+    put Value into Keyword
+    put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+    set property Group of Package to Keywords
+    go to Editor
+  end
+  stop
+
+DeleteKeyword:
+  gosub to SaveKeyword
+  if confirm `Do you want to delete keyword '` cat Keyword cat `'?`
+  begin
+    json delete property Keyword from Keywords
+    put empty into Keyword
+    put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
+    set property Group of Package to Keywords
+    go to Editor
+  end
+  stop
+
+SaveKeyword:
+  if Keyword is empty return
+  put empty into Value
+  set property `syntax` of Value to encode the text of SyntaxInput
+  set property `description` of Value to encode the text of DescriptionInput
+  set property `examples` of Value to encode the text of ExamplesInput
+  set property Keyword of Keywords to Value
+  set property Group of Package to Keywords
+  return
+
+SavePackage:
+  gosub to SaveKeyword
+  fork to SP2
+  return
+
+SP2:
+  set the text of Status to `Saving package "` cat PackageName cat `"...`
+  json format Package
+  rest post Package to `_save/doc~` cat PackageName cat `.json`
+  set the text of Status to `Package "` cat PackageName cat `" saved`
+  wait 3
+  set the text of Status to ``
+  stop
