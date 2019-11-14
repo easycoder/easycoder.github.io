@@ -15,4 +15,4 @@ If you'd like to know more we recommend you start with our 'Codex', a combined t
 /CODEX/
 
 ---
-**Note:** This static website is designed to provide a legacy alternative to the main ~ec~ site ([https://easycoder.software](https://easycoder.software)) in the event of the latter not being available or becoming unsupported.
+**Note:** This static website is designed to provide a legacy alternative to the original ~ec~ site ([https://easycoder.software](https://easycoder.software)) in the event of the latter not being available or becoming unsupported.
