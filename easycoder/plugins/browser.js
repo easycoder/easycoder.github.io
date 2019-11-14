@@ -357,6 +357,7 @@ const EasyCoder_Browser = {
 					} else {
 						const imports = compiler.imports;
 						if (imports && imports.length > 0) {
+							// This section is used by Codex to force run in Run panel
 							const parent = imports[0].name;
 							compiler.addCommand({
 								domain: `browser`,
