@@ -15,10 +15,10 @@ So let's take our first step into the world of coding. Click this link to contin
 
 ~next:Hello world~
 
-Note to developers: Throw away your preconceptions; this is unlike anything else. See our **Background** page.
+Note to developers: Throw away your preconceptions; this is unlike anything else. See our ~link:background:Background~ page.
 
 As well as being a learning resource, ~ec~ **_Codex_** is also a complete IDE for writing, running and testing scripts that are to become browser applications. Scripts written here can be deployed as web apps with few changes being needed in most cases.
 
 You can also download and run Codex locally on your own computer. There's no difference except that when you save a script it will be written to a file on the computer's hard drive instead of being kept in browser storage. This can be very convenient as it allows you to write and test code even without an Internet connection.
 
-You can optionally install Codex on your own server. For more information see our **Installation** page.
+You can optionally install Codex on your own server. For more information see our ~link:install:Installation~ page.

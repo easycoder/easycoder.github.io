@@ -1,4 +1,6 @@
-script ScriptEditor
+! Script Editor
+
+  script ScriptEditor
 
   div Body
   div Container
@@ -235,7 +237,7 @@ DoOpen:
 SelectFile:
   index File to the index of FileName
   set the content of NameEditor to File
-  rest get Content from `_load/ecs~` cat File
+  rest get Content from `/resources/ecs/` cat File
   put Content into Current
   set the content of Status to `Script '` cat File cat `' loaded`
   fork to ResetStatus
