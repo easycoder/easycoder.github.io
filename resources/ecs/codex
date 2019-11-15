@@ -66,6 +66,7 @@
     variable Data
     variable Payload
     variable ECPayload
+    variable Size
     variable A
     variable B
     variable V
@@ -784,7 +785,7 @@ SHP4:
     end
 	return
 
-ProcessMarkdown:
+ProcessMarkdown: ! TODO Count the links & set up listeners
   on DecoratorCallback go to Decorate
   put 0 into LinkCount
   set the content of HelpPanel to showdown decode Script with DecoratorCallback
@@ -798,8 +799,8 @@ ProcessMarkdown:
   end
   on click Link
   begin
-    put attribute `data-id` of Link into Data
-    end
+    put attribute `data-id` of Link into Step
+    goto ShowHelpPage
   end
   return
 
@@ -830,6 +831,32 @@ Decorate:
   else if left 4 of Payload is `copy`
   begin
   	put `<button id="copy">Copy to editor</button>` into Payload
+  end
+  else if left 5 of Payload is `icon:`
+  begin
+  	put from 5 of Payload into Payload
+    put the position of `:` in Payload into N
+    put left N of Payload into Name
+    add 1 to N
+    put from N of Payload into Payload
+    put the position of `:` in Payload into N
+    put left N of Payload into Size
+    add 1 to N
+    put from N of Payload into Payload
+  	put `<img src="resources/icon/` cat Name
+    	cat `.png" style="width:` cat Size cat `;height:` cat Size
+        cat `" title="` cat Payload cat `" />` into Payload
+  end
+  else if left 5 of Payload is `link:`
+  begin
+  	put from 5 of Payload into Payload
+    put the position of `:` in Payload into N
+    put left N of Payload into Data
+    add 1 to N
+    put from N of Payload into Payload
+  	put `<b><a href="" id="ec-link-` cat LinkCount cat `" data-id="` cat Data cat `">`
+    	cat Payload cat `</a></b>` into Payload
+  	add 1 to LinkCount
   end
   else if left 5 of Payload is `next:`
   begin

@@ -1,4 +1,4 @@
-  script Showdown
+script Showdown
   
   import div Container
 
@@ -6,8 +6,6 @@
   a Link
   variable Markup
   variable Payload
-  variable LinkCount
-  variable Index
   variable Data
   variable ECPayload
 
@@ -19,21 +17,7 @@
   on message
   begin
   	put the message into Markup
-    put 0 into LinkCount
     set the content of Container to showdown decode Markup with DecoratorCallback
-    set the elements of Link to LinkCount
-    put 0 into Index
-    while Index is less than LinkCount
-    begin
-      index Link to Index
-      attach Link to `ec-link-` cat Index
-      add 1 to Index
-    end
-    on click Link
-    begin
-      put attribute `data-id` of Link into Data
-      send Data to parent
-    end
   end
   set ready
   stop
