@@ -18,7 +18,6 @@
     div ScriptName
     div ContentDiv
     div Clear
-    div Code
 !    div Tracer
     input NameEditor
     textarea ContentEditor
@@ -738,19 +737,6 @@ SHP5:
         end
     end
     scroll HelpOuter to 0
-
-!    put `/resources/codex/code/` cat Step into Item
-!    rest get Fragment from Item or begin end
-!	attach Code to `code` or goto SHP3
-!    if the content of Code is `yes`
-!    begin
-!    	set the style of Code to `font-family:mono;color:#660000;margin-bottom:1em`
-!    	put Fragment into Content
-!    	replace newline with `<br>` in Content
-!    	replace ` ` with `&nbsp;` in Content
-!    	set the content of Code to Content
-!    end
-!    else set the style of Code to `display:none`
 
 SHP3:
     if Script is not empty

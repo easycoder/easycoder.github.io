@@ -3,10 +3,8 @@ script Showdown
   import div Container
 
   callback DecoratorCallback
-  a Link
   variable Markup
   variable Payload
-  variable Data
   variable ECPayload
 
   load showdown

@@ -6,7 +6,6 @@
   
   div Container
   div ContentDiv
-  div EditorDiv
   div ButtonsDiv
   div FormDiv
   div RowDiv
@@ -50,12 +49,10 @@
   variable Record
   variable Keyword
   variable Value
-  variable Condition
   variable Syntax
   variable Description
   variable Payload
   variable Examples
-  variable TextBoxWidth
   variable Group
   variable NewGroup
   variable Index
@@ -63,7 +60,6 @@
   variable Script
   variable Password
   variable Valid
-  variable Message
   variable Content
   variable Item
   variable Name
@@ -146,7 +142,6 @@ Restart:
   end
 RS2:
   put property Group of Package into Keywords
-  put 40 into TextBoxWidth
 
   create ButtonsDiv in Container
   set the style of ButtonsDiv to
