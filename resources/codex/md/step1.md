@@ -10,7 +10,7 @@ It's a tradition in programming that your first program is called "Hello, world"
 
 You'll see that in our editor the text inside the backticks is colored whereas the word 'alert' is black. This is because the editor 'understands' what ~ec~ scripts look like. Also note that blank lines or spaces at the start of lines are ignored, and that a command can occupy more than one line as long as you don't put a line break in the middle of a quoted string (such as ~quot:Hello, world!~).
 
-The word ~code:alert~ is an ~ec~ command word and the text between the backticks is fixed text. We programmers call it a string. Words that are colored black are all part of ~ec~ itself; everything else has a color that indicates the part it plays in the language. Strings are always ~code:dull red~.
+The word ~code:alert~ is an ~ec~ command word and the text between the backticks is fixed text. We programmers call it a string. Words that are colored black are all part of ~ec~ itself; everything else has a color that indicates the part it plays in the language. Strings are always ~code:dull~ ~code:red~.
 
 When you click the ~icon:run:20px:Run~ button its icon will change to ~icon:runstop:20px:Stop~ and a popup box will appear containing your message. When you click the OK button in the box everything will be returned to as it was before. Your script has finished its job.
 
