@@ -19,7 +19,7 @@ The program actually behaved as if you'd typed
 ~pre:alert &#96;Hello, world!&#96;
 exit~
 
-If you leave off the exit instruction the ~ec~ compiler puts one in for you, but there are times when you don't want the program to just exit. It may be waiting for the user to interact so it has to keep itself alive. To do this we need another variation:
+If you leave off the ~code:exit~ instruction the ~ec~ compiler puts one in for you, but there are times when you don't want the program to just exit. It may be waiting for the user to interact so it has to keep itself alive. To do this we need another variation:
 
 ~pre:alert &#96;Hello, world!&#96;
 stop~
