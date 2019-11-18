@@ -13,6 +13,7 @@
     li ButtonItem
     button HomeButton
     button IntroButton
+    button ExamplesButton
     button AboutButton
     button PhilosophyButton
     button CodexButton
@@ -20,6 +21,7 @@
     module ShowdownModule
     module HomeModule
     module IntroModule
+    module ExamplesModule
     module AboutModule
     module PhilosophyModule
     module CurrentModule
@@ -58,7 +60,7 @@ BuildPage:
 		set the style of Header to `margin:0 2em;text-align:center`
     
     create Banner in Header
-    if not mobile set the style of Banner to `width:70%;margin:0 auto`
+    if not mobile set the style of Banner to `width:50%;margin:0 auto`
     set attribute `src` of Banner to `resources/img/banner.png`
     
     create Rule in Body
@@ -82,15 +84,17 @@ BuildPage:
         set the style of Document to `flex:1`
     end
 
-    rest get Script from `/resources/ecs/showdown`
+    rest get Script from `/resources/ecs/showdown.ecs`
     run Script with Document as ShowdownModule
- 	rest get Script from `/resources/ecs/home`
+ 	rest get Script from `/resources/ecs/home.ecs`
     run Script with ShowdownModule as HomeModule
-  	rest get Script from `/resources/ecs/intro`
+  	rest get Script from `/resources/ecs/intro.ecs`
     run Script with ShowdownModule as IntroModule
-  	rest get Script from `/resources/ecs/about`
+  	rest get Script from `/resources/ecs/examples.ecs`
+    run Script with ShowdownModule as ExamplesModule
+  	rest get Script from `/resources/ecs/about.ecs`
     run Script with ShowdownModule as AboutModule
-  	rest get Script from `/resources/ecs/philosophy`
+  	rest get Script from `/resources/ecs/philosophy.ecs`
     run Script with ShowdownModule as PhilosophyModule
 
     alias CurrentModule to HomeModule
@@ -105,7 +109,7 @@ BuildPage:
 	create HomeButton in ButtonItem
     set the style of HomeButton to ButtonStyle
     set style `background` of HomeButton to `darkgray`
-    if not mobile set style `margin-top` of HomeButton to `4em`
+    if not mobile set style `margin-top` of HomeButton to `1em`
     set the text of HomeButton to `Home`
     on click HomeButton
     begin
@@ -128,6 +132,20 @@ BuildPage:
     	send `pause` to CurrentModule
         alias CurrentModule to IntroModule
     	send to IntroModule
+    end
+    
+	create ButtonItem in ButtonList
+    create ExamplesButton in ButtonItem
+    set the style of ExamplesButton to ButtonStyle
+    set style `margin-top` of ExamplesButton to `0.25em`
+    set the text of ExamplesButton to `Examples`
+    on click ExamplesButton
+    begin
+    	gosub to DeselectAllButtons
+        set style `background` of ExamplesButton to `darkgray`
+    	send `pause` to CurrentModule
+        alias CurrentModule to ExamplesModule
+    	send to ExamplesModule
     end
     
 	create ButtonItem in ButtonList
@@ -166,7 +184,7 @@ BuildPage:
     on click CodexButton
     begin
       load plugin `codemirror`
-      rest get Script from `/resources/ecs/codex`
+      rest get Script from `/resources/ecs/codex.ecs`
       send `pause` to CurrentModule
       set style `display` of Body to `none`
       run Script
@@ -176,6 +194,7 @@ BuildPage:
 DeselectAllButtons:
 	set style `background` of HomeButton to ``
     set style `background` of IntroButton to ``
+    set style `background` of ExamplesButton to ``
     set style `background` of AboutButton to ``
     set style `background` of PhilosophyButton to ``
     return

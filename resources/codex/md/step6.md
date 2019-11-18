@@ -22,6 +22,6 @@ First we create the container, giving it center alignment, a margin around itsel
 
 The image element is then created. Note that the command requests it to be created inside the container; the default would be for it to sit underneath. The image width is set to 70% of its containing element. Then we request the image itself from our server. When resources such as graphics are located on the same server as the code that uses them it's common for the URL not to begin with the usual ~code:http://~; here we have a relative path that refers to a folder on the server. As the programmer you obviously will know where your images are kept.
 
-The title text comprises several lines. In a web page a line break is requested by using the word break, and to keep things tidy here the whole string is divided into lines and catenated together.
+The title text comprises several lines. In a web page a line break is requested by using the word ~code:break~, and to keep things tidy here the whole string is divided into lines and catenated together.
 
 ~next:Animation~

@@ -1,18 +1,21 @@
-# Website coding in English #
+## The simple yet powerful alternative to JavaScript ##
 
-Most websites are quite easy to describe in English, yet programmers write their code in JavaScript, which looks nothing like English and which for anyone other than an expert is very hard to follow. So we created ~ec~, a language that looks a lot like English and lets you code much the same way you describe your site. It's a productivity tool you can use to build parts of websites or even entire websites.
+~ec~ is a scripting language that looks a lot like English. It lets you build interactive websites or add interactivity to your existing website.
+### Do I need to learn programming? ###
+No. It's not necessary for you to be an expert programmer. What matters is you know what you want to do and can express it logically. If you can describe clearly - in English - what your web page should do you're already half-way to an ~ec~ script. You can add one to any website in minutes and bring it to life, transforming it from static to lively and interactive.
+### What sort of things does it do? ###
+- Many websites consist of a long single page that have to be scrolled to get to the details, but it can be hard to know where anything is and there's usually no effective organization. With a few lines of script such a page can be divided into sections that can be hidden and revealed one at a time like a slide deck.
 
-For example, suppose you want to react to the user clicking a screen element by turning the background of that element pink. This is an action requiring a small piece of CSS that sets the 'background' style of the element to 'pink'. In ~ec~ it's just that:
+- If you have a number of items on a page you could show which the user has already looked at by drawing an outline round each one, changing the background color or overlaying a tick in one corner.
 
-/0//SHOWME/
+- When the user leaves the page on their screen, after some period of time you can cause it to automatically cycle some part of its content, which might get their attention again.
 
-In some cases this might be all you need; something simple that happens in response to a user action. But to do this in JavaScript means adding a separate script file, learning the syntax of all the commands needed and figuring how to 'wire it up' to your HTML. For programmers this is easy but for everyone else it's rocket science.
+- Any part of the screen can be replaced with new content taken from a remote server without the need to reload the page.
 
-By contrast, the 'script' containing ~ec~ commands goes into a special element in your HTML and it's ready for use as soon as the page loads. No complicated compilers, linkers, loaders or other tools are needed; you just write what you want then refresh the page to see it in action.
+Although these features are the ones most likely to be used by the averge website owner, ~ec~ can do a lot more, to the point it can be used to build entire interactive websites without a single line of JavaScript ever being seen. A good example is our own site, that you're reading now.
+### How do I find out more? ###
+The best place to start is with our ~ec~ **Codex** - see the link /SIDEBAR/. The **Codex** is a page here on this website that teaches the basic features of ~ec~ and lets you try out example scripts in our coding playground. It includes a complete reference manual for the ~ec~ scripting language and it's intended to be used by people of all abilities.
 
-If you'd like to know more we recommend you start with our 'Codex', a combined tutorial, prorammer's playground and reference manual. Click the button below to begin. Or you can browse the site links /SIDEBAR/.
+Also look at  some of our examples (/SIDEBAR/). These are complete web pages you can copy to your own website and run.
 
-/CODEX/
-
----
-**Note:** This static website is designed to provide a legacy alternative to the original ~ec~ site ([https://easycoder.software](https://easycoder.software)) in the event of the latter not being available or becoming unsupported.
+After that it's time to add an ~ec~ script to your web page. The links /SIDEBAR/ include examples that should help you understand what you need to add to your website. If you need further help you can contact us in our [Slack](https://easycoder-software.slack.com/) channel. Don't be afraid to ask; everybody was a beginner once.

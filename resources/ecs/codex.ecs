@@ -90,7 +90,7 @@
     variable Items
     
     load showdown
-    rest get ECPayload from `/resources/fragment/ec`
+    rest get ECPayload from `/resources/fragment/ec.txt`
 
 !    create Tracer
 !    set attribute `id` of Tracer to `easycoder-tracer`
@@ -121,7 +121,7 @@
     
     if not ReadOnly set the title to `EasyCoder Codex`
     
-    rest get Pages from `/resources/ecs/pages`
+    rest get Pages from `/resources/ecs/pages.json`
 
     get Step from storage as `.step`
     if left 4 of Step is not `step`
@@ -276,7 +276,7 @@
     set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
 	gosub to ShowHelpPage
-	rest get Script from `/resources/ecs/docman`
+	rest get Script from `/resources/ecs/docman.ecs`
     run Script with ReferencePanel
 	put empty into storage as `.ref`
 
@@ -592,7 +592,7 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
-	if PasswordValid rest get Content from `/resources/scripts/` cat File
+	if PasswordValid rest get Content from `/resources/scripts/` cat File cat `.ecs`
     else get Content from storage as File
     put Content into Current
     set the content of Status to `Script '` cat File cat `' loaded`
@@ -645,7 +645,7 @@ ShowContents:
 
 ShowHelpPage:
 	put Step into storage as `.step`
-    put `/resources/codex/code/` cat Step into Item
+    put `/resources/codex/code/` cat Step cat `.ecs` into Item
     rest get Fragment from Item or begin end
     put property Step of Pages into Page
     if property `prev` of Page is empty set style `visibility` of Back to `hidden`
@@ -910,6 +910,7 @@ DoRunStop:
 	end
     
     set attribute `src` of RunStop to `resources/icon/runstop.png`
+    set attribute `title` of RunStop to `Stop`
     set Running
     wait 10 ticks
     
@@ -917,6 +918,7 @@ DoRunStop:
     begin
         clear Running
     	set attribute `src` of RunStop to `resources/icon/run.png`
+    	set attribute `title` of RunStop to `Run`
         set style `display` of RunPanel to `none`
         set style `display` of HelpOuter to `block`
         if Mobile set style `display` of ScriptName to `none`

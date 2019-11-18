@@ -1,0 +1,62 @@
+!	About
+
+	script About
+    
+    import module Showdown
+    
+    button ShowMeButton
+    button CodexButton
+    variable Script
+    variable Item
+    variable Codex
+    variable ShowMe
+    variable Message
+    
+    rest get Script from `/resources/md/about.md`
+    if mobile
+    begin
+    	replace `/SIDEBAR/` with `below` in Script
+    end
+    else
+    begin
+    	replace `/SIDEBAR/` with `on the left` in Script
+    end
+    rest get Item from `/resources/fragment/about/0.txt`
+    replace `/0/` with `<span style="font-family:mono;color:darkred">` cat Item cat `</span>` in Script
+    replace `/SHOWME/` with `<button style="margin-left:3em" id="showme">Show Me</button>` in Script
+	replace `/CODEX/` with `<a href="#" id="about-codex">EasyCoder Codex</a>` in Script
+    replace `/SLACK/` with `<a href="https://easycoder-software.slack.com">Slack workspace</a>` in Script
+
+    on message
+    begin
+    	put the message into Message
+        if Message is `restore` send Message to parent
+        else if Message is `pause` begin end
+        else go to Start
+    end
+    
+    set ready
+    load plugin `codemirror`
+    stop
+
+Start:
+    send Script to Showdown
+	clear ShowMe
+    attach ShowMeButton to `showme`
+    set style `border-radius` of ShowMeButton to `0.5em`
+    set style `padding` of ShowMeButton to `1em`
+    on click ShowMeButton
+    begin
+    	if ShowMe set style `background` of ShowMeButton to ``
+        else set style `background` of ShowMeButton to `pink`
+        toggle ShowMe
+    end
+    attach CodexButton to `about-codex`
+    on click CodexButton
+    begin
+	    load plugin `codemirror`
+    	rest get Codex from `/resources/ecs/codex`
+    	send `hide` to parent
+    	run Codex
+    end
+    stop

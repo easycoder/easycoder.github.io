@@ -13,11 +13,10 @@
 	
 	rest get Script from `/resources/md/intro.md`
 	replace `/WP/` with `<a href="#">this page</a>` in Script
-	replace `/CODEX/` with `<a href="#" id="intro-codex">EasyCoder Codex</a>` in Script
 	put 1 into N
 	while N is less than 4
 	begin
-		rest get Item from `/resources/fragment/intro/` cat N
+		rest get Item from `/resources/fragment/intro/` cat N cat `.txt`
 		replace `<` with `&lt;` in Item
 		replace `>` with `&gt;` in Item
 		replace `/` cat N cat `/` with `<pre>` cat Item cat `</pre>` in Script
@@ -37,7 +36,7 @@
 
 Start:
 	send Script to Showdown
-	attach RunCodex to `intro-codex`
+	attach RunCodex to `codex`
 	on click RunCodex
 	begin
 		send `hide` to parent

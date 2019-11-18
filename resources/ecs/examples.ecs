@@ -1,0 +1,40 @@
+!	Examples
+
+	script Examples
+    
+    import module Showdown
+    
+    div Container
+    div Concertina
+    module ConcertinaModule
+    variable Content
+    variable Script
+    variable Message
+    variable ConcertinaRunning
+    
+    rest get Content from `/resources/md/examples.md`
+
+    on message
+    begin
+    	put the message into Message
+        if Message is `restore` send `show` to parent
+        else if Message is `pause` begin end
+        else go to Start
+    end
+    
+    set ready
+    stop
+
+Start:
+    send Content to Showdown
+    if not ConcertinaRunning
+    begin
+    	wait 10 ticks
+        attach Container to `container`
+        create Concertina in Container
+    	rest get Script from `/resources/ecs/concertina.ecs`
+        run Script as ConcertinaModule
+        set ConcertinaRunning
+    end
+    send to ConcertinaModule
+    stop

@@ -24,7 +24,7 @@ If you leave off the ~code:exit~ instruction the ~ec~ compiler puts one in for y
 ~pre:alert &#96;Hello, world!&#96;
 stop~
 
-In this case, after you click the OK button and the popup box disappears, the  button doesn't change back to . This is because the script is still in a 'running' state but it isn't actually doing anything. If you click the ~icon:runstop:20px:Stop~ button the script will be forced to exit. Try it and see.
+In this case, after you click the OK button and the popup box disappears, the  button doesn't change back to ~icon:run:20px:Run~. This is because the script is still in a 'running' state but it isn't actually doing anything. If you click the ~icon:runstop:20px:Stop~ button the script will be forced to exit. Try it and see.
 
 The alert popup is very useful when you want to stop your script and check what it's doing. You can construct a message that contains whatever information you need. For the next couple of steps in this tutorial we'll use alerts to explore some of the basic programming features and do some arithmetical computing before we get onto the visual stuff.
 
