@@ -2,21 +2,26 @@
 
 mkdir -p ~/temp/lib
 rm -rf ~/temp/lib
-cd ~/Dropbox/Code/VisualStudio/EasyCoder/
+mkdir -p ~/temp/plugins
+cd ~/Dropbox/Code/VisualStudio/EasyCoder/EasyCoder
 
-echo "easycoder: running babel"
-npx babel --plugins transform-object-rest-spread js --out-dir ~/temp/lib
-echo "easycoder: babel finished"
+cp js/plugins/* ~/EasyCoder/easycoder/plugins
+cp server/* ~/EasyCoder/easycoder
 
-npx browserify ~/temp/lib/EasyCoder.js -o ~/EasyCoder/easycoder.js
-echo "easycoder: browserify finished"
+cat js/easycoder/*.js js/EasyCoder.js > ~/EasyCoder/easycoder/easycoder.js
+cat js/plugins/browser.js js/plugins/json.js js/plugins/rest.js js/plugins/ckeditor.js js/plugins/gmap.js js/plugins/showdown.js js/plugins/codemirror.js js/plugins/svg.js js/plugins/ui.js js/plugins/wof.js js/plugins/anagrams.js js/plugins-all.js js/easycoder/*.js js/EasyCoder-Cordova.js > ~/EasyCoder/easycoder/easycoder-cordova.js
+echo "Merge completed"
 
-java -jar compiler.jar --js ~/EasyCoder/easycoder.js --js_output_file ~/EasyCoder/easycoder-min.js
-echo "easycoder: closure finished"
+cd ~/EasyCoder
+npx google-closure-compiler --js=easycoder/easycoder.js --js_output_file=easycoder/easycoder-min.js --language_in ECMASCRIPT_2018
+echo "Closure finished"
 
-cp js/easycoder/plugins-sample.js ~/EasyCoder
-cp js/plugins/* ~/EasyCoder/plugins
-cp server/* ~/EasyCoder
+cp easycoder/easycoder.js ~/Dropbox/Code/VisualStudio/EasyCoder/EasyCoder/easycoder/easycoder.js
+cp easycoder/easycoder-min.js ~/Dropbox/Code/VisualStudio/EasyCoder/EasyCoder/easycoder/easycoder-min.js
+cp -R easycoder/plugins ~/Dropbox/Code/VisualStudio/EasyCoder/EasyCoder/easycoder
+rm easycoder.zip
+zip -r easycoder.zip *
+cp easycoder.zip ~/Dropbox/Code/VisualStudio/EasyCoder
 echo "Files copied"
 
 rm -rf ~/temp/lib

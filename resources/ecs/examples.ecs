@@ -4,15 +4,16 @@
     
     import module Showdown
     
-    div Container
-    div Concertina
-    module ConcertinaModule
+    module ImageSwitcherModule
+    div ImageSwitcher
+    button ShowImageSwitcher
     variable Content
     variable Script
     variable Message
-    variable ConcertinaRunning
+    variable ImageSwitcherRunning
     
     rest get Content from `/resources/md/examples.md`
+    replace `/SHOW-IMAGESWITCHER/` with `<button id="show-imageswitcher">Show</button>` in Content
 
     on message
     begin
@@ -27,14 +28,26 @@
 
 Start:
     send Content to Showdown
-    if not ConcertinaRunning
+    if not ImageSwitcherRunning
     begin
     	wait 10 ticks
-        attach Container to `container`
-        create Concertina in Container
-    	rest get Script from `/resources/ecs/concertina.ecs`
-        run Script as ConcertinaModule
-        set ConcertinaRunning
+    	rest get Script from `/resources/ecs/imageswitcher.ecs`
+        run Script as ImageSwitcherModule
+        set ImageSwitcherRunning
+        attach ImageSwitcher to `ex-imageswitcher`
+        attach ShowImageSwitcher to `show-imageswitcher`
+        fork to ClickImageSwitcher
     end
-    send to ConcertinaModule
+    send to ImageSwitcherModule
     stop
+
+ClickImageSwitcher:
+    set style `display` of ImageSwitcher to `none`
+    set the text of ShowImageSwitcher to `Show`
+    on click ShowImageSwitcher
+    begin
+        set style `display` of ImageSwitcher to `block`
+        set the text of ShowImageSwitcher to `Hide`
+        on click ShowImageSwitcher go to ClickImageSwitcher
+    end
+	stop

@@ -1,0 +1,93 @@
+!	Image Switcher
+
+	script ImageSwitcher
+    
+	div Container
+    div Buttons
+    img Left
+    img Right
+    img Thumb
+    img Image
+    a Link
+    variable ImageCount
+    variable N
+    variable M
+    
+    attach Container to `ex-imageswitcher`
+    on message go to Start
+    set ready
+    stop
+
+Start:
+	clear Container
+    
+	put 9 into ImageCount
+	set the elements of Thumb to ImageCount
+	set the elements of Image to ImageCount
+    create Buttons in Container
+    set the style of Buttons to `text-align:center; padding:10px;border:1px solid lightgray`
+    create Link in Buttons
+    create Left in Link
+    set style `width` of Left to `60px`
+    set attribute `src` of Left to `resources/icon/left.png`
+    on click Left go to DoLeft
+    put 0 into N
+    while N is less than ImageCount
+    begin
+    	index Thumb to N
+        create Link in Buttons
+        create Thumb in Link
+        set style `width` of Thumb to `60px`
+        set style `border` of Thumb to `1px solid white`
+        if N is not 0 set style `margin-left` of Thumb to `10px`
+        set attribute `src` of Thumb to `resources/img/imageswitcher/thumbs/img` cat N cat `.jpg`
+    	add 1 to N
+    end
+    on click Thumb go to DoThumb
+    create Link in Buttons
+    create Right in Link
+    set style `width` of Right to `60px`
+    set attribute `src` of Right to `resources/icon/right.png`
+    on click Right go to DoRight
+    put 0 into N
+    while N is less than ImageCount
+    begin
+    	index Image to N
+        create Image in Container
+        set the style of Image to `width:100%;display:none`
+        set attribute `src` of Image to `resources/img/imageswitcher/img` cat N cat `.jpg`
+    	add 1 to N
+    end
+    put 0 into N
+Select:
+    index Image to N
+    index Thumb to N
+    set style `display` of Image to `block`
+    set style `border` of Thumb to `1px solid blue`
+    stop
+
+DoLeft:
+    set style `display` of Image to `none`
+    set style `border` of Thumb to `1px solid white`
+	put the index of Image into N
+    if N is 0 put ImageCount into N
+    take 1 from N
+    go to Select
+
+DoRight:
+    set style `display` of Image to `none`
+    set style `border` of Thumb to `1px solid white`
+	put the index of Image into N
+    add 1 to N
+    if N is ImageCount put 0 into N
+    go to Select
+
+DoThumb:
+    set style `display` of Image to `none`
+	put the index of Thumb into N
+    put the index of Image into M
+    index Thumb to M
+    set style `border` of Thumb to `1px solid white`
+    index Thumb to N
+    index Image to N
+    go to Select

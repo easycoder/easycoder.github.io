@@ -187,7 +187,8 @@ DoOpen:
   while N is less than FileCount
   begin
   	put element N of Files into Item
-    if property `type` of Item is `file` json add Item to Content
+    if property `type` of Item is `ecs` json add Item to Content
+    if property `type` of Item is `json` json add Item to Content
     add 1 to N
   end
   json sort Content
