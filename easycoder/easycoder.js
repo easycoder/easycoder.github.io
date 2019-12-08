@@ -959,6 +959,8 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
+			program.parent.run(program.parent.nextPc);
+			program.parent.nextPc = 0;
 			program.exit();
 			return 0;
 		}
@@ -2146,6 +2148,55 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Split: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			item = compiler.getNextValue();
+			let on = `\n`;
+			if (compiler.tokenIs(`on`)) {
+				on = compiler.getNextValue();
+			}
+			if ([`giving`, `into`].includes(compiler.getToken())) {
+				if (compiler.nextIsSymbol()) {
+					const targetRecord = compiler.getSymbolRecord();
+					if (targetRecord.keyword === `variable`) {
+						compiler.next();
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `split`,
+							lino,
+							item,
+							on,
+							target: targetRecord.name
+						});
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		run: program => {
+			let command = program[program.pc];
+			let content = program.getValue(command.item);
+			let on = program.getValue(command.on);
+			content = content.split(on);
+			let elements = content.length;
+			targetRecord = program.getSymbolRecord(command.target);
+			targetRecord.elements = elements;
+			for (let n = 0; n < elements; n++) {
+				targetRecord.value[n] = {
+					type: `constant`,
+					numeric: false,
+					content: content[n]
+				};
+			}
+			targetRecord.index = 0;
+			return command.pc + 1;
+		}
+	},
+
 	Stop: {
 
 		compile: compiler => {
@@ -2506,6 +2557,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Set;
 		case `sort`:
 			return EasyCoder_Core.Sort;
+		case `split`:
+			return EasyCoder_Core.Split;
 		case `stop`:
 			return EasyCoder_Core.Stop;
 		case `take`:
@@ -2715,6 +2768,18 @@ const EasyCoder_Core = {
 					}
 				}
 			}
+			if ([`character`, `char`].includes(token)) {
+				let index = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					let value = compiler.getNextValue();
+					return {
+						domain: `core`,
+						type: `char`,
+						index,
+						value
+					};
+				}
+			}
 			if (compiler.tokenIs(`the`)) {
 				compiler.next();
 			}
@@ -2822,7 +2887,12 @@ const EasyCoder_Core = {
 				}
 				break;
 			case `position`:
-				if (compiler.nextTokenIs(`of`)) {
+				let nocase = false;
+				if (compiler.nextTokenIs(`nocase`)) {
+					nocase = true;
+					compiler.next();
+				}
+				if (compiler.tokenIs(`of`)) {
 					var last = false;
 					if (compiler.nextTokenIs(`the`)) {
 						if (compiler.nextTokenIs(`last`)) {
@@ -2838,7 +2908,8 @@ const EasyCoder_Core = {
 							type: `position`,
 							needle,
 							haystack,
-							last
+							last,
+							nocase
 						};
 					}
 				}
@@ -2956,8 +3027,12 @@ const EasyCoder_Core = {
 					content: to ? fstr.substr(from, to) : fstr.substr(from)
 				};
 			case `position`:
-				const needle = program.getValue(value.needle);
-				const haystack = program.getValue(value.haystack);
+				let needle = program.getValue(value.needle);
+				let haystack = program.getValue(value.haystack);
+				if (value.nocase) {
+					needle = needle.toLowerCase();
+					haystack = haystack.toLowerCase();
+				}
 				return {
 					type: `constant`,
 					numeric: true,
@@ -2984,6 +3059,7 @@ const EasyCoder_Core = {
 					const spec = JSON.parse(program.getValue(value.value));
 					switch (spec.mode) {
 					case `time`:
+						
 						return {
 							type: `constant`,
 							numeric: true,
@@ -2991,10 +3067,14 @@ const EasyCoder_Core = {
 						};
 					case `date`:
 					default:
+						const date = new Date(fmtValue);
+						const content = (spec.format === `iso`)
+							? `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+							: date.toLocaleDateString(spec.locale, spec.options);
 						return {
 							type: `constant`,
 							numeric: true,
-							content: new Date(fmtValue).toLocaleDateString(spec.locale, spec.options)
+							content
 						};
 					}
 				} catch (err) {
@@ -3022,10 +3102,15 @@ const EasyCoder_Core = {
 					content: Math.floor(date.getTime() / 1000)
 				};
 			case `date`:
+				content = Date.parse(program.getValue(value.value)) / 1000;
+				if (isNaN(content)) {
+					program.runtimeError(program[program.pc].lino, `Invalid date format; expecting 'yyyy-mm-dd'`);
+					return null;
+				}
 				return {
 					type: `constant`,
 					numeric: true,
-					content: Date.parse(program.getValue(value.value)) / 1000
+					content
 				};
 			case `newline`:
 				return {
@@ -3152,6 +3237,14 @@ const EasyCoder_Core = {
 					numeric: !isNaN(content),
 					content
 				};
+			case `char`:
+				let index = program.getValue(value.index);
+				let string = program.getValue(value.value);
+				return {
+					type: `constant`,
+					numeric: false,
+					content: string[index]
+				};
 			}
 			return null;
 		},
@@ -3216,7 +3309,8 @@ const EasyCoder_Core = {
 						return {
 							domain: `core`,
 							type: `numeric`,
-							value1
+							value1,
+							negate
 						};
 					case `even`:
 						compiler.next();
@@ -3291,7 +3385,9 @@ const EasyCoder_Core = {
 			case `boolean`:
 				return program.getValue(condition.value);
 			case `numeric`:
-				return !isNaN(program.getValue(condition.value1));
+				let v = program.getValue(condition.value1);
+				let test = v === ` ` || isNaN(v);
+				return condition.negate ? test : !test;
 			case `even`:
 				return (program.getValue(condition.value1) % 2) === 0;
 			case `odd`:
@@ -3419,7 +3515,8 @@ const EasyCoder = {
 		if (v.type === `boolean`) {
 			return v.content ? `true` : `false`;
 		}
-		if (v.content.substr(0, 2) === `{"` || v.content[0] === `[`) {
+		if (typeof v.content !==`undefined` && v.content.length >= 2
+			&& (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
 			try {
 				const parsed = JSON.parse(v.content);
 				return JSON.stringify(parsed, null, 2);
@@ -3497,8 +3594,11 @@ const EasyCoder = {
 			EasyCoder.reportError(err, program, program.source);
 			if (program.onError) {
 				program.run(program.onError);
-			} else if (program.parent && program.parent.onError) {
-				program.parent.run(program.parent.onError);
+			} else {
+				let parent = program.parent;
+				if (parent && parent.onError) {
+					parent.run(parent.onError);
+				}
 			}
 			return;
 		}
@@ -3637,9 +3737,9 @@ const EasyCoder = {
 				`${finishCompile - startCompile} ms`);
 		} catch (err) {
 			if (err.message !== `stop`) {
-				this.reportError(err, program, source);
-				if (program && program.onError) {
-					program.run(program.onError);
+				this.reportError(err, parent, source);
+				if (parent && parent.onError) {
+					parent.run(parent.onError);
 				}
 			}
 		}

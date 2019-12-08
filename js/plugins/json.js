@@ -166,7 +166,11 @@ const EasyCoder_Json = {
 				break;
 			case `split`:
 				item = compiler.getNextValue();
-				if (compiler.tokenIs(`into`)) {
+				let on = `\n`;
+				if (compiler.tokenIs(`on`)) {
+					on = compiler.getNextValue();
+				}
+				if ([`giving`, `into`].includes(compiler.getToken())) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
 						if (targetRecord.keyword === `variable`) {
@@ -177,9 +181,35 @@ const EasyCoder_Json = {
 								lino,
 								request,
 								item,
+								on,
 								target: targetRecord.name
 							});
 							return true;
+						}
+					}
+				}
+				break;
+			case `replace`:
+				if (compiler.nextTokenIs(`element`)) {
+					const index = compiler.getNextValue();
+					if (compiler.tokenIs(`of`)) {
+						if (compiler.nextIsSymbol()) {
+							const targetRecord = compiler.getSymbolRecord();
+							if (targetRecord.keyword === `variable`) {
+								if ([`by`, `with`].includes(compiler.nextToken())) {
+									const value = compiler.getNextValue();
+									compiler.addCommand({
+										domain: `json`,
+										keyword: `json`,
+										lino,
+										request,
+										target: targetRecord.name,
+										index,
+										value
+									});
+									return true;
+								}
+							}
 						}
 					}
 				}
@@ -238,7 +268,7 @@ const EasyCoder_Json = {
 			case `sort`:
 				targetRecord = program.getSymbolRecord(command.target);
 				const list = program.getValue(targetRecord.value[targetRecord.index]);
-				content = list ? JSON.stringify(JSON.parse(list).sort()) : list;
+				content = list ? JSON.stringify(JSON.parse(list).sort()) : null;
 				targetRecord.value[targetRecord.index] = {
 					type: `constant`,
 					numeric: false,
@@ -328,13 +358,34 @@ const EasyCoder_Json = {
 				targetRecord = program.getSymbolRecord(command.target);
 				const existing = targetRecord.value[targetRecord.index].content;
 				record = existing ? JSON.parse(existing) : [];
-				record.push(content);
-				targetRecord.value[targetRecord.index].content = JSON.stringify(record);
+				record.push((`[`, `{`).includes(content[0]) ? JSON.parse(content) :content);
+				targetRecord.value[targetRecord.index] = {
+					type: `constant`,
+					numeric: false,
+					content: JSON.stringify(record)
+				};
 				break;
 			case `split`:
 				content = program.getValue(command.item);
+				const on = program.getValue(command.on);
 				targetRecord = program.getSymbolRecord(command.target);
-				targetRecord.value[targetRecord.index].content = content.split(`\n`);
+				targetRecord.value[targetRecord.index] = {
+					type: `constant`,
+					numeric: false,
+					content: JSON.stringify(content.split(on))
+				};
+				break;
+			case `replace`:
+				targetRecord = program.getSymbolRecord(command.target);
+				const index = program.getValue(command.index);
+				const value = program.getValue(command.value);
+				const current = targetRecord.value[targetRecord.index].content;
+				record = current ? JSON.parse(current) : [];
+				if (index > record.length - 1) {
+					program.runtimeError(command.lino, `Index out of range`);
+				}
+				record[index] = value;
+				targetRecord.value[targetRecord.index].content = JSON.stringify(record);
 				break;
 			}
 			return command.pc + 1;

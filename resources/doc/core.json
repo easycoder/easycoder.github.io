@@ -57,12 +57,12 @@
     },
     "decode": {
       "syntax": "decode {variable}",
-      "description": "~m:decode~ performs a decoding operation on a text value. The default encoding translates single and double quotes into special character sequences and is mainly for use when storing HTML, JSON or other data in your own database using **_EasyCoder_**~sq~s REST server.%0a%0aSee also ~l:set!set the encoding~, which defines the type of encoding to be used by both ~m:decode~ and ~l:encode~.",
+      "description": "~m:decode~ performs a decoding operation on a text value. The default encoding translates single and double quotes into special character sequences and is mainly for use when storing HTML, JSON or other data in your own database using EasyCoder~sq~s REST server.%0a%0aSee also ~l:set!set the encoding~, which defines the type of encoding to be used by both ~m:decode~ and ~l:encode~.",
       "examples": "decode Content"
     },
     "encode": {
       "syntax": "encode {variable}",
-      "description": "~m:encode~ performs an encoding operation on a text value. The default encoding translates single and double quotes into special character sequences and is mainly for use when storing HTML or other data in your own database using **_EasyCoder_**~sq~s REST server.%0a%0aSee also ~l:set!set the encoding~, which defines the type of encoding to be used by both ~m:encode~ and ~l:decode~.",
+      "description": "~m:encode~ performs an encoding operation on a text value. The default encoding translates single and double quotes into special character sequences and is mainly for use when storing HTML or other data in your own database using EasyCoder~sq~s REST server.%0a%0aSee also ~l:set!set the encoding~, which defines the type of encoding to be used by both ~m:encode~ and ~l:decode~.",
       "examples": "encode Content"
     },
     "end": {
@@ -77,7 +77,7 @@
     },
     "go": {
       "syntax": "goto {label}%0ago [to] {label}",
-      "description": "~m:go [to]~ and ~m:goto~ transfer control to the command at the named  ~m:label~. The command(s) following the ~m:go~/~m:goto~ are not executed at that time.",
+      "description": "~m:go to~ and ~m:goto~ transfer control to the command at the named  ~m:label~. The command(s) following the ~m:go~/~m:goto~ are not executed at that time.",
       "examples": "go to Next%0agoto Next"
     },
     "gosub": {
@@ -87,8 +87,8 @@
     },
     "if": {
       "syntax": "if {condition} {true-outcome} [else {false-outcome}]",
-      "description": "~m:if~ tests the condition that follows. If the result is ~m:true~ then control transfers to the command or block of commands given. Otherwise, if there~sq~s an ~m:else~ section this is executed, then the program resumes at the next instruction after the ~m:if~. (Unless a ~l:stop~, ~l:goto~ or equivalent was encountered as in the second and third examples.)",
-      "examples": "if Value1 is greater than Value2 put true into Result%0aif Remaining is 0 stop%0aelse go to Repeat"
+      "description": "~m:if~ tests the condition that follows. If the result is ~m:true~ then control resumes at the named label; otherwise if there~sq~s an ~m:else~ section this is executed, then the program resumes at the next instruction after the ~m:if~. (Unless a ~l:goto~ or equivalent was encountered as in the second example.)",
+      "examples": "if Value1 is greater than Value2 put true into Result%0aif Remaining is 0 stop%0aelse go to RepeatRepeatRepeatRepeatRepeatRepeat"
     },
     "import": {
       "syntax": "import {variable list}",
@@ -102,7 +102,7 @@
     },
     "load": {
       "syntax": "load plugin {name}",
-      "description": "~m:load~ currently has just one purpose in this package; to load an _**EasyCoder**_ plugin module prior to running a script that requires its functionality. Until the plugin is loaded, using any of its script commands will cause compilation errors. This feature of _**EasyCoder**_ avoids the need for all modules to be loaded up-front, which improves the start-up time. It also permits pages to use functionality in a dynamic manner, which can be important in the planning of large single-page websites.%0a%0aIn any instance of _**EasyCoder**_ there are 2 kinds of plugin. The first kind are loaded when _**EasyCoder**_  itself starts. These are globally-defined plugins that will be needed by every page of the website, such as _browser_ and (usually) _json_.%0a%0aThe second kind of plugin is loaded by a script so that it can be used by another script. Any number of scripts can be run, by loading the text of the script then calling ~l:run~. Scripts loaded and run in this way may need to employ plugins that were not defined globally, so these must be loaded before the script is run.%0a%0aNote that a script cannot load plugins for its own use. This would be an impossibility since each plugin contains the compiler for the extra commands it makes available.%0a%0a_**EasyCoder**_ includes a growing number of plugins, which are covered by this documentation. In addition, third-party plugins may also be available. It is relatively straightforward for any competent JavaScript programmer to write a custom plugin to provide features for a specific website page. The plugin can be hosted anywhere and is loaded by giving its URL.",
+      "description": "~m:load~ currently has just one purpose; to load an _**EasyCoder**_ plugin module prior to running a script that requires its functionality. Until the plugin is loaded, using any of its script commands will cause compilation errors. This feature of _**EasyCoder**_ avoids the need for all modules to be loaded up-front, which improves the start-up time. It also permits pages to use functionality in a dynamic manner, which can be important in the planning of large single-page websites.%0a%0aIn any instance of _**EasyCoder**_ there are 2 kinds of plugin. The first kind are loaded when _**EasyCoder**_  itself starts. These are globally-defined plugins that will be needed by every page of the website, such as _browser_ and (usually) _json_.%0a%0aThe second kind of plugin is loaded by a script so that it can be used by another script. Any number of scripts can be run, by loading the text of the script then calling ~l:run~. Scripts loaded and run in this way may need to employ plugins that were not defined globally, so these must be loaded before the script is run.%0a%0aNote that a script cannot load plugins for its own use. This would be an impossibility since each plugin contains the compiler for the extra commands it makes available.%0a%0a_**EasyCoder**_ includes a growing number of plugins, which are covered by this documentation. In addition, third-party plugins may also be available. It is relatively straightforward for any competent JavaScript programmer to write a custom plugin to provide features for a specific website page. The plugin can be hosted anywhere and is loaded by giving its URL.",
       "examples": "load plugin ckeditor"
     },
     "negate": {
@@ -192,7 +192,7 @@
     },
     "exit": {
       "syntax": "exit",
-      "description": "Causes the script to stop and release all its data. Note that if you have data items that are referred to outside the module they won~sq~t be recovered; this is a potential source of memory leaks and is an advanced topic well beyond the scope of these notes.",
+      "description": "Causes the script to stop and release all its data.",
       "examples": "exit"
     },
     "append": {
@@ -294,7 +294,7 @@
     },
     "position": {
       "syntax": "the position of [the last] {needle} in {haystack}",
-      "description": "returns the position in ~m:{haystack}~ of either the first or the last occurrence of ~m:{needle}~, where both ~m:{needle}~ and ~m:{haystack}~ are text values.%0a",
+      "description": "returns the position in ~m:{haystack}~ of either the first or the last occurrence of ~m:{needle}~, where both ~m:{needle}~ and ~m:{haystack}~ are text values.%0a%0aIf ~m:{needle}~ is not contained in ~m:{haystack}~ the value ~m:-1~ is returned.%0a",
       "examples": "put the position of `fox` in `The quick brown fox jumps over the lazy dog` into Pos (Pos=16)%0aput the position of the last `dot` in `dot dot dot` into P (P=8)"
     },
     "decode": {

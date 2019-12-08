@@ -98,7 +98,8 @@ const EasyCoder = {
 		if (v.type === `boolean`) {
 			return v.content ? `true` : `false`;
 		}
-		if (v.content.substr(0, 2) === `{"` || v.content[0] === `[`) {
+		if (typeof v.content !==`undefined` && v.content.length >= 2
+			&& (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
 			try {
 				const parsed = JSON.parse(v.content);
 				return JSON.stringify(parsed, null, 2);
@@ -176,8 +177,11 @@ const EasyCoder = {
 			EasyCoder.reportError(err, program, program.source);
 			if (program.onError) {
 				program.run(program.onError);
-			} else if (program.parent && program.parent.onError) {
-				program.parent.run(program.parent.onError);
+			} else {
+				let parent = program.parent;
+				if (parent && parent.onError) {
+					parent.run(parent.onError);
+				}
 			}
 			return;
 		}
@@ -316,9 +320,9 @@ const EasyCoder = {
 				`${finishCompile - startCompile} ms`);
 		} catch (err) {
 			if (err.message !== `stop`) {
-				this.reportError(err, program, source);
-				if (program && program.onError) {
-					program.run(program.onError);
+				this.reportError(err, parent, source);
+				if (parent && parent.onError) {
+					parent.run(parent.onError);
 				}
 			}
 		}

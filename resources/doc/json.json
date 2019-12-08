@@ -44,6 +44,11 @@
       "syntax": "json sort {list}",
       "description": "Sorts the contents of a list into ascending alphabetical order.",
       "examples": "json sort MyList"
+    },
+    "json split": {
+      "syntax": "json split {item} [on {separator}] into {variable}",
+      "description": "Splits a variable into an array of parts on the given separator. If no separator is given the separator is set to a newline (\n).",
+      "examples": "json split Paragraph into Lines%0ajson split Text on `~` into Tokens"
     }
   },
   "values": {

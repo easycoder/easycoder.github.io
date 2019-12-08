@@ -123,7 +123,7 @@ const EasyCoder_Rest = {
 			// request.command = command;
 
 			request.onload = function () {
-				if (200 <= request.status && request.status < 300) {
+				if (200 <= request.status && request.status < 400) {
 					var content = request.responseText.trim();
 					if (command.target) {
 						const targetRecord = program.getSymbolRecord(command.target);
@@ -135,12 +135,12 @@ const EasyCoder_Rest = {
 						targetRecord.used = true;
 					}
 				} else {
-					const error = `Error ${request.status}: ${request.statusText}`;
+					const error = `${request.status} ${request.statusText}`;
 					if (command.onError) {
-						program.errorMessage = error;
+						program.errorMessage = `Exception trapped: ${error}`;
 						program.run(command.onError);
 					} else {
-						program.runtimeError(command.lino, error);
+						program.runtimeError(command.lino, `Error: ${error}`);
 					}
 				}
 				program.run(command.pc + 1);
@@ -167,7 +167,7 @@ const EasyCoder_Rest = {
 				const value = program.getValue(command.value);
 				console.log(`POST to ${path}`);
 				// request.open(`POST`, path);
-				if (value.charAt(0) === `{` || !isNaN(value)) {
+				if (value.length >0 && value.charAt(0) === `{`) {
 					request.setRequestHeader(`Content-Type`, `application/json; charset=UTF-8`);
 					//            console.log(`value=${value}`);
 					request.send(value.charAt(0) === `{` ? value : value.toString());

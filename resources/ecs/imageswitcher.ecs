@@ -4,15 +4,21 @@
     
 	div Container
     div Buttons
+    div Text
     img Left
     img Right
     img Thumb
     img Image
     a Link
+    variable Markup
     variable ImageCount
     variable N
     variable M
+    variable ECPayload
+    variable Payload
+  	callback DecoratorCallback
     
+  	rest get ECPayload from `/resources/fragment/ec.txt`
     attach Container to `ex-imageswitcher`
     on message go to Start
     set ready
@@ -58,6 +64,7 @@ Start:
         set attribute `src` of Image to `resources/img/imageswitcher/img` cat N cat `.jpg`
     	add 1 to N
     end
+    gosub to AddDescription
     put 0 into N
 Select:
     index Image to N
@@ -91,3 +98,25 @@ DoThumb:
     index Thumb to N
     index Image to N
     go to Select
+
+AddDescription:
+ 	 on DecoratorCallback go to Decorate
+	rest get Markup from `/resources/md/imageswitcher.md`
+	create Text in Container
+    set the content of Text to showdown decode Markup with DecoratorCallback
+    return
+
+Decorate:
+  put the payload of DecoratorCallback into Payload
+  if Payload is `ec` put ECPayload into Payload
+  else if left 5 of Payload is `code:`
+  begin
+  	put `<span style="font-family:mono;color:darkred">` cat from 5 of Payload into Payload
+    put Payload cat `</span>` into Payload
+  end
+  else if left 5 of Payload is `html:`
+  begin
+  	put from 5 of Payload into Payload
+  end
+  set the payload of DecoratorCallback to Payload
+  stop
