@@ -24,6 +24,7 @@ Control the appearance and behavior of your posts and pages by embedding simple 
 * Retrieve content from web services using REST and JSON
 * Draw and animate simple graphics
 * Create a Google Map, put markers on it and intearct with the map and the markers
+* Use CodeMirror to create a unique color-coded text editor
 * Include the CKEditor rich text editor in your pages
 * Include the Showdown markdown converter in your pages
 
@@ -52,6 +53,9 @@ A range of example scripts can be seen at our [examples](https://easycoder.softw
 For tutorials and a programmers' reference see our [EasyCoder Software Codex](https://codex.easycoder.software).
 
 == Changelog ==
+
+= 2.5.3 09-dec-2019 =
+* Revised run/import handling & minor additions
 
 = 2.5.2 05-oct-2019 =
 * Fix bugs in drag & drop and others
