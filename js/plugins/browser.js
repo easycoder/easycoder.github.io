@@ -357,14 +357,13 @@ const EasyCoder_Browser = {
 					} else {
 						const imports = compiler.imports;
 						if (imports && imports.length > 0) {
-							// This section is used by Codex to force run in Run panel
-							const parent = imports[0].name;
+							// This section is used by Codex to force run in Run panel, which must be the first import
 							compiler.addCommand({
 								domain: `browser`,
 								keyword: `create`,
 								lino,
 								name: symbolRecord.name,
-								parent,
+								parent: imports[0],
 								imported: true
 							});
 							return true;

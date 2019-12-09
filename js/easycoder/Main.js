@@ -63,9 +63,9 @@ const EasyCoder = {
 			return this.getSymbolRecord(target.alias);
 		}
 		if (target.exporter) {
-			if (target.exporter != this) {
-				return target.exporter.getSymbolRecord(target.exportedName);
-			}
+			// if (target.exporter != this.script) {
+			return EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
+			// }
 		}
 		return target;
 	},
@@ -170,6 +170,7 @@ const EasyCoder = {
 		const command = program[program.pc];
 		const script = program.getValue(command.script);
 		const imports = command.imports;
+		imports.caller = program.script;
 		const moduleRecord = command.module ? program.getSymbolRecord(command.module) : null;
 		try {
 			EasyCoder.tokeniseAndCompile(script.split(`\n`), imports, moduleRecord, this, command.then);
@@ -313,7 +314,6 @@ const EasyCoder = {
 			if (!program.script) {
 				program.script = this.scriptIndex;
 			}
-			EasyCoder.scripts[program.script] = [...program];
 			const finishCompile = Date.now();
 			console.log(`${finishCompile - this.timestamp} ms: ` +
 				`Compiled ${program.script}: ${source.scriptLines.length} lines (${source.tokens.length} tokens) in ` +

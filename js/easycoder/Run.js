@@ -162,6 +162,7 @@ const EasyCoder_Run = {
 
 	exit: (program) => {
 		if (program.onExit) {
+			delete EasyCoder.scripts[program.script];
 			program.parent.run(program.onExit);
 			program.module.program = null;
 			program.running = false;

@@ -354,10 +354,10 @@ const EasyCoder_Core = {
 				break;
 			case `symbol`:
 				const record = program.getSymbolRecord(command.name);
-				const exporter = record.exporter;
+				const exporter = record.exporter.script;
 				delete record.exporter;
 				console.log(`Symbol: ${JSON.stringify(record, null, 2)}`);
-				record.exporter = exporter;
+				record.exporter.script = exporter;
 				break;
 			case `step`:
 				program.debugStep = true;
@@ -776,16 +776,18 @@ const EasyCoder_Core = {
 
 		compile: compiler => {
 			const imports = compiler.imports;
+			let caller = EasyCoder.scripts[imports.caller];
 			const program = compiler.getProgram();
 			if (imports.length) {
-				for (const symbolRecord of imports) {
+				for (const name of imports) {
+					let symbolRecord = caller.getSymbolRecord(name);
 					const thisType = compiler.nextToken();
 					const exportedType = symbolRecord.keyword;
 					if (thisType === exportedType) {
 						const command = compiler.compileVariable(symbolRecord.domain, exportedType, true);
 						const newRecord = program[compiler.getSymbols()[command.name].pc];
 						newRecord.element = symbolRecord.element;
-						newRecord.exporter = symbolRecord.exporter;
+						newRecord.exporter = symbolRecord.exporter ? symbolRecord.exporter : caller.script;
 						newRecord.exportedName = symbolRecord.name;
 						newRecord.extra = symbolRecord.extra;
 						newRecord.isValueHolder = symbolRecord.isValueHolder;
@@ -848,7 +850,7 @@ const EasyCoder_Core = {
 			}
 			symbol.index = index;
 			if (symbol.imported) {
-				const exporterRecord = symbol.exporter.getSymbolRecord(symbol.exportedName);
+				const exporterRecord = EasyCoder.symbols[symbol.exporter].getSymbolRecord(symbol.exportedName);
 				exporterRecord.index = index;
 			}
 			return command.pc + 1;
@@ -1153,7 +1155,7 @@ const EasyCoder_Core = {
 				content: value.content
 			};
 			if (target.imported) {
-				const exporterRecord = target.exporter.getSymbolRecord(target.exportedName);
+				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
 				exporterRecord.value[exporterRecord.index] = value;
 			}
 			return command.pc + 1;
@@ -1264,13 +1266,14 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const lino = compiler.getLino();
 			const script = compiler.getNextValue();
+			let program = compiler.getProgram();
 			const imports = [];
 			if (compiler.tokenIs(`with`)) {
 				while (true) {
 					if (compiler.nextIsSymbol(true)) {
 						const symbolRecord = compiler.getSymbolRecord();
-						symbolRecord.exporter = compiler.getProgram();
-						imports.push(symbolRecord);
+						// symbolRecord.exporter = program.script;
+						imports.push(symbolRecord.name);
 						compiler.next();
 						if (!compiler.tokenIs(`and`)) {
 							break;
@@ -1282,7 +1285,7 @@ const EasyCoder_Core = {
 			if (compiler.tokenIs(`as`)) {
 				if (compiler.nextIsSymbol(true)) {
 					const moduleRecord = compiler.getSymbolRecord();
-					moduleRecord.program = compiler.getProgram();
+					moduleRecord.program = program;
 					compiler.next();
 					if (moduleRecord.keyword !== `module`) {
 						throw new Error(`'${moduleRecord.name}' is not a module`);
@@ -1371,14 +1374,16 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const program = compiler.getProgram();
 			program.script = compiler.nextToken();
+			if (EasyCoder.scripts[program.script]) {
+				throw new Error(`Script '${program.script}' is already running.`);
+			}
 			EasyCoder.scripts[program.script] = program;
 			compiler.next();
 			return true;
 		},
 
 		run: program => {
-			const command = program[program.pc];
-			return command.pc + 1;
+			return program[program.pc].pc + 1;
 		}
 	},
 
