@@ -32,7 +32,7 @@ Control the appearance and behavior of your posts and pages by embedding simple 
 
 *EasyCoder* scripts are embedded in your page or post, inside a special "preformatted" tag. When the page loads, *EasyCoder* looks for this element then compiles and runs the script it contains. When it interacts with HTML elements it attaches their IDs to its own variables, so your HTML and its controlling script are in the same file.
 
-The *EasyCoder* core module is currently about 55k bytes in its minimised form and it downloads its own plugin modules from a growing library. Its performance is good because it precompiles scripts - a process that takes only tens of milliseconds - and the compiled code for each command is only a thin wrapper around the corresponding JavaScript functionality.
+The *EasyCoder* core module is currently about 58k bytes in its minimised form and it downloads its own plugin modules from a growing library. Its performance is good because it precompiles scripts - a process that takes only tens of milliseconds - and the compiled code for each command is only a thin wrapper around the corresponding JavaScript functionality.
 
 When *EasyCoder* detects an error, either in compilation or at runtime, it opens a popup window with a friendly error message that tries to tell you what went wrong and where in the script it happened.
 
