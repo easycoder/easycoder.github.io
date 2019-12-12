@@ -3,7 +3,7 @@
   * Plugin Name: EasyCoder
   * Plugin URI: https://easycoder.software
   * Description: Control the appearance and behavior of your posts and pages by embedding simple English-like scripts, without the need to learn JavaScript.
-  * Version: 2.5.3
+  * Version: 2.5.4
   * Author: EasyCoder Software
   * Author URI: https://easycoder.software
   */
@@ -16,7 +16,7 @@
   add_action('wp_enqueue_scripts', 'easycoder_enqueue_script', 2);
   function easycoder_enqueue_script() {   
     wp_enqueue_script('easycoder_script', plugin_dir_url( __FILE__ )
-            . 'easycoder-min.js', array(), '2.5.3');
+            . 'easycoder-min.js', array(), '2.5.4');
   }
   
   // Set up default plugin and REST scripts

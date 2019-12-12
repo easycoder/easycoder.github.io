@@ -283,7 +283,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const moduleRecord = program.getSymbolRecord(command.module);
-			const p = moduleRecord.program;
+			const p = EasyCoder.scripts[moduleRecord.program];
 			p.run(p.onClose);
 			return command.pc + 1;
 		}
@@ -575,8 +575,6 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
-			program.parent.run(program.parent.nextPc);
-			program.parent.nextPc = 0;
 			program.exit();
 			return 0;
 		}
@@ -792,7 +790,7 @@ const EasyCoder_Core = {
 						newRecord.extra = symbolRecord.extra;
 						newRecord.isValueHolder = symbolRecord.isValueHolder;
 						if (symbolRecord.program) {
-							newRecord.program = symbolRecord.program;
+							newRecord.program = symbolRecord.program.script;
 						}
 						newRecord.imported = true;
 						if (!compiler.tokenIs(`and`)) {
@@ -905,8 +903,7 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
-			const command = program[program.pc];
-			return command.pc + 1;
+			return program[program.pc].pc + 1;
 		}
 	},
 
@@ -1266,13 +1263,11 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const lino = compiler.getLino();
 			const script = compiler.getNextValue();
-			let program = compiler.getProgram();
 			const imports = [];
 			if (compiler.tokenIs(`with`)) {
 				while (true) {
 					if (compiler.nextIsSymbol(true)) {
 						const symbolRecord = compiler.getSymbolRecord();
-						// symbolRecord.exporter = program.script;
 						imports.push(symbolRecord.name);
 						compiler.next();
 						if (!compiler.tokenIs(`and`)) {
@@ -1285,7 +1280,7 @@ const EasyCoder_Core = {
 			if (compiler.tokenIs(`as`)) {
 				if (compiler.nextIsSymbol(true)) {
 					const moduleRecord = compiler.getSymbolRecord();
-					moduleRecord.program = program;
+					// moduleRecord.program = program.script;
 					compiler.next();
 					if (moduleRecord.keyword !== `module`) {
 						throw new Error(`'${moduleRecord.name}' is not a module`);
@@ -1422,9 +1417,9 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const message = program.getValue(command.message);
 			if (command.recipient === `parent`) {
-				const parent = program.parent;
-				if (parent) {
-					const onMessage = program.parent.onMessage;
+				if (program.parent) {
+					const parent = EasyCoder.scripts[program.parent];
+					const onMessage = parent.onMessage;
 					if (onMessage) {
 						parent.message = message;
 						parent.run(parent.onMessage);
@@ -1433,8 +1428,9 @@ const EasyCoder_Core = {
 			} else {
 				const recipient = program.getSymbolRecord(command.recipient);
 				if (recipient.program) {
-					recipient.program.message = message;
-					recipient.program.run(recipient.program.onMessage);
+					let rprog = EasyCoder.scripts[recipient.program];
+					rprog.message = message;
+					rprog.run(rprog.onMessage);
 				}
 			}
 			return command.pc + 1;
@@ -1643,8 +1639,11 @@ const EasyCoder_Core = {
 				}
 				break;
 			case `setReady`:
-				program.parent.run(program.parent.nextPc);
-				program.parent.nextPc = 0;
+				let parent = EasyCoder.scripts[program.parent];
+				if (parent) {
+					parent.run(parent.nextPc);
+					parent.nextPc = 0;
+				}
 				break;
 			case `setArray`:
 				targetRecord = program.getSymbolRecord(command.target);
@@ -1851,7 +1850,7 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			if (command.name) {
 				const symbolRecord = program.getSymbolRecord(command.name);
-				symbolRecord.program.exit();
+				EasyCoder.scripts[symbolRecord.program].exit();
 			} else {
 				return 0;
 			}
@@ -2051,7 +2050,9 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const value = program.getValue(command.value);
 			setTimeout(function () {
-				program.run(command.pc + 1);
+				if (program.run) {
+					program.run(command.pc + 1);
+				}
 			}, value * command.multiplier);
 			return 0;
 		}

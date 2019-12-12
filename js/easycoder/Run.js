@@ -162,11 +162,19 @@ const EasyCoder_Run = {
 
 	exit: (program) => {
 		if (program.onExit) {
-			delete EasyCoder.scripts[program.script];
-			program.parent.run(program.onExit);
-			program.module.program = null;
-			program.running = false;
-			program = null;
+			program.run(program.onExit);
+		}
+		let parent = program.parent;
+		let afterExit = program.afterExit;
+		delete EasyCoder.scripts[program.script];
+		if (program.module) {
+			delete program.module.program;
+		}
+		Object.keys(program).forEach(function(key) {
+			delete program[key];
+		});
+		if (parent && afterExit) {
+			EasyCoder.scripts[parent].run(afterExit);
 		}
 	}
 };

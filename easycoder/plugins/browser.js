@@ -395,7 +395,7 @@ const EasyCoder_Browser = {
 				if (command.parent === `body`) {
 					parent = document.body;
 				} else {
-					const p = command.imported ? program.parent : program;
+					const p = command.imported ? EasyCoder.scripts[program.parent] : program;
 					const parentRecord = p.getSymbolRecord(command.parent);
 					if (!parentRecord.element[parentRecord.index]) {
 						program.runtimeError(command.pc, `Element ${parentRecord.name} does not exist.`);

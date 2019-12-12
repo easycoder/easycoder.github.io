@@ -173,7 +173,7 @@ const EasyCoder = {
 		imports.caller = program.script;
 		const moduleRecord = command.module ? program.getSymbolRecord(command.module) : null;
 		try {
-			EasyCoder.tokeniseAndCompile(script.split(`\n`), imports, moduleRecord, this, command.then);
+			EasyCoder.tokeniseAndCompile(script.split(`\n`), imports, moduleRecord, this.script, command.then);
 		} catch (err) {
 			EasyCoder.reportError(err, program, program.source);
 			if (program.onError) {
@@ -244,7 +244,7 @@ const EasyCoder = {
 		program.module = module;
 		program.parent = parent;
 		if (module) {
-			module.program = program;
+			module.program = program.script;
 		}
 		return program;
 	},
@@ -327,7 +327,11 @@ const EasyCoder = {
 			}
 		}
 		if (program) {
-			program.onExit = then;
+			EasyCoder.scripts[program.script] = program;
+			if (module) {
+				module.program = program.script;
+			}
+			program.afterExit = then;
 			program.running = true;
 			EasyCoder_Run.run(program, 0);
 		}

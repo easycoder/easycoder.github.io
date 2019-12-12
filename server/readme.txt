@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.5.4 10-dec-2019 =
+* Fixed bug in parent script handling
+
 = 2.5.3 09-dec-2019 =
 * Revised run/import handling & minor additions
 
