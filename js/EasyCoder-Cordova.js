@@ -1,4 +1,4 @@
-EasyCoder.version = `2.5.5`;
+EasyCoder.version = `2.5.6`;
 EasyCoder.timestamp = Date.now();
 
 const app = {

@@ -134,6 +134,7 @@ const EasyCoder_Rest = {
 						};
 						targetRecord.used = true;
 					}
+					program.run(command.pc + 1);
 				} else {
 					const error = `${request.status} ${request.statusText}`;
 					if (command.onError) {
@@ -143,7 +144,6 @@ const EasyCoder_Rest = {
 						program.runtimeError(command.lino, `Error: ${error}`);
 					}
 				}
-				program.run(command.pc + 1);
 			};
 
 			request.onerror = function () {
