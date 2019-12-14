@@ -959,7 +959,12 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
+			let parent = EasyCoder.scripts[program.parent];
 			program.exit();
+			if (parent) {
+				parent.run(parent.nextPc);
+				parent.nextPc = 0;
+			}
 			return 0;
 		}
 	},
@@ -4248,7 +4253,7 @@ const EasyCoder_Value = {
 		return value;
 	}
 };
-EasyCoder.version = `2.5.4`;
+EasyCoder.version = `2.5.5`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 

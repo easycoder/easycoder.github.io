@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.5.5 12-dec-2019 =
+* Fix problems with exit(); replace program with name in objects
+
 = 2.5.4 10-dec-2019 =
 * Fixed bug in parent script handling
 
