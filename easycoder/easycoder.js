@@ -4253,7 +4253,7 @@ const EasyCoder_Value = {
 		return value;
 	}
 };
-EasyCoder.version = `2.5.5`;
+EasyCoder.version = `2.5.6`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 

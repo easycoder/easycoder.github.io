@@ -1097,6 +1097,7 @@ const EasyCoder_Browser = {
 				break;
 			case `click`:
 				const targetRecord = program.getSymbolRecord(command.symbol);
+				targetRecord.program = program.script;
 				targetRecord.element.forEach(function (target, index) {
 					target.targetRecord = targetRecord;
 					target.targetIndex = index;
@@ -1110,7 +1111,8 @@ const EasyCoder_Browser = {
 								eventTarget.targetRecord.index = eventTarget.targetIndex;
 								setTimeout(function () {
 									EasyCoder.timestamp = Date.now();
-									program.run(eventTarget.targetPc);
+									let p = EasyCoder.scripts[eventTarget.targetRecord.program]
+									p.run(eventTarget.targetPc);
 								}, 1);
 							}
 						}

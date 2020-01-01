@@ -86,7 +86,7 @@ BuildPage:
 
     rest get Script from `/resources/ecs/showdown.ecs`
     run Script with Document as ShowdownModule
- 	rest get Script from `/resources/ecs/home.ecs`
+ 		rest get Script from `/resources/ecs/home.ecs`
     run Script with ShowdownModule as HomeModule
   	rest get Script from `/resources/ecs/intro.ecs`
     run Script with ShowdownModule as IntroModule

@@ -2,7 +2,7 @@
 
     script Codex
 
-	div Body
+		div Body
     div Screen
     div CodePanel
     div NonCodePanel
@@ -89,7 +89,7 @@
     variable Item
     variable Items
     
-    load showdown
+    load plugin showdown
     rest get ECPayload from `/resources/fragment/ec.txt`
 
 !    create Tracer
