@@ -88,8 +88,8 @@
     variable FileIsOpen
     variable Item
     variable Items
+		debug step
     
-    load plugin showdown
     rest get ECPayload from `/resources/fragment/ec.txt`
 
 !    create Tracer
