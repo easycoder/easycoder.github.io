@@ -90,6 +90,7 @@
     variable Items
 		debug step
     
+    load showdown
     rest get ECPayload from `/resources/fragment/ec.txt`
 
 !    create Tracer
