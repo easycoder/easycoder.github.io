@@ -9,8 +9,6 @@
   variable Payload
   variable ECPayload
   variable Codex
-
-  load showdown
   
   rest get ECPayload from `/resources/fragment/ec.txt`
   rest get Codex from `/resources/fragment/codex.txt`
