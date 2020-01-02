@@ -29,3 +29,6 @@ Coding services
 
 ---
 **Note:** This static website is designed to provide a legacy alternative to the main ~ec~ site ([https://easycoder.software](https://easycoder.software)) in the event of the latter not being available or becoming unsupported.
+
+### The Author ###
+My name is Graham Trott. I've been writing easy-to-use high-level programming languages for over 30 years and using them to solve real-world problems and needs. Since (at the time of writing) I'm now in my 70s this will probably be the last one in the line, hence the need to document everything as well as possible. This website - [(https://easycoder.github.io](https://easycoder.github.io) - is hosted by GitHub and will probably outlive me by a comfortable margin, so you can't rely on being able to contact me for help. The site is attached to the [EasyCoder](https://github.com/easycoder) repository, where you will find all the source code.
