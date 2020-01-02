@@ -113,7 +113,7 @@
     load plugin `gmap`
     load plugin `svg`
     
-    codemirror init basic profile `https://`cat the hostname cat `/easycoder/plugins/codemirror-ecs.js`
+    codemirror init basic profile `https://` cat the hostname cat `/easycoder/plugins/codemirror-ecs.js`
     require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`
