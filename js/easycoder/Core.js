@@ -1856,6 +1856,7 @@ const EasyCoder_Core = {
 			if (command.name) {
 				const symbolRecord = program.getSymbolRecord(command.name);
 				EasyCoder.scripts[symbolRecord.program].exit();
+				symbolRecord.program = null;
 			} else {
 				return 0;
 			}
