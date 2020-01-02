@@ -13,7 +13,6 @@
   rest get ECPayload from `/resources/fragment/ec.txt`
   rest get Codex from `/resources/fragment/codex.txt`
   
-  load showdown
   on DecoratorCallback go to Decorate
   on message
   begin

@@ -123,7 +123,6 @@
   end
   json sort Packages
   set ready
-	on message exit
 
 Restart:
   clear Container

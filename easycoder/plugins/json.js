@@ -467,7 +467,7 @@ const EasyCoder_Json = {
 				return {
 					type: `constant`,
 					numeric: true,
-					content: array ? array.length : 0
+					content: array.length
 				};
 			case `keys`:
 				symbolRecord = program.getSymbolRecord(value.name);

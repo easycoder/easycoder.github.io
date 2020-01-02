@@ -41,7 +41,6 @@
     a Link
     a Index
     module TestModule
-		module DocManModule
   	callback DecoratorCallback
     variable Password
     variable PasswordRequested
@@ -89,6 +88,7 @@
     variable FileIsOpen
     variable Item
     variable Items
+		debug step
     
     load showdown
     rest get ECPayload from `/resources/fragment/ec.txt`
@@ -113,7 +113,7 @@
     load plugin `gmap`
     load plugin `svg`
     
-    codemirror init basic profile `https://` cat the hostname cat `/easycoder/plugins/codemirror-ecs.js`
+    codemirror init basic profile `https://`cat the hostname cat `/easycoder/plugins/codemirror-ecs.js`
     require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`
@@ -139,7 +139,7 @@
 
     create Screen in Body    
     create Container in Screen
-		set the style of Container to `width:100%;height:100%;display:flex;flex-direction: column`
+	set the style of Container to `width:100%;height:100%;display:flex;flex-direction: column`
     
     create Controls in Container
     set the style of Controls to `flex:5em`
@@ -271,59 +271,58 @@
     create HelpInner in HelpOuter
     set the style of HelpInner to `width:100%;line-height:1.5em`
 
-		create HelpPanel in HelpInner
-			set the style of HelpPanel to `display:none;width:100%;height:100%`
-		create ReferencePanel in HelpInner
-			set the style of ReferencePanel to `display:none;width:100%;height:100%`
+	create HelpPanel in HelpInner
+    set the style of HelpPanel to `display:none;width:100%;height:100%`
+	create ReferencePanel in HelpInner
+    set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
+	gosub to ShowHelpPage
+	rest get Script from `/resources/ecs/docman.ecs`
+    run Script with ReferencePanel
+	put empty into storage as `.ref`
+
+	get Item from storage as `.ref`
+    if Item
+    begin
+	    set style `display` of ReferencePanel to `block`
+        set style `display` of HelpButtons to `none`
+    end
+    else set style `display` of HelpPanel to `block`
+
+	on click Back go to StepBack
+	on click Forward go to StepForward
+    on click Contents go to ShowContents
+	on click Reference
+    begin
+	    set style `display` of ReferencePanel to `block`
+        set style `display` of HelpPanel to `none`
+        set style `display` of HelpButtons to `none`
+        put `y` into storage as `.ref`
+    end
+	on click Tools
+    begin
+    	put `tools` into Step
 		gosub to ShowHelpPage
-		rest get Script from `/resources/ecs/docman.ecs`
-			run Script with ReferencePanel as DocManModule
-		put empty into storage as `.ref`
-
-		get Item from storage as `.ref`
-			if Item
-			begin
-				set style `display` of ReferencePanel to `block`
-					set style `display` of HelpButtons to `none`
-			end
-			else set style `display` of HelpPanel to `block`
-
-		on click Back go to StepBack
-		on click Forward go to StepForward
-			on click Contents go to ShowContents
-		on click Reference
-		begin
-			set style `display` of ReferencePanel to `block`
-			set style `display` of HelpPanel to `none`
-			set style `display` of HelpButtons to `none`
-			put `y` into storage as `.ref`
-		end
-		on click Tools
-		begin
-			put `tools` into Step
-			gosub to ShowHelpPage
-		end
-		on click Exit
-		begin
-			stop DocManModule
-			remove element Body
-			send `restore` to parent
-			exit
-		end
-			
-		on message
-		begin
-			put the message into Message
-			if Message is `next` go to StepForward
-			if Message is `tutorial`
-			begin
-				set style `display` of ReferencePanel to `none`
-				set style `display` of HelpPanel to `block`
-				set style `display` of HelpButtons to `block`
-				put empty into storage as `.ref`
-			end
-		end
+    end
+	on click Exit
+    begin
+    	remove element Body
+        send `restore` to parent
+        exit
+    end
+    
+    on message
+    begin
+    	put the message into Message
+    	if Message is `next` go to StepForward
+        if Message is `tutorial`
+        begin
+		    set style `display` of ReferencePanel to `none`
+	        set style `display` of HelpPanel to `block`
+	        set style `display` of HelpButtons to `block`
+	        put empty into storage as `.ref`
+        end
+    end
     
     on error
     begin
