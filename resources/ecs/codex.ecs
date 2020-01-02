@@ -41,6 +41,7 @@
     a Link
     a Index
     module TestModule
+		module DocManModule
   	callback DecoratorCallback
     variable Password
     variable PasswordRequested
@@ -138,7 +139,7 @@
 
     create Screen in Body    
     create Container in Screen
-	set the style of Container to `width:100%;height:100%;display:flex;flex-direction: column`
+		set the style of Container to `width:100%;height:100%;display:flex;flex-direction: column`
     
     create Controls in Container
     set the style of Controls to `flex:5em`
@@ -277,7 +278,7 @@
 
 	gosub to ShowHelpPage
 	rest get Script from `/resources/ecs/docman.ecs`
-    run Script with ReferencePanel
+    run Script with ReferencePanel as DocManModule
 	put empty into storage as `.ref`
 
 	get Item from storage as `.ref`
@@ -305,9 +306,10 @@
     end
 	on click Exit
     begin
+			send `close` to DocManModule
     	remove element Body
-        send `restore` to parent
-        exit
+      send `restore` to parent
+      exit
     end
     
     on message
