@@ -140,6 +140,7 @@ const EasyCoder_Rest = {
 					if (command.onError) {
 						program.errorMessage = `Exception trapped: ${error}`;
 						program.run(command.onError);
+						program.run(command.pc + 1);
 					} else {
 						program.runtimeError(command.lino, `Error: ${error}`);
 					}
