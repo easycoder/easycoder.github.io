@@ -29,3 +29,7 @@ Coding services
 
 ---
 **Note:** This static website is designed to provide a legacy alternative to the main ~ec~ site ([https://easycoder.software](https://easycoder.software)) in the event of the latter not being available or becoming unsupported.
+
+### The author ###
+
+My name is Graham Trott. I've been writing easy-to-use high-level compilers for 30 years or so amd using them for a range of real-world projects.
