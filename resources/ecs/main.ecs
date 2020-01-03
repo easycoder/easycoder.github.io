@@ -2,110 +2,110 @@
 
 	script Main
     
-!    div Tracer
-    div Body
-    div Main
-    div Header
-    div Sidebar
-    div Document
-		div Notes
-    img Banner
-    ul ButtonList
-    li ButtonItem
-    button HomeButton
-    button IntroButton
-    button ExamplesButton
-    button AboutButton
-    button PhilosophyButton
-    button CodexButton
-    hr Rule
-		a ShowNotes
-    module ShowdownModule
-    module HomeModule
-    module IntroModule
-    module ExamplesModule
-    module AboutModule
-    module PhilosophyModule
-    module CurrentModule
-    variable Script
-    variable ButtonStyle
-    variable Message
-    
-!    create Tracer
-!    set attribute `id` of Tracer to `easycoder-tracer`
-    create Body
-    if mobile
+!  div Tracer
+	div Body
+	div Main
+	div Header
+	div Sidebar
+	div Document
+	div Notes
+	img Banner
+	ul ButtonList
+	li ButtonItem
+	button HomeButton
+	button IntroButton
+	button ExamplesButton
+	button AboutButton
+	button PhilosophyButton
+	button CodexButton
+	hr Rule
+	a ShowNotes
+	module ShowdownModule
+	module HomeModule
+	module IntroModule
+	module ExamplesModule
+	module AboutModule
+	module PhilosophyModule
+	module CurrentModule
+	variable Script
+	variable ButtonStyle
+	variable Message
+	
+!  create Tracer
+!  set attribute `id` of Tracer to `easycoder-tracer`
+	create Body
+	if mobile
 		set the style of Body to `width:100%`
 	else
 		set the style of Body to `width:100%;max-width:1200px;margin:0 auto`
-    
-    on message
-    begin
-    	put the message into Message
-        if Message is `hide`
-        begin
-        	send `pause` to CurrentModule
-        	set style `display` of Body to `none`
-        end
-        else if Message is `restore`
-        begin
-        	set style `display` of Body to `block`
-            send `resume` to CurrentModule
-        end
-    end
+	
+	on message
+	begin
+		put the message into Message
+		if Message is `hide`
+		begin
+			send `pause` to CurrentModule
+			set style `display` of Body to `none`
+		end
+		else if Message is `restore`
+		begin
+			set style `display` of Body to `block`
+			send `resume` to CurrentModule
+		end
+	end
     
 BuildPage:
-    create Header in Body
-    if mobile
-	    set the style of Header to `text-align:center`
+	create Header in Body
+	if mobile
+		set the style of Header to `text-align:center`
 	else
 		set the style of Header to `margin:0 2em;text-align:center`
-    
-    create Banner in Header
-    if not mobile set the style of Banner to `width:50%;margin:0 auto`
-    set attribute `src` of Banner to `resources/img/banner.png`
-    
-    create Rule in Body
-    
-    create Main in Body
-    if not mobile
-    begin
-    	set style `display` of Main to `flex`
-    end
-    
-    if mobile
-    begin
-        create Document in Main
-        create Sidebar in Main
-    end
-    else
-    begin
-        create Sidebar in Main
-    	set the style of Sidebar to `width:250px;margin-right:2em`
-        create Document in Main
-        set the style of Document to `flex:1`
-    end
+	
+	create Banner in Header
+	if not mobile set the style of Banner to `width:50%;margin:0 auto`
+	set attribute `src` of Banner to `resources/img/banner.png`
+	
+	create Rule in Body
+	
+	create Main in Body
+	if not mobile
+	begin
+		set style `display` of Main to `flex`
+	end
+	
+	if mobile
+	begin
+		create Document in Main
+		create Sidebar in Main
+	end
+	else
+	begin
+		create Sidebar in Main
+		set the style of Sidebar to `width:250px;margin-right:2em`
+		create Document in Main
+		set the style of Document to `flex:1`
+	end
 
-    rest get Script from `/resources/ecs/showdown.ecs`
-    run Script with Document as ShowdownModule
- 		rest get Script from `/resources/ecs/home.ecs`
-    run Script with ShowdownModule as HomeModule
-  	rest get Script from `/resources/ecs/intro.ecs`
-    run Script with ShowdownModule as IntroModule
-  	rest get Script from `/resources/ecs/examples.ecs`
-    run Script with ShowdownModule as ExamplesModule
-  	rest get Script from `/resources/ecs/about.ecs`
-    run Script with ShowdownModule as AboutModule
-  	rest get Script from `/resources/ecs/philosophy.ecs`
-    run Script with ShowdownModule as PhilosophyModule
+	rest get Script from `/resources/ecs/showdown.ecs`
+	run Script with Document as ShowdownModule
+	rest get Script from `/resources/ecs/home.ecs`
+	run Script with ShowdownModule as HomeModule
+	rest get Script from `/resources/ecs/intro.ecs`
+	run Script with ShowdownModule as IntroModule
+	rest get Script from `/resources/ecs/examples.ecs`
+	run Script with ShowdownModule as ExamplesModule
+	rest get Script from `/resources/ecs/about.ecs`
+	run Script with ShowdownModule as AboutModule
+	rest get Script from `/resources/ecs/philosophy.ecs`
+	run Script with ShowdownModule as PhilosophyModule
 
-    alias CurrentModule to HomeModule
-    send to HomeModule
+	alias CurrentModule to HomeModule
+	send to HomeModule
 
-    create ButtonList in Sidebar
-    set the style of ButtonList to `margin-left:0px;padding-left:0px;list-style-type:none`
-    
-    put `width:100%;height:2em;margin-bottom:0.5em;font-size:110%` into ButtonStyle
+	create ButtonList in Sidebar
+	set the style of ButtonList to `margin-left:0px;padding-left:0px;list-style-type:none`
+	
+	put `width:100%;height:2em;margin-bottom:0.5em;font-size:110%` into ButtonStyle
 
 	create ButtonItem in ButtonList
 	create HomeButton in ButtonItem
