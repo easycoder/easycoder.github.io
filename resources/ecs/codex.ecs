@@ -318,7 +318,7 @@
     	if Message is `next` go to StepForward
         if Message is `tutorial`
         begin
-		    set style `display` of ReferencePanel to `none`
+		    	set style `display` of ReferencePanel to `none`
 	        set style `display` of HelpPanel to `block`
 	        set style `display` of HelpButtons to `block`
 	        put empty into storage as `.ref`
