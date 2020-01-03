@@ -194,11 +194,15 @@ BuildPage:
 
 	create Notes in Main
 	create ShowNotes in Notes
+DoNotes:
+	set style `display` of ShowNotes to `none`
 	set the content of ShowNotes to `Show Notes`
 	on click ShowNotes
 	begin
 		attach Notes to `developer-notes`
 		set style `display` of Notes to `block`
+		set the content of ShowNotes to `Hide Notes`
+		on click ShowNotes go to DoNotes
 	end
 
 	stop
