@@ -8,6 +8,7 @@
     div Header
     div Sidebar
     div Document
+		div Notes
     img Banner
     ul ButtonList
     li ButtonItem
@@ -18,6 +19,7 @@
     button PhilosophyButton
     button CodexButton
     hr Rule
+		a ShowNotes
     module ShowdownModule
     module HomeModule
     module IntroModule
@@ -107,88 +109,98 @@ BuildPage:
 
 	create ButtonItem in ButtonList
 	create HomeButton in ButtonItem
-    set the style of HomeButton to ButtonStyle
-    set style `background` of HomeButton to `darkgray`
-    if not mobile set style `margin-top` of HomeButton to `1em`
-    set the text of HomeButton to `Home`
-    on click HomeButton
-    begin
-    	gosub to DeselectAllButtons
-        set style `background` of HomeButton to `darkgray`
-    	send `pause` to CurrentModule
-        alias CurrentModule to HomeModule
-    	send to HomeModule
-    end
+	set the style of HomeButton to ButtonStyle
+	set style `background` of HomeButton to `darkgray`
+	if not mobile set style `margin-top` of HomeButton to `1em`
+	set the text of HomeButton to `Home`
+	on click HomeButton
+	begin
+		gosub to DeselectAllButtons
+			set style `background` of HomeButton to `darkgray`
+		send `pause` to CurrentModule
+			alias CurrentModule to HomeModule
+		send to HomeModule
+	end
     
 	create ButtonItem in ButtonList
-    create IntroButton in ButtonItem
-    set the style of IntroButton to ButtonStyle
-    set style `margin-top` of IntroButton to `1em`
-    set the text of IntroButton to `Introduction`
-    on click IntroButton
-    begin
-    	gosub to DeselectAllButtons
-        set style `background` of IntroButton to `darkgray`
-    	send `pause` to CurrentModule
-        alias CurrentModule to IntroModule
-    	send to IntroModule
-    end
+	create IntroButton in ButtonItem
+	set the style of IntroButton to ButtonStyle
+	set style `margin-top` of IntroButton to `1em`
+	set the text of IntroButton to `Introduction`
+	on click IntroButton
+	begin
+		gosub to DeselectAllButtons
+			set style `background` of IntroButton to `darkgray`
+		send `pause` to CurrentModule
+			alias CurrentModule to IntroModule
+		send to IntroModule
+	end
     
 	create ButtonItem in ButtonList
-    create ExamplesButton in ButtonItem
-    set the style of ExamplesButton to ButtonStyle
-    set style `margin-top` of ExamplesButton to `0.25em`
-    set the text of ExamplesButton to `Examples`
-    on click ExamplesButton
-    begin
-    	gosub to DeselectAllButtons
-        set style `background` of ExamplesButton to `darkgray`
-    	send `pause` to CurrentModule
-        alias CurrentModule to ExamplesModule
-    	send to ExamplesModule
-    end
+	create ExamplesButton in ButtonItem
+	set the style of ExamplesButton to ButtonStyle
+	set style `margin-top` of ExamplesButton to `0.25em`
+	set the text of ExamplesButton to `Examples`
+	on click ExamplesButton
+	begin
+		gosub to DeselectAllButtons
+			set style `background` of ExamplesButton to `darkgray`
+		send `pause` to CurrentModule
+			alias CurrentModule to ExamplesModule
+		send to ExamplesModule
+	end
     
 	create ButtonItem in ButtonList
-    create AboutButton in ButtonItem
-    set the style of AboutButton to ButtonStyle
-    set style `margin-top` of AboutButton to `0.25em`
-    set the text of AboutButton to `About EasyCoder`
-    on click AboutButton
-    begin
-    	gosub to DeselectAllButtons
-        set style `background` of AboutButton to `darkgray`
-    	send `pause` to CurrentModule
-        alias CurrentModule to AboutModule
-    	send to AboutModule
-    end
+	create AboutButton in ButtonItem
+	set the style of AboutButton to ButtonStyle
+	set style `margin-top` of AboutButton to `0.25em`
+	set the text of AboutButton to `About EasyCoder`
+	on click AboutButton
+	begin
+		gosub to DeselectAllButtons
+			set style `background` of AboutButton to `darkgray`
+		send `pause` to CurrentModule
+			alias CurrentModule to AboutModule
+		send to AboutModule
+	end
     
 	create ButtonItem in ButtonList
-    create PhilosophyButton in ButtonItem
-    set the style of PhilosophyButton to ButtonStyle
-    set style `margin-top` of PhilosophyButton to `0.25em`
-    set the text of PhilosophyButton to `Philosophy`
-    on click PhilosophyButton
-    begin
-    	gosub to DeselectAllButtons
-        set style `background` of PhilosophyButton to `darkgray`
-    	send `pause` to CurrentModule
-        alias CurrentModule to PhilosophyModule
-    	send to PhilosophyModule
-    end
+	create PhilosophyButton in ButtonItem
+	set the style of PhilosophyButton to ButtonStyle
+	set style `margin-top` of PhilosophyButton to `0.25em`
+	set the text of PhilosophyButton to `Philosophy`
+	on click PhilosophyButton
+	begin
+		gosub to DeselectAllButtons
+			set style `background` of PhilosophyButton to `darkgray`
+		send `pause` to CurrentModule
+			alias CurrentModule to PhilosophyModule
+		send to PhilosophyModule
+	end
 
 	create ButtonItem in ButtonList
 	create CodexButton in ButtonItem
-    set the style of CodexButton to ButtonStyle
-    set style `margin-top` of CodexButton to `0.25em`
-    set the text of CodexButton to `Codex`
-    on click CodexButton
-    begin
-      load plugin `codemirror`
-      rest get Script from `/resources/ecs/codex.ecs`
-      send `pause` to CurrentModule
-      set style `display` of Body to `none`
-      run Script
-    end
+	set the style of CodexButton to ButtonStyle
+	set style `margin-top` of CodexButton to `0.25em`
+	set the text of CodexButton to `Codex`
+	on click CodexButton
+	begin
+		load plugin `codemirror`
+		rest get Script from `/resources/ecs/codex.ecs`
+		send `pause` to CurrentModule
+		set style `display` of Body to `none`
+		run Script
+	end
+
+	create Notes in Main
+	create ShowNotes in Notes
+	set the content of ShowNotes to `Show Notes`
+	on click ShowNotes
+	begin
+		attach Notes to `developer-notes`
+		set style `display` of Notes to `block`
+	end
+
 	stop
 
 DeselectAllButtons:
