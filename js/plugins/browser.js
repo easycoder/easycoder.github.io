@@ -1139,7 +1139,7 @@ const EasyCoder_Browser = {
 								eventTarget.targetRecord.index = eventTarget.targetIndex;
 								setTimeout(function () {
 									EasyCoder.timestamp = Date.now();
-									let p = EasyCoder.scripts[eventTarget.targetRecord.program]
+									let p = EasyCoder.scripts[eventTarget.targetRecord.program];
 									p.run(eventTarget.targetPc);
 								}, 1);
 							}
