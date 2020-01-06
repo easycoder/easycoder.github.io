@@ -242,11 +242,6 @@
       "description": "Returns one integer ~m:value~ modulo another, which is to say, the remainder after dividing the former by the latter.",
       "examples": "put Count modulo 10 into Count"
     },
-    "the index of": {
-      "syntax": "the index of",
-      "description": "The (numeric) value of the current index of a named array variable. This is the value set by ~l:index!index {variable} to ...~.",
-      "examples": "put the index of Button into Index"
-    },
     "property": {
       "syntax": "property {name} of {JSON string}",
       "description": "~m:property~ is used to access an item in a JSON structure. In _**EasyCoder**_, JSON objects are ~dq~stringified~dq~ and kept in plain text variables. When you request a ~m:property~ from such an object it is first parsed then the requested property is extracted for you. See also ~l:element~ and ~l:set|k!set property~.",
@@ -278,8 +273,8 @@
       "examples": "put tan X radius R into Length"
     },
     "left": {
-      "syntax": "left {count} of {Text}",
-      "description": "returns the leftmost ~m:{count}~ characters of ~m:{Text}~.%0a",
+      "syntax": "left {count} of {text}",
+      "description": "returns the leftmost ~m:{count}~ characters of ~m:{text}~.%0a",
       "examples": "put left 5 of Text into Prefix"
     },
     "right": {
@@ -293,9 +288,9 @@
       "examples": "put from 8 of Sentence into Phrase%0aput from X to Y of `the quick brown fox` into Extract"
     },
     "position": {
-      "syntax": "the position of [the last] {needle} in {haystack}",
-      "description": "returns the position in ~m:{haystack}~ of either the first or the last occurrence of ~m:{needle}~, where both ~m:{needle}~ and ~m:{haystack}~ are text values.%0a%0aIf ~m:{needle}~ is not contained in ~m:{haystack}~ the value ~m:-1~ is returned.%0a",
-      "examples": "put the position of `fox` in `The quick brown fox jumps over the lazy dog` into Pos (Pos=16)%0aput the position of the last `dot` in `dot dot dot` into P (P=8)"
+      "syntax": "the position [nocase] of [the last] {needle} in {haystack}",
+      "description": "returns the position in ~m:{haystack}~ of either the first or the last occurrence of ~m:{needle}~, where both ~m:{needle}~ and ~m:{haystack}~ are text values.%0a%0aIf ~m:{needle}~ is not contained in ~m:{haystack}~ the value ~m:-1~ is returned.%0a%0aIf the optional ~m:nocase~ is given the match is done with case ignored.%0a",
+      "examples": "put the position of `fox` in `The quick brown fox jumps over the lazy dog` into Pos (Pos=16)%0aput the position nocase of the last `dot` in `Dot dot Dot` into P (P=8)"
     },
     "decode": {
       "syntax": "decode {variable}",
@@ -345,6 +340,26 @@
       "syntax": "date {value}",
       "description": "Returns the timestamp of a given date - the number of seconds since the epoch (January 1, 1970).%0a%0aThe value returned will depend on the format given. The first example above returns 1561420800000, which is the UTC value for the date given, but the second and third return values for the local timezone. The last one returns GMT (which is the same as UTC).%0a%0aSee also ~l:today~, ~l:now~ and ~l:format~.",
       "examples": "put date `2019-06-25` into TheDate%0aput date `2019-06-25 00:00:00` into TheDate%0aput date `Tuesday June 25 2019` into TheDate%0aput date `Tuesday June 25 2019 GMT` into TheDate"
+    },
+    "char[acter]": {
+      "syntax": "char[acter] {index} of {value}",
+      "description": "Extracts a single character from a string. Both ~m:index~ and ~m:value~ can be either symbols or values.",
+      "examples": "put char N of Text into C%0aprint character 5 of ~dq~helpful~dq~ --> ~dq~u~dq~"
+    },
+    "split": {
+      "syntax": "split {value} on {value} giving/into {variable}",
+      "description": "Splits a value into an array of parts on the given separator. If no separator is given the separator is set to a newline.%0a%0aThe result is an array variable.",
+      "examples": "split Text into Lines%0asplit CSV on `,` giving Items%0asplit `1,2,3,4,5` on Comma into Numbers"
+    },
+    "index of": {
+      "syntax": "the index of",
+      "description": "The (numeric) value of the current index of a named array variable. This is the value set by ~l:index!index {variable} to ...~.",
+      "examples": "put the index of Button into Index"
+    },
+    "length of": {
+      "syntax": "length of {value}",
+      "description": "Measures a text variable.",
+      "examples": "put the length of Name into Length"
     }
   },
   "conditions": {
@@ -354,9 +369,9 @@
       "examples": "if EditorModule is not running goto StartEditor"
     },
     "numeric": {
-      "syntax": "numeric",
+      "syntax": "[not] numeric",
       "description": "Tests if a value is numeric",
-      "examples": "if TheValue is numeric ..."
+      "examples": "if TheValue is numeric ...%0aif char N of Value is not numeric ..."
     },
     "even": {
       "syntax": "even",

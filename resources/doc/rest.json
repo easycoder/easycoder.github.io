@@ -3,7 +3,7 @@
     "rest get": {
       "syntax": "rest get {variable} from {endpoint} [or ...]",
       "description": "This issues a REST GET request to the named ~m:endpoint~, giving it the ~l:variable|k|core~ to receive the contents of the request. If there is an error and the ~m:or~ clause has been provided this will be executed, allowing you to take appropriate actions, otherwise the error will be unrecoverable and the program will stop. See also ~l:rest post~.%0a%0aThe REST server comes with a selection of useful endpoints but in many cases you will need to add new ones for the tables you add to the database. The server has an extension mechanism; you will find a file called ~m:rest-local.php~ in the top-level ~m:resources~ folder of your WordPress installation. Use this to add functionality; don~sq~t alter the main REST server as it will be overwritten in a future update to _**EasyCoder**_.",
-      "examples": "rest get Record from `/resources/users/25 or%0abegin%0a&nbsp;&nbsp;alert `Couldn~sq~t retrieve data`%0a&nbsp;&nbsp;stop%0aend"
+      "examples": "rest get Record from `_/ec_users/25 or%0abegin%0a&nbsp;&nbsp;alert `Couldn~sq~t retrieve data`%0a&nbsp;&nbsp;stop%0aend"
     },
     "rest post": {
       "syntax": "rest post [{value}] to {endpoint} [giving {variable}] [or ...]",

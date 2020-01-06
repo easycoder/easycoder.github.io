@@ -510,6 +510,34 @@ const EasyCoder_Browser = {
 		}
 	},
 
+	Focus: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const symbol = compiler.getToken();
+				compiler.next();
+				compiler.addCommand({
+					domain: `browser`,
+					keyword: `focus`,
+					lino,
+					symbol
+				});
+				return true;
+			}
+			compiler.addWarning(`Unrecognised syntax in 'focus'`);
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const symbol = program.getSymbolRecord(command.symbol);
+			const element = symbol.element[symbol.index];
+			element.focus();
+			return command.pc + 1;
+		}
+	},
+
 	FORM: {
 
 		compile: (compiler) => {
@@ -2347,6 +2375,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.FIELDSET;
 		case `file`:
 			return EasyCoder_Browser.FILE;
+		case `focus`:
+			return EasyCoder_Browser.Focus;
 		case `form`:
 			return EasyCoder_Browser.FORM;
 		case `fullscreen`:

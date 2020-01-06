@@ -219,6 +219,11 @@
       "syntax": "request fullscreen [exit]",
       "description": "This manages fullscreen mode, where the content of the document occupies the entire screen with now browser element being visible.%0a%0aThis feature allows **_EasyCoder_** to be used for display systems where the whole screen is used, with no title bar or other window furniture visible.%0a%0aNote that if you go into fullscreen mode you may need to provide some means of returning, as the browser Back button will not be visible.",
       "examples": "request fullscreen%0arequest fullscreen exit"
+    },
+    "focus": {
+      "syntax": "focus [element]",
+      "description": "Requests the focus to be applied to the field whose name is given.",
+      "examples": "focus NameField%0afocus OKButton"
     }
   },
   "values": {
