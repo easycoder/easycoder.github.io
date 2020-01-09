@@ -56,6 +56,7 @@
 !	and the website will be marked as ReadOnly.
 	rest get Content from `list/map`
     or begin
+    	print `Read only`
     	set ReadOnly
     	rest get Index from `/index.json` or go to Start
         rest get Map from `/map.json`
