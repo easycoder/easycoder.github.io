@@ -51,6 +51,7 @@
     
     clear ReadOnly
     clear Index
+    debug step
 
 !	Get all the record IDs as a list. If the site is static the first command will throw an error
 !	and the website will be marked as ReadOnly.
@@ -59,7 +60,7 @@
     	print `Read only`
     	set ReadOnly
     	rest get Index from `/index.json` or go to Start
-        rest get Map from `/map.json`
+        rest get Map from `/map.json` or go to Start
         go to Start
     end
     put property `files` of Content into Content
