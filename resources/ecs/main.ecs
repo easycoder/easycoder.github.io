@@ -18,6 +18,7 @@
 	button AboutButton
 	button PhilosophyButton
 	button CodexButton
+    button ThisIsMeButton
 	hr Rule
 	a ShowNotes
 	module ShowdownModule
@@ -116,9 +117,9 @@ BuildPage:
 	on click HomeButton
 	begin
 		gosub to DeselectAllButtons
-			set style `background` of HomeButton to `darkgray`
+		set style `background` of HomeButton to `darkgray`
 		send `pause` to CurrentModule
-			alias CurrentModule to HomeModule
+		alias CurrentModule to HomeModule
 		send to HomeModule
 	end
     
@@ -130,9 +131,9 @@ BuildPage:
 	on click IntroButton
 	begin
 		gosub to DeselectAllButtons
-			set style `background` of IntroButton to `darkgray`
+		set style `background` of IntroButton to `darkgray`
 		send `pause` to CurrentModule
-			alias CurrentModule to IntroModule
+		alias CurrentModule to IntroModule
 		send to IntroModule
 	end
     
@@ -144,9 +145,9 @@ BuildPage:
 	on click ExamplesButton
 	begin
 		gosub to DeselectAllButtons
-			set style `background` of ExamplesButton to `darkgray`
+		set style `background` of ExamplesButton to `darkgray`
 		send `pause` to CurrentModule
-			alias CurrentModule to ExamplesModule
+		alias CurrentModule to ExamplesModule
 		send to ExamplesModule
 	end
     
@@ -158,9 +159,9 @@ BuildPage:
 	on click AboutButton
 	begin
 		gosub to DeselectAllButtons
-			set style `background` of AboutButton to `darkgray`
+		set style `background` of AboutButton to `darkgray`
 		send `pause` to CurrentModule
-			alias CurrentModule to AboutModule
+		alias CurrentModule to AboutModule
 		send to AboutModule
 	end
     
@@ -172,9 +173,9 @@ BuildPage:
 	on click PhilosophyButton
 	begin
 		gosub to DeselectAllButtons
-			set style `background` of PhilosophyButton to `darkgray`
+		set style `background` of PhilosophyButton to `darkgray`
 		send `pause` to CurrentModule
-			alias CurrentModule to PhilosophyModule
+		alias CurrentModule to PhilosophyModule
 		send to PhilosophyModule
 	end
 
@@ -190,6 +191,16 @@ BuildPage:
 		send `pause` to CurrentModule
 		set style `display` of Body to `none`
 		run Script
+	end
+
+	create ButtonItem in ButtonList
+	create ThisIsMeButton in ButtonItem
+	set the style of ThisIsMeButton to ButtonStyle
+	set style `margin-top` of ThisIsMeButton to `0.25em`
+	set the text of ThisIsMeButton to `This is Me`
+	on click ThisIsMeButton
+	begin
+		location `/thisisme/index.html`
 	end
 
 	create Notes in Main

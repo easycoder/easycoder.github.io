@@ -1,0 +1,12 @@
+.rowstyle {
+    display:flex;
+    margin-top:0.5em
+}
+.labelstyle {
+    width:10em;
+    font-weight:bold
+}
+.inputstyle {
+    flex:1
+}
+

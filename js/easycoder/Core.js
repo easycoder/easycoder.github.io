@@ -1703,7 +1703,8 @@ const EasyCoder_Core = {
 						targetJSON[itemName] = itemValue.content;
 					} else if (itemValue.numeric) {
 						targetJSON[itemName] = itemValue.content;
-					} else if (itemValue.content.substr(0, 2) === `{"`) {
+					// } else if (itemValue.content.substr(0, 2) === `{"`) {
+					} else if ([`["`, `{"`].includes(itemValue.content.substr(0, 2))) {
 						targetJSON[itemName] = JSON.parse(itemValue.content);
 					} else {
 						targetJSON[itemName] = itemValue.content.split(`"`).join(`\\"`);

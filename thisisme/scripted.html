@@ -1,0 +1,21 @@
+<html>
+  <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Script Editor</title>
+	<script type='text/javascript' src='easycoder/easycoder.js?ver=3.0.0'></script>
+  </head>
+  <body>
+
+<pre id="easycoder-script" style="display:none">
+!	EasyCoder Script Editor
+
+	script Boot
+
+	variable Script
+	load plugin `codemirror`
+	rest get Script from `/ecs/scripted.ecs`
+	run Script
+</pre>
+</body>
+</html>

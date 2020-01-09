@@ -32,9 +32,12 @@
   variable FileCount
   variable File
   variable Files
+  variable Dirs
   variable N
+  variable M
   variable FileIsOpen
   variable Item
+  variable Extension
 
   set the title to `Script Editor`
 
@@ -116,7 +119,7 @@
     put the content of ContentEditor into Content
     if Content is not Current
     begin
-      rest post Content to `_save/ecs~` cat Name
+      rest post Content to `save/ecs/` cat Name
       put Content into Current
       set the content of Status to `Script '` cat Name cat `' saved`
       fork to ResetStatus
@@ -142,7 +145,7 @@
     if confirm `Are you sure you want to delete '` cat Name cat `'?`
     begin
       codemirror close ContentEditor
-      rest post to `_delete/ecs~` cat Name
+      rest post to `delete/ecs/` cat Name
       set the content of Status to `Script '` cat Name cat `' deleted`
       set the content of NameEditor to empty
       put empty into Content
@@ -160,7 +163,7 @@ DoOpen:
   begin
     if confirm `Content has changed. Do you want to save it?`
     begin
-      rest post Content to `_save/ecs~` cat CurrentName
+      rest post Content to `/save/ecs/` cat CurrentName
     end
   end
 
@@ -179,19 +182,31 @@ DoOpen:
   set style `display` of Media to `block`
   set style `display` of FileListing to `inline-block`
 
+  on click CloseButton
+  begin
+    put Current into Content
+    go to CloseBrowser
+  end
+
 ! Fill the browser with content from the server
-  rest get Files from `_list/ecs`
+  rest get Files from `list/ecs`
+  put property `dirs` of Files into Dirs
+  put property `files` of Files into Files
   put the json count of Files into FileCount
   put empty into Content
   put 0 into N
   while N is less than FileCount
   begin
   	put element N of Files into Item
-    if property `type` of Item is `ecs` json add Item to Content
-    if property `type` of Item is `json` json add Item to Content
+  	put the position of the last `.` in Item into M
+  	put from M of Item into Extension
+    if Extension is `.ecs` json add Item to Content
+    if Extension is `.json` json add Item to Content
     add 1 to N
   end
+  if Content is empty stop
   json sort Content
+  print Content
   put empty into FileList
   put the json count of Content into FileCount
   set the elements of File to FileCount
@@ -222,23 +237,17 @@ DoOpen:
     put element N of Content into File
     attach FileRow to `ec-file-row-` cat N
     attach FileName to `ec-file-name-` cat N
-    put property `name` of File into File
     set the content of FileName to File
     if N is even set style `background` of FileRow to `lightgray`
     on click FileName go to SelectFile
     add 1 to N
-  end
-  on click CloseButton
-  begin
-    put Current into Content
-    go to CloseBrowser
   end
   stop
 
 SelectFile:
   index File to the index of FileName
   set the content of NameEditor to File
-  rest get Content from `/resources/ecs/` cat File
+  rest get Content from `/ecs/` cat File
   put Content into Current
   set the content of Status to `Script '` cat File cat `' loaded`
   fork to ResetStatus

@@ -1,0 +1,162 @@
+!	Find a person
+
+	script Find
+    
+    import variable RowStyle
+        and variable LabelStyle
+        and variable InputStyle
+        and variable Index
+    
+    div Body
+    div Form
+    div Title
+    div Row
+    div Label
+    div Input
+    div Choices
+    div Buttons
+    input Name
+    button FindRecordButton
+    button NewRecordButton
+    button ChoiceButton
+    variable N
+    variable Message
+    variable Selection
+    variable ID
+    variable Record
+    variable F
+    variable G
+    variable D
+    variable ChoiceIndex
+    variable Text
+
+    clear body
+    create Body in body
+    
+    create Form in Body
+    set the style of Form to
+    	`width:100%;max-width:800px;margin:1em auto 0 auto;border:1px solid lightgray`
+        cat `;padding:0 0.5em 0.5em 0.5em`
+    
+    create Title in Form
+    set the style of Title to `text-align:center;font-size:1.1em;font-weight:bold;margin-top:0.5em`
+    set the content of Title to `Get a record`
+
+	create Row in Form
+    set the style of Row to RowStyle
+    create Label in Row
+    set the style of Label to LabelStyle
+    set the content of Label to `Name:`
+    create Input in Row
+    set the style of Input to InputStyle
+    create Name in Input
+    set the style of Name to `width:100%`
+    
+    create Choices in Form
+    set the style of Choices to `display:none`
+    
+    create Buttons in Form
+    set the style of Buttons to
+    	`text-align:center;margin-top:0.5em;border-top:1px solid lightgray;padding-top:0.5em`
+
+	create FindRecordButton in Buttons
+    set the text of FindRecordButton to `Find record`
+    on click FindRecordButton go to SearchRecords
+    
+    create NewRecordButton in Buttons
+    set the style of NewRecordButton to `margin-left:0.5em`
+    set the text of NewRecordButton to `New record`
+    on click NewRecordButton go to NewRecord
+    
+    on message
+    begin
+    	put the message into Message
+        if Message is `show` set style `display` of Body to `block`
+        else if Message is `hide` set style `display` of Body to `none`
+    end
+
+	set ready
+    wait 10 ticks
+    focus Name
+    stop
+
+!	Search for matching records - when Find button is clicked
+SearchRecords:
+    if Name is empty
+    begin
+	   	alert `Please provide the full name or the first part of either the given or the family name.`
+    	stop
+    end
+
+    put 0 into N
+    put `[]` into Selection
+    while N is less than the json count of Index
+    begin
+    	put element N of Index into ID
+    	rest get Record from `/map/` cat ID cat `.json`
+        put property `fname` of Record into F
+        put property `gname` of Record into G
+        if Name is G cat ` ` cat F
+        begin
+        	json add N to Selection
+            go to SR2
+        end
+        if the position nocase of Name in F is 0 json add ID to Selection
+        else if the position nocase of Name in G is 0 json add ID to Selection
+SR2:
+    	add 1 to N
+    end
+
+    put the json count of Selection into N
+    if N is greater than 0
+    begin
+    	if N is 1
+        begin
+        	put element 0 of Selection into ID
+            go to Selected
+        end
+        ! Show a list of matching results
+        set the elements of ChoiceButton to the json count of Selection
+        set the elements of ChoiceIndex to the json count of Selection
+        clear Choices
+        put 0 into N
+        while N is less than the json count of Selection
+        begin
+        	put element N of Selection into ID
+    		rest get Record from `/map/` cat ID cat `.json`
+            put property `fname` of Record into F
+            put property `gname` of Record into G
+            put property `dob` of Record into D
+            create Row in Choices
+            set the style of Row to RowStyle
+            create Label in Row
+            set the style of Label to LabelStyle
+            index ChoiceButton to N
+            create ChoiceButton in Row
+            put G cat ` ` cat F into Text
+            if D is not empty put Text cat ` (` cat D cat `)` into Text
+            set the text of ChoiceButton to Text
+            index ChoiceIndex to N
+           	put ID into ChoiceIndex
+        	add 1 to N
+        end
+        set style `display` of Choices to `block`
+        on click ChoiceButton
+        begin
+        	put the index of ChoiceButton into N
+            index ChoiceIndex to N
+            put ChoiceIndex into ID
+            go to Selected
+        end
+       	stop
+    end
+    alert `No matching record(s) found.`
+    stop
+
+Selected:
+	set style `display` of Body to `none`
+    clear Message
+    set property `action` of Message to `view`
+    set property `id` of Message to ID
+	send Message to parent
+	exit

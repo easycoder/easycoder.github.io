@@ -26,9 +26,9 @@
 	on message
 	begin
 		put the message into Message
-			if Message is `restore` send Message to parent
-			else if Message is `pause` begin end
-			else go to Start
+		if Message is `restore` send Message to parent
+		else if Message is `pause` begin end
+		else go to Start
 	end
 	
 	set ready
@@ -40,7 +40,7 @@ Start:
 	on click RunCodex
 	begin
 		send `hide` to parent
-		rest get Codex from `/resources/ecs/codex`
+		rest get Codex from `/resources/ecs/codex.ecs`
 		run Codex
 	end
 	stop

@@ -1,0 +1,221 @@
+!   This is me
+
+!	These are the main data objects:
+
+!	1. A "record", which comprises all the information relating to a single individual.
+!	Record properties are handled by this main script and also by other scripts
+!	called as needed.
+!	Each record has a unique ID comprising the user ID and the timestamp of record creation.
+!	Records are stored in individual files in the "map" folder or in a database,
+!	where the record ID is used as the filename or database record key.
+
+!	2. "index.json"; a list of record IDs obtained by scanning the "map" folder.
+
+!	3. "map.json"; a map containing key information from all the records in the index.
+
+    script ThisIsMe
+    
+    variable ReadOnly
+    variable Index
+    variable ID
+    variable ID2
+    variable RowStyle
+    variable LabelStyle
+    variable InputStyle
+    variable Content
+    variable Record
+    variable Item
+    variable Item2
+    variable List
+    variable Map
+    variable N
+    variable M
+    variable D
+    variable P
+    variable C
+    variable Message
+    variable Action
+    variable FindScript
+    variable ViewerScript
+    variable EditorScript
+    variable A
+    variable B
+    variable V
+    module FindModule
+    module ViewerModule
+    module EditorModule
+
+	put `display:flex;margin-top:0.5em` into RowStyle
+    put `width:10em;font-weight:bold` into LabelStyle
+    put `flex:1` into InputStyle
+    
+    clear ReadOnly
+    clear Index
+
+!	Get all the record IDs as a list. If the site is static the first command will throw an error
+!	and the website will be marked as ReadOnly.
+	rest get Content from `list/map`
+    or begin
+    	set ReadOnly
+    	rest get Index from `/index.json` or go to Start
+        rest get Map from `/map.json`
+        go to Start
+    end
+    put property `files` of Content into Content
+    clear Index
+    put 0 into N
+    while N is less than the json count of Content
+    begin
+    	put element N of Content into ID
+        put the position of `.` in ID into D
+        put left D of ID into ID
+        json add ID to Index
+    	add 1 to N
+    end
+    sort Index with SortIndex
+!	print Index
+	rest post Index to `save/index.json`
+
+!	Build an in-memory map of parent-child-sibling-friend relationships
+  	clear Map
+   	put 0 into N
+    while N is less than the json count of Index
+    begin
+        clear Item
+      	put element N of Index into ID
+!        set property `id` of Item to ID
+   		rest get Record from `/map/` cat ID cat `.json` or go to Start
+        put property `father` of Record into P
+        if P is not empty set property `father` of Item to P
+        put property `mother` of Record into P
+        if P is not empty set property `mother` of Item to P
+        set property ID of Map to Item
+       	add 1 to N
+    end
+    put 0 into N
+    while N is less than the json count of Index
+    begin
+       	put element N of Index into ID
+        gosub to GetChildren
+       	add 1 to N
+    end
+    put 0 into N
+    while N is less than the json count of Index
+    begin
+       	put element N of Index into ID
+        gosub to GetSiblings
+       	add 1 to N
+    end
+!    print Map
+    rest post Map to `save/map.json` or go to Start
+
+Start:
+    rest get ViewerScript from `/ecs/viewmain.ecs`
+    rest get EditorScript from `/ecs/editmain.ecs`
+    rest get FindScript from `/ecs/find.ecs`
+    
+    on message
+    begin
+    	put the message into Message
+        put property `action` of Message into Action
+        if Action is `find`
+        begin
+    		run FindScript with RowStyle and LabelStyle and InputStyle and Index as FindModule
+        end
+        if Action is `view`
+        begin
+        	put property `id` of Message into ID
+            go to ViewRecord
+        end
+        if Action is `edit`
+        begin
+        	put property `id` of Message into ID
+            go to EditRecord
+        end
+    end
+    put element 0 of Index into ID
+
+!	View a record
+ViewRecord:
+    run ViewerScript with ID as ViewerModule
+	stop
+
+!	Edit a record
+EditRecord:
+    run EditorScript with ID as EditorModule
+	stop
+
+!	Sort the index
+SortIndex:
+    put arg `a` of Index into A
+    put arg `b` of Index into B
+    if A is greater than B put 1 into V
+    else if A is less than B put -1 into V
+    else put 0 into V
+    set arg `v` of Index to V
+    stop
+
+!	Set all the relationships exposed in the Item whose id is ID
+GetChildren:
+	put property ID of Map into Item
+
+	put property `father` of Item into P
+    if P is not empty
+    begin
+        put property P of Map into Item2
+        put property `children` of Item2 into C
+        json add ID to C
+        set property `children` of Item2 to C
+        set property P of Map to Item2
+    end
+	put property `mother` of Item into P
+    if P is not empty
+    begin
+        put property P of Map into Item2
+        put property `children` of Item2 into C
+        json add ID to C
+        set property `children` of Item2 to C
+        set property P of Map to Item2
+    end
+    set property ID of Map to Item
+    return
+
+GetSiblings:
+	put property ID of Map into Item
+
+	clear List
+	put property `father` of Item into P
+    if P is not empty
+    begin
+        put property P of Map into Item2
+        put property `children` of Item2 into C
+        put 0 into M
+        while M is less than the json count of C
+        begin
+        	put element M of C into ID2
+            if ID is not ID2 json add ID2 to List
+        	add 1 to M
+        end
+    end
+    if the json count of List is not 0 set property `siblings` of Item to List
+    set property ID of Map to Item
+    
+	put property `mother` of Item into P
+    if P is not empty
+    begin
+        put property P of Map into Item2
+        put property `children` of Item2 into C
+        put 0 into M
+        while M is less than the json count of C
+        begin
+        	put element M of C into ID2
+            if ID is not ID2
+            begin
+            	if the index of ID2 in List is -1 json add ID2 to List
+            end
+        	add 1 to M
+        end
+    end
+    if the json count of List is not 0 set property `siblings` of Item to List
+    set property ID of Map to Item
+	return
