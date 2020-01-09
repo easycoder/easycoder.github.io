@@ -51,7 +51,6 @@
     
     clear ReadOnly
     clear Index
-    debug step
 
 !	Get all the record IDs as a list. If the site is static the first command will throw an error
 !	and the website will be marked as ReadOnly.
