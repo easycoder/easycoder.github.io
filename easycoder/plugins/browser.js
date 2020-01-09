@@ -510,6 +510,34 @@ const EasyCoder_Browser = {
 		}
 	},
 
+	Focus: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const symbol = compiler.getToken();
+				compiler.next();
+				compiler.addCommand({
+					domain: `browser`,
+					keyword: `focus`,
+					lino,
+					symbol
+				});
+				return true;
+			}
+			compiler.addWarning(`Unrecognised syntax in 'focus'`);
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const symbol = program.getSymbolRecord(command.symbol);
+			const element = symbol.element[symbol.index];
+			element.focus();
+			return command.pc + 1;
+		}
+	},
+
 	FORM: {
 
 		compile: (compiler) => {
@@ -1691,6 +1719,26 @@ const EasyCoder_Browser = {
 						}
 						throw new Error(`'${compiler.getToken()}' is not a symbol`);
 					}
+				} else if (token === `class`) {
+					if (compiler.nextTokenIs(`of`)) {
+						if (compiler.nextIsSymbol()) {
+							const symbol = compiler.getSymbolRecord();
+							if (symbol.extra === `dom`) {
+								if (compiler.nextTokenIs(`to`)) {
+									const value = compiler.getNextValue();
+									compiler.addCommand({
+										domain: `browser`,
+										keyword: `set`,
+										lino,
+										type: `setClass`,
+										symbolName: symbol.name,
+										value
+									});
+									return true;
+								}
+							}
+						}
+					}
 				} else if (token === `id`) {
 					if (compiler.nextTokenIs(`of`)) {
 						if (compiler.nextIsSymbol()) {
@@ -1951,6 +1999,15 @@ const EasyCoder_Browser = {
 				} else {
 					select.selectedIndex = -1;
 				}
+				break;
+			case `setClass`:
+				symbol = program.getSymbolRecord(command.symbolName);
+				target = symbol.element[symbol.index];
+				if (!target) {
+					targetId = program.getValue(symbol.value[symbol.index]);
+					target = document.getElementById(targetId);
+				}
+				target.classList.add(program.getValue(command.value));
 				break;
 			case `setId`:
 				symbol = program.getSymbolRecord(command.symbolName);
@@ -2347,6 +2404,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.FIELDSET;
 		case `file`:
 			return EasyCoder_Browser.FILE;
+		case `focus`:
+			return EasyCoder_Browser.Focus;
 		case `form`:
 			return EasyCoder_Browser.FORM;
 		case `fullscreen`:
