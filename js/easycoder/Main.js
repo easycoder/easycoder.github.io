@@ -179,7 +179,7 @@ const EasyCoder = {
 			if (program.onError) {
 				program.run(program.onError);
 			} else {
-				let parent = program.parent;
+				let parent = EasyCoder.scripts[program.parent];
 				if (parent && parent.onError) {
 					parent.run(parent.onError);
 				}
@@ -320,9 +320,10 @@ const EasyCoder = {
 				`${finishCompile - startCompile} ms`);
 		} catch (err) {
 			if (err.message !== `stop`) {
-				this.reportError(err, parent, source);
-				if (parent && parent.onError) {
-					parent.run(parent.onError);
+				let parentRecord = EasyCoder.scripts[parent];
+				this.reportError(err, parentRecord, source);
+				if (parentRecord && parentRecord.onError) {
+					parentRecord.run(parentRecord.onError);
 				}
 			}
 		}

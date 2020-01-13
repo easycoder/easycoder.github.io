@@ -2809,7 +2809,7 @@ const EasyCoder_Core = {
 				if (property && propertyContent) {
 					if (typeof propertyContent === `object`) {
 						content = propertyContent[property];
-					} else if (propertyContent.charAt(0) === `{`) {
+					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
 						try {
 							content = JSON.parse(propertyContent)[property];
 						} catch (err) {
@@ -2819,7 +2819,7 @@ const EasyCoder_Core = {
 				}
 				return {
 					type: `constant`,
-					numeric: !isNaN(content),
+					numeric: !Array.isArray(content) && !isNaN(content),
 					content: typeof content === `object` ? JSON.stringify(content) : content
 				};
 			case `module`:

@@ -3193,7 +3193,7 @@ const EasyCoder_Core = {
 				if (property && propertyContent) {
 					if (typeof propertyContent === `object`) {
 						content = propertyContent[property];
-					} else if (propertyContent.charAt(0) === `{`) {
+					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
 						try {
 							content = JSON.parse(propertyContent)[property];
 						} catch (err) {
@@ -3203,7 +3203,7 @@ const EasyCoder_Core = {
 				}
 				return {
 					type: `constant`,
-					numeric: !isNaN(content),
+					numeric: !Array.isArray(content) && !isNaN(content),
 					content: typeof content === `object` ? JSON.stringify(content) : content
 				};
 			case `module`:
@@ -3609,7 +3609,7 @@ const EasyCoder = {
 			if (program.onError) {
 				program.run(program.onError);
 			} else {
-				let parent = program.parent;
+				let parent = EasyCoder.scripts[program.parent];
 				if (parent && parent.onError) {
 					parent.run(parent.onError);
 				}
@@ -3750,9 +3750,10 @@ const EasyCoder = {
 				`${finishCompile - startCompile} ms`);
 		} catch (err) {
 			if (err.message !== `stop`) {
-				this.reportError(err, parent, source);
-				if (parent && parent.onError) {
-					parent.run(parent.onError);
+				let parentRecord = EasyCoder.scripts[parent];
+				this.reportError(err, parentRecord, source);
+				if (parentRecord && parentRecord.onError) {
+					parentRecord.run(parentRecord.onError);
 				}
 			}
 		}

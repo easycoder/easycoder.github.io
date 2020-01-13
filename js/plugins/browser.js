@@ -2448,8 +2448,6 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Mail;
 		case `on`:
 			return EasyCoder_Browser.On;
-		case `option`:
-			return EasyCoder_Browser.Option;
 		case `p`:
 			return EasyCoder_Browser.P;
 		case `play`:
