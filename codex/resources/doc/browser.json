@@ -97,7 +97,7 @@
     },
     "select": {
       "syntax": "select {name}",
-      "description": "This declares a ~m:&lt;select&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~",
+      "description": "This declares a ~m:&lt;select&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.%0a%0aThe ~m:select~ element is a dropdown list. There is no corresponding ~m:option~ element; instead, to construct the element you must create a JSON array containing the elements of the list, then use ~l:set!set Select from List~, where ~m:Select~ and ~m:List~ are the relevant variable types.",
       "examples": "select CountryList"
     },
     "span": {
@@ -192,7 +192,7 @@
     },
     "set": {
       "syntax": "set [the content of] {target} from {source}%0aset [the] title to {title}%0aset [the] content of {element} to {value}%0aset [the] id of {element} to {id} [as {selected}]%0aset [the] text of {button}/{input}/{span}/{label} to {text}%0aset [the] size of {input} to {size}%0aset attribute {name} of {element} to {value}%0aset style {name} of {element}/body to {style}%0aset [the] styles of {element} to {styles}%0aset [the] default of {select} to {value}%0aset {select} from List [as {value}]",
-      "description": "The ~m:set~ command is the most heavily used in _**EasyCoder**_ (and in English generally). The examples above cover all of the different variants. In many of them, ~m:the~ is optional, but it~sq~s always best to include it as an aid to readability.%0a%0aAlso note that the only way to assign classes to elements is by using ~m:set attribute~. All elements are given ids when they are ~l:create!created~.%0a%0aThe form ~m:set {select} from {list} as {selected}~ loads a ~l:select|k|browser~ element from an array and optionally sets one of them to be the selected value. Note that the values must be strings; if you are using numbers then add them to the list as ~m:`` cat N~ to force them to become strings.%0a%0a~m:set~ is also used in other packages, for example in ~l:set|k|core!core~.",
+      "description": "The ~m:set~ command is the most heavily used in _**EasyCoder**_ (and in English generally). The examples above cover all of the different variants. In many of them, ~m:the~ is optional, but it~sq~s always best to include it as an aid to readability.%0a%0aAlso note that the only way to assign classes to elements is by using ~m:set attribute~. All elements are given ids when they are ~l:create!created~.%0a%0aThe form ~m:set {select} from {list} as {selected}~ loads a ~l:select|k|browser~ element from a json array and optionally sets one of them to be the selected value. Note that the values must be strings; if you are using numbers then add them to the list as ~m:`` cat N~ to force them to become strings.%0a%0a~m:set~ is also used in other packages, for example in ~l:set|k|core!core~.",
       "examples": "set the content of TargetDiv from SourceDiv%0aset the title to `My First EasyCoder Page`%0aset the content of Link to `Click for more`%0aset the id of ContentDiv to `ec-contents`%0aset the text of HelpButton to `Help`%0aset the size of NameField to 40%0aset attribute `class` of MainText to `normal-text`%0aset style `display` of ButtonPanel to `none`%0aset style `text-align` of body to `center`%0aset the styles of TextPanel to `flex:2;font-weight:bold;margin-top:1em`%0aset the default of Countries to `Spain`%0aset Months from MonthList as `March`"
     },
     "trace": {
@@ -219,6 +219,11 @@
       "syntax": "request fullscreen [exit]",
       "description": "This manages fullscreen mode, where the content of the document occupies the entire screen with now browser element being visible.%0a%0aThis feature allows **_EasyCoder_** to be used for display systems where the whole screen is used, with no title bar or other window furniture visible.%0a%0aNote that if you go into fullscreen mode you may need to provide some means of returning, as the browser Back button will not be visible.",
       "examples": "request fullscreen%0arequest fullscreen exit"
+    },
+    "focus": {
+      "syntax": "focus [element]",
+      "description": "Requests the focus to be applied to the field whose name is given.",
+      "examples": "focus NameField%0afocus OKButton"
     }
   },
   "values": {

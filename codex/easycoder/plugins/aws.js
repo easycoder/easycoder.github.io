@@ -1,5 +1,7 @@
 const EasyCoder_AWS = {
 
+	name: `EasyCoder_AWS`,
+
 	AWS: {
 
 		compile: (compiler) => {

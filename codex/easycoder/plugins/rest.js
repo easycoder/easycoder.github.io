@@ -1,5 +1,7 @@
 const EasyCoder_Rest = {
 
+	name: `EasyCoder_Rest`,
+
 	Rest: {
 
 		compile: (compiler) => {
@@ -110,7 +112,8 @@ const EasyCoder_Rest = {
 			const url = program.getValue(command.url);
 			const rest = EasyCoder_Plugins.rest();
 			const path = url.startsWith(`http`) ? url
-				: `${window.location.origin}${rest ? `/${rest}` : ``}/${url}`;
+				: url[0] === `/` ? url.substr(1)
+					: `${window.location.origin}${rest ? `/${rest}` : ``}/${url}`;
 
 			const request = EasyCoder_Rest.Rest.createCORSRequest(command.request, path);
 			if (!request) {
@@ -120,19 +123,27 @@ const EasyCoder_Rest = {
 			// request.command = command;
 
 			request.onload = function () {
-				var content = request.responseText;
-				if (content.length > 0 && ![`[`, `{`].includes(content.charAt(0))) {
-					// content = program.decode(content);
+				if (200 <= request.status && request.status < 400) {
+					var content = request.responseText.trim();
+					if (command.target) {
+						const targetRecord = program.getSymbolRecord(command.target);
+						targetRecord.value[targetRecord.index] = {
+							type: `constant`,
+							numeric: false,
+							content
+						};
+						targetRecord.used = true;
+					}
+					program.run(command.pc + 1);
+				} else {
+					const error = `${request.status} ${request.statusText}`;
+					if (command.onError) {
+						program.errorMessage = `Exception trapped: ${error}`;
+						program.run(command.onError);
+					} else {
+						program.runtimeError(command.lino, `Error: ${error}`);
+					}
 				}
-				if (command.target) {
-					const targetRecord = program.getSymbolRecord(command.target);
-					targetRecord.value[targetRecord.index] = {
-						type: `constant`,
-						numeric: false,
-						content
-					};
-				}
-				program.run(command.pc + 1);
 			};
 
 			request.onerror = function () {
@@ -147,6 +158,7 @@ const EasyCoder_Rest = {
 
 			switch (command.request) {
 			case `get`:
+				// alert(`GET from ${path}`);
 				// console.log(`GET from ${path}`);
 				// request.open(`GET`, path);
 				request.send();
@@ -155,7 +167,7 @@ const EasyCoder_Rest = {
 				const value = program.getValue(command.value);
 				console.log(`POST to ${path}`);
 				// request.open(`POST`, path);
-				if (value.charAt(0) === `{` || !isNaN(value)) {
+				if (value.length >0 && value.charAt(0) === `{`) {
 					request.setRequestHeader(`Content-Type`, `application/json; charset=UTF-8`);
 					//            console.log(`value=${value}`);
 					request.send(value.charAt(0) === `{` ? value : value.toString());

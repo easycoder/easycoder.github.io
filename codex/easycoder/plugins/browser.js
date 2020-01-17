@@ -1,5 +1,7 @@
 const EasyCoder_Browser = {
 
+	name: `EasyCoder_Browser`,
+
 	A: {
 
 		compile: (compiler) => {
@@ -354,14 +356,14 @@ const EasyCoder_Browser = {
 						}
 					} else {
 						const imports = compiler.imports;
-						if (imports.length > 0) {
-							const parent = imports[0].name;
+						if (imports && imports.length > 0) {
+							// This section is used by Codex to force run in Run panel, which must be the first import
 							compiler.addCommand({
 								domain: `browser`,
 								keyword: `create`,
 								lino,
 								name: symbolRecord.name,
-								parent,
+								parent: imports[0],
 								imported: true
 							});
 							return true;
@@ -401,10 +403,11 @@ const EasyCoder_Browser = {
 					parent = parentRecord.element[parentRecord.index];
 				}
 				targetRecord.element[targetRecord.index] = document.createElement(targetRecord.keyword);
-				if (!this.elementId) {
-					this.elementId = 0;
+				if (!program.elementId) {
+					program.elementId = 0;
 				}
-				targetRecord.element[targetRecord.index].id = `ec-${targetRecord.name}-${targetRecord.index}-${this.elementId++}`;
+				targetRecord.element[targetRecord.index].id =
+					`ec-${targetRecord.name}-${targetRecord.index}-${program.elementId++}`;
 				if (targetRecord.keyword === `a`) {
 					targetRecord.element[targetRecord.index].setAttribute(`href`, `#`);
 				}
@@ -504,6 +507,34 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			return program[program.pc].pc + 1;
+		}
+	},
+
+	Focus: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const symbol = compiler.getToken();
+				compiler.next();
+				compiler.addCommand({
+					domain: `browser`,
+					keyword: `focus`,
+					lino,
+					symbol
+				});
+				return true;
+			}
+			compiler.addWarning(`Unrecognised syntax in 'focus'`);
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const symbol = program.getSymbolRecord(command.symbol);
+			const element = symbol.element[symbol.index];
+			element.focus();
+			return command.pc + 1;
 		}
 	},
 
@@ -1078,22 +1109,23 @@ const EasyCoder_Browser = {
 			switch (command.action) {
 			case `change`:
 				const changeItem = program.getSymbolRecord(command.symbol);
-				if (changeItem.keyword === `select`) {
-					const target = changeItem.element[changeItem.index];
-					target.targetPc = command.pc + 2;
-					target.addEventListener(`change`, function () {
-						try {
-							program.run(target.targetPc);
-						} catch (err) {
-							console.log(err.message);
-							alert(err.message);
-						}
-						return false;
-					});
-				}
+				// if (changeItem.keyword === `select`) {
+				const target = changeItem.element[changeItem.index];
+				target.targetPc = command.pc + 2;
+				target.addEventListener(`change`, function () {
+					try {
+						program.run(target.targetPc);
+					} catch (err) {
+						console.log(err.message);
+						alert(err.message);
+					}
+					return false;
+				});
+				// }
 				break;
 			case `click`:
 				const targetRecord = program.getSymbolRecord(command.symbol);
+				targetRecord.program = program.script;
 				targetRecord.element.forEach(function (target, index) {
 					target.targetRecord = targetRecord;
 					target.targetIndex = index;
@@ -1107,7 +1139,8 @@ const EasyCoder_Browser = {
 								eventTarget.targetRecord.index = eventTarget.targetIndex;
 								setTimeout(function () {
 									EasyCoder.timestamp = Date.now();
-									program.run(eventTarget.targetPc);
+									let p = EasyCoder.scripts[eventTarget.targetRecord.program];
+									p.run(eventTarget.targetPc);
 								}, 1);
 							}
 						}
@@ -1246,16 +1279,20 @@ const EasyCoder_Browser = {
 								e.stopPropagation();
 								document.dragX = e.clientX;
 								document.dragY = e.clientY;
-								setTimeout(function () {
-									program.run(document.mouseMovePc);
-								}, 1);
+								if (document.onmousemove) {
+									setTimeout(function () {
+										program.run(document.mouseMovePc);
+									}, 1);
+								}
 								return false;
 							};
 							window.onmouseup = function () {
-								window.onmousemove = null;
-								window.onmouseup = null;
+								document.onmousemove = null;
+								document.onmouseup = null;
 								setTimeout(function () {
-									program.run(document.mouseUpPc);
+									if (program && program.run) {
+										program.run(document.mouseUpPc);
+									}
 								}, 1);
 								return false;
 							};
@@ -1542,6 +1579,7 @@ const EasyCoder_Browser = {
 	Scroll: {
 
 		compile: (compiler) => {
+			const lino = compiler.getLino();
 			let name = null;
 			if (compiler.nextIsSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
@@ -1553,6 +1591,7 @@ const EasyCoder_Browser = {
 				compiler.addCommand({
 					domain: `browser`,
 					keyword: `scroll`,
+					lino,
 					name,
 					to
 				});
@@ -1680,7 +1719,27 @@ const EasyCoder_Browser = {
 								return true;
 							}
 						}
-						throw new Error(`Expected a symbol at '{compiler.getToken()}'`);
+						throw new Error(`'${compiler.getToken()}' is not a symbol`);
+					}
+				} else if (token === `class`) {
+					if (compiler.nextTokenIs(`of`)) {
+						if (compiler.nextIsSymbol()) {
+							const symbol = compiler.getSymbolRecord();
+							if (symbol.extra === `dom`) {
+								if (compiler.nextTokenIs(`to`)) {
+									const value = compiler.getNextValue();
+									compiler.addCommand({
+										domain: `browser`,
+										keyword: `set`,
+										lino,
+										type: `setClass`,
+										symbolName: symbol.name,
+										value
+									});
+									return true;
+								}
+							}
+						}
 					}
 				} else if (token === `id`) {
 					if (compiler.nextTokenIs(`of`)) {
@@ -1942,6 +2001,15 @@ const EasyCoder_Browser = {
 				} else {
 					select.selectedIndex = -1;
 				}
+				break;
+			case `setClass`:
+				symbol = program.getSymbolRecord(command.symbolName);
+				target = symbol.element[symbol.index];
+				if (!target) {
+					targetId = program.getValue(symbol.value[symbol.index]);
+					target = document.getElementById(targetId);
+				}
+				target.classList.add(program.getValue(command.value));
 				break;
 			case `setId`:
 				symbol = program.getSymbolRecord(command.symbolName);
@@ -2338,6 +2406,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.FIELDSET;
 		case `file`:
 			return EasyCoder_Browser.FILE;
+		case `focus`:
+			return EasyCoder_Browser.Focus;
 		case `form`:
 			return EasyCoder_Browser.FORM;
 		case `fullscreen`:
@@ -2380,8 +2450,6 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Mail;
 		case `on`:
 			return EasyCoder_Browser.On;
-		case `option`:
-			return EasyCoder_Browser.Option;
 		case `p`:
 			return EasyCoder_Browser.P;
 		case `play`:
@@ -2501,7 +2569,7 @@ const EasyCoder_Browser = {
 							symbol: symbol.name
 						};
 					}
-					throw new Error(`Expected a symbol at '{compiler.getToken()}'`);
+					throw new Error(`'${compiler.getToken()}' is not a symbol`);
 				}
 				return null;
 			case `selected`:

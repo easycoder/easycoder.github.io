@@ -19,7 +19,6 @@
     div ContentDiv
     div Clear
     div Code
-!    div Tracer
     input NameEditor
     textarea ContentEditor
     span Status
@@ -35,7 +34,6 @@
     img Banner
     img Reference
     img Tools
-    img Exit
     img Contents
     a Copy
     a Next
@@ -45,7 +43,6 @@
     variable Password
     variable PasswordRequested
     variable PasswordValid
-    variable ReadOnly
     variable Name
     variable CurrentName
     variable Content
@@ -87,11 +84,6 @@
 !    create Tracer
 !    set attribute `id` of Tracer to `easycoder-tracer`
 
-!	Properties file only exists if the site is writable
-    put empty into Script
-    clear ReadOnly
-	rest get Script from `/properties.txt` or set ReadOnly
-
     clear PasswordRequested
     
     if portrait
@@ -101,7 +93,6 @@
 !    set Mobile
     set ShowRun
     
-    load plugin `gmap`
     load plugin `svg`
     
     codemirror init basic profile `/easycoder/plugins/codemirror-ecs.js`
@@ -111,9 +102,9 @@
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
     
-    if not ReadOnly set the title to `EasyCoder Codex`
+    set the title to `EasyCoder Codex`
     
-    rest get Pages from `/resources/ecs/pages`
+    rest get Pages from `_load/ecs~pages`
 
     get Step from storage as `.step`
     if left 4 of Step is not `step`
@@ -252,12 +243,7 @@
     create Tools in Link
     set the style of Tools to `margin-left:1em;width:40px`
     set attribute `src` of Tools to `resources/icon/tools.png`
-    set attribute `title` of Tools to `Tools and Techniques`
-    create Link in HelpButtons
-    create Exit in Link
-    set the style of Exit to `margin-left:1em;width:40px`
-    set attribute `src` of Exit to `resources/icon/exit.png`
-    set attribute `title` of Exit to `Exit Codex`
+    set attribute `title` of Tools to `Tools`
     
     create HelpInner in HelpOuter
     set the style of HelpInner to `width:100%;line-height:1.5em`
@@ -268,7 +254,7 @@
     set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
 	gosub to ShowHelpPage
-	rest get Script from `/resources/ecs/docman`
+	rest get Script from `_load/ecs~docman`
     run Script with ReferencePanel
 
 	get Item from storage as `.ref`
@@ -288,19 +274,13 @@
         set style `display` of HelpPanel to `none`
         set style `display` of HelpButtons to `none`
         put `y` into storage as `.ref`
+    	set the title to `Codex Reference`
     end
 	on click Tools
     begin
     	put `tools` into Step
-		gosub to ShowHelpPage
-    end
-	on click Exit
-    begin
-    	remove element Body
-        send `restore` to parent
-        exit
-    end
-		gosub to ShowHelpPage
+		gosub to SHP2
+    	set the title to `Codex Tools`
     end
     
     on message
@@ -313,6 +293,7 @@
 	        set style `display` of HelpPanel to `block`
 	        set style `display` of HelpButtons to `block`
 	        put empty into storage as `.ref`
+    		set the title to `Codex - ` cat File
         end
     end
     
@@ -372,11 +353,13 @@
             end
     	end
     	clear FileIsOpen
+        put empty into File
         set the content of ContentEditor to empty
       	codemirror attach to ContentEditor
         set the content of NameEditor to empty
         put empty into Content
         put Content into Current
+    	set the title to `Codex`
 	end
 
     on click Save
@@ -462,18 +445,19 @@
 	            	set style `display` of RunPanel to `block`
     	        	set style `display` of HelpOuter to `none`
         	    	put `run` into View
+    				set the title to `Running ` cat File
                 end
+    			else set the title to `Codex - ` cat File
             end
         	else
             begin
             	set style `display` of RunPanel to `none`
             	set style `display` of HelpOuter to `block`
             	put `help` into View
+    			set the title to `Tutorial`
             end
         end
     end
-    
-    set ready
     stop
 
 DoOpen:
@@ -516,7 +500,6 @@ DoOpen:
     if PasswordValid
     begin
         rest get Files from `_list/scripts`
-        print Files
         put the json count of Files into FileCount
         put empty into Content
         put 0 into N
@@ -585,11 +568,12 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
-	if PasswordValid rest get Content from `/resources/scripts/` cat File
+	if PasswordValid rest get Content from `_load/scripts~` cat File
     else get Content from storage as File
     put Content into Current
     set the content of Status to `Script '` cat File cat `' loaded`
     fork to ResetStatus
+    set the title to `Codex - ` cat File
     set ShowRun
 
 CloseBrowser:
@@ -633,11 +617,12 @@ ResetStatus:
 
 ShowContents:
 	put `contents` into Step
-	gosub to ShowHelpPage
+	gosub to SHP2
     stop
 
 ShowHelpPage:
 	put Step into storage as `.step`
+SHP2:
     put property Step of Pages into Page
     if property `prev` of Page is empty set style `visibility` of Back to `hidden`
     else set style `visibility` of Back to `visible`
@@ -674,12 +659,7 @@ ShowHelpPage:
     end
     else
     begin
-    	put `/resources/html/` cat Step into Item
-    	rest get Script from Item or
-        begin
-        	alert `The script '` cat Item cat `' could not be found`
-            put empty into Script
-        end
+    	rest get Script from `_load/html~` cat Step
     end
     set the content of HelpPanel to Script
     if Step is `contents`
@@ -694,7 +674,7 @@ ShowHelpPage:
         	on click Index
         	begin
             	put attribute `data-file` of Index into Step
-            	goto ShowHelpPage
+            	goto SHP2
         	end
             add 1 to N
         end
@@ -719,7 +699,7 @@ SHP5:
 	   	        on click Index
 	  	        begin
 	  	            put attribute `data-file` of Index into Step
-		            goto ShowHelpPage
+		            goto SHP2
 		        end
                 add 1 to N
             end
@@ -727,8 +707,7 @@ SHP5:
     end
     scroll HelpOuter to 0
 
-    put `/resources/ecs/fragment/` cat Step into Item
-    rest get Fragment from Item or begin end
+    rest get Fragment from `_load/ecs~fragment~` cat Step
 	attach Code to `code` or goto SHP3
     if the content of Code is `yes`
     begin
@@ -754,6 +733,7 @@ SHP3:
             codemirror close ContentEditor
     		codemirror attach to ContentEditor
     		codemirror set content of ContentEditor to Fragment
+        	put Fragment into Current
             set the text of NameEditor to empty
             attach Clear to `clear`
             if the content of Clear is `y` set ShowRun else clear ShowRun
@@ -834,6 +814,8 @@ DoRunStop:
     set Running
     wait 10 ticks
     
+    set the title to `Running ` cat File
+    clear RunPanel
     run Script with RunPanel as TestModule nowait then
     begin
         clear Running
@@ -848,6 +830,7 @@ DoRunStop:
 StopTestModule:
 	if TestModule is running
     begin
+    	set the title to `Codex - ` cat File
     	stop TestModule
         clear Running
         clear RunPanel
@@ -860,18 +843,12 @@ StopTestModule:
         end
         else put `help` into View
         set style `display` of HelpOuter to `block`
+        set style `display` of RunPanel to `none`
         set attribute `src` of RunStop to `resources/icon/run.png`
     end
 	return
 
 GetPassword:
-	if ReadOnly
-    begin
-    	clear PasswordValid
-        return
-    end
-	if the hostname is `localhost` go to SetPasswordValid
-	if the hostname is `127.0.0.1` go to SetPasswordValid
 	if not PasswordRequested
     begin
 	    set PasswordRequested

@@ -104,7 +104,8 @@ const EasyCoder_Value = {
 				type: `constant`,
 				numeric: false,
 				content: value.parts.reduce(function (acc, part) {
-					return acc + EasyCoder_Value.doValue(program, part).content;
+					let value = EasyCoder_Value.doValue(program, part);
+					return acc + (value ? value.content : ``);
 				}, ``)
 			};
 		case `boolean`:

@@ -11,33 +11,7 @@
       "examples": "rest post MyData to `_/ec_markers` giving Response%0aor begin%0a&nbsp;&nbsp;alert the error%0a&nbsp;&nbsp;step%0aend%0arest post to `_/ec_test/dummy`"
     }
   },
-  "values": {
-    "": {
-      "syntax": "",
-      "description": "",
-      "examples": ""
-    },
-    "json keys": {
-      "syntax": "[the] json keys of {object}",
-      "description": "Returns the keys of all the properties in the JSON object as an array.",
-      "examples": "put the json keys of PersonalDetails into MyArray"
-    },
-    "json count": {
-      "syntax": "[the] json count of {array}",
-      "description": "Returns the number of elements in the specified array. See also ~l:json size~, which does the same thing.",
-      "examples": "put the json count of Rows into NRows"
-    },
-    "json size": {
-      "syntax": "[the] json size of {array}",
-      "description": "Returns the number of elements in the specified array. See also ~l:json count~, which does the same thing.",
-      "examples": "put the json size of Rows into NRows"
-    },
-    "json index": {
-      "syntax": "[the] json index of {item} in {array}",
-      "description": "",
-      "examples": "put the json index of `August` in Months into Index"
-    }
-  },
+  "values": "{}",
   "conditions": {},
   "": ""
 }

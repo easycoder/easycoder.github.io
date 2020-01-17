@@ -1,0 +1,19 @@
+!	EasyCoder Installation
+
+	script `Install`
+    
+    div Container
+    variable Script
+    variable Mobile
+    
+    if portrait
+    begin
+    	if mobile set Mobile else clear Mobile
+    end
+
+    create Container
+    if Mobile set style `width` of Container to `100%`
+    else set the style of Container to `width:1024px;margin:0 auto`
+    rest get Script from `_load/html~background`
+    set the content of Container to Script
+    stop

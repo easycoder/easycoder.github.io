@@ -161,6 +161,7 @@
   stop
 
 DoOpen:
+debug step
   if FileIsOpen codemirror close ContentEditor
   put the content of ContentEditor into Content
   if Content is not Current
@@ -188,11 +189,14 @@ DoOpen:
 
 ! Fill the browser with content from the server
   rest get Files from `_list/ecs`
+  print Files
   put the json count of Files into FileCount
+  print FileCount
   put empty into Content
   put 0 into N
   while N is less than FileCount
   begin
+    print N
   	put element N of Files into Item
     if property `type` of Item is `file` json add Item to Content
     add 1 to N

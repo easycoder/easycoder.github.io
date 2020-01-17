@@ -1,6 +1,8 @@
 
 const EasyCoder_GMap = {
 
+	name: `EasyCoder_GMap`,
+
 	Create: {
 
 		compile: compiler => {

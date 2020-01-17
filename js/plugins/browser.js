@@ -1109,19 +1109,19 @@ const EasyCoder_Browser = {
 			switch (command.action) {
 			case `change`:
 				const changeItem = program.getSymbolRecord(command.symbol);
-				if (changeItem.keyword === `select`) {
-					const target = changeItem.element[changeItem.index];
-					target.targetPc = command.pc + 2;
-					target.addEventListener(`change`, function () {
-						try {
-							program.run(target.targetPc);
-						} catch (err) {
-							console.log(err.message);
-							alert(err.message);
-						}
-						return false;
-					});
-				}
+				// if (changeItem.keyword === `select`) {
+				const target = changeItem.element[changeItem.index];
+				target.targetPc = command.pc + 2;
+				target.addEventListener(`change`, function () {
+					try {
+						program.run(target.targetPc);
+					} catch (err) {
+						console.log(err.message);
+						alert(err.message);
+					}
+					return false;
+				});
+				// }
 				break;
 			case `click`:
 				const targetRecord = program.getSymbolRecord(command.symbol);
@@ -1290,7 +1290,9 @@ const EasyCoder_Browser = {
 								document.onmousemove = null;
 								document.onmouseup = null;
 								setTimeout(function () {
-									program.run(document.mouseUpPc);
+									if (program && program.run) {
+										program.run(document.mouseUpPc);
+									}
 								}, 1);
 								return false;
 							};

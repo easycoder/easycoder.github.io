@@ -1,4 +1,4 @@
-  script DocMan
+script DocMan
 
   import div Container
   
@@ -15,7 +15,6 @@
   div TitleDiv
   div PackageButtonsDiv
   div Div
-  div Tracer
   label Label
   label Status
   select PackageList
@@ -115,8 +114,6 @@
 
 Restart:
   clear Container
-  create Tracer in Container
-  set attribute `id` of Tracer to `easycoder-tracer`
   rest get Package from `/resources/doc/` cat PackageName cat `.json`
   if Group is empty
   begin

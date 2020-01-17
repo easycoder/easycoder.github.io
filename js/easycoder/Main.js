@@ -325,7 +325,13 @@ const EasyCoder = {
 				if (parentRecord && parentRecord.onError) {
 					parentRecord.run(parentRecord.onError);
 				}
+				// Remove this script
+				if (EasyCoder_Compiler.script) {
+					delete EasyCoder.scripts[EasyCoder_Compiler.script];
+					delete EasyCoder_Compiler.script;
+				}
 			}
+			return;
 		}
 		if (program) {
 			EasyCoder.scripts[program.script] = program;

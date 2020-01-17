@@ -1,0 +1,154 @@
+!   ISO Date
+
+!	A script to convert dates in various formats into standard ISO
+
+    script ISODate
+    
+    div Container
+!    div Tracer
+    div Row
+    div Label
+    div Field
+    div Converted
+    input From
+    button Convert
+    variable Date
+    variable N
+    variable Separator
+    variable Parts
+    variable Months
+    
+    create Container
+    set the style of Container to `max-width:500px`
+!    create Tracer in Container
+!    set attribute `id` of Tracer to `easycoder-tracer`
+    create Row in Container
+    set the style of Row to
+    	`text-align:center;font-size:1.6em;`
+        cat `font-style:bold;margin-bottom:1em`
+    set the content of Row to `Convert a date to ISO`
+    create Row in Container
+    set the style of Row to `display:flex`
+    create Label in Row
+    set the style of Label to `width:10em;font-style:bold`
+    set the content of Label to `Date to convert:`
+    create From in Row
+    set the style of From to `flex:1`
+    create Row in Container
+    set the style of Row to `display:flex`
+    create Label in Row
+    set the style of Label to `width:10em;font-style:bold`
+    set the content of Label to `Converted:`
+    create Converted in Row
+    set the style of Converted to `flex:1`
+    create Row in Container
+    set the style of Row to `text-align:center;margin-top:0.5em`
+    create Convert in Row
+    set the text of Convert to `Convert`
+    on click Convert
+    begin
+    	put From into Date
+        gosub to ConvertDate
+        set the content of Converted to Date
+    end
+
+    set the elements of Months to 12
+    index Months to 0 put `Jan` into Months
+    index Months to 1 put `Feb` into Months
+    index Months to 2 put `Mar` into Months
+    index Months to 3 put `Apr` into Months
+    index Months to 4 put `May` into Months
+    index Months to 5 put `Jun` into Months
+    index Months to 6 put `Jul` into Months
+    index Months to 7 put `Aug` into Months
+    index Months to 8 put `Sep` into Months
+    index Months to 9 put `Oct` into Months
+    index Months to 10 put `Nov` into Months
+    index Months to 11 put `Dec` into Months
+    stop
+
+ConvertDate:
+trace
+    replace `,` with `` in Date
+    
+	put 0 into N
+    while N is less than the length of Date
+    begin
+    	if character N of Date is not numeric
+		    put character N of Date into Separator
+        add 1 to N
+    end
+    if Separator is not empty
+    	split Date on Separator giving Parts
+    else put Date into Parts
+
+	put 0 into N
+    while N is less than the elements of Parts
+    begin
+    print `N = ` cat N cat ` of ` cat the elements of Parts
+    	index Parts to N
+        if the length of Parts is 1 put `0` cat Parts into Parts
+        add 1 to N
+    end
+    
+    index Parts to 0
+    if the elements of Parts is 1
+    begin
+    	put Parts into Date
+        return
+    end
+    
+    put 0 into N
+    while N is less than 12
+    begin
+    	index Months to N
+        if the position of Months in Parts is 0 go to MonthAsText
+    	add 1 to N
+    end
+
+    if the length of Parts is 4 go to YearFirst
+    index Parts to 2
+    if the length of Parts is not 4 go to BadFormat
+    
+	index Parts to 2
+    put Parts into Date
+    index Parts to 1
+    put Date cat `-` cat Parts into Date
+    index Parts to 0
+    put Date cat `-` cat Parts into Date
+	return
+
+YearFirst:
+    put Parts into Date
+    index Parts to 1
+    put Date cat `-` cat Parts into Date
+    index Parts to 2
+    put Date cat `-` cat Parts into Date
+    return
+
+MonthAsText:
+	add 1 to N giving Parts
+    if Parts is less than 10 put `0` cat Parts into Parts
+    if the elements of Parts is 2
+    begin
+		index Parts to 1
+	    put Parts into Date
+	    index Parts to 0
+	    put Date cat `-` cat Parts into Date
+	    index Parts to 1
+	    put Date cat `-01` into Date
+    end
+    else
+    begin
+		index Parts to 2
+	    put Parts into Date
+	    index Parts to 0
+	    put Date cat `-` cat Parts into Date
+	    index Parts to 1
+	    put Date cat `-` cat Parts into Date
+	end
+    return
+    
+BadFormat:
+	alert `Bad format`
+    exit

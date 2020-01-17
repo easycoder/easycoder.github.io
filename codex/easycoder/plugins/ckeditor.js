@@ -1,5 +1,7 @@
 const EasyCoder_CKEditor = {
 
+	name: `EasyCoder_CKEditor`,
+
 	CKEditor: {
 
 		compile: (compiler) => {

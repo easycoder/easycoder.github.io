@@ -1,5 +1,7 @@
 const EasyCoder_UI = {
 
+	name: `EasyCoder_UI`,
+
 	monthNames: [
 		`January`,
 		`February`,

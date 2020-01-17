@@ -1,5 +1,7 @@
 const EasyCoder_CodeMirror = {
 
+	name: `EasyCoder_CodeMirror`,
+
 	CodeMirror: {
 
 		compile: (compiler) => {
@@ -108,14 +110,16 @@ const EasyCoder_CodeMirror = {
 				}
 				break;
 			case `attach`:
-				editor = program.getSymbolRecord(command.editor);
-				const element = document.getElementById(editor.element[editor.index].id);
-				editor.editor = CodeMirror.fromTextArea(element, {
-					mode: command.mode,
-					theme: `default`,
-					lineNumbers: true
-				});
-				editor.editor.setSize(`100%`, `100%`);
+				try {
+					editor = program.getSymbolRecord(command.editor);
+					const element = document.getElementById(editor.element[editor.index].id);
+					editor.editor = CodeMirror.fromTextArea(element, {
+						mode: command.mode,
+						theme: `default`,
+						lineNumbers: true
+					});
+					editor.editor.setSize(`100%`, `100%`);
+				} catch (err) { alert(err); }
 				break;
 			case `setContent`:
 				editor = program.getSymbolRecord(command.editor);

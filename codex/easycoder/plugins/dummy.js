@@ -1,5 +1,7 @@
 const EasyCoder_Dummy = {
 
+	name: `EasyCoder_Dummy`,
+
 	Dummy: {
 
 		// Command keywords

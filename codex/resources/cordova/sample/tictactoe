@@ -1,0 +1,125 @@
+  script TicTacToe
+
+  div Panel
+  div Board
+  div Row
+  div Cell
+  div Message
+  variable Model
+  variable Index
+  variable Turn
+  variable Moves
+  variable Winner
+  variable Score
+  variable WinningCombinations
+
+! Initialization
+  set the elements of Cell to 9
+  set the elements of Model to 9
+  clear Turn
+  put 0 into Moves
+  put `` into Winner
+  set WinningCombinations to
+    0 1 2
+    3 4 5
+    6 7 8
+    0 3 6
+    1 4 7
+    2 5 8
+    0 4 8
+    2 4 6
+
+! Set up the board
+  create Panel
+  create Message in Panel
+  set the content of Message to `Click to take your turn`
+  create Board in Panel
+  set style `font-size` of Board to `24px`
+  put 0 into Index
+  while Index is less than 9
+  begin
+    if Index modulo 3 is 0
+    begin
+      create Row in Board
+      set the style of Row to `width:105px;height:34px`
+    end
+    index Cell to Index
+    create Cell in Row
+    set style `display` of Cell to `inline-block`
+    set style `border` of Cell to `1px solid gray`
+    set style `float` of Cell to `left`
+    set style `font-size` of Cell to `24px`
+    set style `font-weight` of Cell to `bold`
+    set style `line-height` of Cell to `34px`
+    set style `width` of Cell to `34px`
+    set style `height` of Cell to `34px`
+    set style `margin-right` of Cell to `-1px`
+    set style `margin-top` of Cell to `-1px`
+    set style `padding` of Cell to `0`
+    set style `text-align` of Cell to `center`
+    index Model to Index
+    put 0 into Model
+    add 1 to Index
+  end
+  on click Cell
+  begin
+    if Moves is 9 stop
+    if Winner stop
+    put the index of Cell into Index
+    index Model to Index
+    if Model is not 0 stop
+    if Turn
+    begin
+      put 1 into Model
+      set the content of Cell to `X`
+    end
+    else
+    begin
+      put -1 into Model
+      set the content of Cell to `O`
+    end
+    gosub to CheckWinner
+    if Winner
+    begin
+      set the content of Message to `The winner is ` cat Winner
+      stop
+    end
+    toggle Turn
+    add 1 to Moves
+    if Moves is 9
+    begin
+      set the content of Message to `Stalemate - no winner`
+      stop
+    end
+  end
+  stop
+
+CheckWinner:
+  put 0 into Index
+  while Index is less than 24
+  begin
+    put 0 into Score
+    index WinningCombinations to Index
+    index Model to WinningCombinations
+    add Model to Score
+    add 1 to Index
+    index WinningCombinations to Index
+    index Model to WinningCombinations
+    add Model to Score
+    add 1 to Index
+    index WinningCombinations to Index
+    index Model to WinningCombinations
+    add Model to Score
+    if Score is -3
+    begin
+      put `O` into Winner
+      return
+    end
+    if Score is 3
+    begin
+      put `X` into Winner
+      return
+    end
+    add 1 to Index
+  end
+  return

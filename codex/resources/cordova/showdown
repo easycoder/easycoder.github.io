@@ -1,0 +1,75 @@
+  script Showdown
+  
+  import div Container and variable Markup
+
+  callback DecoratorCallback
+  a Link
+  variable Payload
+  variable P
+  variable Function
+  variable Data
+  variable LinkCount
+  variable Index
+  variable Pipe
+  variable ExMark
+  variable Display
+
+  on DecoratorCallback go to Decorate
+  on message
+  begin
+    put 0 into LinkCount
+    set the content of Container to showdown decode Markup with DecoratorCallback
+    set the elements of Link to LinkCount
+    put 0 into Index
+    while Index is less than LinkCount
+    begin
+      index Link to Index
+      attach Link to `ec-link-` cat Index
+      add 1 to Index
+    end
+    on click Link
+    begin
+      put attribute `data-id` of Link into Data
+      send Data to parent
+    end
+  end
+  set ready
+  stop
+
+Decorate:
+  put the payload of DecoratorCallback into Payload
+  put the position of `:` in Payload into P
+  put left P of Payload into Function
+  add 1 to P
+  put from P of Payload into Data
+
+  put the position of `|` in Data into Pipe
+  put the position of `!` in Data into ExMark
+  if ExMark is greater than 0
+  begin
+    add 1 to ExMark giving P
+    put from P of Data into Display
+    put left ExMark of Data into Data
+  end
+  else if Pipe is greater than 0 put left Pipe of Data into Display
+  else put Data into Display
+
+  if Function is `m` gosub to ProcessMono
+  else if Function is `q` gosub to ProcessQuote
+  else if Function is `l` gosub to ProcessLink
+  set the payload of DecoratorCallback to Payload
+  stop
+
+ProcessMono:
+  put `<span style="color:#800;font-family:mono">` cat Data cat `</span>` into Payload
+  return
+
+ProcessQuote:
+  put `<span style="color:#800">` cat Data cat `</span>` into Payload
+  return
+
+ProcessLink:
+  put `<a href="" id="ec-link-` cat LinkCount cat `" data-id="` cat Data cat `">`
+    cat Display cat `</a>` into Payload
+  add 1 to LinkCount
+  return

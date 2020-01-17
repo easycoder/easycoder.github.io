@@ -1,28 +1,4 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-// EasyCoder
-
-const EasyCoder = require(`./easycoder/Main`);
-
-EasyCoder.version = `2.5.1`;
-EasyCoder.timestamp = Date.now();
-console.log(`EasyCoder loaded; waiting for page`);
-
-window.onload = function () {
-	console.log(`${Date.now() - EasyCoder.timestamp} ms: Page loaded; reset timer & start EasyCoder`);
-	EasyCoder.timestamp = Date.now();
-	EasyCoder.scripts = {};
-	window.EasyCoder = EasyCoder;
-	const script = document.getElementById(`easycoder-script`);
-	if (script) {
-		script.style.display = `none`;
-		try {
-			EasyCoder.start(script.innerText);
-		} catch (err) {
-			EasyCoder.reportError(err);
-		}
-	}
-};
-},{"./easycoder/Main":6}],2:[function(require,module,exports){
+// eslint-disable-next-line no-unused-vars
 const EasyCoder_Compare = (program, value1, value2) => {
 
 	const val1 = program.value.evaluate(program, value1);
@@ -31,7 +7,7 @@ const EasyCoder_Compare = (program, value1, value2) => {
 	var v2 = val2.content;
 	if (v1 && val1.numeric) {
 		if (!val2.numeric) {
-			v2 = typeof v2 === `undefined` ? 0 : parseInt(v2);
+			v2 = (v2 === `` || typeof v2 === `undefined`) ? 0 : parseInt(v2);
 		}
 	} else {
 		if (v2 && val2.numeric) {
@@ -52,225 +28,224 @@ const EasyCoder_Compare = (program, value1, value2) => {
 	}
 	return 0;
 };
-
-module.exports = EasyCoder_Compare;
-},{}],3:[function(require,module,exports){
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _this = this;
-
+// eslint-disable-next-line no-unused-vars
 const EasyCoder_Compiler = {
 
-	getTokens: () => {
-		return _this.tokens;
+	name: `EasyCoder_Compiler`,
+
+	getTokens: function() {
+		return this.tokens;
 	},
 
-	addWarning: message => {
-		_this.warnings.push(message);
+	addWarning: function(message) {
+		this.warnings.push(message);
 	},
 
-	warning: message => {
-		EasyCoder_Compiler.addWarning(message);
+	warning: function(message) {
+		this.addWarning(message);
 	},
 
-	unrecognisedSymbol: item => {
-		EasyCoder_Compiler.addWarning(`Unrecognised symbol '${item}'`);
+	unrecognisedSymbol: function(item) {
+		this.addWarning(`Unrecognised symbol '${item}'`);
 	},
 
-	getWarnings: () => {
-		return _this.warnings;
+	getWarnings: function() {
+		return this.warnings;
 	},
 
-	getIndex: () => {
-		return _this.index;
+	getIndex: function() {
+		return this.index;
 	},
 
-	next: (step = 1) => {
-		_this.index = _this.index + step;
+	next: function(step = 1) {
+		this.index = this.index + step;
 	},
 
-	peek: () => {
-		return _this.tokens[_this.index + 1].token;
+	peek: function() {
+		return this.tokens[this.index + 1].token;
 	},
 
-	more: () => {
-		return _this.index < _this.tokens.length;
+	more: function() {
+		return this.index < this.tokens.length;
 	},
 
-	getToken: () => {
-		if (_this.index >= _this.tokens.length) {
+	getToken: function() {
+		if (this.index >= this.tokens.length) {
 			return null;
 		}
-		const item = _this.tokens[_this.index];
-		return item ? _this.tokens[_this.index].token : null;
+		const item = this.tokens[this.index];
+		return item ? this.tokens[this.index].token : null;
 	},
 
-	nextToken: () => {
-		EasyCoder_Compiler.next();
-		return EasyCoder_Compiler.getToken();
+	nextToken: function() {
+		this.next();
+		return this.getToken();
 	},
 
-	tokenIs: token => {
-		if (_this.index >= _this.tokens.length) {
+	tokenIs: function(token) {
+		if (this.index >= this.tokens.length) {
 			return false;
 		}
-		return token === _this.tokens[_this.index].token;
+		return token === this.tokens[this.index].token;
 	},
 
-	nextTokenIs: token => {
-		EasyCoder_Compiler.next();
-		return EasyCoder_Compiler.tokenIs(token);
+	nextTokenIs: function(token) {
+		this.next();
+		return this.tokenIs(token);
 	},
 
-	skip: token => {
-		if (_this.index >= _this.tokens.length) {
+	skip: function(token) {
+		if (this.index >= this.tokens.length) {
 			return null;
 		}
-		EasyCoder_Compiler.next();
-		if (EasyCoder_Compiler.tokenIs(token)) {
-			EasyCoder_Compiler.next();
+		this.next();
+		if (this.tokenIs(token)) {
+			this.next();
 		}
 	},
 
-	prev: () => {
-		_this.index--;
+	prev: function() {
+		this.index--;
 	},
 
-	getLino: () => {
-		if (_this.index >= _this.tokens.length) {
+	getLino: function() {
+		if (this.index >= this.tokens.length) {
 			return 0;
 		}
-		return _this.tokens[_this.index].lino;
+		return this.tokens[this.index].lino;
 	},
 
-	getTarget: (index = _this.index) => {
-		return _this.tokens[index].token;
+	getTarget: function(index = this.index) {
+		return this.tokens[index].token;
 	},
 
-	getTargetPc: (index = _this.index) => {
-		return _this.symbols[EasyCoder_Compiler.getTarget(index)].pc;
+	getTargetPc: function(index = this.index) {
+		return this.symbols[this.getTarget(index)].pc;
 	},
 
-	getCommandAt: pc => {
-		return _this.program[pc];
+	getCommandAt: function(pc) {
+		return this.program[pc];
 	},
 
-	isSymbol: (required = false) => {
-		const isSymbol = EasyCoder_Compiler.getTarget() in _this.symbols;
+	isSymbol: function(required = false) {
+		const isSymbol = this.getTarget() in this.symbols;
 		if (isSymbol) return true;
 		if (required) {
-			throw new Error(`Unknown symbol: '${EasyCoder_Compiler.getTarget()}'`);
+			throw new Error(`Unknown symbol: '${this.getTarget()}'`);
 		}
 		return false;
 	},
 
-	nextIsSymbol: (required = false) => {
-		EasyCoder_Compiler.next();
-		return EasyCoder_Compiler.isSymbol(required);
+	nextIsSymbol: function(required = false) {
+		this.next();
+		return this.isSymbol(required);
 	},
 
-	getSymbol: () => {
-		return _this.symbols[EasyCoder_Compiler.getToken()];
+	getSymbol: function(required = false) {
+		if (this.isSymbol(required)) {
+			return this.symbols[this.getToken()];
+		}
 	},
 
-	getSymbolPc: () => {
-		return EasyCoder_Compiler.getSymbol().pc;
+	getSymbolPc: function(required = false) {
+		return this.getSymbol(required).pc;
 	},
 
-	getSymbolRecord: () => {
-		const record = _this.program[EasyCoder_Compiler.getSymbolPc()];
+	getSymbolRecord: function() {
+		const record = this.program[this.getSymbolPc(true)];
 		record.used = true;
 		return record;
 	},
 
-	getSymbols: () => {
-		return _this.symbols;
+	getSymbols: function() {
+		return this.symbols;
 	},
 
-	getProgram: () => {
-		return _this.program;
+	getProgram: function() {
+		return this.program;
 	},
 
-	getPc: () => {
-		return _this.program.length;
+	getPc: function() {
+		return this.program.length;
 	},
 
-	getValue: () => {
-		return EasyCoder_Compiler.value.compile(EasyCoder_Compiler);
+	getValue: function() {
+		return this.value.compile(this);
 	},
 
-	getNextValue: () => {
-		EasyCoder_Compiler.next();
-		return EasyCoder_Compiler.getValue();
+	getNextValue: function() {
+		this.next();
+		return this.getValue();
 	},
 
-	getCondition: () => {
-		return EasyCoder_Compiler.condition.compile(EasyCoder_Compiler);
+	getCondition: function() {
+		return this.condition.compile(this);
 	},
 
-	constant: (content, numeric = false) => {
-		return EasyCoder_Compiler.value.constant(content, numeric);
+	constant: function(content, numeric = false) {
+		return this.value.constant(content, numeric);
 	},
 
-	addCommand: item => {
-		const pc = _this.program.length;
-		_this.program.push(_extends({
-			pc
-		}, item));
+	addCommand: function(item) {
+		const pc = this.program.length;
+		this.program.push({
+			pc,
+			...item
+		});
 	},
 
-	addSymbol: (name, pc) => {
-		_this.symbols[name] = {
+	addSymbol: function(name, pc) {
+		this.symbols[name] = {
 			pc
 		};
 	},
 
-	mark: () => {
-		_this.savedMark = _this.index;
+	mark: function() {
+		this.savedMark = this.index;
 	},
 
-	rewind: () => {
-		_this.index = _this.savedMark;
+	rewind: function() {
+		this.index = this.savedMark;
 	},
 
-	rewindTo: index => {
-		_this.index = index;
+	rewindTo: function(index) {
+		this.index = index;
 	},
 
-	completeHandler: () => {
-		const lino = EasyCoder_Compiler.getLino();
+	completeHandler: function() {
+		const lino = this.getLino();
 		// Add a 'goto' to skip the action
-		const goto = EasyCoder_Compiler.getPc();
-		EasyCoder_Compiler.addCommand({
+		const goto = this.getPc();
+		this.addCommand({
 			domain: `core`,
 			keyword: `goto`,
 			lino,
 			goto: 0
 		});
 		// Add the action
-		EasyCoder_Compiler.compileOne();
+		this.compileOne();
 		// Add a 'stop'
-		EasyCoder_Compiler.addCommand({
+		this.addCommand({
 			domain: `core`,
 			keyword: `stop`,
 			lino,
 			next: 0
 		});
 		// Fixup the 'goto'
-		EasyCoder_Compiler.getCommandAt(goto).goto = EasyCoder_Compiler.getPc();
+		this.getCommandAt(goto).goto = this.getPc();
 		return true;
 	},
 
-	compileVariable: (domain, keyword, isValueHolder = false, extra = null) => {
-		EasyCoder_Compiler.next();
-		const lino = EasyCoder_Compiler.getLino();
-		const item = EasyCoder_Compiler.getTokens()[EasyCoder_Compiler.getIndex()];
-		if (_this.symbols[item.token]) {
+	compileVariable: function(domain, keyword, isValueHolder = false, extra = null) {
+		this.next();
+		const lino = this.getLino();
+		const item = this.getTokens()[this.getIndex()];
+		if (this.symbols[item.token]) {
 			throw new Error(`Duplicate variable name '${item.token}'`);
 		}
-		const pc = EasyCoder_Compiler.getPc();
-		EasyCoder_Compiler.next();
-		EasyCoder_Compiler.addSymbol(item.token, pc);
+		const pc = this.getPc();
+		this.next();
+		this.addSymbol(item.token, pc);
 		const command = {
 			domain,
 			keyword,
@@ -288,103 +263,102 @@ const EasyCoder_Compiler = {
 		if (extra === `dom`) {
 			command.element = [];
 		}
-		EasyCoder_Compiler.addCommand(command);
+		this.addCommand(command);
 		return command;
 	},
 
-	compileToken: () => {
+	compileToken: function() {
 		// Try each domain in turn until one can handle the command
-		const token = EasyCoder_Compiler.getToken();
+		const token = this.getToken();
 		if (!token) {
 			return;
 		}
 		// console.log(`Compile ${token}`);
-		EasyCoder_Compiler.mark();
-		for (const domainName of Object.keys(EasyCoder_Compiler.domain)) {
+		this.mark();
+		for (const domainName of Object.keys(this.domain)) {
 			//      console.log(`Try domain ${domainName} for token ${token}`);
-			const domain = EasyCoder_Compiler.domain[domainName];
+			const domain = this.domain[domainName];
 			if (domain) {
 				const handler = domain.getHandler(token);
 				if (handler) {
-					if (handler.compile(EasyCoder_Compiler)) {
+					if (handler.compile(this)) {
 						return;
 					}
 				}
 			}
-			EasyCoder_Compiler.rewind();
+			this.rewind();
 		}
 		console.log(`No handler found`);
 		throw new Error(`I don't understand '${token}...'`);
 	},
 
-	compileOne: () => {
-		const keyword = EasyCoder_Compiler.getToken();
+	compileOne: function() {
+		const keyword = this.getToken();
 		if (!keyword) {
 			return;
 		}
 		// console.log(`Compile keyword '${keyword}'`);
-		_this.warnings = [];
-		const pc = _this.program.length;
+		this.warnings = [];
+		const pc = this.program.length;
 		// First check for a label
 		if (keyword.endsWith(`:`)) {
 			const name = keyword.substring(0, keyword.length - 1);
-			if (_this.symbols[name]) {
+			if (this.symbols[name]) {
 				throw new Error(`Duplicate symbol: '${name}'`);
 			}
-			_this.symbols[name] = {
+			this.symbols[name] = {
 				pc
 			};
-			_this.index++;
+			this.index++;
 		} else {
-			EasyCoder_Compiler.compileToken();
+			this.compileToken();
 		}
 	},
 
-	compileFromHere: stopOn => {
-		while (_this.index < _this.tokens.length) {
-			const token = _this.tokens[_this.index];
+	compileFromHere: function(stopOn) {
+		while (this.index < this.tokens.length) {
+			const token = this.tokens[this.index];
 			const keyword = token.token;
 			if (keyword === `else`) {
-				return _this.program;
+				return this.program;
 			}
-			EasyCoder_Compiler.compileOne();
+			this.compileOne();
 			if (stopOn.indexOf(keyword) > -1) {
 				break;
 			}
 		}
 	},
 
-	compile: tokens => {
-		_this.tokens = tokens;
-		_this.index = 0;
-		_this.program = [];
-		_this.symbols = {};
-		_this.warnings = [];
-		EasyCoder_Compiler.compileFromHere([]);
-		EasyCoder_Compiler.addCommand({
+	compile: function(tokens) {
+		this.tokens = tokens;
+		this.index = 0;
+		this.program = [];
+		this.program.symbols = {};
+		this.symbols = this.program.symbols;
+		this.warnings = [];
+		this.compileFromHere([]);
+		this.addCommand({
 			domain: `core`,
 			keyword: `exit`,
-			lino: EasyCoder_Compiler.getLino(),
+			lino: this.getLino(),
 			next: 0
 		});
 		//    console.log('Symbols: ' + JSON.stringify(this.symbols, null, 2));
-		for (const symbol in _this.symbols) {
-			const record = _this.program[_this.symbols[symbol].pc];
-			if (record.isSymbol && !record.used) {
+		for (const symbol in this.symbols) {
+			const record = this.program[this.symbols[symbol].pc];
+			if (record.isSymbol && !record.used && !record.exporter) {
 				console.log(`Symbol '${record.name}' has not been used.`);
 			}
 		}
-		return _this.program;
+		return this.program;
 	}
 };
-
-module.exports = EasyCoder_Compiler;
-},{}],4:[function(require,module,exports){
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
+// eslint-disable-next-line no-unused-vars
 const EasyCoder_Condition = {
 
-	compile: compiler => {
+	name: `EasyCoder_Condition`,
+
+	compile: (compiler) => {
 		// See if any of the domains can handle it
 		compiler.mark();
 		for (const domainName of Object.keys(compiler.domain)) {
@@ -392,9 +366,10 @@ const EasyCoder_Condition = {
 			const domain = compiler.domain[domainName];
 			const code = domain.condition.compile(compiler);
 			if (code) {
-				return _extends({
-					domain: name
-				}, code);
+				return {
+					domain: name,
+					...code
+				};
 			}
 			compiler.rewind();
 		}
@@ -407,12 +382,9 @@ const EasyCoder_Condition = {
 		return handler.condition.test(program, condition);
 	}
 };
-
-module.exports = EasyCoder_Condition;
-},{}],5:[function(require,module,exports){
-var _this = this;
-
 const EasyCoder_Core = {
+
+	name: `EasyCoder_Core`,
 
 	Add: {
 
@@ -456,7 +428,7 @@ const EasyCoder_Core = {
 						}
 						return true;
 					}
-					compiler.warning(`core ${_this.name}: Expected value holder`);
+					compiler.warning(`core 'add': Expected value holder`);
 				} else {
 					// Here we have 2 values so 'giving' must come next
 					const value2 = compiler.getValue();
@@ -474,7 +446,7 @@ const EasyCoder_Core = {
 						});
 						return true;
 					}
-					compiler.warning(`core ${_this.name}: Expected "giving"`);
+					compiler.warning(`core 'add'': Expected "giving"`);
 				}
 			}
 			return false;
@@ -490,7 +462,8 @@ const EasyCoder_Core = {
 			if (target.isValueHolder) {
 				const value = target.value[target.index];
 				if (value2) {
-					const result = program.getValue(value2) + program.getValue(value1);
+					const result = program.getValue(value2) +
+						program.getValue(value1);
 					target.value[target.index] = {
 						type: `constant`,
 						numeric: true,
@@ -694,7 +667,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const moduleRecord = program.getSymbolRecord(command.module);
-			const p = moduleRecord.program;
+			const p = EasyCoder.scripts[moduleRecord.program];
 			p.run(p.onClose);
 			return command.pc + 1;
 		}
@@ -760,27 +733,27 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const item = command.item;
 			switch (item) {
-				case `symbols`:
-					console.log(`Symbols: ${JSON.stringify(program.symbols, null, 2)}`);
-					break;
-				case `symbol`:
-					const record = program.getSymbolRecord(command.name);
-					const exporter = record.exporter;
-					delete record.exporter;
-					console.log(`Symbol: ${JSON.stringify(record, null, 2)}`);
-					record.exporter = exporter;
-					break;
-				case `step`:
-					program.debugStep = true;
-					break;
-				case `program`:
-					console.log(`Debug program: ${JSON.stringify(program, null, 2)}`);
-					break;
-				default:
-					if (item.content >= 0) {
-						console.log(`Debug item ${item.content}: ${JSON.stringify(program[item.content], null, 2)}`);
-					}
-					break;
+			case `symbols`:
+				console.log(`Symbols: ${JSON.stringify(program.symbols, null, 2)}`);
+				break;
+			case `symbol`:
+				const record = program.getSymbolRecord(command.name);
+				const exporter = record.exporter.script;
+				delete record.exporter;
+				console.log(`Symbol: ${JSON.stringify(record, null, 2)}`);
+				record.exporter.script = exporter;
+				break;
+			case `step`:
+				program.debugStep = true;
+				break;
+			case `program`:
+				console.log(`Debug program: ${JSON.stringify(program, null, 2)}`);
+				break;
+			default:
+				if (item.content >= 0) {
+					console.log(`Debug item ${item.content}: ${JSON.stringify(program[item.content], null, 2)}`);
+				}
+				break;
 			}
 			return command.pc + 1;
 		}
@@ -857,11 +830,11 @@ const EasyCoder_Core = {
 					});
 					return true;
 				}
-				compiler.warning(`core ${_this.name}: Expected value holder`);
+				compiler.warning(`core 'divide'': Expected value holder`);
 			} else {
 				// Here we should already have the target.
 				if (typeof target === `undefined`) {
-					compiler.warning(`core ${_this.name}: No target variable given`);
+					compiler.warning(`core 'divide': No target variable given`);
 				}
 				compiler.addCommand({
 					domain: `core`,
@@ -986,7 +959,12 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
+			let parent = EasyCoder.scripts[program.parent];
 			program.exit();
+			if (parent) {
+				parent.run(parent.nextPc);
+				parent.nextPc = 0;
+			}
 			return 0;
 		}
 	},
@@ -1152,6 +1130,7 @@ const EasyCoder_Core = {
 				compiler.addCommand({
 					domain: `core`,
 					keyword: `goto`,
+					lino,
 					goto: 0
 				});
 				// Fixup the link to the 'else' branch
@@ -1184,19 +1163,24 @@ const EasyCoder_Core = {
 
 		compile: compiler => {
 			const imports = compiler.imports;
+			let caller = EasyCoder.scripts[imports.caller];
 			const program = compiler.getProgram();
 			if (imports.length) {
-				for (const symbolRecord of imports) {
+				for (const name of imports) {
+					let symbolRecord = caller.getSymbolRecord(name);
 					const thisType = compiler.nextToken();
 					const exportedType = symbolRecord.keyword;
 					if (thisType === exportedType) {
 						const command = compiler.compileVariable(symbolRecord.domain, exportedType, true);
 						const newRecord = program[compiler.getSymbols()[command.name].pc];
 						newRecord.element = symbolRecord.element;
-						newRecord.exporter = symbolRecord.exporter;
+						newRecord.exporter = symbolRecord.exporter ? symbolRecord.exporter : caller.script;
 						newRecord.exportedName = symbolRecord.name;
 						newRecord.extra = symbolRecord.extra;
 						newRecord.isValueHolder = symbolRecord.isValueHolder;
+						if (symbolRecord.program) {
+							newRecord.program = symbolRecord.program.script;
+						}
 						newRecord.imported = true;
 						if (!compiler.tokenIs(`and`)) {
 							break;
@@ -1248,11 +1232,12 @@ const EasyCoder_Core = {
 			const symbol = program.getSymbolRecord(command.symbol);
 			const index = program.getValue(command.value);
 			if (index >= symbol.elements) {
-				program.runtimeError(command.lino, `Array index ${index} is out of range for '${symbol.name}'`);
+				program.runtimeError(command.lino,
+					`Array index ${index} is out of range for '${symbol.name}'`);
 			}
 			symbol.index = index;
 			if (symbol.imported) {
-				const exporterRecord = symbol.exporter.getSymbolRecord(symbol.exportedName);
+				const exporterRecord = EasyCoder.symbols[symbol.exporter].getSymbolRecord(symbol.exportedName);
 				exporterRecord.index = index;
 			}
 			return command.pc + 1;
@@ -1265,15 +1250,15 @@ const EasyCoder_Core = {
 			const lino = compiler.getLino();
 			const type = compiler.nextToken();
 			switch (type) {
-				case `plugin`:
-					const name = compiler.getNextValue();
-					compiler.addCommand({
-						domain: `core`,
-						keyword: `load`,
-						lino,
-						name
-					});
-					return true;
+			case `plugin`:
+				const name = compiler.getNextValue();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `load`,
+					lino,
+					name
+				});
+				return true;
 			}
 			return false;
 		},
@@ -1282,14 +1267,19 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const name = program.getValue(command.name);
 			switch (command.keyword) {
-				case `load`:
-					if (program.checkPlugin(name)) {
-						return command.pc + 1;
-					}
-					EasyCoder_Plugins.getLocalPlugin(program.getPluginsPath, name, program.getPlugin, program.addLocalPlugin, function () {
+			case `load`:
+				if (program.checkPlugin(name)) {
+					return command.pc + 1;
+				}
+				EasyCoder_Plugins.getLocalPlugin(
+					program.getPluginsPath,
+					name,
+					program.getPlugin,
+					program.addLocalPlugin,
+					function () {
 						program.run(command.pc + 1);
 					});
-					return 0;
+				return 0;
 			}
 		}
 	},
@@ -1302,9 +1292,7 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
-			const command = program[program.pc];
-			command.program = null;
-			return command.pc + 1;
+			return program[program.pc].pc + 1;
 		}
 	},
 
@@ -1370,7 +1358,8 @@ const EasyCoder_Core = {
 			if (target.isValueHolder) {
 				const value = target.value[target.index];
 				if (value1) {
-					const result = program.getValue(value1) * program.getValue(value2);
+					const result = program.getValue(value1) *
+						program.getValue(value2);
 					target.value[target.index] = {
 						type: `constant`,
 						numeric: true,
@@ -1435,17 +1424,17 @@ const EasyCoder_Core = {
 			const lino = compiler.getLino();
 			const action = compiler.nextToken();
 			switch (action) {
-				case `close`:
-				case `message`:
-				case `error`:
-					compiler.next();
-					compiler.addCommand({
-						domain: `core`,
-						keyword: `on`,
-						lino,
-						action
-					});
-					return compiler.completeHandler();
+			case `close`:
+			case `message`:
+			case `error`:
+				compiler.next();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `on`,
+					lino,
+					action
+				});
+				return compiler.completeHandler();
 			}
 			if (compiler.isSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
@@ -1467,23 +1456,23 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const cb = command.pc + 2;
 			switch (command.action) {
-				case `close`:
-					program.onClose = cb;
-					break;
-				case `message`:
-					program.onMessage = cb;
-					break;
-				case `error`:
-					program.onError = cb;
-					break;
-				default:
-					const callbacklRecord = program.getSymbolRecord(command.action);
-					if (callbacklRecord) {
-						callbacklRecord.cb = cb;
-					} else {
-						program.runtimeError(command.lino, `Unknown action '${command.action}'`);
-						return 0;
-					}
+			case `close`:
+				program.onClose = cb;
+				break;
+			case `message`:
+				program.onMessage = cb;
+				break;
+			case `error`:
+				program.onError = cb;
+				break;
+			default:
+				const callbacklRecord = program.getSymbolRecord(command.action);
+				if (callbacklRecord) {
+					callbacklRecord.cb = cb;
+				} else {
+					program.runtimeError(command.lino, `Unknown action '${command.action}'`);
+					return 0;
+				}
 			}
 			return command.pc + 1;
 		}
@@ -1552,7 +1541,7 @@ const EasyCoder_Core = {
 				content: value.content
 			};
 			if (target.imported) {
-				const exporterRecord = target.exporter.getSymbolRecord(target.exportedName);
+				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
 				exporterRecord.value[exporterRecord.index] = value;
 			}
 			return command.pc + 1;
@@ -1630,9 +1619,10 @@ const EasyCoder_Core = {
 
 		run: program => {
 			const command = program[program.pc];
-			program.require(command.type, program.getValue(command.url), function () {
-				program.run(command.pc + 1);
-			});
+			program.require(command.type, program.getValue(command.url),
+				function () {
+					program.run(command.pc + 1);
+				});
 			return 0;
 		}
 	},
@@ -1667,8 +1657,7 @@ const EasyCoder_Core = {
 				while (true) {
 					if (compiler.nextIsSymbol(true)) {
 						const symbolRecord = compiler.getSymbolRecord();
-						symbolRecord.exporter = compiler.getProgram();
-						imports.push(symbolRecord);
+						imports.push(symbolRecord.name);
 						compiler.next();
 						if (!compiler.tokenIs(`and`)) {
 							break;
@@ -1680,6 +1669,7 @@ const EasyCoder_Core = {
 			if (compiler.tokenIs(`as`)) {
 				if (compiler.nextIsSymbol(true)) {
 					const moduleRecord = compiler.getSymbolRecord();
+					// moduleRecord.program = program.script;
 					compiler.next();
 					if (moduleRecord.keyword !== `module`) {
 						throw new Error(`'${moduleRecord.name}' is not a module`);
@@ -1768,14 +1758,18 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const program = compiler.getProgram();
 			program.script = compiler.nextToken();
+			compiler.script = program.script;
+			if (EasyCoder.scripts[program.script]) {
+				delete compiler.script;
+				throw new Error(`Script '${program.script}' is already running.`);
+			}
 			EasyCoder.scripts[program.script] = program;
 			compiler.next();
 			return true;
 		},
 
 		run: program => {
-			const command = program[program.pc];
-			return command.pc + 1;
+			return program[program.pc].pc + 1;
 		}
 	},
 
@@ -1814,9 +1808,9 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const message = program.getValue(command.message);
 			if (command.recipient === `parent`) {
-				const parent = program.parent;
-				if (parent) {
-					const onMessage = program.parent.onMessage;
+				if (program.parent) {
+					const parent = EasyCoder.scripts[program.parent];
+					const onMessage = parent.onMessage;
 					if (onMessage) {
 						parent.message = message;
 						parent.run(parent.onMessage);
@@ -1825,8 +1819,9 @@ const EasyCoder_Core = {
 			} else {
 				const recipient = program.getSymbolRecord(command.recipient);
 				if (recipient.program) {
-					recipient.program.message = message;
-					recipient.program.run(recipient.program.onMessage);
+					let rprog = EasyCoder.scripts[recipient.program];
+					rprog.message = message;
+					rprog.run(rprog.onMessage);
 				}
 			}
 			return command.pc + 1;
@@ -1875,73 +1870,51 @@ const EasyCoder_Core = {
 				return true;
 			}
 			switch (compiler.getToken()) {
-				case `ready`:
-					compiler.next();
-					compiler.addCommand({
-						domain: `core`,
-						keyword: `set`,
-						lino,
-						request: `setReady`
-					});
-					return true;
-				case `element`:
-					const index = compiler.getNextValue();
-					if (compiler.tokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
-							const targetRecord = compiler.getSymbolRecord();
-							if (targetRecord.keyword === `variable`) {
-								if (compiler.nextTokenIs(`to`)) {
-									const value = compiler.getNextValue();
-									compiler.addCommand({
-										domain: `core`,
-										keyword: `set`,
-										lino,
-										request: `setElement`,
-										target: targetRecord.name,
-										index,
-										value
-									});
-									return true;
-								}
-							}
-						}
-					}
-					break;
-				case `property`:
-					name = compiler.getNextValue();
-					if (compiler.tokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
-							const targetRecord = compiler.getSymbolRecord();
-							if (targetRecord.keyword === `variable`) {
-								if (compiler.nextTokenIs(`to`)) {
-									const value = compiler.getNextValue();
-									compiler.addCommand({
-										domain: `core`,
-										keyword: `set`,
-										lino,
-										request: `setProperty`,
-										target: targetRecord.name,
-										name,
-										value
-									});
-									return true;
-								}
-							}
-						}
-					}
-					break;
-				case `arg`:
-					name = compiler.getNextValue();
-					if (compiler.tokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
-							const targetRecord = compiler.getSymbolRecord();
+			case `ready`:
+				compiler.next();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `set`,
+					lino,
+					request: `setReady`
+				});
+				return true;
+			case `element`:
+				const index = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const targetRecord = compiler.getSymbolRecord();
+						if (targetRecord.keyword === `variable`) {
 							if (compiler.nextTokenIs(`to`)) {
 								const value = compiler.getNextValue();
 								compiler.addCommand({
 									domain: `core`,
 									keyword: `set`,
 									lino,
-									request: `setArg`,
+									request: `setElement`,
+									target: targetRecord.name,
+									index,
+									value
+								});
+								return true;
+							}
+						}
+					}
+				}
+				break;
+			case `property`:
+				name = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const targetRecord = compiler.getSymbolRecord();
+						if (targetRecord.keyword === `variable`) {
+							if (compiler.nextTokenIs(`to`)) {
+								const value = compiler.getNextValue();
+								compiler.addCommand({
+									domain: `core`,
+									keyword: `set`,
+									lino,
+									request: `setProperty`,
 									target: targetRecord.name,
 									name,
 									value
@@ -1950,70 +1923,92 @@ const EasyCoder_Core = {
 							}
 						}
 					}
-			}
-			if (compiler.tokenIs(`the`)) {
-				compiler.next();
-			}
-			switch (compiler.getToken()) {
-				case `elements`:
-					compiler.next();
-					if (compiler.tokenIs(`of`)) {
-						compiler.next();
-						if (!compiler.isSymbol()) {
-							throw new Error(`Unknown variable '${compiler.getToken()}'`);
-						}
-						const symbol = compiler.getToken();
-						compiler.next();
-						if (compiler.tokenIs(`to`)) {
-							compiler.next();
-							// get the value
-							const value = compiler.getValue();
+				}
+				break;
+			case `arg`:
+				name = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const targetRecord = compiler.getSymbolRecord();
+						if (compiler.nextTokenIs(`to`)) {
+							const value = compiler.getNextValue();
 							compiler.addCommand({
 								domain: `core`,
 								keyword: `set`,
 								lino,
-								request: `setElements`,
-								symbol,
+								request: `setArg`,
+								target: targetRecord.name,
+								name,
 								value
 							});
 							return true;
 						}
 					}
-					break;
-				case `encoding`:
-					if (compiler.nextTokenIs(`to`)) {
-						const encoding = compiler.getNextValue();
+				}
+			}
+			if (compiler.tokenIs(`the`)) {
+				compiler.next();
+			}
+			switch (compiler.getToken()) {
+			case `elements`:
+				compiler.next();
+				if (compiler.tokenIs(`of`)) {
+					compiler.next();
+					if (!compiler.isSymbol()) {
+						throw new Error(`Unknown variable '${compiler.getToken()}'`);
+					}
+					const symbol = compiler.getToken();
+					compiler.next();
+					if (compiler.tokenIs(`to`)) {
+						compiler.next();
+						// get the value
+						const value = compiler.getValue();
 						compiler.addCommand({
 							domain: `core`,
 							keyword: `set`,
-							request: `encoding`,
 							lino,
-							encoding
+							request: `setElements`,
+							symbol,
+							value
 						});
 						return true;
 					}
-					compiler.addWarning(`Unknown encoding option`);
-					break;
-				case `payload`:
-					if (compiler.nextTokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
-							const callbackRecord = compiler.getSymbolRecord();
-							if (callbackRecord.keyword === `callback`) {
-								if (compiler.nextTokenIs(`to`)) {
-									const payload = compiler.getNextValue();
-									compiler.addCommand({
-										domain: `core`,
-										keyword: `set`,
-										request: `setPayload`,
-										lino,
-										callback: callbackRecord.name,
-										payload
-									});
-									return true;
-								}
+				}
+				break;
+			case `encoding`:
+				if (compiler.nextTokenIs(`to`)) {
+					const encoding = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `core`,
+						keyword: `set`,
+						request: `encoding`,
+						lino,
+						encoding
+					});
+					return true;
+				}
+				compiler.addWarning(`Unknown encoding option`);
+				break;
+			case `payload`:
+				if (compiler.nextTokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const callbackRecord = compiler.getSymbolRecord();
+						if (callbackRecord.keyword === `callback`) {
+							if (compiler.nextTokenIs(`to`)) {
+								const payload = compiler.getNextValue();
+								compiler.addCommand({
+									domain: `core`,
+									keyword: `set`,
+									request: `setPayload`,
+									lino,
+									callback: callbackRecord.name,
+									payload
+								});
+								return true;
 							}
 						}
 					}
+				}
 			}
 			return false;
 		},
@@ -2022,97 +2017,101 @@ const EasyCoder_Core = {
 			let targetRecord;
 			const command = program[program.pc];
 			switch (command.request) {
-				case `setBoolean`:
-					const target = program.getSymbolRecord(command.target);
-					if (target.isValueHolder) {
-						target.value[target.index] = {
-							type: `boolean`,
-							content: true
-						};
-						command.numeric = false;
+			case `setBoolean`:
+				const target = program.getSymbolRecord(command.target);
+				if (target.isValueHolder) {
+					target.value[target.index] = {
+						type: `boolean`,
+						content: true
+					};
+					command.numeric = false;
+				} else {
+					program.variableDoesNotHoldAValueError(command.lino, target.name);
+				}
+				break;
+			case `setReady`:
+				let parent = EasyCoder.scripts[program.parent];
+				if (parent) {
+					parent.run(parent.nextPc);
+					parent.nextPc = 0;
+				}
+				break;
+			case `setArray`:
+				targetRecord = program.getSymbolRecord(command.target);
+				targetRecord.elements = command.value.length;
+				targetRecord.value = command.value;
+				break;
+			case `encoding`:
+				program.encoding = program.getValue(command.encoding);
+				break;
+			case `setElements`:
+				const symbol = program.getSymbolRecord(command.symbol);
+				const oldCount = symbol.elements;
+				symbol.elements = program.getValue(command.value);
+				symbol.index = 0;
+				if (symbol.elements > oldCount) {
+					for (var n = oldCount; n < symbol.elements; n++) {
+						symbol.value.push({});
+						symbol.element.push({});
+					}
+				} else {
+					symbol.value = symbol.value.slice(0, symbol.elements);
+					symbol.element = symbol.element.slice(0, symbol.elements);
+				}
+				break;
+			case `setElement`:
+				targetRecord = program.getSymbolRecord(command.target);
+				const index = program.getValue(command.index);
+				const elements = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
+				const value = program.getValue(command.value);
+				elements[index] = JSON.parse(value);
+				targetRecord.value[targetRecord.index].content = JSON.stringify(elements);
+				break;
+			case `setProperty`:
+				targetRecord = program.getSymbolRecord(command.target);
+				let targetValue = program.getValue(targetRecord.value[targetRecord.index]);
+				if (!targetValue) {
+					targetValue = `{}`;
+				}
+				let targetJSON = ``;
+				try {
+					targetJSON = JSON.parse(targetValue);
+				} catch (err) {
+					program.runtimeError(command.lino, `Can't parse ${targetRecord.name}`);
+					return 0;
+				}
+				const itemName = program.getValue(command.name);
+				const itemValue = program.evaluate(command.value);
+				if (itemValue) {
+					if (itemValue.content instanceof Array) {
+						targetJSON[itemName] = itemValue.content;
+					} else if (itemValue.type === `boolean`) {
+						targetJSON[itemName] = itemValue.content;
+					} else if (itemValue.numeric) {
+						targetJSON[itemName] = itemValue.content;
+					// } else if (itemValue.content.substr(0, 2) === `{"`) {
+					} else if ([`["`, `{"`].includes(itemValue.content.substr(0, 2))) {
+						targetJSON[itemName] = JSON.parse(itemValue.content);
 					} else {
-						program.variableDoesNotHoldAValueError(command.lino, target.name);
+						targetJSON[itemName] = itemValue.content.split(`"`).join(`\\"`);
 					}
-					break;
-				case `setReady`:
-					program.parent.run(program.parent.nextPc);
-					program.parent.nextPc = 0;
-					break;
-				case `setArray`:
-					targetRecord = program.getSymbolRecord(command.target);
-					targetRecord.elements = command.value.length;
-					targetRecord.value = command.value;
-					break;
-				case `encoding`:
-					program.encoding = program.getValue(command.encoding);
-					break;
-				case `setElements`:
-					const symbol = program.getSymbolRecord(command.symbol);
-					const oldCount = symbol.elements;
-					symbol.elements = program.getValue(command.value);
-					symbol.index = 0;
-					if (symbol.elements > oldCount) {
-						for (var n = oldCount; n < symbol.elements; n++) {
-							symbol.value.push({});
-							symbol.element.push({});
-						}
-					} else {
-						symbol.value = symbol.value.slice(0, symbol.elements);
-						symbol.element = symbol.element.slice(0, symbol.elements);
-					}
-					break;
-				case `setElement`:
-					targetRecord = program.getSymbolRecord(command.target);
-					const index = program.getValue(command.index);
-					const elements = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
-					const value = program.getValue(command.value);
-					elements[index] = JSON.parse(value);
-					targetRecord.value[targetRecord.index].content = JSON.stringify(elements);
-					break;
-				case `setProperty`:
-					targetRecord = program.getSymbolRecord(command.target);
-					let targetValue = program.getValue(targetRecord.value[targetRecord.index]);
-					if (!targetValue) {
-						targetValue = `{}`;
-					}
-					let targetJSON = ``;
-					try {
-						targetJSON = JSON.parse(targetValue);
-					} catch (err) {
-						program.runtimeError(command.lino, `Can't parse ${targetRecord.name}`);
-						return 0;
-					}
-					const itemName = program.getValue(command.name);
-					const itemValue = program.evaluate(command.value);
-					if (itemValue) {
-						if (itemValue.content instanceof Array) {
-							targetJSON[itemName] = itemValue.content;
-						} else if (itemValue.type === `boolean`) {
-							targetJSON[itemName] = itemValue.content;
-						} else if (itemValue.numeric) {
-							targetJSON[itemName] = itemValue.content;
-						} else if (itemValue.content.substr(0, 2) === `{"`) {
-							targetJSON[itemName] = JSON.parse(itemValue.content);
-						} else {
-							targetJSON[itemName] = itemValue.content.split(`"`).join(`\\"`);
-						}
-						targetRecord.value[targetRecord.index] = {
-							type: `constant`,
-							numeric: false,
-							content: JSON.stringify(targetJSON)
-						};
-					}
-					break;
-				case `setPayload`:
-					program.getSymbolRecord(command.callback).payload = program.getValue(command.payload);
-					break;
-				case `setArg`:
-					const name = program.getValue(command.name);
-					targetRecord = program.getSymbolRecord(command.target);
-					targetRecord[name] = program.getValue(command.value);
-					break;
-				default:
-					break;
+					targetRecord.value[targetRecord.index] = {
+						type: `constant`,
+						numeric: false,
+						content: JSON.stringify(targetJSON)
+					};
+				}
+				break;
+			case `setPayload`:
+				program.getSymbolRecord(command.callback).payload = program.getValue(command.payload);
+				break;
+			case `setArg`:
+				const name = program.getValue(command.name);
+				targetRecord = program.getSymbolRecord(command.target);
+				targetRecord[name] = program.getValue(command.value);
+				break;
+			default:
+				break;
 			}
 			return command.pc + 1;
 		}
@@ -2161,6 +2160,55 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Split: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			item = compiler.getNextValue();
+			let on = `\n`;
+			if (compiler.tokenIs(`on`)) {
+				on = compiler.getNextValue();
+			}
+			if ([`giving`, `into`].includes(compiler.getToken())) {
+				if (compiler.nextIsSymbol()) {
+					const targetRecord = compiler.getSymbolRecord();
+					if (targetRecord.keyword === `variable`) {
+						compiler.next();
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `split`,
+							lino,
+							item,
+							on,
+							target: targetRecord.name
+						});
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		run: program => {
+			let command = program[program.pc];
+			let content = program.getValue(command.item);
+			let on = program.getValue(command.on);
+			content = content.split(on);
+			let elements = content.length;
+			targetRecord = program.getSymbolRecord(command.target);
+			targetRecord.elements = elements;
+			for (let n = 0; n < elements; n++) {
+				targetRecord.value[n] = {
+					type: `constant`,
+					numeric: false,
+					content: content[n]
+				};
+			}
+			targetRecord.index = 0;
+			return command.pc + 1;
+		}
+	},
+
 	Stop: {
 
 		compile: compiler => {
@@ -2194,7 +2242,8 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			if (command.name) {
 				const symbolRecord = program.getSymbolRecord(command.name);
-				symbolRecord.program.exit();
+				EasyCoder.scripts[symbolRecord.program].exit();
+				symbolRecord.program = null;
 			} else {
 				return 0;
 			}
@@ -2243,7 +2292,7 @@ const EasyCoder_Core = {
 						}
 						return true;
 					} else {
-						compiler.warning(`core ${_this.name}: Expected value holder`);
+						compiler.warning(`core 'take'': Expected value holder`);
 					}
 				} else {
 					// Here we have 2 values so 'giving' must come next
@@ -2262,7 +2311,7 @@ const EasyCoder_Core = {
 						});
 						return true;
 					} else {
-						compiler.warning(`core ${_this.name}: Expected "giving"`);
+						compiler.warning(`core 'take'': Expected "giving"`);
 					}
 				}
 			}
@@ -2277,7 +2326,8 @@ const EasyCoder_Core = {
 			if (target.isValueHolder) {
 				const value = target.value[target.index];
 				if (value2) {
-					const result = program.getValue(value2) - program.getValue(value1);
+					const result = program.getValue(value2) -
+						program.getValue(value1);
 					target.value[target.index] = {
 						type: `constant`,
 						numeric: true,
@@ -2358,26 +2408,26 @@ const EasyCoder_Core = {
 			const scale = compiler.getToken();
 			let multiplier = 1000;
 			switch (scale) {
-				case `milli`:
-				case `millis`:
-					compiler.next();
-					multiplier = 1;
-					break;
-				case `tick`:
-				case `ticks`:
-					compiler.next();
-					multiplier = 10;
-					break;
-				case `second`:
-				case `seconds`:
-					compiler.next();
-					multiplier = 1000;
-					break;
-				case `minute`:
-				case `minutes`:
-					compiler.next();
-					multiplier = 60000;
-					break;
+			case `milli`:
+			case `millis`:
+				compiler.next();
+				multiplier = 1;
+				break;
+			case `tick`:
+			case `ticks`:
+				compiler.next();
+				multiplier = 10;
+				break;
+			case `second`:
+			case `seconds`:
+				compiler.next();
+				multiplier = 1000;
+				break;
+			case `minute`:
+			case `minutes`:
+				compiler.next();
+				multiplier = 60000;
+				break;
 			}
 			compiler.addCommand({
 				domain: `core`,
@@ -2393,7 +2443,9 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const value = program.getValue(command.value);
 			setTimeout(function () {
-				program.run(command.pc + 1);
+				if (program.run) {
+					program.run(command.pc + 1);
+				}
 			}, value * command.multiplier);
 			return 0;
 		}
@@ -2443,97 +2495,99 @@ const EasyCoder_Core = {
 		}
 	},
 
-	getHandler: name => {
+	getHandler: (name) => {
 		switch (name) {
-			case `add`:
-				return EasyCoder_Core.Add;
-			case `alias`:
-				return EasyCoder_Core.Alias;
-			case `append`:
-				return EasyCoder_Core.Append;
-			case `begin`:
-				return EasyCoder_Core.Begin;
-			case `callback`:
-				return EasyCoder_Core.Callback;
-			case `clear`:
-				return EasyCoder_Core.Clear;
-			case `close`:
-				return EasyCoder_Core.Close;
-			case `debug`:
-				return EasyCoder_Core.Debug;
-			case `decode`:
-				return EasyCoder_Core.Decode;
-			case `divide`:
-				return EasyCoder_Core.Divide;
-			case `dummy`:
-				return EasyCoder_Core.Dummy;
-			case `encode`:
-				return EasyCoder_Core.Encode;
-			case `end`:
-				return EasyCoder_Core.End;
-			case `exit`:
-				return EasyCoder_Core.Exit;
-			case `filter`:
-				return EasyCoder_Core.Filter;
-			case `fork`:
-				return EasyCoder_Core.Fork;
-			case `go`:
-			case `goto`:
-				return EasyCoder_Core.Go;
-			case `gosub`:
-				return EasyCoder_Core.Gosub;
-			case `if`:
-				return EasyCoder_Core.If;
-			case `import`:
-				return EasyCoder_Core.Import;
-			case `index`:
-				return EasyCoder_Core.Index;
-			case `load`:
-				return EasyCoder_Core.Load;
-			case `module`:
-				return EasyCoder_Core.Module;
-			case `multiply`:
-				return EasyCoder_Core.Multiply;
-			case `negate`:
-				return EasyCoder_Core.Negate;
-			case `on`:
-				return EasyCoder_Core.On;
-			case `print`:
-				return EasyCoder_Core.Print;
-			case `put`:
-				return EasyCoder_Core.Put;
-			case `replace`:
-				return EasyCoder_Core.Replace;
-			case `require`:
-				return EasyCoder_Core.Require;
-			case `return`:
-				return EasyCoder_Core.Return;
-			case `run`:
-				return EasyCoder_Core.Run;
-			case `sanitize`:
-				return EasyCoder_Core.Sanitize;
-			case `script`:
-				return EasyCoder_Core.Script;
-			case `send`:
-				return EasyCoder_Core.Send;
-			case `set`:
-				return EasyCoder_Core.Set;
-			case `sort`:
-				return EasyCoder_Core.Sort;
-			case `stop`:
-				return EasyCoder_Core.Stop;
-			case `take`:
-				return EasyCoder_Core.Take;
-			case `toggle`:
-				return EasyCoder_Core.Toggle;
-			case `variable`:
-				return EasyCoder_Core.Variable;
-			case `wait`:
-				return EasyCoder_Core.Wait;
-			case `while`:
-				return EasyCoder_Core.While;
-			default:
-				return false;
+		case `add`:
+			return EasyCoder_Core.Add;
+		case `alias`:
+			return EasyCoder_Core.Alias;
+		case `append`:
+			return EasyCoder_Core.Append;
+		case `begin`:
+			return EasyCoder_Core.Begin;
+		case `callback`:
+			return EasyCoder_Core.Callback;
+		case `clear`:
+			return EasyCoder_Core.Clear;
+		case `close`:
+			return EasyCoder_Core.Close;
+		case `debug`:
+			return EasyCoder_Core.Debug;
+		case `decode`:
+			return EasyCoder_Core.Decode;
+		case `divide`:
+			return EasyCoder_Core.Divide;
+		case `dummy`:
+			return EasyCoder_Core.Dummy;
+		case `encode`:
+			return EasyCoder_Core.Encode;
+		case `end`:
+			return EasyCoder_Core.End;
+		case `exit`:
+			return EasyCoder_Core.Exit;
+		case `filter`:
+			return EasyCoder_Core.Filter;
+		case `fork`:
+			return EasyCoder_Core.Fork;
+		case `go`:
+		case `goto`:
+			return EasyCoder_Core.Go;
+		case `gosub`:
+			return EasyCoder_Core.Gosub;
+		case `if`:
+			return EasyCoder_Core.If;
+		case `import`:
+			return EasyCoder_Core.Import;
+		case `index`:
+			return EasyCoder_Core.Index;
+		case `load`:
+			return EasyCoder_Core.Load;
+		case `module`:
+			return EasyCoder_Core.Module;
+		case `multiply`:
+			return EasyCoder_Core.Multiply;
+		case `negate`:
+			return EasyCoder_Core.Negate;
+		case `on`:
+			return EasyCoder_Core.On;
+		case `print`:
+			return EasyCoder_Core.Print;
+		case `put`:
+			return EasyCoder_Core.Put;
+		case `replace`:
+			return EasyCoder_Core.Replace;
+		case `require`:
+			return EasyCoder_Core.Require;
+		case `return`:
+			return EasyCoder_Core.Return;
+		case `run`:
+			return EasyCoder_Core.Run;
+		case `sanitize`:
+			return EasyCoder_Core.Sanitize;
+		case `script`:
+			return EasyCoder_Core.Script;
+		case `send`:
+			return EasyCoder_Core.Send;
+		case `set`:
+			return EasyCoder_Core.Set;
+		case `sort`:
+			return EasyCoder_Core.Sort;
+		case `split`:
+			return EasyCoder_Core.Split;
+		case `stop`:
+			return EasyCoder_Core.Stop;
+		case `take`:
+			return EasyCoder_Core.Take;
+		case `toggle`:
+			return EasyCoder_Core.Toggle;
+		case `variable`:
+			return EasyCoder_Core.Variable;
+		case `wait`:
+			return EasyCoder_Core.Wait;
+		case `while`:
+			return EasyCoder_Core.While;
+		default:
+			return false;
 		}
 	},
 
@@ -2543,12 +2597,13 @@ const EasyCoder_Core = {
 		const command = program[program.pc];
 		const handler = EasyCoder_Core.getHandler(command.keyword);
 		if (!handler) {
-			program.runtimeError(command.lino, `Unknown keyword '${command.keyword}' in 'core' package`);
+			program.runtimeError(command.lino,
+				`Unknown keyword '${command.keyword}' in 'core' package`);
 		}
 		return handler.run(program);
 	},
 
-	isNegate: compiler => {
+	isNegate: (compiler) => {
 		const token = compiler.getToken();
 		if (token === `not`) {
 			compiler.next();
@@ -2564,29 +2619,29 @@ const EasyCoder_Core = {
 				const name = compiler.getToken();
 				const symbolRecord = compiler.getSymbolRecord();
 				switch (symbolRecord.keyword) {
-					case `module`:
-						compiler.next();
+				case `module`:
+					compiler.next();
+					return {
+						domain: `core`,
+						type: `module`,
+						name
+					};
+				case `variable`:
+					const type = compiler.nextToken();
+					if ([`format`, `modulo`].includes(type)) {
+						const value = compiler.getNextValue();
 						return {
 							domain: `core`,
-							type: `module`,
-							name
+							type,
+							name,
+							value
 						};
-					case `variable`:
-						const type = compiler.nextToken();
-						if ([`format`, `modulo`].includes(type)) {
-							const value = compiler.getNextValue();
-							return {
-								domain: `core`,
-								type,
-								name,
-								value
-							};
-						}
-						return {
-							domain: `core`,
-							type: `symbol`,
-							name
-						};
+					}
+					return {
+						domain: `core`,
+						type: `symbol`,
+						name
+					};
 				}
 				return null;
 			}
@@ -2653,7 +2708,7 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
-			if ([`now`, `today`, `newline`, `break`, `empty`].includes(token)) {
+			if ([`now`, `today`, `newline`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
 					domain: `core`,
@@ -2728,14 +2783,49 @@ const EasyCoder_Core = {
 					}
 				}
 			}
+			if ([`character`, `char`].includes(token)) {
+				let index = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					let value = compiler.getNextValue();
+					return {
+						domain: `core`,
+						type: `char`,
+						index,
+						value
+					};
+				}
+			}
 			if (compiler.tokenIs(`the`)) {
 				compiler.next();
 			}
 			const type = compiler.getToken();
 			switch (type) {
-				case `elements`:
-					if (compiler.nextTokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
+			case `elements`:
+				if (compiler.nextTokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const name = compiler.getToken();
+						compiler.next();
+						return {
+							domain: `core`,
+							type,
+							name
+						};
+					}
+				}
+				break;
+			case `index`:
+				if (compiler.nextTokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						if (compiler.peek() === `in`) {
+							const value1 = compiler.getValue();
+							const value2 = compiler.getNextValue();
+							return {
+								domain: `core`,
+								type: `indexOf`,
+								value1,
+								value2
+							};
+						} else {
 							const name = compiler.getToken();
 							compiler.next();
 							return {
@@ -2744,426 +2834,441 @@ const EasyCoder_Core = {
 								name
 							};
 						}
-					}
-					break;
-				case `index`:
-					if (compiler.nextTokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
-							if (compiler.peek() === `in`) {
-								const value1 = compiler.getValue();
-								const value2 = compiler.getNextValue();
-								return {
-									domain: `core`,
-									type: `indexOf`,
-									value1,
-									value2
-								};
-							} else {
-								const name = compiler.getToken();
-								compiler.next();
-								return {
-									domain: `core`,
-									type,
-									name
-								};
-							}
-						} else {
-							const value1 = compiler.getValue();
-							if (compiler.tokenIs(`in`)) {
-								const value2 = compiler.getNextValue();
-								return {
-									domain: `core`,
-									type: `indexOf`,
-									value1,
-									value2
-								};
-							}
-						}
-					}
-					break;
-				case `value`:
-					if (compiler.nextTokenIs(`of`)) {
-						compiler.next();
-						const value = compiler.getValue();
-						return {
-							domain: `core`,
-							type: `valueOf`,
-							value
-						};
-					}
-					break;
-				case `length`:
-					if (compiler.nextTokenIs(`of`)) {
-						compiler.next();
-						const value = compiler.getValue();
-						return {
-							domain: `core`,
-							type: `lengthOf`,
-							value
-						};
-					}
-					break;
-				case `left`:
-				case `right`:
-					try {
-						const count = compiler.getNextValue();
-						if (compiler.tokenIs(`of`)) {
-							const value = compiler.getNextValue();
+					} else {
+						const value1 = compiler.getValue();
+						if (compiler.tokenIs(`in`)) {
+							const value2 = compiler.getNextValue();
 							return {
 								domain: `core`,
-								type,
-								count,
-								value
+								type: `indexOf`,
+								value1,
+								value2
 							};
 						}
-					} catch (err) {
-						return null;
 					}
-					break;
-				case `from`:
-					const from = compiler.getNextValue();
-					const to = compiler.tokenIs(`to`) ? compiler.getNextValue() : null;
+				}
+				break;
+			case `value`:
+				if (compiler.nextTokenIs(`of`)) {
+					compiler.next();
+					const value = compiler.getValue();
+					return {
+						domain: `core`,
+						type: `valueOf`,
+						value
+					};
+				}
+				break;
+			case `length`:
+				if (compiler.nextTokenIs(`of`)) {
+					compiler.next();
+					const value = compiler.getValue();
+					return {
+						domain: `core`,
+						type: `lengthOf`,
+						value
+					};
+				}
+				break;
+			case `left`:
+			case `right`:
+				try {
+					const count = compiler.getNextValue();
 					if (compiler.tokenIs(`of`)) {
 						const value = compiler.getNextValue();
 						return {
 							domain: `core`,
 							type,
-							from,
-							to,
+							count,
 							value
 						};
 					}
-					break;
-				case `position`:
-					if (compiler.nextTokenIs(`of`)) {
-						var last = false;
-						if (compiler.nextTokenIs(`the`)) {
-							if (compiler.nextTokenIs(`last`)) {
-								compiler.next();
-								last = true;
-							}
+				} catch (err) {
+					return null;
+				}
+				break;
+			case `from`:
+				const from = compiler.getNextValue();
+				const to = compiler.tokenIs(`to`) ? compiler.getNextValue() : null;
+				if (compiler.tokenIs(`of`)) {
+					const value = compiler.getNextValue();
+					return {
+						domain: `core`,
+						type,
+						from,
+						to,
+						value
+					};
+				}
+				break;
+			case `position`:
+				let nocase = false;
+				if (compiler.nextTokenIs(`nocase`)) {
+					nocase = true;
+					compiler.next();
+				}
+				if (compiler.tokenIs(`of`)) {
+					var last = false;
+					if (compiler.nextTokenIs(`the`)) {
+						if (compiler.nextTokenIs(`last`)) {
+							compiler.next();
+							last = true;
 						}
-						const needle = compiler.getValue();
-						if (compiler.tokenIs(`in`)) {
-							const haystack = compiler.getNextValue();
+					}
+					const needle = compiler.getValue();
+					if (compiler.tokenIs(`in`)) {
+						const haystack = compiler.getNextValue();
+						return {
+							domain: `core`,
+							type: `position`,
+							needle,
+							haystack,
+							last,
+							nocase
+						};
+					}
+				}
+				break;
+			case `payload`:
+				if (compiler.nextTokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const callbackRecord = compiler.getSymbolRecord();
+						if (callbackRecord.keyword === `callback`) {
+							compiler.next();
 							return {
 								domain: `core`,
-								type: `position`,
-								needle,
-								haystack,
-								last
+								type: `payload`,
+								callback: callbackRecord.name
 							};
 						}
 					}
-					break;
-				case `payload`:
-					if (compiler.nextTokenIs(`of`)) {
-						if (compiler.nextIsSymbol()) {
-							const callbackRecord = compiler.getSymbolRecord();
-							if (callbackRecord.keyword === `callback`) {
-								compiler.next();
-								return {
-									domain: `core`,
-									type: `payload`,
-									callback: callbackRecord.name
-								};
-							}
-						}
-					}
-					break;
-				case `message`:
-				case `error`:
-					compiler.next();
-					return {
-						domain: `core`,
-						type
-					};
+				}
+				break;
+			case `message`:
+			case `error`:
+				compiler.next();
+				return {
+					domain: `core`,
+					type
+				};
 			}
 			return null;
 		},
 
 		get: (program, value) => {
 			switch (value.type) {
-				case `boolean`:
-					return {
-						type: `boolean`,
-						numeric: false,
-						content: value.content
-					};
-				case `elements`:
-					return {
-						type: `constant`,
-						numeric: true,
-						content: program.getSymbolRecord(value.name).elements
-					};
-				case `index`:
-					return {
-						type: `constant`,
-						numeric: true,
-						content: program.getSymbolRecord(value.name).index
-					};
-				case `random`:
-					const range = program.evaluate(value.range);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: Math.floor(Math.random() * range.content)
-					};
-				case `cos`:
-					const angle_c = program.getValue(value.angle_c);
-					const radius_c = program.getValue(value.radius_c);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: parseInt(Math.cos(parseFloat(angle_c) * 0.01745329) * radius_c, 10)
-					};
-				case `sin`:
-					const angle_s = program.getValue(value.angle_s);
-					const radius_s = program.getValue(value.radius_s);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: parseInt(Math.sin(parseFloat(angle_s) * 0.01745329) * radius_s, 10)
-					};
-				case `tan`:
-					const angle_t = program.getValue(value.angle_t);
-					const radius_t = program.getValue(value.radius_t);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: parseInt(Math.tan(parseFloat(angle_t) * 0.01745329) * radius_t, 10)
-					};
-				case `valueOf`:
-					const v = parseInt(program.getValue(value.value));
-					return {
-						type: `constant`,
-						numeric: true,
-						content: v ? v : 0
-					};
-				case `lengthOf`:
-					return {
-						type: `constant`,
-						numeric: true,
-						content: program.getValue(value.value).length
-					};
-				case `left`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: program.getValue(value.value).substr(0, program.getValue(value.count))
-					};
-				case `right`:
-					const str = program.getValue(value.value);
-					return {
-						type: `constant`,
-						numeric: false,
-						content: str.substr(str.length - program.getValue(value.count))
-					};
-				case `from`:
-					const from = program.getValue(value.from);
-					const to = value.to ? program.getValue(value.to) : null;
-					const fstr = program.getValue(value.value);
-					return {
-						type: `constant`,
-						numeric: false,
-						content: to ? fstr.substr(from, to) : fstr.substr(from)
-					};
-				case `position`:
-					const needle = program.getValue(value.needle);
-					const haystack = program.getValue(value.haystack);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: value.last ? haystack.lastIndexOf(needle) : haystack.indexOf(needle)
-					};
-				case `payload`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: program.getSymbolRecord(value.callback).payload
-					};
-				case `modulo`:
-					const symbolRecord = program.getSymbolRecord(value.name);
-					const modval = program.evaluate(value.value);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: symbolRecord.value[symbolRecord.index].content % modval.content
-					};
-				case `format`:
-					const fmtRecord = program.getSymbolRecord(value.name);
-					const fmtValue = program.getValue(fmtRecord.value[fmtRecord.index]) * 1000;
-					try {
-						const spec = JSON.parse(program.getValue(value.value));
-						switch (spec.mode) {
-							case `time`:
-								return {
-									type: `constant`,
-									numeric: true,
-									content: new Date(fmtValue).toLocaleTimeString(spec.locale, spec.options)
-								};
-							case `date`:
-							default:
-								return {
-									type: `constant`,
-									numeric: true,
-									content: new Date(fmtValue).toLocaleDateString(spec.locale, spec.options)
-								};
-						}
-					} catch (err) {
-						program.runtimeError(program[program.pc].lino, `Can't parse ${value.value}`);
-						return null;
-					}
-				case `empty`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: ``
-					};
-				case `now`:
-					return {
-						type: `constant`,
-						numeric: true,
-						content: Math.floor(Date.now() / 1000)
-					};
-				case `today`:
-					const date = new Date();
-					date.setHours(0, 0, 0, 0);
-					return {
-						type: `constant`,
-						numeric: true,
-						content: Math.floor(date.getTime() / 1000)
-					};
-				case `date`:
-					return {
-						type: `constant`,
-						numeric: true,
-						content: Date.parse(program.getValue(value.value)) / 1000
-					};
-				case `newline`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: `\n`
-					};
-				case `break`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: `<br />`
-					};
-				case `encode`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: program.encode(program.getValue(value.value))
-					};
-				case `decode`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: program.decode(program.getValue(value.value))
-					};
-				case `lowercase`:
-					return {
-						type: `constant`,
-						numeric: false,
-						content: program.getValue(value.value).toLowerCase()
-					};
-				case `hash`:
-					const hashval = program.getValue(value.value);
-					let hash = 0;
-					if (hashval.length === 0) return hash;
-					for (let i = 0; i < hashval.length; i++) {
-						const chr = hashval.charCodeAt(i);
-						hash = (hash << 5) - hash + chr;
-						//					hash |= 0; // Convert to 32bit integer
-					}
-					return {
-						type: `constant`,
-						numeric: true,
-						content: hash
-					};
-				case `element`:
-					const element = program.getValue(value.element);
-					const elementRecord = program.getSymbolRecord(value.symbol);
-					var elementContent = ``;
-					try {
-						elementContent = JSON.parse(program.getValue(elementRecord.value[elementRecord.index]))[element];
-					} catch (err) {
-						program.runtimeError(program[program.pc].lino, `Can't parse JSON`);
-						return null;
-					}
-					return {
-						type: `constant`,
-						numeric: false,
-						content: typeof elementContent === `object` ? JSON.stringify(elementContent) : elementContent
-					};
-				case `property`:
-					const property = program.getValue(value.property);
-					const propertyRecord = program.getSymbolRecord(value.symbol);
-					let propertyContent = program.getValue(propertyRecord.value[propertyRecord.index]);
-					var content = ``;
-					if (property && propertyContent) {
-						if (typeof propertyContent === `object`) {
-							content = propertyContent[property];
-						} else if (propertyContent.charAt(0) === `{`) {
-							try {
-								content = JSON.parse(propertyContent)[property];
-							} catch (err) {
-								console.log(`Can't parse '${propertyContent}': ${err.message}`);
-							}
-						}
-					}
-					return {
-						type: `constant`,
-						numeric: !isNaN(content),
-						content: typeof content === `object` ? JSON.stringify(content) : content
-					};
-				case `module`:
-					const module = program.getSymbolRecord(value.name);
-					return {
-						type: `boolean`,
-						numeric: false,
-						content: module.program
-					};
-				case `message`:
-					content = program.message;
-					return {
-						type: `constant`,
-						numeric: false,
-						content
-					};
-				case `error`:
-					content = program.errorMessage;
-					return {
-						type: `constant`,
-						numeric: false,
-						content
-					};
-				case `indexOf`:
-					const value1 = program.getValue(value.value1);
-					const value2 = program.getValue(value.value2);
-					try {
-						content = JSON.parse(value2).indexOf(value1);
+			case `boolean`:
+				return {
+					type: `boolean`,
+					numeric: false,
+					content: value.content
+				};
+			case `elements`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: program.getSymbolRecord(value.name).elements
+				};
+			case `index`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: program.getSymbolRecord(value.name).index
+				};
+			case `random`:
+				const range = program.evaluate(value.range);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: Math.floor((Math.random() * range.content))
+				};
+			case `cos`:
+				const angle_c = program.getValue(value.angle_c);
+				const radius_c = program.getValue(value.radius_c);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: parseInt(Math.cos(parseFloat(angle_c) * 0.01745329) * radius_c, 10)
+				};
+			case `sin`:
+				const angle_s = program.getValue(value.angle_s);
+				const radius_s = program.getValue(value.radius_s);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: parseInt(Math.sin(parseFloat(angle_s) * 0.01745329) * radius_s, 10)
+				};
+			case `tan`:
+				const angle_t = program.getValue(value.angle_t);
+				const radius_t = program.getValue(value.radius_t);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: parseInt(Math.tan(parseFloat(angle_t) * 0.01745329) * radius_t, 10)
+				};
+			case `valueOf`:
+				const v = parseInt(program.getValue(value.value));
+				return {
+					type: `constant`,
+					numeric: true,
+					content: v ? v : 0
+				};
+			case `lengthOf`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: program.getValue(value.value).length
+				};
+			case `left`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: program.getValue(value.value).substr(0, program.getValue(value.count))
+				};
+			case `right`:
+				const str = program.getValue(value.value);
+				return {
+					type: `constant`,
+					numeric: false,
+					content: str.substr(str.length - program.getValue(value.count))
+				};
+			case `from`:
+				const from = program.getValue(value.from);
+				const to = value.to ? program.getValue(value.to) : null;
+				const fstr = program.getValue(value.value);
+				return {
+					type: `constant`,
+					numeric: false,
+					content: to ? fstr.substr(from, to) : fstr.substr(from)
+				};
+			case `position`:
+				let needle = program.getValue(value.needle);
+				let haystack = program.getValue(value.haystack);
+				if (value.nocase) {
+					needle = needle.toLowerCase();
+					haystack = haystack.toLowerCase();
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: value.last ? haystack.lastIndexOf(needle) : haystack.indexOf(needle)
+				};
+			case `payload`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: program.getSymbolRecord(value.callback).payload
+				};
+			case `modulo`:
+				const symbolRecord = program.getSymbolRecord(value.name);
+				const modval = program.evaluate(value.value);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: symbolRecord.value[symbolRecord.index].content % modval.content
+				};
+			case `format`:
+				const fmtRecord = program.getSymbolRecord(value.name);
+				const fmtValue = program.getValue(fmtRecord.value[fmtRecord.index]) * 1000;
+				try {
+					const spec = JSON.parse(program.getValue(value.value));
+					switch (spec.mode) {
+					case `time`:
+						
+						return {
+							type: `constant`,
+							numeric: true,
+							content: new Date(fmtValue).toLocaleTimeString(spec.locale, spec.options)
+						};
+					case `date`:
+					default:
+						const date = new Date(fmtValue);
+						const content = (spec.format === `iso`)
+							? `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+							: date.toLocaleDateString(spec.locale, spec.options);
 						return {
 							type: `constant`,
 							numeric: true,
 							content
 						};
-					} catch (err) {
-						program.runtimeError(program[program.pc].lino, `Can't parse ${value2}`);
 					}
-					break;
-				case `arg`:
-					const name = program.getValue(value.value);
-					const target = program.getSymbolRecord(value.target);
-					content = target[name];
+				} catch (err) {
+					program.runtimeError(program[program.pc].lino, `Can't parse ${value.value}`);
+					return null;
+				}
+			case `empty`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: ``
+				};
+			case `now`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: Math.floor(Date.now() / 1000)
+				};
+			case `today`:
+				const date = new Date();
+				date.setHours(0, 0, 0, 0);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: Math.floor(date.getTime() / 1000)
+				};
+			case `date`:
+				content = Date.parse(program.getValue(value.value)) / 1000;
+				if (isNaN(content)) {
+					program.runtimeError(program[program.pc].lino, `Invalid date format; expecting 'yyyy-mm-dd'`);
+					return null;
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content
+				};
+			case `newline`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: `\n`
+				};
+			case `break`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: `<br />`
+				};
+			case `uuid`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.replace(/[xy]/g, function(c) {
+						var r = Math.random() * 16 | 0, v = c == `x` ? r : (r & 0x3 | 0x8);
+						return v.toString(16);
+					})
+				};
+			case `encode`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: program.encode(program.getValue(value.value))
+				};
+			case `decode`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: program.decode(program.getValue(value.value))
+				};
+			case `lowercase`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: program.getValue(value.value).toLowerCase()
+				};
+			case `hash`:
+				const hashval = program.getValue(value.value);
+				let hash = 0;
+				if (hashval.length === 0) return hash;
+				for (let i = 0; i < hashval.length; i++) {
+					const chr = hashval.charCodeAt(i);
+					hash = ((hash << 5) - hash) + chr;
+					//					hash |= 0; // Convert to 32bit integer
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: hash
+				};
+			case `element`:
+				const element = program.getValue(value.element);
+				const elementRecord = program.getSymbolRecord(value.symbol);
+				var elementContent = ``;
+				try {
+					elementContent = JSON.parse(program.getValue(elementRecord.value[elementRecord.index]))[element];
+				} catch (err) {
+					program.runtimeError(program[program.pc].lino, `Can't parse JSON`);
+					return null;
+				}
+				return {
+					type: `constant`,
+					numeric: false,
+					content: typeof elementContent === `object` ?
+						JSON.stringify(elementContent) : elementContent
+				};
+			case `property`:
+				const property = program.getValue(value.property);
+				const propertyRecord = program.getSymbolRecord(value.symbol);
+				let propertyContent = program.getValue(propertyRecord.value[propertyRecord.index]);
+				var content = ``;
+				if (property && propertyContent) {
+					if (typeof propertyContent === `object`) {
+						content = propertyContent[property];
+					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
+						try {
+							content = JSON.parse(propertyContent)[property];
+						} catch (err) {
+							console.log(`Can't parse '${propertyContent}': ${err.message}`);
+						}
+					}
+				}
+				return {
+					type: `constant`,
+					numeric: !Array.isArray(content) && !isNaN(content),
+					content: typeof content === `object` ? JSON.stringify(content) : content
+				};
+			case `module`:
+				const module = program.getSymbolRecord(value.name);
+				return {
+					type: `boolean`,
+					numeric: false,
+					content: module.program
+				};
+			case `message`:
+				content = program.message;
+				return {
+					type: `constant`,
+					numeric: false,
+					content
+				};
+			case `error`:
+				content = program.errorMessage;
+				return {
+					type: `constant`,
+					numeric: false,
+					content
+				};
+			case `indexOf`:
+				const value1 = program.getValue(value.value1);
+				const value2 = program.getValue(value.value2);
+				try {
+					content = JSON.parse(value2).indexOf(value1);
 					return {
 						type: `constant`,
-						numeric: !isNaN(content),
+						numeric: true,
 						content
 					};
+				} catch (err) {
+					program.runtimeError(program[program.pc].lino, `Can't parse ${value2}`);
+				}
+				break;
+			case `arg`:
+				const name = program.getValue(value.value);
+				const target = program.getSymbolRecord(value.target);
+				content = target[name];
+				return {
+					type: `constant`,
+					numeric: !isNaN(content),
+					content
+				};
+			case `char`:
+				let index = program.getValue(value.index);
+				let string = program.getValue(value.value);
+				return {
+					type: `constant`,
+					numeric: false,
+					content: string[index]
+				};
 			}
 			return null;
 		},
@@ -3223,64 +3328,65 @@ const EasyCoder_Core = {
 					const negate = EasyCoder_Core.isNegate(compiler);
 					const test = compiler.getToken();
 					switch (test) {
-						case `numeric`:
+					case `numeric`:
+						compiler.next();
+						return {
+							domain: `core`,
+							type: `numeric`,
+							value1,
+							negate
+						};
+					case `even`:
+						compiler.next();
+						return {
+							domain: `core`,
+							type: `even`,
+							value1
+						};
+					case `odd`:
+						compiler.next();
+						return {
+							domain: `core`,
+							type: `odd`,
+							value1
+						};
+					case `greater`:
+						compiler.next();
+						if (compiler.tokenIs(`than`)) {
 							compiler.next();
-							return {
-								domain: `core`,
-								type: `numeric`,
-								value1
-							};
-						case `even`:
-							compiler.next();
-							return {
-								domain: `core`,
-								type: `even`,
-								value1
-							};
-						case `odd`:
-							compiler.next();
-							return {
-								domain: `core`,
-								type: `odd`,
-								value1
-							};
-						case `greater`:
-							compiler.next();
-							if (compiler.tokenIs(`than`)) {
-								compiler.next();
-								const value2 = compiler.getValue();
-								return {
-									domain: `core`,
-									type: `greater`,
-									value1,
-									value2,
-									negate
-								};
-							}
-							return null;
-						case `less`:
-							compiler.next();
-							if (compiler.tokenIs(`than`)) {
-								compiler.next();
-								const value2 = compiler.getValue();
-								return {
-									domain: `core`,
-									type: `less`,
-									value1,
-									value2,
-									negate
-								};
-							}
-							return null;
-						default:
 							const value2 = compiler.getValue();
 							return {
 								domain: `core`,
-								type: `is`,
+								type: `greater`,
 								value1,
 								value2,
 								negate
 							};
+						}
+						return null;
+					case `less`:
+						compiler.next();
+						if (compiler.tokenIs(`than`)) {
+							compiler.next();
+							const value2 = compiler.getValue();
+							return {
+								domain: `core`,
+								type: `less`,
+								value1,
+								value2,
+								negate
+							};
+						}
+						return null;
+					default:
+						const value2 = compiler.getValue();
+						return {
+							domain: `core`,
+							type: `is`,
+							value1,
+							value2,
+							negate
+						};
 					}
 				} else if (value1) {
 					// It's a boolean if
@@ -3300,50 +3406,42 @@ const EasyCoder_Core = {
 		test: (program, condition) => {
 			var comparison;
 			switch (condition.type) {
-				case `boolean`:
-					return program.getValue(condition.value);
-				case `numeric`:
-					return !isNaN(program.getValue(condition.value1));
-				case `even`:
-					return program.getValue(condition.value1) % 2 === 0;
-				case `odd`:
-					return program.getValue(condition.value1) % 2 === 1;
-				case `is`:
-					comparison = program.compare(program, condition.value1, condition.value2);
-					return condition.negate ? comparison !== 0 : comparison === 0;
-				case `greater`:
-					comparison = program.compare(program, condition.value1, condition.value2);
-					return condition.negate ? comparison <= 0 : comparison > 0;
-				case `less`:
-					comparison = program.compare(program, condition.value1, condition.value2);
-					return condition.negate ? comparison >= 0 : comparison < 0;
-				case `not`:
-					return !program.getValue(condition.value);
-				case `moduleRunning`:
-					const running = program.getSymbolRecord(condition.name).program;
-					return condition.sense ? running : !running;
-				case `includes`:
-					const value1 = JSON.parse(program.getValue(condition.value1));
-					const value2 = program.getValue(condition.value2);
-					return value1.includes(value2);
+			case `boolean`:
+				return program.getValue(condition.value);
+			case `numeric`:
+				let v = program.getValue(condition.value1);
+				let test = v === ` ` || isNaN(v);
+				return condition.negate ? test : !test;
+			case `even`:
+				return (program.getValue(condition.value1) % 2) === 0;
+			case `odd`:
+				return (program.getValue(condition.value1) % 2) === 1;
+			case `is`:
+				comparison = program.compare(program, condition.value1, condition.value2);
+				return condition.negate ? comparison !== 0 : comparison === 0;
+			case `greater`:
+				comparison = program.compare(program, condition.value1, condition.value2);
+				return condition.negate ? comparison <= 0 : comparison > 0;
+			case `less`:
+				comparison = program.compare(program, condition.value1, condition.value2);
+				return condition.negate ? comparison >= 0 : comparison < 0;
+			case `not`:
+				return !program.getValue(condition.value);
+			case `moduleRunning`:
+				const running = program.getSymbolRecord(condition.name).program;
+				return condition.sense ? running : !running;
+			case `includes`:
+				const value1 = JSON.parse(program.getValue(condition.value1));
+				const value2 = program.getValue(condition.value2);
+				return value1.includes(value2);
 			}
 			return false;
 		}
 	}
 };
-
-module.exports = EasyCoder_Core;
-},{}],6:[function(require,module,exports){
-var _this = this;
-
-const EasyCoder_Compiler = require(`./Compile`);
-const EasyCoder_Run = require(`./Run`);
-const EasyCoder_Value = require(`./Value`);
-const EasyCoder_Condition = require(`./Condition`);
-const EasyCoder_Compare = require(`./Compare`);
-const EasyCoder_Core = require(`./Core`);
-
 const EasyCoder = {
+
+	name: `EasyCoder_Main`,
 
 	domain: {
 		core: EasyCoder_Core
@@ -3352,9 +3450,9 @@ const EasyCoder = {
 	runtimeError: function (lino, message) {
 		this.lino = lino;
 		this.reportError({
-			message: `Line ${lino >= 0 ? lino : ``}: ${message}`
-		}, EasyCoder.program);
-		EasyCoder.program.aborted = true;
+			message: `Line ${(lino >= 0) ? lino : ``}: ${message}`
+		}, this.program);
+		this.program.aborted = true;
 	},
 	nonNumericValueError: function (lino) {
 		this.runtimeError(lino, `Non-numeric value`);
@@ -3374,12 +3472,12 @@ const EasyCoder = {
 			console.log(errString);
 			return;
 		}
-		const compiler = EasyCoder_Compiler;
+		// const compiler = EasyCoder_Compiler;
 		const {
 			tokens,
 			scriptLines
 		} = source ? source : program.source;
-		const lino = this.compiling ? tokens[compiler.getIndex()].lino : program[program.pc].lino;
+		const lino = this.compiling ? tokens[EasyCoder_Compiler.getIndex()].lino : program[program.pc].lino;
 		var errString = this.compiling ? `Compile error` : `Runtime error in '${program.script}'`;
 		errString += `:\n`;
 		var start = lino - 5;
@@ -3406,9 +3504,9 @@ const EasyCoder = {
 			return this.getSymbolRecord(target.alias);
 		}
 		if (target.exporter) {
-			if (target.exporter != this) {
-				return target.exporter.getSymbolRecord(target.exportedName);
-			}
+			// if (target.exporter != this.script) {
+			return EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
+			// }
 		}
 		return target;
 	},
@@ -3441,7 +3539,8 @@ const EasyCoder = {
 		if (v.type === `boolean`) {
 			return v.content ? `true` : `false`;
 		}
-		if (v.content.substr(0, 2) === `{"` || v.content[0] === `[`) {
+		if (typeof v.content !==`undefined` && v.content.length >= 2
+			&& (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
 			try {
 				const parsed = JSON.parse(v.content);
 				return JSON.stringify(parsed, null, 2);
@@ -3469,7 +3568,7 @@ const EasyCoder = {
 
 	run: function (pc) {
 		if (pc) {
-			EasyCoder.program = this;
+			this.program = this;
 			EasyCoder_Run.run(this, pc);
 		}
 	},
@@ -3478,24 +3577,24 @@ const EasyCoder = {
 		EasyCoder_Run.exit(this);
 	},
 
-	register: program => {
-		EasyCoder.program = program;
+	register: (program) => {
+		this.program = program;
 	},
 
-	require: (type, src, cb) => {
+	require: function(type, src, cb) {
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
-			case `css`:
-				element.type = `text/css`;
-				element.href = src;
-				element.rel = `stylesheet`;
-				break;
-			case `js`:
-				element.type = `text/javascript`;
-				element.src = src;
-				break;
-			default:
-				return;
+		case `css`:
+			element.type = `text/css`;
+			element.href = src;
+			element.rel = `stylesheet`;
+			break;
+		case `js`:
+			element.type = `text/javascript`;
+			element.src = src;
+			break;
+		default:
+			return;
 		}
 		element.onload = function () {
 			console.log(`${Date.now() - EasyCoder.timestamp} ms: Library ${src} loaded`);
@@ -3512,20 +3611,24 @@ const EasyCoder = {
 		const command = program[program.pc];
 		const script = program.getValue(command.script);
 		const imports = command.imports;
+		imports.caller = program.script;
 		const moduleRecord = command.module ? program.getSymbolRecord(command.module) : null;
 		try {
-			EasyCoder.tokeniseAndCompile(script.split(`\n`), imports, moduleRecord, this, command.then);
+			EasyCoder.tokeniseAndCompile(script.split(`\n`), imports, moduleRecord, this.script, command.then);
 		} catch (err) {
-			this.reportError(err, EasyCoder.program, program.source);
+			EasyCoder.reportError(err, program, program.source);
 			if (program.onError) {
 				program.run(program.onError);
-			} else if (program.parent && program.parent.onError) {
-				program.parent.run(program.parent.onError);
+			} else {
+				let parent = EasyCoder.scripts[program.parent];
+				if (parent && parent.onError) {
+					parent.run(parent.onError);
+				}
 			}
 			return;
 		}
 		if (command.nowait) {
-			this.run(program.nextPc);
+			EasyCoder.run(program.nextPc);
 		}
 	},
 
@@ -3537,15 +3640,16 @@ const EasyCoder = {
 		} = source;
 		this.compiling = true;
 		const compiler = EasyCoder_Compiler;
+		this.compiler = compiler;
 		compiler.value = EasyCoder_Value;
 		compiler.condition = EasyCoder_Condition;
-		compiler.domain = EasyCoder.domain;
+		compiler.domain = this.domain;
 		compiler.imports = imports;
 		const program = EasyCoder_Compiler.compile(tokens);
 		//    console.log('Program: ' + JSON.stringify(program, null, 2));
 		this.compiling = false;
 
-		program.EasyCoder = EasyCoder;
+		program.EasyCoder = this;
 		program.value = EasyCoder_Value;
 		program.condition = EasyCoder_Condition;
 		program.compare = EasyCoder_Compare;
@@ -3581,12 +3685,12 @@ const EasyCoder = {
 		program.module = module;
 		program.parent = parent;
 		if (module) {
-			module.program = program;
+			module.program = program.script;
 		}
 		return program;
 	},
 
-	tokeniseFile: file => {
+	tokeniseFile: function(file) {
 		const scriptLines = [];
 		const tokens = [];
 		let index = 0;
@@ -3637,57 +3741,72 @@ const EasyCoder = {
 				});
 			}
 		});
-		return { scriptLines, tokens };
+		return {scriptLines, tokens};
 	},
 
 	tokeniseAndCompile: function (file, imports, module, parent, then) {
 		//  console.log('Tokenise script: ');
 		let program = null;
 		const startCompile = Date.now();
-		const source = EasyCoder.tokeniseFile(file);
+		const source = this.tokeniseFile(file);
 		try {
-			program = EasyCoder.compileScript(source, imports, module, parent);
-			const name = program.script ? program.script : `<anon>`;
+			program = this.compileScript(source, imports, module, parent);
+			this.scriptIndex++;
+			if (!program.script) {
+				program.script = this.scriptIndex;
+			}
 			const finishCompile = Date.now();
-			console.log(`${finishCompile - EasyCoder.timestamp} ms: ` + `Compiled ${name}: ${source.scriptLines.length} lines (${source.tokens.length} tokens) in ` + `${finishCompile - startCompile} ms`);
+			console.log(`${finishCompile - this.timestamp} ms: ` +
+				`Compiled ${program.script}: ${source.scriptLines.length} lines (${source.tokens.length} tokens) in ` +
+				`${finishCompile - startCompile} ms`);
 		} catch (err) {
 			if (err.message !== `stop`) {
-				const p = EasyCoder.program;
-				this.reportError(err, p, source);
-				if (p.onError) {
-					p.run(p.onError);
+				let parentRecord = EasyCoder.scripts[parent];
+				this.reportError(err, parentRecord, source);
+				if (parentRecord && parentRecord.onError) {
+					parentRecord.run(parentRecord.onError);
+				}
+				// Remove this script
+				if (EasyCoder_Compiler.script) {
+					delete EasyCoder.scripts[EasyCoder_Compiler.script];
+					delete EasyCoder_Compiler.script;
 				}
 			}
+			return;
 		}
 		if (program) {
-			program.onExit = then;
+			EasyCoder.scripts[program.script] = program;
+			if (module) {
+				module.program = program.script;
+			}
+			program.afterExit = then;
 			program.running = true;
 			EasyCoder_Run.run(program, 0);
 		}
 	},
 
-	tokenise: source => {
+	tokenise: function(source) {
 		const script = source.split(`\n`);
-		if (!_this.tokenising) {
+		if (!this.tokenising) {
 			try {
-				EasyCoder.tokeniseAndCompile(script);
+				this.tokeniseAndCompile(script);
 			} catch (err) {
-				EasyCoder.reportError(err, null, source);
+				this.reportError(err, null, source);
 			}
-			_this.tokenising = true;
+			this.tokenising = true;
 		}
 	},
 
-	setPluginCount: count => {
-		_this.plugins = [];
-		_this.pluginCount = count;
+	setPluginCount: function(count) {
+		EasyCoder.plugins = [];
+		EasyCoder.pluginCount = count;
 	},
 
-	checkPlugin: name => {
+	checkPlugin: function(name) {
 		return EasyCoder.domain[name];
 	},
 
-	getPlugin: (name, src, onload) => {
+	getPlugin: function(name, src, onload) {
 		if (EasyCoder.domain[name]) {
 			onload();
 			return;
@@ -3702,51 +3821,59 @@ const EasyCoder = {
 		document.head.appendChild(script);
 	},
 
-	addGlobalPlugin: (name, handler) => {
-		_this.plugins.push({
+	addGlobalPlugin: function(name, handler) {
+		// alert(`Add plugin ${name}`);
+		EasyCoder.plugins.push({
 			name,
 			handler
 		});
-		if (_this.plugins.length === _this.pluginCount) {
-			_this.plugins.forEach(function (plugin) {
+		if (EasyCoder.plugins.length === EasyCoder.pluginCount) {
+			EasyCoder.plugins.forEach(function (plugin) {
 				EasyCoder.domain[plugin.name] = plugin.handler;
 			});
-			EasyCoder.tokenise(_this.source);
+			EasyCoder.tokenise(EasyCoder.source);
 		}
 	},
 
-	addLocalPlugin: (name, handler, callback) => {
+	addLocalPlugin: function(name, handler, callback) {
 		EasyCoder.domain[name] = handler;
 		callback();
 	},
 
-	getPluginsPath: () => {
+	getPluginsPath: function() {
 		return EasyCoder.pluginsPath;
 	},
 
-	loadPluginJs: path => {
-		console.log(`${Date.now() - EasyCoder.timestamp} ms: Load ${path}/easycoder/plugins.js`);
+	loadPluginJs: function(path) {
+		console.log(`${Date.now() - this.timestamp} ms: Load ${path}/easycoder/plugins.js`);
 		const script = document.createElement(`script`);
-		script.src = `${window.location.origin}${path}/easycoder/plugins.js?ver=${EasyCoder.version}`;
+		script.src = `${window.location.origin}${path}/easycoder/plugins.js?ver=${this.version}`;
 		script.type = `text/javascript`;
-		script.onload = function () {
-			EasyCoder_Plugins.getGlobalPlugins(EasyCoder.timestamp, path, EasyCoder.setPluginCount, EasyCoder.getPlugin, EasyCoder.addGlobalPlugin);
+		script.onload = () => {
+			EasyCoder_Plugins.getGlobalPlugins(
+				this.timestamp,
+				path,
+				this.setPluginCount,
+				this.getPlugin,
+				this.addGlobalPlugin
+			);
 		};
 		script.onerror = () => {
 			if (path) {
-				EasyCoder.loadPluginJs(path.slice(0, path.lastIndexOf(`/`)));
+				this.loadPluginJs(path.slice(0, path.lastIndexOf(`/`)));
 			} else {
-				EasyCoder.reportError({
+				this.reportError({
 					message: `Can't load plugins.js`
-				}, EasyCoder.program, _this.source);
+				}, this.program, this.source);
 			}
 		};
 		document.head.appendChild(script);
-		EasyCoder.pluginsPath = path;
+		this.pluginsPath = path;
 	},
 
-	start: source => {
-		_this.source = source;
+	start: function(source) {
+		this.source = source;
+		this.scriptIndex = 0;
 		let pathname = window.location.pathname;
 		if (pathname.endsWith(`/`)) {
 			pathname = pathname.slice(0, -1);
@@ -3754,23 +3881,28 @@ const EasyCoder = {
 			pathname = ``;
 		}
 		if (typeof EasyCoder_Plugins === `undefined`) {
-			EasyCoder.loadPluginJs(pathname);
+			this.loadPluginJs(pathname);
 		} else {
-			EasyCoder.pluginsPath = pathname;
-			EasyCoder_Plugins.getGlobalPlugins(EasyCoder.timestamp, pathname, EasyCoder.setPluginCount, EasyCoder.getPlugin, EasyCoder.addGlobalPlugin);
+			this.pluginsPath = pathname;
+			EasyCoder_Plugins.getGlobalPlugins(
+				this.timestamp,
+				pathname,
+				this.setPluginCount,
+				this.getPlugin,
+				this.addGlobalPlugin
+			);
 		}
 	}
 };
-
-module.exports = EasyCoder;
-},{"./Compare":2,"./Compile":3,"./Condition":4,"./Core":5,"./Run":7,"./Value":8}],7:[function(require,module,exports){
 const EasyCoder_Run = {
 
-	run: (program, pc) => {
+	name: `EasyCoder_Run`,
+
+	run: (program, pc) =>{
 
 		const queue = [];
 
-		const minIndent = scriptLines => {
+		const minIndent = (scriptLines) => {
 			let count = 9999;
 			scriptLines.forEach(function (element) {
 				const item = element.line;
@@ -3800,7 +3932,9 @@ const EasyCoder_Run = {
 			while (program.running) {
 				if (program.watchdog > 1000000) {
 					program.lino = program[program.pc].lino;
-					program.reportError(new Error(`Program runaway intercepted.\nHave you forgotten to increment a loop counter?`, program), program);
+					program.reportError(
+						new Error(`Program runaway intercepted.\nHave you forgotten to increment a loop counter?`, program),
+						program);
 					break;
 				}
 				program.watchdog++;
@@ -3857,14 +3991,14 @@ const EasyCoder_Run = {
 									}
 								}
 								switch (program.tracer.alignment) {
-									case `horizontal`:
-										if (index < array.length - 1) {
-											variables += `, `;
-										}
-										break;
-									case `vertical`:
-										variables += `<br>`;
-										break;
+								case `horizontal`:
+									if (index < array.length - 1) {
+										variables += `, `;
+									}
+									break;
+								case `vertical`:
+									variables += `<br>`;
+									break;
 								}
 							});
 							variables += `<hr>`;
@@ -3872,7 +4006,9 @@ const EasyCoder_Run = {
 							for (var n = 5; n > 0; n--) {
 								if (command.lino) {
 									const text = scriptLines[command.lino - n].line.substr(minSpace);
-									trace += `<input type="text" name="${n}"` + `value="${command.lino - n + 1}: ${text.split(`\\s`).join(` `)}"` + `style="width:100%;border:none;enabled:false">`;
+									trace += `<input type="text" name="${n}"` +
+                  `value="${command.lino - n + 1}: ${text.split(`\\s`).join(` `)}"` +
+                  `style="width:100%;border:none;enabled:false">`;
 								}
 								trace += `<br>`;
 							}
@@ -3920,21 +4056,29 @@ const EasyCoder_Run = {
 		}
 	},
 
-	exit: program => {
+	exit: (program) => {
 		if (program.onExit) {
-			program.parent.run(program.onExit);
-			program.module.program = null;
-			program.running = false;
-			program = null;
+			program.run(program.onExit);
+		}
+		let parent = program.parent;
+		let afterExit = program.afterExit;
+		delete EasyCoder.scripts[program.script];
+		if (program.module) {
+			delete program.module.program;
+		}
+		Object.keys(program).forEach(function(key) {
+			delete program[key];
+		});
+		if (parent && afterExit) {
+			EasyCoder.scripts[parent].run(afterExit);
 		}
 	}
 };
-
-module.exports = EasyCoder_Run;
-},{}],8:[function(require,module,exports){
 const EasyCoder_Value = {
 
-	getItem: compiler => {
+	name: `EasyCoder_Value`,
+
+	getItem: (compiler) => {
 		const token = compiler.getToken();
 		if (!token) {
 			return null;
@@ -4031,36 +4175,37 @@ const EasyCoder_Value = {
 		}
 		const type = value.type;
 		switch (type) {
-			case `cat`:
-				return {
-					type: `constant`,
-					numeric: false,
-					content: value.parts.reduce(function (acc, part) {
-						return acc + EasyCoder_Value.doValue(program, part).content;
-					}, ``)
-				};
-			case `boolean`:
-			case `constant`:
-				return value;
-			case `symbol`:
-				const symbol = program.getSymbolRecord(value.name);
-				if (symbol.isValueHolder) {
-					const symbolValue = symbol.value[symbol.index];
-					if (symbolValue) {
-						const v = symbolValue.content;
-						if (v === null || typeof v === `undefined`) {
-							symbolValue.content = symbolValue.numeric ? 0 : ``;
-						}
-						return symbolValue;
-					} else {
-						return null;
+		case `cat`:
+			return {
+				type: `constant`,
+				numeric: false,
+				content: value.parts.reduce(function (acc, part) {
+					let value = EasyCoder_Value.doValue(program, part);
+					return acc + (value ? value.content : ``);
+				}, ``)
+			};
+		case `boolean`:
+		case `constant`:
+			return value;
+		case `symbol`:
+			const symbol = program.getSymbolRecord(value.name);
+			if (symbol.isValueHolder) {
+				const symbolValue = symbol.value[symbol.index];
+				if (symbolValue) {
+					const v = symbolValue.content;
+					if (v === null || typeof v === `undefined`) {
+						symbolValue.content = symbolValue.numeric ? 0 : ``;
 					}
+					return symbolValue;
 				} else {
-					const handler = program.domain[symbol.domain].value;
-					return handler.get(program, value);
+					return null;
 				}
-			default:
-				break;
+			} else {
+				const handler = program.domain[symbol.domain].value;
+				return handler.get(program, value);
+			}
+		default:
+			break;
 		}
 		// Call the given domain to handle a value
 		const handler = program.domain[value.domain].value;
@@ -4099,12 +4244,15 @@ const EasyCoder_Value = {
 	encode: (value, encoding) => {
 		if (value) {
 			switch (encoding) {
-				case `ec`:
-					return value.replace(/'/g, `~sq~`).replace(/"/g, `~dq~`).replace(/\n/g, `%0a`).replace(/\r/g, `%0d`);
-				case `url`:
-					return encodeURIComponent(value.replace(/\s/g, `+`));
-				case `sanitize`:
-					return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
+			case `ec`:
+				return value.replace(/'/g, `~sq~`)
+					.replace(/"/g, `~dq~`)
+					.replace(/\n/g, `%0a`)
+					.replace(/\r/g, `%0d`);
+			case `url`:
+				return encodeURIComponent(value.replace(/\s/g, `+`));
+			case `sanitize`:
+				return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
 			}
 		}
 		return value;
@@ -4113,16 +4261,39 @@ const EasyCoder_Value = {
 	decode: (value, encoding) => {
 		if (value) {
 			switch (encoding) {
-				case `ec`:
-					return value.replace(/~dq~/g, `"`).replace(/~sq~/g, `'`).replace(/%0a/g, `\n`).replace(/%0d/g, `\r`);
-				case `url`:
-					const decoded = decodeURIComponent(value);
-					return decoded.replace(/\+/g, ` `);
+			case `ec`:
+				return value.replace(/~dq~/g, `"`)
+					.replace(/~sq~/g, `'`)
+					.replace(/%0a/g, `\n`)
+					.replace(/%0d/g, `\r`);
+			case `url`:
+				const decoded = decodeURIComponent(value);
+				return decoded.replace(/\+/g, ` `);
 			}
 		}
 		return value;
 	}
 };
+EasyCoder.version = `2.5.6`;
+EasyCoder.timestamp = Date.now();
+console.log(`EasyCoder loaded; waiting for page`);
 
-module.exports = EasyCoder_Value;
-},{}]},{},[1]);
+function EasyCoder_Startup() {
+	console.log(`${Date.now() - EasyCoder.timestamp} ms: Page loaded; reset timer & start EasyCoder`);
+	EasyCoder.timestamp = Date.now();
+	EasyCoder.scripts = {};
+	window.EasyCoder = EasyCoder;
+	const script = document.getElementById(`easycoder-script`);
+	if (script) {
+		script.style.display = `none`;
+		try {
+			EasyCoder.start(script.innerText);
+		}
+		catch (err) {
+			EasyCoder.reportError(err);
+		}
+	}
+}
+
+// For browsers
+window.onload = EasyCoder_Startup;

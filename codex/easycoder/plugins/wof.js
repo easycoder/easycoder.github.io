@@ -1,6 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 const EasyCoder_WOF = {
 
+	name: `EasyCoder_WOF`,
+
+	/*
+	A package to draw and manage a roulette wheel.
+	*/
+
 	Draw: {
 
 		compile: compiler => {
@@ -142,6 +148,7 @@ const EasyCoder_WOF = {
 	},		
 };
 
+// A sample roulette wheel
 const EasyCoder_roulette_wheel = {
     
 	init: ($) => {

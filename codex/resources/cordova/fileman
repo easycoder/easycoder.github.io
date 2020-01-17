@@ -1,0 +1,258 @@
+! File Manager
+
+  script FileManager
+  
+  div Tracer
+  div Panel
+  div FileListing
+  div FileRow
+  div Scroller
+  div Uploader
+  div Buttons
+  span UploadStatus
+  progress UploadProgress
+  input UploadFile
+  button CloseButton
+  button NewFolderButton
+  button ShowURLButton
+  button UploadButton
+  button DeleteButton
+  a FileName
+  img Icon
+  img Image
+  variable FileList
+  variable FileCount
+  variable File
+  variable Name
+  variable Type
+  variable Source
+  variable Content
+  variable CurrentPath
+  variable Separator
+  variable Path
+  variable N
+  variable Even
+
+  create Panel
+  set the style of Panel to `width:100%;height:100%;background:#ffe`
+
+  create Tracer in Panel
+  set attribute `id` of Tracer to `easycoder-tracer`
+
+!  trace
+
+  create Uploader in Panel
+  set the style of Uploader to
+    `width:100%;padding:0.5em 0;border:1px solid gray;font-size:80%;text-align:center`
+  create UploadFile in Uploader
+  set attribute `type` of UploadFile to `file`
+  set attribute `name` of UploadFile to `Source`
+  create UploadStatus in Uploader
+  create UploadProgress in Uploader
+  set style `margin-left` of UploadProgress to `0.5em`
+  set attribute `value` of UploadProgress to 0
+  set attribute `max` of UploadProgress to 100
+
+  create Buttons in Panel
+  set the style of Buttons to `display:flex`
+  create CloseButton in Buttons
+  set the style of CloseButton to `flex:1;width:150px;height:40px`
+  set the text of CloseButton to `Close`
+  on click CloseButton go to Exit
+  create DeleteButton in Buttons
+  set the style of DeleteButton to `flex:1;width:150px;height:40px`
+  set the text of DeleteButton to `Delete`
+  create NewFolderButton in Buttons
+  set the style of NewFolderButton to `flex:1;width:150px;height:40px`
+  set the text of NewFolderButton to `New Folder`
+  create ShowURLButton in Buttons
+  set the style of ShowURLButton to `flex:1;display:none;width:150px;height:40px`
+  set the text of ShowURLButton to `Show URL`
+  create UploadButton in Buttons
+  set the style of UploadButton to `flex:1;width:150px;height:40px`
+  set the text of UploadButton to `Upload`
+  on click UploadButton go to Upload
+
+  create FileListing in Panel
+  set the style of FileListing to `width:100%;height:80%;text-align:center`
+  create Scroller in FileListing
+  set the style of Scroller to
+    `width:100%;height:100%;text-align:left;overflow-y:scroll`
+  create Image in FileListing
+  set the style of Image to `display:none;display: block;margin: 0 auto;max-width:100%;max-height:100%`
+
+  on click NewFolderButton
+  begin
+    put prompt `Name of folder:` with `new` into Path
+    if Path is empty stop
+    replace ` ` with `-` in Path
+    put `resources/upload` cat CurrentPath cat `/` cat Path into Path
+    rest post Path to `_mkdir`
+    or begin
+      alert `Failed to create a directory.`
+      stop
+    end
+    goto Browser
+  end
+
+  on message go to Show
+  set ready
+  stop
+
+Show:
+! Fill the browser with content from the server
+  put empty into CurrentPath
+
+! Fill the browser with content from the server
+  get CurrentPath from storage as `fm-path`
+
+! Build the list
+Browser:
+  put CurrentPath into storage as `fm-path`
+  rest get Content from `_list/upload~` cat CurrentPath
+  or begin
+    alert `Failed to list files.`
+    stop
+  end
+  put empty into FileList
+  put the json count of Content into FileCount
+  set the elements of File to FileCount
+  set the elements of FileName to FileCount
+
+! Add a row for each file
+  set the content of Scroller to ``
+  set Even
+
+  if CurrentPath is not empty
+  begin
+    create FileRow in Scroller
+    set the style of FileRow to `width:90%;padding:0.5em 1em;text-align:left`
+    create Icon in FileRow
+    set the style of Icon to `float:left;margin-right:0.5em;width:20px`
+    set attribute `src` of Icon to `resources/icon/arrow-back.png`
+    create FileName in FileRow
+    set the content of FileName to `(back to previous folder)`
+    on click FileName
+    begin
+      put the position of the last `~` in CurrentPath into N
+      if N is less than 0 put the position of the last `/` in CurrentPath into N
+      put left N of CurrentPath into CurrentPath
+      go to Browser
+    end
+  end
+
+  set the elements of FileName to FileCount
+  put 0 into N
+  while N is less than FileCount
+  begin
+    index File to N
+    put element N of Content into File
+    put property `name` of File into Name
+    put property `type` of File into Type
+    create FileRow in Scroller
+    set the style of FileRow to `clear:both;padding:0.5em 1em;text-align:left`
+    if Even set style `background` of FileRow to `#eee`
+    create Icon in FileRow
+    set the style of Icon to `float:left;margin-right:0.5em;width:20px`
+    if Type is `dir` put `folder.png` into Source
+    else if Type is `img` put `image.png` into Source
+    else if Type is `txt` put `text.png` into Source
+    else if Type is `doc` put `document.png` into Source
+    else put `unknown.png` into Source
+    set attribute `src` of Icon to `resources/icon/` cat Source
+    index FileName to N
+    create FileName in FileRow
+    set the content of FileName to Name
+    on click FileName go to SelectFile
+    toggle Even
+    add 1 to N
+  end
+
+  on click DeleteButton
+  begin
+    if FileCount is 0
+    begin
+   	  put `upload` cat Path into CurrentPath
+      replace `/` with `~` in CurrentPath
+      rest post to `_delete/` cat CurrentPath
+      or begin
+        alert `Failed to delete a file.`
+        stop
+      end
+      put the position of the last `~` in CurrentPath into N
+      if N is less than 0 put the position of the last `/` in CurrentPath into N
+      put left N of CurrentPath into CurrentPath
+      go to Browser
+    end
+    else
+    begin
+      alert `Folder is not empty`
+    end
+  end
+
+  stop
+
+SelectFile:
+  index File to the index of FileName
+  put property `type` of File into Type
+  if Type is `dir`
+  begin
+    put CurrentPath cat `~` cat the content of FileName into CurrentPath
+    goto Browser
+  end
+  if Type is `img`
+  begin
+    set style `display` of Uploader to `none`
+    set style `display` of UploadButton to `none`
+    set style `display` of NewFolderButton to `none`
+
+    set style `display` of Scroller to `none`
+    set style `display` of Image to `block`
+    put CurrentPath cat `/` cat property `name` of File into Path
+    replace `~` with `/` in Path
+    set attribute `src` of Image to `resources/upload` cat Path
+    on click CloseButton go to CloseMedia
+    set style `display` of ShowURLButton to `inline-block`
+    on click ShowURLButton
+    begin
+      put prompt `URL of this image:` with `resources/upload` cat Path into Path
+    end
+    on click DeleteButton
+    begin
+   	  put `upload` cat Path into Path
+      replace `/` with `~` in Path
+      rest post to `_delete/` cat Path
+      or begin
+        alert `Failed to delete the image.`
+        stop
+      end
+      go to CloseMedia
+    end
+  end
+  stop
+
+CloseMedia:
+  set style `display` of Image to `none`
+  set style `display` of Scroller to `block`
+  set style `display` of Uploader to `inline-block`
+  set style `display` of UploadButton to `inline-block`
+  set style `display` of NewFolderButton to `inline-block`
+  set style `display` of ShowURLButton to `none`
+  on click CloseButton go to Exit
+  go to Browser
+
+Upload:
+  if UploadFile is empty alert `Please choose a file to upload`
+  else
+  begin
+    put `resources/upload` cat CurrentPath into Path
+    replace `/` with `~` in Path
+    put `_upload/` cat Path into Path
+    upload UploadFile to Path with UploadProgress and UploadStatus
+    goto Browser
+  end
+  stop
+
+Exit:
+    send `fmexit` to parent
+	stop

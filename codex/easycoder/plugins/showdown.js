@@ -1,5 +1,7 @@
 const EasyCoder_Showdown = {
 
+	name: `EasyCoder_Showdown`,
+
 	Load: {
 
 		compile: compiler => {
@@ -19,27 +21,32 @@ const EasyCoder_Showdown = {
 		run: program => {
 			const command = program[program.pc];
 			if (program.isUndefined(this.showdown_loaded)) {
-				program.require(`js`, `https://cdn.rawgit.com/showdownjs/showdown/1.9.0/dist/showdown.min.js`, function () {
+				program.require(`js`, `https://unpkg.com/showdown@1.9.1/./dist/showdown.js`, function () {
 					this.showdown_loaded = true;
-					showdown.extension(`Extension`, {
-						type: `lang`,
-						filter: function (text, converter) {
-							const callback = program.getSymbolRecord(converter.callback);
-							return text.replace(/~([^~]+)~/g, function (match, group) {
-								callback.payload = group;
-								program.run(callback.cb);
-								return callback.payload;
-							});
-						}
-					});
+					EasyCoder_Showdown.setupExtension();
 					program.run(command.pc + 1);
 				});
 			}
 			else {
+				EasyCoder_Showdown.setupExtension();
 				return command.pc + 1;
 			}
 			return 0;
 		}
+	},
+
+	setupExtension: () => {
+		showdown.extension(`Extension`, {
+			type: `lang`,
+			filter: function (text, converter) {
+				const callback = program.getSymbolRecord(converter.callback);
+				return text.replace(/~([^~]+)~/g, function (match, group) {
+					callback.payload = group;
+					program.run(callback.cb);
+					return callback.payload;
+				});
+			}
+		});
 	},
 
 	getHandler: (name) => {

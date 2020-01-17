@@ -1,5 +1,7 @@
 const EasyCoder_SVG = {
 
+	name: `EasyCoder_SVG`,
+
 	Circle: {
 
 		compile: (compiler) => {

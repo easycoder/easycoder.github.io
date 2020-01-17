@@ -148,15 +148,15 @@
         "file":"install",
         "title":"Installation"
     },
-	"deploy": {
-    	"index":53,
-        "file":"deploy",
-        "title":"Deployment"
-    },
 	"tools": {
-    	"index":54,
+    	"index":53,
         "file":"tools",
         "title":"Tools"
+    },
+	"contact": {
+    	"index":54,
+        "file":"contact",
+        "title":"Contact"
     },
 	"contents": {
         "title":"Contents"

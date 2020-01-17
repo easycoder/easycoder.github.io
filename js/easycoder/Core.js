@@ -1374,7 +1374,9 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const program = compiler.getProgram();
 			program.script = compiler.nextToken();
+			compiler.script = program.script;
 			if (EasyCoder.scripts[program.script]) {
+				delete compiler.script;
 				throw new Error(`Script '${program.script}' is already running.`);
 			}
 			EasyCoder.scripts[program.script] = program;
@@ -2322,7 +2324,7 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
-			if ([`now`, `today`, `newline`, `break`, `empty`].includes(token)) {
+			if ([`now`, `today`, `newline`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
 					domain: `core`,
@@ -2752,6 +2754,15 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: false,
 					content: `<br />`
+				};
+			case `uuid`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.replace(/[xy]/g, function(c) {
+						var r = Math.random() * 16 | 0, v = c == `x` ? r : (r & 0x3 | 0x8);
+						return v.toString(16);
+					})
 				};
 			case `encode`:
 				return {

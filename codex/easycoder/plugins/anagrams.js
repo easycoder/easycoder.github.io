@@ -1,6 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 const EasyCoder_Anagrams = {
 
+	name: `EasyCoder_Anagrams`,
+
 	value: {
 
 		compile: (compiler) => {
