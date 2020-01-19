@@ -8,7 +8,6 @@
 	div Document
 	img Banner
 	hr Rule
-	a ShowNotes
 	module ShowdownModule
 	variable Script
 	
