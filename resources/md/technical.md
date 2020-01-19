@@ -12,13 +12,13 @@ At ~ec~ we take issue with this assumption, for the following reasons:
 
 1. Frameworks reduce the scope for ingenuity, seeking to eliminate errors from the outset by reducing all programming effort to a simple process of following rules that relies more on learning the structure than on thinking about problems and solutions.
 
-1. Rather than imposing a straitjacket on developers, large monolithic systems should wherever possible be broken down into smaller units that work in cooperation with each other and are maintained independently - the classic "black box" approach. Each unit can use different desigh choices, depending on the job being done and the skills available to construct it.
+1. Rather than imposing a straitjacket on developers, large monolithic systems should wherever possible be broken down into smaller units that work in cooperation with each other and are maintained independently - the classic "black box" approach. Each unit can use different design choices, depending on the job being done and the skills available to construct it.
 
 1. Frameworks are hard to learn and none last long before they are replaced by different frameworks. It is naive to believe that any of the current crop will still be preeminent in a decade's time. This is bad for projects that require intermittent maintenance over a long period, where skills are often not maintained in the organization. External contractors brought in to deal with updates do not have time to become fully familiar with the product, and overall integrity suffers.
 
 1. Programming should not be the preserve solely of highly skilled professionals. It's a skill anyone can develop, that can be used at varying levels. To expect everyone to spend months learning JavaScript plus a massive framework is to exclude talent that is very much needed.
 
-## Sructure of ~ec~ ##
+## Structure of ~ec~ ##
 
 ~ec~ operates without HTML or JavaScript. There's no virtual DOM; instead the language operates directly on the page. The package has its own compiler and runtime, which both run in the browser. Scripts are plain text files that are compiled on demand. This is very quick; the compiler will process about 20 lines of script per millisecond on an average laptop and take only a little longer on a smartphone. Scripts tend to be fairly small, usually well under 1000 lines long. Page load times are usually under 2 seconds, depending on how much is needed in the initial page and how much can be deferred until after the page has rendered.
 
