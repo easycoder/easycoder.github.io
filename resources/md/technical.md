@@ -8,7 +8,7 @@ By imposing structure we aim to reduce the opportunity for coding errors to be m
 
 At ~ec~ we take issue with this claim, for the following reasons:
 
-1. Frameworks greatly add to the size of the code base, and a primary rule of programming is that the bigger the code, the more places there are for bugs to hide.
+1. Frameworks greatly add to the size of the code base, and a primary rule of programming is that the more code you have the more places there are for bugs to hide.
 
 1. Frameworks reduce the scope for ingenuity, seeking to eliminate errors from the outset by reducing all programming effort to a simple process of following rules that relies more on learning the structure than on thinking about problems and solutions.
 
