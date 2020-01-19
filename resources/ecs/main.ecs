@@ -180,6 +180,16 @@ BuildPage:
 	end
 
 	create ButtonItem in ButtonList
+	create TechnicalButton in ButtonItem
+	set the style of TechnicalButton to ButtonStyle
+	set style `margin-top` of TechnicalButton to `0.25em`
+	set the text of TechnicalButton to `Technical Overview`
+	on click TechnicalButton
+	begin
+		location `/technical.html`
+	end
+
+	create ButtonItem in ButtonList
 	create CodexButton in ButtonItem
 	set the style of CodexButton to ButtonStyle
 	set style `margin-top` of CodexButton to `0.25em`
@@ -191,16 +201,6 @@ BuildPage:
 		send `pause` to CurrentModule
 		set style `display` of Body to `none`
 		run Script
-	end
-
-	create ButtonItem in ButtonList
-	create TechnicalButton in ButtonItem
-	set the style of TechnicalButton to ButtonStyle
-	set style `margin-top` of TechnicalButton to `0.25em`
-	set the text of TechnicalButton to `Technical Overview`
-	on click TechnicalButton
-	begin
-		location `/technical.html`
 	end
 
 	create Notes in Main
