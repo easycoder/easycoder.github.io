@@ -10,7 +10,9 @@ At ~ec~ we take issue with this assumption, for the following reasons:
 
 1. Frameworks greatly add to the size of the code base, and a primary rule of programming is that the bigger the code, the more places there are for bugs to hide.
 
-1. Frameworks reduce the scope for ingenuity, seeking to eliminate errors from the outset by reducing all programming effort to a simple process of following rules. This relies more on learning the structure and less on thinking about problems and solutions. Large monolithic systems should wherever possible be broken down into smaller units that work in cooperation with each other and are maintained independently - the classic "black box" approach. Each unit can use different desigh choices, depending on the job being done and the skills available to construct it.
+1. Frameworks reduce the scope for ingenuity, seeking to eliminate errors from the outset by reducing all programming effort to a simple process of following rules that relies more on learning the structure than on thinking about problems and solutions.
+
+1. Rather than imposing a straitjacket on developers, large monolithic systems should wherever possible be broken down into smaller units that work in cooperation with each other and are maintained independently - the classic "black box" approach. Each unit can use different desigh choices, depending on the job being done and the skills available to construct it.
 
 1. Frameworks are hard to learn and none last long before they are replaced by different frameworks. It is naive to believe that any of the current crop will still be preeminent in a decade's time. This is bad for projects that require intermittent maintenance over a long period, where skills are often not maintained in the organization. External contractors brought in to deal with updates do not have time to become fully familiar with the product, and overall integrity suffers.
 
