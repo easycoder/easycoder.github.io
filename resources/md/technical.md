@@ -1,6 +1,6 @@
 # Technical Overview #
 
-~ec~ is a scripting language for browsers, written in JavaScript. It comprises a compiler and a runtime and by using a pluggable, modular architecture it can handle projects of any size. For general information see [easycoder.github.io](easycoder.github.io).
+~ec~ is an English-like, high level scripting language for browsers, written in JavaScript. It comprises a compiler and a runtime and by using a pluggable, modular architecture it can handle projects of any size. For general information see [easycoder.github.io](easycoder.github.io).
 
 Modern web programming regards structure as being more important than content. A plethora of frameworks exist to provide a structural basis for any web project, and without a deep understanding of at least one such framework it is hard to be taken seriously as a web programmer.
 
