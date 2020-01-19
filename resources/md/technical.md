@@ -6,7 +6,7 @@ Modern web programming regards structure as being more important than content. A
 
 By imposing structure we aim to reduce the opportunity for coding errors to be made. It's difficult to measure the success of this approach since to do so would mean creating a second version of the project that does not use a structural framework, then comparing the two to see which is better. Such a test is unlikely to take place for anything but a trivial project, so we have to take the word of the industry that their products are everything claimed for them.
 
-At ~ec~ we take issue with this assumption, for the following reasons:
+At ~ec~ we take issue with this claim, for the following reasons:
 
 1. Frameworks greatly add to the size of the code base, and a primary rule of programming is that the bigger the code, the more places there are for bugs to hide.
 
@@ -26,8 +26,10 @@ At ~ec~ we take issue with this assumption, for the following reasons:
 
 ~ec~ is modular and pluggable. It is composed of a core set of JavaScript files totalling less than 250k bytes, with additional plugins that provide special functionality. Many projects will need no more than the core set, which provides basic language features, DOM manipulation, JSON and REST features. Plugins are available for text editors, Google Maps, markdown processing and more. In this respect ~ec~ is itself a framework, albeit one that emphasises language rather than structure.
 
-~ec~ compiles script into an intermediate form; an array of objects, one for each step in the program. The runtime engine goes through the array, achieving respectable performance.
+~ec~ compiles script into an intermediate form; an array of objects, one for each step in the program. The runtime engine goes through the array item by item and achieves respectable performance.
 
 ~ec~ is highly customizable. If the supplied functionality is insufficient, a plugin module can be written to provide missing features or to make existing ones run faster. Plugin programming is straightforward; it comprises code to handle the additional syntax and to wrap the algorithms used at runtime. Google Maps is a good example; it has a simple API that is well suited to being implemented as an ~ec~ plugin, and the source JavaScript of the plugin, comprising compiler and runtime, is only 560 lines long.
 
 ~ec~ does not use any third-party libraries for its core code, so its behavior can be relied upon not to change. Some plugins make use of code from CDN libraries so we cannot offer any guarantees in that respect, but all the ~ec~ files are available as Open Source here on GitHub.
+
+A website bult with ~ec~ can be maintained by any competent programmer without needing high-level skills in specific languages or frameworks. This lowers the overall cost of ownership and helps extend the useful life span of the product.
