@@ -18,7 +18,7 @@ At ~ec~ we take issue with this claim, for the following reasons:
 
 1. Programming should not be the preserve solely of highly skilled professionals. It's a skill anyone can develop, that can be used at varying levels. To expect everyone to spend months learning JavaScript plus a massive framework is to exclude talent that is very much needed.
 
-## Structure of ~ec~ ##
+## Structure and benefits of ~ec~ ##
 
 ~ec~ operates without HTML or JavaScript. There's no virtual DOM; instead the language operates directly on the page. The package has its own compiler and runtime, which both run in the browser. Scripts are plain text files that are compiled on demand. This is very quick; the compiler will process about 20 lines of script per millisecond on an average laptop and take only a little longer on a smartphone. Scripts tend to be fairly small, usually well under 1000 lines long. Page load times are usually under 2 seconds, depending on how much is needed in the initial page and how much can be deferred until after the page has rendered.
 
