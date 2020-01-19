@@ -7,7 +7,7 @@ When the script runs the text will appear in the run panel and hide this tutoria
 
 ~copy~
 
-There's quite a lot going on here, so I'll explain. The first line is a variable declaration, a fancy programmer's term meaning a definition of somewhere you can store information. In the real world you might have 2 dogs, called Rover and Spot. When you refer to the first one in conversation you may well say "This is my dog Rover". Your interlocutor (the person you're talking to) knows what a dog is, and in writing we confirm that Rover is a name because we spell it with a capital letter. Once we've identified the animal in question we can refer to him as just Rover without having to repeat 'my dog' as well.
+There's quite a lot going on here, so I'll explain. The first line is a comment which can be ignored. After that is p Para, which is a variable declaration, a fancy programmer's term meaning a definition of somewhere you can store information. In the real world you might have 2 dogs, called Rover and Spot. When you refer to the first one in conversation you may well say "This is my dog Rover". Your interlocutor (the person you're talking to) knows what a dog is, and in writing we confirm that Rover is a name because we spell it with a capital letter. Once we've identified the animal in question we can refer to him as just Rover without having to repeat 'my dog' as well.
 
 ~ec~ works in the same way as English. I need to be clear about that because for some curious reason most other computer languages do things in exactly the opposite manner, starting names with lower-case letters and types with capital letters. For many beginners this is counter-intuitive so we prefer to follow the English way.
 
