@@ -20,7 +20,7 @@ At ~ec~ we take issue with this claim, for the following reasons:
 
 ## Structure and benefits of ~ec~ ##
 
-~ec~ operates without HTML or JavaScript. There's no virtual DOM; instead the language operates directly on the page. The package has its own compiler and runtime, which both run in the browser. Scripts are plain text files that are compiled on demand. This is very quick; the compiler will process about 20 lines of script per millisecond on an average laptop and take only a little longer on a smartphone. Scripts tend to be fairly small, usually well under 1000 lines long. Page load times are usually under 2 seconds, depending on how much is needed in the initial page and how much can be deferred until after the page has rendered.
+~ec~ operates without HTML or JavaScript. There's no virtual DOM; instead the language operates directly on the page. The package has its own compiler and runtime, which both run in the browser. Scripts are plain text files that are compiled on demand. This is very quick; the compiler will process about 20 lines of script per millisecond on an average laptop and take only a little longer on a smartphone. Scripts tend to be fairly small, generally well under 1000 lines long, and are compiled on the fly when needed. Page load times are usually under 2 seconds, depending on how much is needed in the initial page and how much can be deferred until after the page has rendered.
 
 ~ec~ scripts describe functionality as seen by a user of the system. Aside from the DOM there are no structural features in the language. This may be a disadvantage for some types of project but ~ec~ is not intended to be a "one size fits all" solution; it's designed to be quick, effective and accessible by casual programmers.
 
