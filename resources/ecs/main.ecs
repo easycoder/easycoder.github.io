@@ -18,7 +18,7 @@
 	button AboutButton
 	button PhilosophyButton
 	button CodexButton
-    button ThisIsMeButton
+  button TechnicalButton
 	hr Rule
 	a ShowNotes
 	module ShowdownModule
@@ -194,13 +194,13 @@ BuildPage:
 	end
 
 	create ButtonItem in ButtonList
-	create ThisIsMeButton in ButtonItem
-	set the style of ThisIsMeButton to ButtonStyle
-	set style `margin-top` of ThisIsMeButton to `0.25em`
-	set the text of ThisIsMeButton to `This is Me`
-	on click ThisIsMeButton
+	create TechnicalButton in ButtonItem
+	set the style of TechnicalButton to ButtonStyle
+	set style `margin-top` of TechnicalButton to `0.25em`
+	set the text of TechnicalButton to `Technical Overview`
+	on click TechnicalButton
 	begin
-		location `/thisisme/index.html`
+		location `/technical.html`
 	end
 
 	create Notes in Main

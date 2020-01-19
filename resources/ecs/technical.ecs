@@ -1,0 +1,48 @@
+!	EasyCoder Main
+
+	script Technical
+    
+	div Body
+	div Main
+	div Header
+	div Document
+	img Banner
+	hr Rule
+	a ShowNotes
+	module ShowdownModule
+	variable Script
+	
+	create Body
+	if mobile
+		set the style of Body to `width:100%`
+	else
+		set the style of Body to `width:100%;max-width:1200px;margin:0 auto`
+	
+	create Header in Body
+	if mobile
+		set the style of Header to `text-align:center`
+	else
+		set the style of Header to `margin:0 2em;text-align:center`
+	
+	create Banner in Header
+	if not mobile set the style of Banner to `width:50%;margin:0 auto`
+	set attribute `src` of Banner to `resources/img/banner.png`
+	
+	create Rule in Body
+	
+	create Main in Body
+	if not mobile
+	begin
+		set style `display` of Main to `flex`
+	end
+	
+	create Document in Main
+	set the style of Document to `flex:1`
+
+	rest get Script from `/resources/ecs/showdown.ecs`
+	run Script with Document as ShowdownModule
+
+	rest get Script from `/resources/md/technical.md`
+  send Script to ShowdownModule
+
+	stop

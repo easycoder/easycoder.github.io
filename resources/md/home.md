@@ -12,7 +12,7 @@
 
 - Any part of the screen can be replaced with new content taken from a remote server without the need to reload the page.
 
-Although these features are the ones most likely to be used by the averge website owner, ~ec~ can do a lot more, to the point it can be used to build entire interactive websites without a single line of JavaScript ever being seen. A good example is our own site, that you're reading now.
+Although these features are the ones most likely to be used by the averge website owner, ~ec~ can do a lot more, to the point it can be used to build entire interactive websites without a single line of HTML or JavaScript ever being seen. A good example is our own site, that you're reading now.
 
 ### Do I need to learn programming? ###
 
