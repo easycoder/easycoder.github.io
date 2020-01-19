@@ -64,9 +64,9 @@
     },
     "json index": {
       "syntax": "[the] json index of {item} in {array}",
-      "description": "",
+      "description": "Returns the zero-based index of the element in the array, or -1 if it is not present.",
       "examples": "put the json index of `August` in Months into Index"
     }
   },
-  "conditions": {}
+  "conditions": "{}"
 }
