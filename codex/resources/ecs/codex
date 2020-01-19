@@ -863,6 +863,10 @@ GetPassword:
         	put prompt Message with `` into Password
         end
         rest get PasswordValid from `_verify/` cat Password
+				or begin
+					clear PasswordValid
+					return
+				end
         if PasswordValid is `yes` 
         begin
             put Password into storage as `.password`
