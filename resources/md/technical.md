@@ -24,7 +24,7 @@ At ~ec~ we take issue with this assumption, for the following reasons:
 
 ~ec~ scripts describe functionality as seen by a user of the system. Aside from the DOM there are no structural features in the language. This may be a disadvantage for some types of project but ~ec~ is not intended to be a "one size fits all" solution; it's designed to be quick, effective and accessible by casual programmers.
 
-~ec~ is modular and pluggable. It is composed of a core set of JavaScript files totalling less than 250k bytes, with additional plugins that provide special functionality. Many projects will need no more than the core set, which provides basic language features, DOM manipulation, JSON and REST features. Plugins are available for text editors, Google Maps, markdown processing and more.
+~ec~ is modular and pluggable. It is composed of a core set of JavaScript files totalling less than 250k bytes, with additional plugins that provide special functionality. Many projects will need no more than the core set, which provides basic language features, DOM manipulation, JSON and REST features. Plugins are available for text editors, Google Maps, markdown processing and more. In this respect ~ec~ is itself a framework, albeit one where language, not structure, is the predominant feature.
 
 ~ec~ compiles script into an intermediate form; an array of objects, one for each step in the program. The runtime engine goes through the array, achieving respectable performance.
 
