@@ -824,6 +824,7 @@ DoRunStop:
         set style `display` of HelpOuter to `block`
         if Mobile set style `display` of ScriptName to `none`
         put `help` into View
+    	set the title to `Codex - ` cat File
 	end
     stop
 

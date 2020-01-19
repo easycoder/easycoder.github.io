@@ -1,0 +1,19 @@
+# The properties file for EasyCoder Codex
+
+# The title of the website
+title=EasyCoder Codex
+
+# The URL of the MySQL server
+sqlhost=mysql.easycoder.software
+
+# The name of the database user
+sqluser=graham
+
+# The database password
+sqlpassword=eyore1948
+
+# The database to use
+sqldatabase=easycoder_codex
+
+# The admin password
+password=$2y$10$V346DLlIgUwaP4qQhX/MAevWEa2A1yqzFl26o08HIdvkhUszhROPi

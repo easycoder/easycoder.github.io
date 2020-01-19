@@ -363,7 +363,7 @@
     },
     "uuid": {
       "syntax": "uuid",
-      "description": "Generates a UUID - a random string with a very low probability of being repeated. This is usually random enough to ensure global uniqueness for most projects.%0a%0aIn some cases it may be easier to use a value composed of some local feature plus a timestamp, for example%0a%0a~m:MyEmailAddress cat now~%0a%0awhich combines the user~sq~s email address with the current time, guaranteeing a new unique value every second (assuming only one person has the use of that email address). If the rules are kept to, these values are globally unique.",
+      "description": "Generates a UUID - a random string with a very low probability of being repeated. This is usually enough to ensure global uniqueness for most projects.%0a%0aIn some cases it may be easier to use a value composed of some local feature plus a timestamp, for example%0a%0a~m:MyEmailAddress cat now~%0a%0awhich combines the user~sq~s email address with the current time, guaranteeing a new unique value every second (assuming only one person has the use of that email address). If the rules are kept to, these values are globally unique.",
       "examples": "put uuid into Key"
     }
   },
