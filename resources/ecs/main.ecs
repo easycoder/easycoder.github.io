@@ -17,8 +17,9 @@
 	button ExamplesButton
 	button AboutButton
 	button PhilosophyButton
+	button ContactButton
 	button CodexButton
-  button TechnicalButton
+    button TechnicalButton
 	hr Rule
 	a ShowNotes
 	module ShowdownModule
@@ -27,6 +28,7 @@
 	module ExamplesModule
 	module AboutModule
 	module PhilosophyModule
+	module ContactModule
 	module CurrentModule
 	variable Script
 	variable ButtonStyle
@@ -99,6 +101,8 @@ BuildPage:
 	run Script with ShowdownModule as AboutModule
 	rest get Script from `/resources/ecs/philosophy.ecs`
 	run Script with ShowdownModule as PhilosophyModule
+	rest get Script from `/resources/ecs/contact.ecs`
+	run Script with ShowdownModule as ContactModule
 
 	alias CurrentModule to HomeModule
 	send to HomeModule
@@ -177,6 +181,20 @@ BuildPage:
 		send `pause` to CurrentModule
 		alias CurrentModule to PhilosophyModule
 		send to PhilosophyModule
+	end
+    
+	create ButtonItem in ButtonList
+	create ContactButton in ButtonItem
+	set the style of ContactButton to ButtonStyle
+	set style `margin-top` of ContactButton to `0.25em`
+	set the text of ContactButton to `Contacts`
+	on click ContactButton
+	begin
+		gosub to DeselectAllButtons
+		set style `background` of ContactButton to `darkgray`
+		send `pause` to CurrentModule
+		alias CurrentModule to ContactModule
+		send to ContactModule
 	end
 
 	create ButtonItem in ButtonList
