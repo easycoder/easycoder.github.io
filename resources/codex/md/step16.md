@@ -1,4 +1,5 @@
 # Using Google Maps #
+
 One of the strengths of ~ec~ is the way it can be extended using plugins. These are JavaScript code modules that provide extra language features to users of the system. EasyCoder comes with a number of these, available on demand, so I'll demonstrate how to use one of the more interesting ones.
 
 Google Maps are one of the most spectacular features to be found on any website. They provide a vast range of features and require very little effort to include on the page. That said, it takes some effort to learn how to do it, and we've taken away that effort by building our own ~ec~ plugin to handle maps for you. Currently it's a little basic but we hope to add more features as time goes by. Click here to load the map script:
