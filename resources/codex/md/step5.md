@@ -8,19 +8,20 @@ As before click  to run the script.
 
 That looks a lot better; the text is bigger, it's in the middle of the panel and it's a nice shade of blue. How was this done?
 
-On the web, the content of your page - what you see - is determined by HTML. This includes both the visible text and images, but also the block structure that make up your page. Paragraphs and other components defined in your EasyCoder scripts translate directly to corresponding forms to go in the web page. The type names are identical although the syntax is very different.
+On the web, the content of your page - _what you see_ - is determined by HTML. This includes both the visible text and images, but also the block structure that make up your page. Paragraphs and other components defined in your EasyCoder scripts translate directly to corresponding forms to go in the web page. The type names are identical although the syntax is very different.
 
-Styling, on the other hand, governs how the page looks, and this is controlled by CSS, which stands for Cascading Style Sheets. Keeping these two things separate lets us change the appearance without having to change the content. You may not appreciate just how useful this technique is until you work with it for a while.
+Styling, on the other hand, governs how the page looks, and this is controlled by CSS, which stands for _Cascading Style Sheets_. Keeping these two things separate lets us change the appearance without having to change the content. You may not appreciate just how useful this technique is until you work with it for a while.
 
 CSS lets you control virtually any aspect of how a thing looks. Such as:
 
-size
-color
-margins and padding
-borders
-backgrounds
-positioning
-visibility
+- size
+- color
+- margins and padding
+- borders
+- backgrounds
+- positioning
+- visibility
+
 and so on. In our example we've used the following:
 
 ~code:text-align:center;color:blue;font-size:1.4em~

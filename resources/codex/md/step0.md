@@ -5,7 +5,7 @@ We all have coding skills. Without them we wouldn't be able to follow simple ins
 
 Coding is about learning a particular way of thinking, then using that skill to solve problems, and this website is a place to learn that skill. It's suitable for anyone from pre-teens upwards.
 
-This tutorial takes you through the basics of coding, using simple example scripts you can run in the editor itself. It's designed to work on a smartphone as well as on a desktop computer. Well maybe not quite as well; it's not as easy on a small screen but you can do it, although it's quite a bit easier to use a PC or at least a tablet.
+This tutorial takes you through the basics of coding, using simple example scripts you can write in our editor then run directly, all without leaving this page. It's designed to work on a smartphone as well as on a desktop computer. Well, it's a bit harder on a small screen but you can do it, though it's preferable to use a PC or at least a tablet.
 
 You'll be coding with a scripting language that's much quicker to learn than those used by professional programmers. Just as with recipes, it's possible to write computer code in a form that looks a lot like English. Many beginners think they should start with one of the mainstream computer languages - C, Java, Python and so on - because that will get them more quickly to their goal of making money from coding. Unfortunately, there is no short cut to becoming a professional programmer; it takes years of studying code written by others in a variety of languages, writing your own code, making mistakes, fixing them and learning from experts. The sooner you learn the basics, the sooner you'll be able to get onto all the more complex stuff.
 
@@ -21,4 +21,4 @@ As well as being a learning resource, ~ec~ **_Codex_** is also a complete IDE fo
 
 You can also download and run Codex locally on your own computer. There's no difference except that when you save a script it will be written to a file on the computer's hard drive instead of being kept in browser storage. This can be very convenient as it allows you to write and test code even without an Internet connection.
 
-You can optionally install Codex on your own server. For more information see our ~link:install:Installation~ page.
+You can optionally install Codex on your own server. For more information see our ~link:install:Installation~ page or contact us.

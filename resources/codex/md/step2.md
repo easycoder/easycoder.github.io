@@ -15,7 +15,7 @@ As it happens, this is exactly how ~ec~ does it too. Here you are adding the val
 
 The words ~code:value~ and ~code:variable~ have specific meanings. A ~code:value~ is anything you can measure or count, such as cars or pennies or days. ~ec~ doesn't care what they are; it just knows you have an X pile and a Y pile of them and want to add them together into a Z pile.
 
-A ~code:variable~ is a little more specific; it's a container where something is stored. Your wallet or purse contains money having a certain value, so the purse also has that value, but although a dollar or a pound have values they can't contain other things, so they can't be variables. All this means is that X and Y can be simple values or variables having values, but Z must be a variable.
+A ~code:variable~ is a little more specific; it's a container where something is stored. Your wallet or purse contains money having a certain value, so the purse also has that value. A dollar or a pound, on the other hand, have specific values; they can't contain other things so they can't be variables. All this means is that in the sum above, X and Y can be either values or variables (containing values), but Z can't be a simple value; it must be a variable because we're putting something (the sum of X and Y) into it.
 
 A variant of this sum is where you want to add value X to whatever is already in Y. The sum is simpler:
 
