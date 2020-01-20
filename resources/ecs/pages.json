@@ -149,9 +149,14 @@
         "title":"Installation"
     },
 	"tools": {
-    	"index":54,
+    	"index":53,
         "file":"tools",
         "title":"Tools"
+    },
+	"contact": {
+    	"index":54,
+        "file":"contact",
+        "title":"Contact"
     },
 	"contents": {
         "title":"Contents"
