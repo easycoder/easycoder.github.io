@@ -1,5 +1,6 @@
 # Basic arithmetic #
-EasyCoder is designed for the web; to build apps that do stuff in a browser. The world of the browser is primarily visual, with lots of images and text, but there's always a need for some basic arithmetic so we'll write a couple of scripts that illustrate what's available.
+
+~ec~ is designed for the web; to build apps that do stuff in a browser. The world of the browser is primarily visual, with lots of images and text, but there's always a need for some basic arithmetic so we'll write a couple of scripts that illustrate what's available.
 
 In most computer languages, if you want to add numbers together it will look like your school algebra:
 
