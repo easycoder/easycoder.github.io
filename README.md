@@ -1,4 +1,4 @@
-### EasyCoder ###
+# EasyCoder #
 
 **_EasyCoder_** is a WordPress or standalone plugin that lets you write highly readable scripts to control the appearance and behavior of your web pages. This is what JavaScript does, but **_EasyCoder_** is a lot easier to learn. Here are its main benefits:
 
@@ -12,12 +12,12 @@
  1. **_EasyCoder_** has a fully pluggable architecture. This allows any owner of JavaScript functionality to 'wrap' this in script commands and offer it as a plugin, allowing any site developer to use it without the need to learn JavaScript. Typical examples of such wrappers would be for Google Maps or for CKEditor, each of which presents a concise API and has functionality that's easily understood and easy to describe in plain English. Such well-encapsulated products are ideal candidates for implementation as **_EasyCoder_** plug-ins.
  1. **_EasyCoder_** includes a REST server that permits scripts to access resources on demand from the server rather than having them embedded in the page. Resources include scripts, HTML components, CSS and general data, and all can be loaded and unloaded dynamically.
  1. **_EasyCoder_** is well suited to the construction of single-page web designs of unlimited size. The memory space occupied by JavaScript remains roughly the same no matter how many scripts and data you load and unload using REST. There is no memory or performance hit as the size of the project grows, because modules remain on the server, ready for use, instead of taking up browser space.
- 
-It is said that there's a shortage of competent programmers, a belief that's confirmed by the huge number of job vacancies all asking for the same skills such as React. If that's true then the use of React or similar tools in any project that is not managed by a permanent team is almost guaranteed to result in problems later with maintenance. If it's hard to find developers now then the chances of locating a skilled React engineer in 5-10 years' time at a price compatible with effective maintenance are vanishingly small.
+
+It is said that there's a shortage of competent programmers, a belief that's confirmed by the huge number of job vacancies all asking for skills such as React. If that's true then the use of React or similar tools in any project that is not managed by a permanent team is almost guaranteed to result in problems later with maintenance. If it's hard to find developers now then the chances of locating a skilled React engineer in 5-10 years' time at a price compatible with effective maintenance are vanishingly small.
 
 **_EasyCoder_** tries to address this problem by offering a way to build websites that won't rely on such high-level skills, using the power of language rather than relying on elaborate structures to achieve the desired goal. In the hands of a competent programmer it makes little difference to the cost of building the project but a huge difference to that of maintaining it by people lacking those skills. **_EasyCoder_** scripts are easy to understand by anyone who has a good knowledge of what the site does, even by many people who aren't programmers at all.
 
-There's a lot more information on [our website](https://easycoder.software) including example scripts, and full reference documentation on the language plus a tutorial course, suitable for desktop or mobile users, can be found on [our Codex page](https://codex.easycoder.software). Anyone interested in helping develop **_EasyCoder_** will find a developer manual in the last of the links below.
+There's a lot more information on [our website](https://easycoder.github.io), which includes example scripts plus the Codex; a full reference documentation on the language and a tutorial course suitable for desktop or mobile users. Anyone interested in helping develop **_EasyCoder_** will find an outline developer manual in the last of the links below.
 
 [A Simple Example](Example.md)
 
@@ -27,10 +27,11 @@ There's a lot more information on [our website](https://easycoder.software) incl
 
 [Developer Manual](developer/Developer.md)
 
-### The Codex ###
-The Codex is a separate website that provides a tutorial series plus a programming playground to try out code and a complete programmers' reference to the **_EasyCoder_** language. We also offer a zip file that can be unpacked on any suitable host. The only special hosting requirement is a recent version of PHP. Running it on your own hosting allows you to save scripts to your server; otherwise they remain in browser local storage.
+## The Codex ##
 
-### License ###
+The Codex is a page on [our website](https://easycoder.github.io) that provides a tutorial series plus a programming playground to try out code and a complete programmers' reference to the **_EasyCoder_** language. We also offer a zip file that can be unpacked on any suitable host.
+
+## License ##
 
 Copyright (c) 2018-19 EasyCoder Software
 
@@ -39,4 +40,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
