@@ -2,7 +2,7 @@
 
     script Codex
 
-		div Body
+	div Body
     div Screen
     div CodePanel
     div NonCodePanel
@@ -41,7 +41,7 @@
     a Link
     a Index
     module TestModule
-		module DocManModule
+	module DocManModule
   	callback DecoratorCallback
     variable Password
     variable PasswordRequested
@@ -948,6 +948,7 @@ StopTestModule:
 	return
 
 GetPassword:
+print `ReadOnly = ` cat ReadOnly
 	if ReadOnly
     begin
     	clear PasswordValid
