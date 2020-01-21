@@ -8,11 +8,11 @@ The mechanism for requesting a plugin is very simple. Suppose you want to includ
 
 ~pre:load plugin `gmap`~
 
-In this example the plugin is a standard ~ec~ one but you can also load third-party plugins from any URL (if you deal with CORS issues).
+In this example the plugin is a standard ~ec~ one but you can also load third-party plugins from any URL if you deal with CORS issues.
 
 Once the plugin is loaded it is available to any script that needs it (but not the one that loaded it). Here, any script that includes map commands can be loaded and compiled, as in
 
-~pre:rest get Script from `/resources/scripts/myscript`
+~pre:rest get Script from `/resources/ecs/myscript.ecs`
 run Script~
 
 (This is the simplest form, that assumes you don't need to communicate with the script once it's running.)

@@ -1,7 +1,7 @@
 # Installing the EasyCoder Codex #
-The ~ec~ **Codex** is a complete integrated development system for coding websites. It can be run locally in your own computer or installed on your server; the only prerequisite is a recent copy of PHP.
+The ~ec~ **Codex** is a complete integrated development system for coding websites. It can be run locally in your own computer or installed on your server; the only prerequisite is a recent copy of PHP or Python 3, depending on which you want to use to run a local webserver.
 
-## Installation on a regular PC ##
+## Installation on a regular PC using PHP ##
 First download the Codex archive into an empty folder.
 
 Unzip the archive.
@@ -14,6 +14,9 @@ You should get confirmation that the PHP server started.
 
 Now go to your browser and type ~code:localhost:8000~ into the address bar. Hit ~code:Enter~. The Codex should start up.
 
+## Installation on a regular PC using Python 3 ##
+In this case, use the ~rest.py~ script to run a local webserver on any port you choose.
+
 ## Installation on a server ##
 Download the Codex archive into the root of your website.
 
@@ -21,7 +24,7 @@ Unzip the archive.
 
 Type the URL of your server into your browser address bar and hit ~code:Enter~. The Codex should start up.
 
-If you need help, join our Slack channel by clicking here.
+If you need help, join our [Slack channel](https://join.slack.com/t/easycoder-software/shared_invite/enQtNTU5ODEwOTQ5NTU0LWQ1NWVkOTUxOGQ3NzJmNDI1ZGRlOTdmMjc1NDAxMGIwMTFjODg1ZDJhODEzMzUzODc2MDNlZWU4NmYyZWRlOWI).
 
 ## Script strategies ##
 There are two main strategies for using ~ec~ scripts, as follows:
@@ -62,6 +65,8 @@ becomes
 
 ~pre:attach Button to &#96;ec-button&#96;~
 
+where ~code:ec-button~ is the id of an element that already exists in your HTML.
+
 The most common use of this strategy is probably where an existing page is being retrofitted with ~ec~ script.
 
 ### Script from your server ###
@@ -85,7 +90,7 @@ Here's what the simplest form of this page looks like:
 <pre id="easycoder-script">
 
 variable Script
-rest get Script from &#96;/resources/scripts/myscript&#96;
+rest get Script from &#96;/resources/ecs/myscript.ecs&#96;
 run Script
 stop
 
@@ -95,8 +100,8 @@ stop
 
 </html>~
 
-Here the script (~code:myscript~) is located in the ~code:{site root}/resources/scripts~ directory. When you write scripts in Codex, put them in this directory, allowing you to directly maintain your site code from any computer (including a smartphone).
+Here the script (~code:myscript.ecs~) is located in the ~code:{site root}/resources/ecs~ directory. When you write scripts in Codex, put them in this directory, allowing you to directly maintain your site code from any computer (including a smartphone). The downloaded package includes a file called ~scripted.html~, which is a script editor with which you can edit files in the ~ecs~ directory. You will have to set up an encrypted password in ~code:properties.txt~; it's probably best to contact us for details of this unless you feel like diving into the ~code:rest.php~ REST server.
 
 If you can deal with the CORS issues you can use a complete URL to retrieve your script from a remote site, as in
 
-~pre:rest get Script from &#96;https://mysite.com/myscripts/home&#96;~
+~pre:rest get Script from &#96;https://mysite.com/myscripts/home.ecs&#96;~
