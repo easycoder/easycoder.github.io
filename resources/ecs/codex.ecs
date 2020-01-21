@@ -99,8 +99,12 @@
 !	Properties file only exists if the site is writable
     put empty into Script
     clear ReadOnly
-		rest get Script from `/properties.txt` or set ReadOnly
-
+    rest get Script from `/properties.txt`
+    or begin
+        set ReadOnly
+        go to L2
+    end
+L2:
     clear PasswordRequested
     
     if portrait
