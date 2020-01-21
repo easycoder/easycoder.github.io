@@ -952,7 +952,6 @@ StopTestModule:
 	return
 
 GetPassword:
-print `ReadOnly = ` cat ReadOnly
 	if ReadOnly
     begin
     	clear PasswordValid
