@@ -15,7 +15,7 @@ You should get confirmation that the PHP server started.
 Now go to your browser and type ~code:localhost:8000~ into the address bar. Hit ~code:Enter~. The Codex should start up.
 
 ## Installation on a regular PC using Python 3 ##
-In this case, use the ~rest.py~ script to run a local webserver on any port you choose.
+In this case, use the ~code:rest.py~ script to run a local webserver on any port you choose.
 
 ## Installation on a server ##
 Download the Codex archive into the root of your website.
