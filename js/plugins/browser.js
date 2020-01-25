@@ -2641,16 +2641,16 @@ const EasyCoder_Browser = {
 				};
 			case `prompt`:
 				text = compiler.getNextValue();
+				let pre = null;
 				if (compiler.tokenIs(`with`)) {
-					const pre = compiler.getNextValue();
-					return {
-						domain: `browser`,
-						type: `prompt`,
-						text,
-						pre
-					};
+					pre = compiler.getNextValue();
 				}
-				return null;
+				return {
+					domain: `browser`,
+					type: `prompt`,
+					text,
+					pre
+				};
 			case `screen`:
 				attribute = compiler.nextToken();
 				if ([`width`, `height`].includes(attribute)) {
@@ -2815,7 +2815,7 @@ const EasyCoder_Browser = {
 				return {
 					type: `constant`,
 					numeric: false,
-					content: window.prompt(text, pre)
+					content: pre ? window.prompt(text, pre) : window.prompt(text)
 				};
 			case `contentOf`:
 				symbolRecord = program.getSymbolRecord(value.symbol);

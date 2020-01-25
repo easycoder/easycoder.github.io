@@ -1839,7 +1839,19 @@ const EasyCoder_Core = {
 					return false;
 				}
 				if (compiler.nextTokenIs(`to`)) {
-					compiler.next();
+					const token = compiler.nextToken();
+					if ([`array`, `object`].includes(token)) {
+						compiler.next();
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `set`,
+							lino,
+							request: `setVarTo`,
+							target: targetRecord.name,
+							type: token
+						});
+						return true;
+					}
 					const value = [];
 					while (true) {
 						compiler.mark();
@@ -2082,18 +2094,18 @@ const EasyCoder_Core = {
 				}
 				const itemName = program.getValue(command.name);
 				const itemValue = program.evaluate(command.value);
+				let content = itemValue.content;
 				if (itemValue) {
-					if (itemValue.content instanceof Array) {
-						targetJSON[itemName] = itemValue.content;
+					if (content instanceof Array) {
+						targetJSON[itemName] = content;
 					} else if (itemValue.type === `boolean`) {
-						targetJSON[itemName] = itemValue.content;
+						targetJSON[itemName] = content;
 					} else if (itemValue.numeric) {
-						targetJSON[itemName] = itemValue.content;
-					// } else if (itemValue.content.substr(0, 2) === `{"`) {
-					} else if ([`["`, `{"`].includes(itemValue.content.substr(0, 2))) {
+						targetJSON[itemName] = content;
+					} else if (content.length >= 2 && [`["`, `{"`].includes(content.substr(0, 2))) {
 						targetJSON[itemName] = JSON.parse(itemValue.content);
 					} else {
-						targetJSON[itemName] = itemValue.content.split(`"`).join(`\\"`);
+						targetJSON[itemName] = content.split(`"`).join(`\\"`);
 					}
 					targetRecord.value[targetRecord.index] = {
 						type: `constant`,
@@ -2109,6 +2121,14 @@ const EasyCoder_Core = {
 				const name = program.getValue(command.name);
 				targetRecord = program.getSymbolRecord(command.target);
 				targetRecord[name] = program.getValue(command.value);
+				break;
+			case `setVarTo`:
+				targetRecord = program.getSymbolRecord(command.target);
+				targetRecord.value[targetRecord.index] = {
+					type: `constant`,
+					numeric: false,
+					content: command.type === `array` ? `[]` : `{}`
+				};
 				break;
 			default:
 				break;
