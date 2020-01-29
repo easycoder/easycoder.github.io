@@ -99,7 +99,8 @@ const EasyCoder = {
 			return v.content ? `true` : `false`;
 		}
 		if (typeof v.content !==`undefined` && v.content.length >= 2
-			&& (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
+			// && (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
+			&& [`[`, `{`].includes(v.content[0])) {
 			try {
 				const parsed = JSON.parse(v.content);
 				return JSON.stringify(parsed, null, 2);
@@ -204,6 +205,7 @@ const EasyCoder = {
 		compiler.condition = EasyCoder_Condition;
 		compiler.domain = this.domain;
 		compiler.imports = imports;
+		compiler.continue = false;
 		const program = EasyCoder_Compiler.compile(tokens);
 		//    console.log('Program: ' + JSON.stringify(program, null, 2));
 		this.compiling = false;

@@ -40,7 +40,7 @@ const EasyCoder_AWS = {
 				if (compiler.tokenIs(`giving`)) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
-						if (targetRecord.isValueHolder) {
+						if (targetRecord.isVHolder) {
 							target = targetRecord.name;
 							compiler.next();
 						} else {

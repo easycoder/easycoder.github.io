@@ -237,7 +237,7 @@ const EasyCoder_Browser = {
 				if (compiler.nextTokenIs(`in`)) {
 					if (compiler.nextIsSymbol()) {
 						const symbolRecord = compiler.getSymbolRecord();
-						if (symbolRecord.isValueHolder) {
+						if (symbolRecord.isVHolder) {
 							if (compiler.nextTokenIs(`to`)) {
 								const mode = compiler.nextToken();
 								compiler.next();

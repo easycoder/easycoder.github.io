@@ -236,7 +236,7 @@ const EasyCoder_Compiler = {
 		return true;
 	},
 
-	compileVariable: function(domain, keyword, isValueHolder = false, extra = null) {
+	compileVariable: function(domain, keyword, isVHolder = false, extra = null) {
 		this.next();
 		const lino = this.getLino();
 		const item = this.getTokens()[this.getIndex()];
@@ -252,7 +252,7 @@ const EasyCoder_Compiler = {
 			lino,
 			isSymbol: true,
 			used: false,
-			isValueHolder,
+			isVHolder,
 			name: item.token,
 			elements: 1,
 			index: 0,
@@ -399,7 +399,7 @@ const EasyCoder_Core = {
 				if (compiler.isSymbol()) {
 					const symbol = compiler.getSymbol();
 					const variable = compiler.getCommandAt(symbol.pc);
-					if (variable.isValueHolder) {
+					if (variable.isVHolder) {
 						if (compiler.peek() === `giving`) {
 							// This variable must be treated as a second value
 							const value2 = compiler.getValue();
@@ -459,7 +459,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value2) {
 					const result = program.getValue(value2) +
@@ -540,7 +540,7 @@ const EasyCoder_Core = {
 			if (compiler.tokenIs(`to`)) {
 				if (compiler.nextIsSymbol()) {
 					const symbolRecord = compiler.getSymbolRecord();
-					if (symbolRecord.isValueHolder) {
+					if (symbolRecord.isVHolder) {
 						compiler.next();
 						compiler.addCommand({
 							domain: `core`,
@@ -611,7 +611,7 @@ const EasyCoder_Core = {
 			compiler.next();
 			if (compiler.isSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
-				if (symbolRecord.isValueHolder) {
+				if (symbolRecord.isVHolder) {
 					const symbol = compiler.getToken();
 					compiler.next();
 					compiler.addCommand({
@@ -630,7 +630,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				const handler = program.domain[symbol.domain];
 				handler.value.put(symbol, {
 					type: `boolean`,
@@ -780,7 +780,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const target = program.getSymbolRecord(command.symbol);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const content = program.getValue(target.value[target.index]);
 				target.value[target.index] = {
 					type: `constant`,
@@ -853,7 +853,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value1) {
 					const result = program.getValue(value1) / program.getValue(value2);
@@ -920,7 +920,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const target = program.getSymbolRecord(command.symbol);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const content = program.getValue(target.value[target.index]);
 				target.value[target.index] = {
 					type: `constant`,
@@ -1177,7 +1177,7 @@ const EasyCoder_Core = {
 						newRecord.exporter = symbolRecord.exporter ? symbolRecord.exporter : caller.script;
 						newRecord.exportedName = symbolRecord.name;
 						newRecord.extra = symbolRecord.extra;
-						newRecord.isValueHolder = symbolRecord.isValueHolder;
+						newRecord.isVHolder = symbolRecord.isVHolder;
 						if (symbolRecord.program) {
 							newRecord.program = symbolRecord.program.script;
 						}
@@ -1355,7 +1355,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value1) {
 					const result = program.getValue(value1) *
@@ -1405,7 +1405,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				symbol.value[symbol.index] = {
 					type: `constant`,
 					numeric: true,
@@ -1530,7 +1530,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const target = program.getSymbolRecord(command.target);
-			if (!target.isValueHolder) {
+			if (!target.isVHolder) {
 				program.variableDoesNotHoldAValueError(command.lino, target.name);
 			}
 			const value = program.evaluate(command.value);
@@ -1558,7 +1558,7 @@ const EasyCoder_Core = {
 				if (compiler.tokenIs(`in`)) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
-						if (targetRecord.isValueHolder) {
+						if (targetRecord.isVHolder) {
 							compiler.next();
 							compiler.addCommand({
 								domain: `core`,
@@ -1833,7 +1833,7 @@ const EasyCoder_Core = {
 			const lino = compiler.getLino();
 			if (compiler.nextIsSymbol()) {
 				const targetRecord = compiler.getSymbolRecord();
-				if (!targetRecord.isValueHolder) {
+				if (!targetRecord.isVHolder) {
 					return false;
 				}
 				if (compiler.nextTokenIs(`to`)) {
@@ -2017,7 +2017,7 @@ const EasyCoder_Core = {
 			switch (command.request) {
 			case `setBoolean`:
 				const target = program.getSymbolRecord(command.target);
-				if (target.isValueHolder) {
+				if (target.isVHolder) {
 					target.value[target.index] = {
 						type: `boolean`,
 						content: true
@@ -2261,7 +2261,7 @@ const EasyCoder_Core = {
 				if (compiler.isSymbol()) {
 					const symbol = compiler.getSymbol();
 					const variable = compiler.getCommandAt(symbol.pc);
-					if (variable.isValueHolder) {
+					if (variable.isVHolder) {
 						if (compiler.peek() === `giving`) {
 							// This variable must be treated as a second value
 							const value2 = compiler.getValue();
@@ -2321,7 +2321,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value2) {
 					const result = program.getValue(value2) -
@@ -2371,7 +2371,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const symbol = program[command.symbol];
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				const handler = program.domain[symbol.domain];
 				const content = handler.value.get(program, symbol.value[symbol.index]).content;
 				handler.value.put(symbol, {
@@ -4170,7 +4170,7 @@ const EasyCoder_Value = {
 			return value;
 		case `symbol`:
 			const symbol = program.getSymbolRecord(value.name);
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				const symbolValue = symbol.value[symbol.index];
 				if (symbolValue) {
 					const v = symbolValue.content;

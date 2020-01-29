@@ -15,7 +15,7 @@ const EasyCoder_Core = {
 				if (compiler.isSymbol()) {
 					const symbol = compiler.getSymbol();
 					const variable = compiler.getCommandAt(symbol.pc);
-					if (variable.isValueHolder) {
+					if (variable.isVHolder) {
 						if (compiler.peek() === `giving`) {
 							// This variable must be treated as a second value
 							const value2 = compiler.getValue();
@@ -75,7 +75,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value2) {
 					const result = program.getValue(value2) +
@@ -156,7 +156,7 @@ const EasyCoder_Core = {
 			if (compiler.tokenIs(`to`)) {
 				if (compiler.nextIsSymbol()) {
 					const symbolRecord = compiler.getSymbolRecord();
-					if (symbolRecord.isValueHolder) {
+					if (symbolRecord.isVHolder) {
 						compiler.next();
 						compiler.addCommand({
 							domain: `core`,
@@ -227,7 +227,7 @@ const EasyCoder_Core = {
 			compiler.next();
 			if (compiler.isSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
-				if (symbolRecord.isValueHolder) {
+				if (symbolRecord.isVHolder) {
 					const symbol = compiler.getToken();
 					compiler.next();
 					compiler.addCommand({
@@ -246,7 +246,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				const handler = program.domain[symbol.domain];
 				handler.value.put(symbol, {
 					type: `boolean`,
@@ -286,6 +286,15 @@ const EasyCoder_Core = {
 			const p = EasyCoder.scripts[moduleRecord.program];
 			p.run(p.onClose);
 			return command.pc + 1;
+		}
+	},
+
+	Continue: {
+
+		compile: compiler => {
+			compiler.next();
+			compiler.continue = true;
+			return true;
 		}
 	},
 
@@ -396,7 +405,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const target = program.getSymbolRecord(command.symbol);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const content = program.getValue(target.value[target.index]);
 				target.value[target.index] = {
 					type: `constant`,
@@ -469,7 +478,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value1) {
 					const result = program.getValue(value1) / program.getValue(value2);
@@ -536,7 +545,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const target = program.getSymbolRecord(command.symbol);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const content = program.getValue(target.value[target.index]);
 				target.value[target.index] = {
 					type: `constant`,
@@ -793,7 +802,7 @@ const EasyCoder_Core = {
 						newRecord.exporter = symbolRecord.exporter ? symbolRecord.exporter : caller.script;
 						newRecord.exportedName = symbolRecord.name;
 						newRecord.extra = symbolRecord.extra;
-						newRecord.isValueHolder = symbolRecord.isValueHolder;
+						newRecord.isVHolder = symbolRecord.isVHolder;
 						if (symbolRecord.program) {
 							newRecord.program = symbolRecord.program.script;
 						}
@@ -971,7 +980,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value1) {
 					const result = program.getValue(value1) *
@@ -1021,7 +1030,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				symbol.value[symbol.index] = {
 					type: `constant`,
 					numeric: true,
@@ -1146,7 +1155,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const target = program.getSymbolRecord(command.target);
-			if (!target.isValueHolder) {
+			if (!target.isVHolder) {
 				program.variableDoesNotHoldAValueError(command.lino, target.name);
 			}
 			const value = program.evaluate(command.value);
@@ -1174,7 +1183,7 @@ const EasyCoder_Core = {
 				if (compiler.tokenIs(`in`)) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
-						if (targetRecord.isValueHolder) {
+						if (targetRecord.isVHolder) {
 							compiler.next();
 							compiler.addCommand({
 								domain: `core`,
@@ -1451,7 +1460,7 @@ const EasyCoder_Core = {
 			const lino = compiler.getLino();
 			if (compiler.nextIsSymbol()) {
 				const targetRecord = compiler.getSymbolRecord();
-				if (!targetRecord.isValueHolder) {
+				if (!targetRecord.isVHolder) {
 					return false;
 				}
 				if (compiler.nextTokenIs(`to`)) {
@@ -1647,7 +1656,7 @@ const EasyCoder_Core = {
 			switch (command.request) {
 			case `setBoolean`:
 				const target = program.getSymbolRecord(command.target);
-				if (target.isValueHolder) {
+				if (target.isVHolder) {
 					target.value[target.index] = {
 						type: `boolean`,
 						content: true
@@ -1701,34 +1710,57 @@ const EasyCoder_Core = {
 				if (!targetValue) {
 					targetValue = `{}`;
 				}
-				let targetJSON = ``;
-				try {
-					targetJSON = JSON.parse(targetValue);
-				} catch (err) {
-					program.runtimeError(command.lino, `Can't parse ${targetRecord.name}`);
-					return 0;
-				}
+				// This is object whose property is being set
+				let targetJSON = JSON.parse(targetValue);
+				// This is the name of the property
 				const itemName = program.getValue(command.name);
+				// This is the value of the property
 				const itemValue = program.evaluate(command.value);
 				let content = itemValue.content;
 				if (itemValue) {
-					if (content instanceof Array) {
-						targetJSON[itemName] = content;
-					} else if (itemValue.type === `boolean`) {
-						targetJSON[itemName] = content;
-					} else if (itemValue.numeric) {
-						targetJSON[itemName] = content;
-					} else if (content.length >= 2 && [`["`, `{"`].includes(content.substr(0, 2))) {
+					if (content.length >= 2 && [`[`, `{`].includes(content[0])) {
 						targetJSON[itemName] = JSON.parse(itemValue.content);
-					} else {
-						targetJSON[itemName] = content.split(`"`).join(`\\"`);
+						content = JSON.stringify(targetJSON);
 					}
 					targetRecord.value[targetRecord.index] = {
 						type: `constant`,
 						numeric: false,
-						content: JSON.stringify(targetJSON)
+						content
 					};
 				}
+
+				// let targetValue = program.getFormattedValue(targetRecord.value[targetRecord.index]);
+				// if (!targetValue) {
+				// 	targetValue = `{}`;
+				// }
+				// let targetJSON = ``;
+				// try {
+				// 	targetJSON = JSON.parse(targetValue);
+				// } catch (err) {
+				// 	program.runtimeError(command.lino, `Can't parse ${targetRecord.name}`);
+				// 	return 0;
+				// }
+				// const itemName = program.getValue(command.name);
+				// const itemValue = program.evaluate(command.value);
+				// let content = itemValue.content;
+				// if (itemValue) {
+				// 	if (content instanceof Array) {
+				// 		targetJSON[itemName] = content;
+				// 	} else if (itemValue.type === `boolean`) {
+				// 		targetJSON[itemName] = content;
+				// 	} else if (itemValue.numeric) {
+				// 		targetJSON[itemName] = content;
+				// 	} else if (content.length >= 2 && [`["`, `{"`].includes(content.substr(0, 2))) {
+				// 		targetJSON[itemName] = JSON.parse(itemValue.content);
+				// 	} else {
+				// 		targetJSON[itemName] = content.split(`"`).join(`\\"`);
+				// 	}
+				// 	targetRecord.value[targetRecord.index] = {
+				// 		type: `constant`,
+				// 		numeric: false,
+				// 		content: JSON.stringify(targetJSON)
+				// 	};
+				// }
 				break;
 			case `setPayload`:
 				program.getSymbolRecord(command.callback).payload = program.getValue(command.payload);
@@ -1899,7 +1931,7 @@ const EasyCoder_Core = {
 				if (compiler.isSymbol()) {
 					const symbol = compiler.getSymbol();
 					const variable = compiler.getCommandAt(symbol.pc);
-					if (variable.isValueHolder) {
+					if (variable.isVHolder) {
 						if (compiler.peek() === `giving`) {
 							// This variable must be treated as a second value
 							const value2 = compiler.getValue();
@@ -1959,7 +1991,7 @@ const EasyCoder_Core = {
 			const value1 = command.value1;
 			const value2 = command.value2;
 			const target = program.getSymbolRecord(command.target);
-			if (target.isValueHolder) {
+			if (target.isVHolder) {
 				const value = target.value[target.index];
 				if (value2) {
 					const result = program.getValue(value2) -
@@ -2009,7 +2041,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const symbol = program[command.symbol];
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				const handler = program.domain[symbol.domain];
 				const content = handler.value.get(program, symbol.value[symbol.index]).content;
 				handler.value.put(symbol, {
@@ -2147,6 +2179,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Clear;
 		case `close`:
 			return EasyCoder_Core.Close;
+		case `continue`:
+			return EasyCoder_Core.Continue;
 		case `debug`:
 			return EasyCoder_Core.Debug;
 		case `decode`:

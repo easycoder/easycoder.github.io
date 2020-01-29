@@ -194,19 +194,31 @@ const EasyCoder_Compiler = {
 		});
 		// Add the action
 		this.compileOne();
+		// If `continue` is set
+		if (this.continue) {
+			this.addCommand({
+				domain: `core`,
+				keyword: `goto`,
+				lino,
+				goto: this.getPc() + 1
+			});
+			this.continue = false;
+		}
 		// Add a 'stop'
-		this.addCommand({
-			domain: `core`,
-			keyword: `stop`,
-			lino,
-			next: 0
-		});
+		else {
+			this.addCommand({
+				domain: `core`,
+				keyword: `stop`,
+				lino,
+				next: 0
+			});
+		} 
 		// Fixup the 'goto'
 		this.getCommandAt(goto).goto = this.getPc();
 		return true;
 	},
 
-	compileVariable: function(domain, keyword, isValueHolder = false, extra = null) {
+	compileVariable: function(domain, keyword, isVHolder = false, extra = null) {
 		this.next();
 		const lino = this.getLino();
 		const item = this.getTokens()[this.getIndex()];
@@ -222,7 +234,7 @@ const EasyCoder_Compiler = {
 			lino,
 			isSymbol: true,
 			used: false,
-			isValueHolder,
+			isVHolder,
 			name: item.token,
 			elements: 1,
 			index: 0,

@@ -423,7 +423,7 @@ const EasyCoder_Json = {
 					if (compiler.isSymbol()) {
 						const target = compiler.getSymbolRecord();
 						compiler.next();
-						if (target.isValueHolder) {
+						if (target.isVHolder) {
 							return {
 								domain: `json`,
 								type,

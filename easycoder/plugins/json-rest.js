@@ -345,7 +345,7 @@ const EasyCoder_Json = {
 				if (compiler.tokenIs(`giving`)) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
-						if (targetRecord.isValueHolder) {
+						if (targetRecord.isVHolder) {
 							target = targetRecord.name;
 							compiler.next();
 						} else {
@@ -478,7 +478,7 @@ const EasyCoder_Json = {
 					if (compiler.isSymbol()) {
 						const target = compiler.getSymbolRecord();
 						compiler.next();
-						if (target.isValueHolder) {
+						if (target.isVHolder) {
 							return {
 								domain: `json`,
 								type,

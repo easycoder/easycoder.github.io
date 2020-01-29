@@ -54,19 +54,13 @@ const EasyCoder_Rest = {
 				if (compiler.tokenIs(`giving`)) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
-						if (targetRecord.isValueHolder) {
+						if (targetRecord.isVHolder) {
 							target = targetRecord.name;
 							compiler.next();
 						} else {
 							throw new Error(`'${targetRecord.name}' cannot hold a value`);
 						}
 					}
-				}
-				onError = null;
-				if (compiler.tokenIs(`or`)) {
-					compiler.next();
-					onError = compiler.getPc() + 1;
-					compiler.completeHandler();
 				}
 				compiler.addCommand({
 					domain: `rest`,
@@ -76,8 +70,14 @@ const EasyCoder_Rest = {
 					value,
 					url,
 					target,
-					onError
+					onError: compiler.getPc() + 2
 				});
+				onError = null;
+				if (compiler.tokenIs(`or`)) {
+					compiler.next();
+					// onError = compiler.getPc() + 1;
+					compiler.completeHandler();
+				}
 				return true;
 			}
 			return false;

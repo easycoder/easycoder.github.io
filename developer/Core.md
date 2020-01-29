@@ -27,7 +27,7 @@ compile: compiler => {
 		if (compiler.tokenIs(`in`)) {
 			if (compiler.nextIsSymbol()) {
 				const targetRecord = compiler.getSymbolRecord();
-				if (targetRecord.isValueHolder) {
+				if (targetRecord.isVHolder) {
 					compiler.next();
 					compiler.addCommand({
 						domain: `core`,

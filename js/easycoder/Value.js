@@ -113,7 +113,7 @@ const EasyCoder_Value = {
 			return value;
 		case `symbol`:
 			const symbol = program.getSymbolRecord(value.name);
-			if (symbol.isValueHolder) {
+			if (symbol.isVHolder) {
 				const symbolValue = symbol.value[symbol.index];
 				if (symbolValue) {
 					const v = symbolValue.content;
