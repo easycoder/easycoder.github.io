@@ -2572,24 +2572,26 @@ const EasyCoder_Browser = {
 					throw new Error(`'${compiler.getToken()}' is not a symbol`);
 				}
 				return null;
-			case `selected`:
-				if (compiler.nextTokenIs(`item`)) {
-					if (compiler.nextTokenIs(`in`)) {
-						if (compiler.nextIsSymbol()) {
-							const symbol = compiler.getSymbolRecord();
-							if ([`ul`, `ol`].includes(symbol.keyword)) {
-								compiler.next();
-								return {
-									domain: `browser`,
-									type: `selectedItem`,
-									symbol: symbol.name
-								};
+				case `selected`:
+					let arg = compiler.nextToken();
+					if ([`index`, `item`].includes(arg)) {
+						if (compiler.nextTokenIs(`in`)) {
+							if (compiler.nextIsSymbol()) {
+								const symbol = compiler.getSymbolRecord();
+								if ([`ul`, `ol`].includes(symbol.keyword)) {
+									compiler.next();
+									return {
+										domain: `browser`,
+										type: `selected`,
+										symbol: symbol.name,
+										arg
+									};
+								}
 							}
 						}
 					}
-				}
-				return null;
-			case `color`:
+					return null;
+				case `color`:
 				compiler.next();
 				const value = compiler.getValue();
 				return {
@@ -2837,14 +2839,15 @@ const EasyCoder_Browser = {
 					numeric: false,
 					content
 				};
-			case `selectedItem`:
+			case `selected`:
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				element = symbolRecord.value[symbolRecord.index].content;
 				target = document.getElementById(element);
+				content = (value.arg === `index`) ? target.selectedIndex : target.options[target.selectedIndex].text;
 				return {
 					type: `constant`,
 					numeric: false,
-					content: target.options[target.selectedIndex].text
+					content
 				};
 			case `top`:
 				symbolRecord = program.getSymbolRecord(value.symbol);
