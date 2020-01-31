@@ -1711,14 +1711,17 @@ const EasyCoder_Core = {
 					targetValue = `{}`;
 				}
 				// This is object whose property is being set
-				let targetJSON = JSON.parse(targetValue);
+				let targetJSON = targetValue;
+				if (program.isJsonString(targetValue)) {
+					targetJSON = JSON.parse(targetValue);
+				}
 				// This is the name of the property
 				const itemName = program.getValue(command.name);
 				// This is the value of the property
 				const itemValue = program.evaluate(command.value);
 				let content = itemValue.content;
 				if (itemValue) {
-					if (content.length >= 2 && [`[`, `{`].includes(content[0])) {
+					if (program.isJsonString(itemValue.content)) {
 						targetJSON[itemName] = JSON.parse(itemValue.content);
 						content = JSON.stringify(targetJSON);
 					}

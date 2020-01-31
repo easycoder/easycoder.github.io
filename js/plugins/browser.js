@@ -2575,10 +2575,10 @@ const EasyCoder_Browser = {
 				case `selected`:
 					let arg = compiler.nextToken();
 					if ([`index`, `item`].includes(arg)) {
-						if (compiler.nextTokenIs(`in`)) {
+						if ([`in`, `of`].includes(compiler.nextToken())) {
 							if (compiler.nextIsSymbol()) {
 								const symbol = compiler.getSymbolRecord();
-								if ([`ul`, `ol`].includes(symbol.keyword)) {
+								if ([`ul`, `ol`, `select`].includes(symbol.keyword)) {
 									compiler.next();
 									return {
 										domain: `browser`,
@@ -2841,9 +2841,10 @@ const EasyCoder_Browser = {
 				};
 			case `selected`:
 				symbolRecord = program.getSymbolRecord(value.symbol);
-				element = symbolRecord.value[symbolRecord.index].content;
-				target = document.getElementById(element);
-				content = (value.arg === `index`) ? target.selectedIndex : target.options[target.selectedIndex].text;
+				target = symbolRecord.element[symbolRecord.index];
+				let selectedIndex = target.selectedIndex;
+				let selectedText = selectedIndex  >= 0 ? target.options[selectedIndex].text : ``;
+				content = (value.arg === `index`) ? selectedIndex : selectedText;
 				return {
 					type: `constant`,
 					numeric: false,

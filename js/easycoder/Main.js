@@ -167,6 +167,15 @@ const EasyCoder = {
 		return typeof item === `undefined`;
 	},
 
+	isJsonString: function (str) {
+		try {
+			JSON.parse(str);
+		} catch (e) {
+			return false;
+		}
+		return true;
+	},
+
 	runScript: function (program) {
 		const command = program[program.pc];
 		const script = program.getValue(command.script);
@@ -227,6 +236,7 @@ const EasyCoder = {
 		program.domain = this.domain;
 		program.require = this.require;
 		program.isUndefined = this.isUndefined;
+		program.isJsonString = this.isJsonString;
 		program.checkPlugin = this.checkPlugin;
 		program.getPlugin = this.getPlugin;
 		program.addLocalPlugin = this.addLocalPlugin;
