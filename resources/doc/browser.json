@@ -282,11 +282,6 @@
       "description": "Gets the content of the named element. This is an alternative to ~l:content of![the] text of~.",
       "examples": "put the text of AddressField into Address"
     },
-    "selected item": {
-      "syntax": "[the] selected item in {list}",
-      "description": "Returns the selected item in a ~l:select~ element.",
-      "examples": "put the selected item in Countries into Country"
-    },
     "width": {
       "syntax": "[the] width of {element} ",
       "description": "Gets the width of the named element, relative to the viewport (window, or in the case of mobile, the screen). See also ~l:left~, ~l:right~, ~l:top~, ~l:bottom~ and ~l:height~.",
@@ -356,6 +351,11 @@
       "syntax": "[the] pick/drag position",
       "description": "The retrieves the position of the last mouse click, or of the position while dragging a component. The returned value is a JSON string with properties ~m:x~ and ~m:y~.%0a%0aThese values are useful when implementing drag-and-drop (see ~l:on|k~) as they tell you how far the component has been moved from its starting position. See also ~l:left~ and ~l:top~.",
       "examples": "put the pick position into PickPos%0aput the drag position into DragPos"
+    },
+    "selected": {
+      "syntax": "[the] selected index in {list}%0a[the] selected item in {list}",
+      "description": "Returns the index of the selected item in a ~l:select~ element, or the item itself.",
+      "examples": "put the selected index in Countries into Index%0aput the selected item in Countries into Country"
     }
   },
   "conditions": {
