@@ -204,7 +204,7 @@ const EasyCoder_Compiler = {
 			});
 			this.continue = false;
 		}
-		// Add a 'stop'
+		// else add a 'stop'
 		else {
 			this.addCommand({
 				domain: `core`,

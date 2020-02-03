@@ -1,72 +1,72 @@
 {
-  "commands": {
-    "rect": {
-      "syntax": "rect {name}",
-      "description": "This declares a ~m:&lt;rect&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
-      "examples": "rect BigBox"
+    "commands": {
+        "rect": {
+            "syntax": "rect {name}",
+            "description": "This declares a ~m:&lt;rect&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
+            "examples": "rect BigBox"
+        },
+        "circle": {
+            "syntax": "circle {name}",
+            "description": "This declares a ~m:&lt;circle&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
+            "examples": "circle Ball"
+        },
+        "ellipse": {
+            "syntax": "ellipse {name}",
+            "description": "This declares an ~m:&lt;ellipse&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
+            "examples": "ellipse FirstEllipse"
+        },
+        "group": {
+            "syntax": "group {name}",
+            "description": "This declares a ~m:&lt;group&gt;~ variable.%0a%0aA group is a collection of SVG graphical elements (~l:circle~, ~l:ellipse~, ~l:line~, ~l:rect~, ~l:svgtext~) that all share a common parent - the ~m:group~. The main advantage of this is that you can ~l:move~ the entire group as one element without having to deal with its component parts.",
+            "examples": "group WheelGroup"
+        },
+        "line": {
+            "syntax": "line {name}",
+            "description": "This declares a ~m:&lt;line&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
+            "examples": "line Spoke1"
+        },
+        "move": {
+            "syntax": "move {item} to {top-left x} {top-left y}",
+            "description": "Moves a graphical element or a ~l:group~ to a specified location in the containing ~l:svg!stage~.",
+            "examples": "move PalletGroup2 to Pallet2X 70"
+        },
+        "on": {
+            "syntax": "on click {element}\/{group} ...",
+            "description": "Take action when an element or a group is clicked.",
+            "examples": "on click Button%0abegin%0a&nbsp;&nbsp;index Sound to the index of Button%0a&nbsp;&nbsp;play Sound%0aend%0a"
+        },
+        "set": {
+            "syntax": "set [the] text of {svgtext} to {text}",
+            "description": "Sets the text of an ~l:svgtext~ element.",
+            "examples": "set the text of ButtonLabel to `Help`"
+        },
+        "svg": {
+            "syntax": "svg {name}",
+            "description": "This declares a ~m:&lt;svg&gt;~ variable. See also ~l:create~.",
+            "examples": "svg Stage"
+        },
+        "svgtext": {
+            "syntax": "svgtext {name}",
+            "description": "This declares a ~m:&lt;svgtext&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
+            "examples": "svgtext TopText"
+        },
+        "create": {
+            "syntax": "create {element} in {container} [style {style}]",
+            "description": "Creates an element as a child of the given parent. In the case of graphical elements (~l:circle~, ~l:ellipse~, ~l:line~, ~l:rect~, ~l:svgtext~) you can also add the styles that will apply to the element.%0a%0aThere are a number of examples of using SVG graphics on the [~_**EasyCoder**_ Examples](https:\/\/easycoder.software\/examples) page.",
+            "examples": "create Stage in Container%0acreate Conveyor in Stage%0a&nbsp;&nbsp;style `x:0;y:140;width:` cat Width cat `;height:20;fill:#ccc`%0a"
+        }
     },
-    "circle": {
-      "syntax": "circle {name}",
-      "description": "This declares a ~m:&lt;circle&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
-      "examples": "circle Ball"
+    "values": {
+        "": {
+            "syntax": "",
+            "description": "",
+            "examples": ""
+        },
+        "text": {
+            "syntax": "[the] text of {svgtext}",
+            "description": "Returns the text of the named ~l:svgtext~ element. See also ~l:set|k!set the text~",
+            "examples": "put the text of Button3Text into Text"
+        }
     },
-    "ellipse": {
-      "syntax": "ellipse {name}",
-      "description": "This declares an ~m:&lt;ellipse&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
-      "examples": "ellipse FirstEllipse"
-    },
-    "group": {
-      "syntax": "group {name}",
-      "description": "This declares a ~m:&lt;group&gt;~ variable.%0a%0aA group is a collection of SVG graphical elements (~l:circle~, ~l:ellipse~, ~l:line~, ~l:rect~, ~l:svgtext~) that all share a common parent - the ~m:group~. The main advantage of this is that you can ~l:move~ the entire group as one element without having to deal with its component parts.",
-      "examples": "group WheelGroup"
-    },
-    "line": {
-      "syntax": "line {name}",
-      "description": "This declares a ~m:&lt;line&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
-      "examples": "line Spoke1"
-    },
-    "move": {
-      "syntax": "move {item} to {top-left x} {top-left y}",
-      "description": "Moves a graphical element or a ~l:group~ to a specified location in the containing ~l:svg!stage~.",
-      "examples": "move PalletGroup2 to Pallet2X 70"
-    },
-    "on": {
-      "syntax": "on click {element}/{group} ...",
-      "description": "Take action when an element or a group is clicked.",
-      "examples": "on click Button%0abegin%0a&nbsp;&nbsp;index Sound to the index of Button%0a&nbsp;&nbsp;play Sound%0aend%0a"
-    },
-    "set": {
-      "syntax": "set [the] text of {svgtext} to {text}",
-      "description": "Sets the text of an ~l:svgtext~ element.",
-      "examples": "set the text of ButtonLabel to `Help`"
-    },
-    "svg": {
-      "syntax": "svg {name}",
-      "description": "This declares a ~m:&lt;svg&gt;~ variable. See also ~l:create~.",
-      "examples": "svg Stage"
-    },
-    "svgtext": {
-      "syntax": "svgtext {name}",
-      "description": "This declares a ~m:&lt;svgtext&gt;~ variable. You can either attach it to a corresponding element in the HTML or create a new element; see ~l:attach~ and ~l:create~.",
-      "examples": "svgtext TopText"
-    },
-    "create": {
-      "syntax": "create {element} in {container} [style {style}]",
-      "description": "Creates an element as a child of the given parent. In the case of graphical elements (~l:circle~, ~l:ellipse~, ~l:line~, ~l:rect~, ~l:svgtext~) you can also add the styles that will apply to the element.%0a%0aThere are a number of examples of using SVG graphics on the [~_**EasyCoder**_ Examples](https://easycoder.software/examples) page.",
-      "examples": "create Stage in Container%0acreate Conveyor in Stage%0a&nbsp;&nbsp;style `x:0;y:140;width:` cat Width cat `;height:20;fill:#ccc`%0a"
-    }
-  },
-  "values": {
-    "": {
-      "syntax": "",
-      "description": "",
-      "examples": ""
-    },
-    "text": {
-      "syntax": "[the] text of {svgtext}",
-      "description": "Returns the text of the named ~l:svgtext~ element. See also ~l:set|k!set the text~",
-      "examples": "put the text of Button3Text into Text"
-    }
-  },
-  "conditions": {}
+    "conditions": {}
 }

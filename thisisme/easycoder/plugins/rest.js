@@ -167,14 +167,9 @@ const EasyCoder_Rest = {
 				const value = program.getValue(command.value);
 				console.log(`POST to ${path}`);
 				// request.open(`POST`, path);
-				if (value.length >0 && value.charAt(0) === `{`) {
-					request.setRequestHeader(`Content-Type`, `application/json; charset=UTF-8`);
-					//            console.log(`value=${value}`);
-					request.send(value.charAt(0) === `{` ? value : value.toString());
-				} else {
-					request.setRequestHeader(`Content-Type`, `application/text; charset=UTF-8`);
-					request.send(value);
-				}
+				request.setRequestHeader(`Content-Type`, `application/json; charset=UTF-8`);
+				console.log(`value=${value}`);
+				request.send(value);
 				break;
 			}
 			return 0;

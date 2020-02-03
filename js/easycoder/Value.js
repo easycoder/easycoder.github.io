@@ -169,14 +169,17 @@ const EasyCoder_Value = {
 		if (value) {
 			switch (encoding) {
 			case `ec`:
-				return value.replace(/'/g, `~sq~`)
+				return value.replace(/\n/g, `%0a`)
+					.replace(/\r/g, `%0d`)
 					.replace(/"/g, `~dq~`)
-					.replace(/\n/g, `%0a`)
-					.replace(/\r/g, `%0d`);
+					.replace(/'/g, `~sq~`)
+					.replace(/\\/g, `~bs~`);
 			case `url`:
 				return encodeURIComponent(value.replace(/\s/g, `+`));
 			case `sanitize`:
 				return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
+			default:
+				return value;
 			}
 		}
 		return value;
@@ -186,13 +189,16 @@ const EasyCoder_Value = {
 		if (value) {
 			switch (encoding) {
 			case `ec`:
-				return value.replace(/~dq~/g, `"`)
+				return value.replace(/%0a/g, `\n`)
+					.replace(/%0d/g, `\r`)
+					.replace(/~dq~/g, `"`)
 					.replace(/~sq~/g, `'`)
-					.replace(/%0a/g, `\n`)
-					.replace(/%0d/g, `\r`);
+					.replace(/~bs~/g, `\\`);
 			case `url`:
 				const decoded = decodeURIComponent(value);
 				return decoded.replace(/\+/g, ` `);
+			default:
+				return value;
 			}
 		}
 		return value;

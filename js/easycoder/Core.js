@@ -585,8 +585,9 @@ const EasyCoder_Core = {
 
 		run: program => {
 			let parent = EasyCoder.scripts[program.parent];
+			let unblocked = program.unblocked;
 			program.exit();
-			if (parent) {
+			if (!unblocked && parent) {
 				parent.run(parent.nextPc);
 				parent.nextPc = 0;
 			}
@@ -1671,6 +1672,7 @@ const EasyCoder_Core = {
 				if (parent) {
 					parent.run(parent.nextPc);
 					parent.nextPc = 0;
+					program.unblocked = true;
 				}
 				break;
 			case `setArray`:
@@ -1705,65 +1707,34 @@ const EasyCoder_Core = {
 				targetRecord.value[targetRecord.index].content = JSON.stringify(elements);
 				break;
 			case `setProperty`:
-				targetRecord = program.getSymbolRecord(command.target);
-				let targetValue = program.getValue(targetRecord.value[targetRecord.index]);
-				if (!targetValue) {
-					targetValue = `{}`;
-				}
-				// This is object whose property is being set
-				let targetJSON = targetValue;
-				if (program.isJsonString(targetValue)) {
-					targetJSON = JSON.parse(targetValue);
-				}
 				// This is the name of the property
 				const itemName = program.getValue(command.name);
 				// This is the value of the property
-				const itemValue = program.evaluate(command.value);
-				let content = itemValue.content;
-				if (itemValue) {
-					if (program.isJsonString(itemValue.content)) {
-						targetJSON[itemName] = JSON.parse(itemValue.content);
-						content = JSON.stringify(targetJSON);
+				let itemValue = program.getValue(command.value);
+				if (program.isJsonString(itemValue)) {
+					itemValue = JSON.parse(itemValue);
+				}
+				targetRecord = program.getSymbolRecord(command.target);
+				let targetValue = targetRecord.value[targetRecord.index];
+				// Get the existing JSON
+				if (!targetValue.numeric) {
+					let content = targetValue.content;
+					if (content === ``) {
+						content = {};
 					}
+					else if (program.isJsonString(content)) {
+						content = JSON.parse(content);
+					}
+					// Set the property
+					content[itemName] = itemValue;
+					// Put it back
+					content = JSON.stringify(content);
 					targetRecord.value[targetRecord.index] = {
 						type: `constant`,
 						numeric: false,
 						content
 					};
 				}
-
-				// let targetValue = program.getFormattedValue(targetRecord.value[targetRecord.index]);
-				// if (!targetValue) {
-				// 	targetValue = `{}`;
-				// }
-				// let targetJSON = ``;
-				// try {
-				// 	targetJSON = JSON.parse(targetValue);
-				// } catch (err) {
-				// 	program.runtimeError(command.lino, `Can't parse ${targetRecord.name}`);
-				// 	return 0;
-				// }
-				// const itemName = program.getValue(command.name);
-				// const itemValue = program.evaluate(command.value);
-				// let content = itemValue.content;
-				// if (itemValue) {
-				// 	if (content instanceof Array) {
-				// 		targetJSON[itemName] = content;
-				// 	} else if (itemValue.type === `boolean`) {
-				// 		targetJSON[itemName] = content;
-				// 	} else if (itemValue.numeric) {
-				// 		targetJSON[itemName] = content;
-				// 	} else if (content.length >= 2 && [`["`, `{"`].includes(content.substr(0, 2))) {
-				// 		targetJSON[itemName] = JSON.parse(itemValue.content);
-				// 	} else {
-				// 		targetJSON[itemName] = content.split(`"`).join(`\\"`);
-				// 	}
-				// 	targetRecord.value[targetRecord.index] = {
-				// 		type: `constant`,
-				// 		numeric: false,
-				// 		content: JSON.stringify(targetJSON)
-				// 	};
-				// }
 				break;
 			case `setPayload`:
 				program.getSymbolRecord(command.callback).payload = program.getValue(command.payload);
@@ -3107,8 +3078,12 @@ const EasyCoder_Core = {
 			case `not`:
 				return !program.getValue(condition.value);
 			case `moduleRunning`:
-				const running = program.getSymbolRecord(condition.name).program;
-				return condition.sense ? running : !running;
+				let moduleRecord = program.getSymbolRecord(condition.name);
+				if (EasyCoder.scripts.hasOwnProperty(moduleRecord.program) ) {
+					let p = EasyCoder.scripts[moduleRecord.program];
+					return condition.sense ? p.running : !p.running;
+				}
+				return !condition.sense;
 			case `includes`:
 				const value1 = JSON.parse(program.getValue(condition.value1));
 				const value2 = program.getValue(condition.value2);

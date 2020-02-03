@@ -221,7 +221,14 @@ const EasyCoder_Browser = {
 			if (command.name) {
 				const targetRecord = program.getSymbolRecord(command.name);
 				const target = targetRecord.element[targetRecord.index];
-				target.innerHTML = ``;
+				switch (targetRecord.keyword) {
+				case `input`:
+					target.value = ``;
+					break;
+				default:
+					target.innerHTML = ``;
+					break;
+				}
 			} else {
 				document.body.innerHTML = ``;
 			}

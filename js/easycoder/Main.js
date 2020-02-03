@@ -98,9 +98,7 @@ const EasyCoder = {
 		if (v.type === `boolean`) {
 			return v.content ? `true` : `false`;
 		}
-		if (typeof v.content !==`undefined` && v.content.length >= 2
-			// && (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
-			&& [`[`, `{`].includes(v.content[0])) {
+		if (this.isJsonString(v.content)) {
 			try {
 				const parsed = JSON.parse(v.content);
 				return JSON.stringify(parsed, null, 2);
@@ -249,6 +247,7 @@ const EasyCoder = {
 		program.reportError = this.reportError;
 		program.register = this.register;
 		program.symbols = compiler.getSymbols();
+		program.unblocked = false;
 		program.encoding = `ec`;
 		program.popups = [];
 		program.stack = [];

@@ -7,7 +7,7 @@ const EasyCoder_Compare = (program, value1, value2) => {
 	var v2 = val2.content;
 	if (v1 && val1.numeric) {
 		if (!val2.numeric) {
-			v2 = (v2 === `` || typeof v2 === `undefined`) ? 0 : parseInt(v2);
+			v2 = (v2 === `` || v2 === `-` || typeof v2 === `undefined`) ? 0 : parseInt(v2);
 		}
 	} else {
 		if (v2 && val2.numeric) {
@@ -234,7 +234,7 @@ const EasyCoder_Compiler = {
 			});
 			this.continue = false;
 		}
-		// Add a 'stop'
+		// else add a 'stop'
 		else {
 			this.addCommand({
 				domain: `core`,
@@ -981,8 +981,9 @@ const EasyCoder_Core = {
 
 		run: program => {
 			let parent = EasyCoder.scripts[program.parent];
+			let unblocked = program.unblocked;
 			program.exit();
-			if (parent) {
+			if (!unblocked && parent) {
 				parent.run(parent.nextPc);
 				parent.nextPc = 0;
 			}
@@ -2067,6 +2068,7 @@ const EasyCoder_Core = {
 				if (parent) {
 					parent.run(parent.nextPc);
 					parent.nextPc = 0;
+					program.unblocked = true;
 				}
 				break;
 			case `setArray`:
@@ -2101,62 +2103,34 @@ const EasyCoder_Core = {
 				targetRecord.value[targetRecord.index].content = JSON.stringify(elements);
 				break;
 			case `setProperty`:
-				targetRecord = program.getSymbolRecord(command.target);
-				let targetValue = program.getValue(targetRecord.value[targetRecord.index]);
-				if (!targetValue) {
-					targetValue = `{}`;
-				}
-				// This is object whose property is being set
-				let targetJSON = JSON.parse(targetValue);
 				// This is the name of the property
 				const itemName = program.getValue(command.name);
 				// This is the value of the property
-				const itemValue = program.evaluate(command.value);
-				let content = itemValue.content;
-				if (itemValue) {
-					if (content.length >= 2 && [`[`, `{`].includes(content[0])) {
-						targetJSON[itemName] = JSON.parse(itemValue.content);
-						content = JSON.stringify(targetJSON);
+				let itemValue = program.getValue(command.value);
+				if (program.isJsonString(itemValue)) {
+					itemValue = JSON.parse(itemValue);
+				}
+				targetRecord = program.getSymbolRecord(command.target);
+				let targetValue = targetRecord.value[targetRecord.index];
+				// Get the existing JSON
+				if (!targetValue.numeric) {
+					let content = targetValue.content;
+					if (content === ``) {
+						content = {};
 					}
+					else if (program.isJsonString(content)) {
+						content = JSON.parse(content);
+					}
+					// Set the property
+					content[itemName] = itemValue;
+					// Put it back
+					content = JSON.stringify(content);
 					targetRecord.value[targetRecord.index] = {
 						type: `constant`,
 						numeric: false,
 						content
 					};
 				}
-
-				// let targetValue = program.getFormattedValue(targetRecord.value[targetRecord.index]);
-				// if (!targetValue) {
-				// 	targetValue = `{}`;
-				// }
-				// let targetJSON = ``;
-				// try {
-				// 	targetJSON = JSON.parse(targetValue);
-				// } catch (err) {
-				// 	program.runtimeError(command.lino, `Can't parse ${targetRecord.name}`);
-				// 	return 0;
-				// }
-				// const itemName = program.getValue(command.name);
-				// const itemValue = program.evaluate(command.value);
-				// let content = itemValue.content;
-				// if (itemValue) {
-				// 	if (content instanceof Array) {
-				// 		targetJSON[itemName] = content;
-				// 	} else if (itemValue.type === `boolean`) {
-				// 		targetJSON[itemName] = content;
-				// 	} else if (itemValue.numeric) {
-				// 		targetJSON[itemName] = content;
-				// 	} else if (content.length >= 2 && [`["`, `{"`].includes(content.substr(0, 2))) {
-				// 		targetJSON[itemName] = JSON.parse(itemValue.content);
-				// 	} else {
-				// 		targetJSON[itemName] = content.split(`"`).join(`\\"`);
-				// 	}
-				// 	targetRecord.value[targetRecord.index] = {
-				// 		type: `constant`,
-				// 		numeric: false,
-				// 		content: JSON.stringify(targetJSON)
-				// 	};
-				// }
 				break;
 			case `setPayload`:
 				program.getSymbolRecord(command.callback).payload = program.getValue(command.payload);
@@ -3500,8 +3474,12 @@ const EasyCoder_Core = {
 			case `not`:
 				return !program.getValue(condition.value);
 			case `moduleRunning`:
-				const running = program.getSymbolRecord(condition.name).program;
-				return condition.sense ? running : !running;
+				let moduleRecord = program.getSymbolRecord(condition.name);
+				if (EasyCoder.scripts.hasOwnProperty(moduleRecord.program) ) {
+					let p = EasyCoder.scripts[moduleRecord.program];
+					return condition.sense ? p.running : !p.running;
+				}
+				return !condition.sense;
 			case `includes`:
 				const value1 = JSON.parse(program.getValue(condition.value1));
 				const value2 = program.getValue(condition.value2);
@@ -3611,9 +3589,7 @@ const EasyCoder = {
 		if (v.type === `boolean`) {
 			return v.content ? `true` : `false`;
 		}
-		if (typeof v.content !==`undefined` && v.content.length >= 2
-			// && (v.content.substr(0, 2) === `{"` || v.content[0] === `[`)) {
-			&& [`[`, `{`].includes(v.content[0])) {
+		if (this.isJsonString(v.content)) {
 			try {
 				const parsed = JSON.parse(v.content);
 				return JSON.stringify(parsed, null, 2);
@@ -3680,6 +3656,15 @@ const EasyCoder = {
 		return typeof item === `undefined`;
 	},
 
+	isJsonString: function (str) {
+		try {
+			JSON.parse(str);
+		} catch (e) {
+			return false;
+		}
+		return true;
+	},
+
 	runScript: function (program) {
 		const command = program[program.pc];
 		const script = program.getValue(command.script);
@@ -3740,6 +3725,7 @@ const EasyCoder = {
 		program.domain = this.domain;
 		program.require = this.require;
 		program.isUndefined = this.isUndefined;
+		program.isJsonString = this.isJsonString;
 		program.checkPlugin = this.checkPlugin;
 		program.getPlugin = this.getPlugin;
 		program.addLocalPlugin = this.addLocalPlugin;
@@ -3752,6 +3738,7 @@ const EasyCoder = {
 		program.reportError = this.reportError;
 		program.register = this.register;
 		program.symbols = compiler.getSymbols();
+		program.unblocked = false;
 		program.encoding = `ec`;
 		program.popups = [];
 		program.stack = [];
@@ -4319,14 +4306,17 @@ const EasyCoder_Value = {
 		if (value) {
 			switch (encoding) {
 			case `ec`:
-				return value.replace(/'/g, `~sq~`)
+				return value.replace(/\n/g, `%0a`)
+					.replace(/\r/g, `%0d`)
 					.replace(/"/g, `~dq~`)
-					.replace(/\n/g, `%0a`)
-					.replace(/\r/g, `%0d`);
+					.replace(/'/g, `~sq~`)
+					.replace(/\\/g, `~bs~`);
 			case `url`:
 				return encodeURIComponent(value.replace(/\s/g, `+`));
 			case `sanitize`:
 				return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
+			default:
+				return value;
 			}
 		}
 		return value;
@@ -4336,13 +4326,16 @@ const EasyCoder_Value = {
 		if (value) {
 			switch (encoding) {
 			case `ec`:
-				return value.replace(/~dq~/g, `"`)
+				return value.replace(/%0a/g, `\n`)
+					.replace(/%0d/g, `\r`)
+					.replace(/~dq~/g, `"`)
 					.replace(/~sq~/g, `'`)
-					.replace(/%0a/g, `\n`)
-					.replace(/%0d/g, `\r`);
+					.replace(/~bs~/g, `\\`);
 			case `url`:
 				const decoded = decodeURIComponent(value);
 				return decoded.replace(/\+/g, ` `);
+			default:
+				return value;
 			}
 		}
 		return value;
