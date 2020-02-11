@@ -25,3 +25,6 @@ The best place to start is with our ~ec~ **Codex** - see the link /SIDEBAR/. The
 Also look at  some of our examples (/SIDEBAR/). These are complete web pages you can copy to your own website and run.
 
 After that it's time to add an ~ec~ script to your web page. The links /SIDEBAR/ include examples that should help you understand what you need to add to your website. If you need further help you can contact us in our [Slack](https://easycoder-software.slack.com/) channel. Don't be afraid to ask; everybody was a beginner once.
+
+All of the source code of this website can be found in the [EasyCoder Repository](https:github.com/easycoder/easycoder.github.io).
+
