@@ -96,11 +96,12 @@
 !    create Tracer
 !    set attribute `id` of Tracer to `easycoder-tracer`
 
-!	Properties file only exists if the site is writable
+!	Test if site is on a static host
     put empty into Script
     clear ReadOnly
-    rest get Script from `/properties.txt`
+    rest get List from `_list/scripts`
     or begin
+    	print `Static site`
         set ReadOnly
         go to L2
     end
@@ -401,6 +402,7 @@ L2:
             set the content of Status to `No script name has been given`
             go to ResetStatus
         end
+        if the position of `.ecs` in Name is -1 put Name cat `.ecs` into Name
         replace ` ` with `_` in Name
         codemirror close ContentEditor
         put the content of ContentEditor into Content
@@ -529,14 +531,13 @@ DoOpen:
     if PasswordValid
     begin
         rest get Files from `_list/scripts`
-        print Files
         put the json count of Files into FileCount
         put empty into Content
         put 0 into N
         while N is less than FileCount
         begin
             put element N of Files into Item
-            if property `type` of Item is `file` json add property `name` of Item to Content
+            if property `type` of Item is `ecs` json add property `name` of Item to Content
             add 1 to N
         end
     end
@@ -598,7 +599,7 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
-	if PasswordValid rest get Content from `/resources/scripts/` cat File cat `.ecs`
+	if PasswordValid rest get Content from `/resources/scripts/` cat File
     else get Content from storage as File
     put Content into Current
     set the content of Status to `Script '` cat File cat `' loaded`
@@ -959,6 +960,7 @@ GetPassword:
     end
 	if the hostname is `localhost` go to SetPasswordValid
 	if the hostname is `127.0.0.1` go to SetPasswordValid
+    
 	if not PasswordRequested
     begin
 	    set PasswordRequested
@@ -972,10 +974,10 @@ GetPassword:
         	put prompt Message with `` into Password
         end
         rest get PasswordValid from `_verify/` cat Password
-				or begin
-					clear PasswordValid
-					return
-				end
+            or begin
+                clear PasswordValid
+                return
+            end
         if PasswordValid is `yes` 
         begin
             put Password into storage as `.password`

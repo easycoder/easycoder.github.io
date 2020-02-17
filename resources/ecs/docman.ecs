@@ -41,6 +41,7 @@
   a Link
   callback DecoratorCallback
   variable ReadOnly
+  variable List
   variable Packages
   variable Package
   variable PackageName
@@ -57,7 +58,6 @@
   variable NewGroup
   variable Index
   variable Mode
-  variable Script
   variable Password
   variable Valid
   variable Content
@@ -71,15 +71,14 @@
   variable LinkCount
   variable N
   variable P
-
+  
   create Tracer in Parent
   set attribute `id` of Tracer to `easycoder-tracer`
   create Container in Parent
 
-! Properties file only exists if the site is writable
-  put empty into Script
+! Test if the site is writable
   clear ReadOnly
-  rest get Script from `/properties.txt`
+  rest get List from `_list/scripts`
   or begin
   	set ReadOnly
     goto L2
@@ -136,6 +135,7 @@ Restart:
   	put PackageName into storage as `.docman-package`
   	rest get Package from `/resources/doc/core.json`
   	or alert `Fatal error; can't load package '` cat PackageName cat `'`
+    put decode Package into Package
   end
   if Group is `commands` go to RS2
   else if Group is `values` go to RS2
@@ -161,7 +161,7 @@ RS2:
   create SaveButton in ButtonsDiv
   set the style of SaveButton to `margin-right:1em`
   set the text of SaveButton to `Save`
-  on click SaveButton gosub to SavePackage
+  on click SaveButton go to SavePackage
 
   create ViewerButton in ButtonsDiv
   set the style of ViewerButton to `margin-right:1em`
@@ -635,21 +635,17 @@ DeleteKeyword:
 SaveKeyword:
   if Keyword is empty return
   put empty into Value
-  set property `syntax` of Value to encode the text of SyntaxInput
-  set property `description` of Value to encode the text of DescriptionInput
-  set property `examples` of Value to encode the text of ExamplesInput
+  set property `syntax` of Value to the text of SyntaxInput
+  set property `description` of Value to the text of DescriptionInput
+  set property `examples` of Value to the text of ExamplesInput
   set property Keyword of Keywords to Value
   set property Group of Package to Keywords
   return
 
 SavePackage:
   gosub to SaveKeyword
-  fork to SP2
-  return
-
-SP2:
+!  put encode Package into Package
   set the text of Status to `Saving package "` cat PackageName cat `"...`
-  json format Package
   rest post Package to `_save/doc~` cat PackageName cat `.json`
   set the text of Status to `Package "` cat PackageName cat `" saved`
   wait 3

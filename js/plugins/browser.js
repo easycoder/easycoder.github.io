@@ -44,7 +44,8 @@ const EasyCoder_Browser = {
 			if (compiler.isSymbol()) {
 				//				const symbol = compiler.getProgram()[compiler.getSymbol().pc];
 				const symbol = compiler.getSymbolRecord();
-				switch (symbol.keyword) {
+				let type = symbol.keyword;
+				switch (type) {
 				case `a`:
 				case `blockquote`:
 				case `button`:
@@ -65,6 +66,7 @@ const EasyCoder_Browser = {
 				case `label`:
 				case `legend`:
 				case `li`:
+				case `option`:
 				case `p`:
 				case `pre`:
 				case `select`:
@@ -77,7 +79,16 @@ const EasyCoder_Browser = {
 				case `ul`:
 					compiler.next();
 					if (compiler.tokenIs(`to`)) {
-						const cssId = compiler.getNextValue();
+						let cssID = null;
+						if (compiler.nextTokenIs(`body`)) {
+							if (type=== `div`) {
+								cssId = `body`;
+								compiler.next();
+							} else {
+								throw Error(`Body variable must be a div`);
+							}
+						}
+						else cssId = compiler.getValue();
 						let onError = 0;
 						if (compiler.tokenIs(`or`)) {
 							compiler.next();
@@ -88,7 +99,7 @@ const EasyCoder_Browser = {
 							domain: `browser`,
 							keyword: `attach`,
 							lino,
-							type: symbol.keyword,
+							type,
 							symbol: symbol.name,
 							cssId,
 							onError
@@ -107,8 +118,14 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			const command = program[program.pc];
-			const content = program.value.evaluate(program, command.cssId).content;
-			const element = document.getElementById(content);
+			let content = null;
+			let element = null;
+			if (command.cssId === `body`) {
+				element = document.body;
+			} else {
+				content = program.value.evaluate(program, command.cssId).content;
+				element = document.getElementById(content);
+			}
 			if (!element) {
 				if (command.onError) {
 					program.run(command.onError);
@@ -223,6 +240,7 @@ const EasyCoder_Browser = {
 				const target = targetRecord.element[targetRecord.index];
 				switch (targetRecord.keyword) {
 				case `input`:
+				case `textarea`:
 					target.value = ``;
 					break;
 				default:
@@ -325,6 +343,7 @@ const EasyCoder_Browser = {
 					`label`,
 					`legend`,
 					`li`,
+					`option`,
 					`p`,
 					`pre`,
 					`progress`,
@@ -563,6 +582,7 @@ const EasyCoder_Browser = {
 			const lino = compiler.getLino();
 			if (compiler.nextIsSymbol()) {
 				const target = compiler.getToken();
+				let targetRecord = compiler.getSymbolRecord();
 				if (compiler.nextTokenIs(`from`)) {
 					if (compiler.nextTokenIs(`storage`)) {
 						if (compiler.nextTokenIs(`as`)) {
@@ -589,8 +609,23 @@ const EasyCoder_Browser = {
 					}
 					if (compiler.isSymbol()) {
 						const symbolRecord = compiler.getSymbolRecord();
+						if (symbolRecord.keyword === `select`) {
+							if (targetRecord.keyword === `option`) {
+								compiler.next();
+								compiler.addCommand({
+									domain: `browser`,
+									keyword: `get`,
+									action: `getOption`,
+									lino,
+									target,
+									select: symbolRecord.name
+								});
+								return true;
+							}
+							throw Error(`Invalid variable type`);
+						}
 						if (symbolRecord.keyword !== `form`) {
-							throw Error(`Variable must be a form`);
+							throw Error(`Invalid variable type`);
 						}
 						compiler.next();
 						compiler.addCommand({
@@ -602,6 +637,9 @@ const EasyCoder_Browser = {
 							form: symbolRecord.name
 						});
 						return true;
+					}
+					else {
+						let targetRecord = compiler.getSymbolRecord(target);
 					}
 				}
 			}
@@ -648,6 +686,12 @@ const EasyCoder_Browser = {
 					numeric: false,
 					content: value
 				};
+				break;
+			case `getOption`:
+				let selectRecord = program.getSymbolRecord(command.select);
+				let select = selectRecord.element[selectRecord.index];
+				let option = select.options[select.selectedIndex];
+				targetRecord.element[targetRecord.index] = option;
 				break;
 			}
 			return command.pc + 1;
@@ -1052,6 +1096,18 @@ const EasyCoder_Browser = {
 					action
 				});
 				return compiler.completeHandler();
+			case `window`:
+				if (compiler.nextTokenIs(`resize`)) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `browser`,
+						keyword: `on`,
+						lino,
+						action: `windowResize`
+					});
+					return compiler.completeHandler();
+				}
+				return false;
 			case `browser`:
 			case `restore`:
 				if (action === `browser` && !compiler.nextTokenIs(`back`)) {
@@ -1115,23 +1171,30 @@ const EasyCoder_Browser = {
 			const command = program[program.pc];
 			switch (command.action) {
 			case `change`:
-				const changeItem = program.getSymbolRecord(command.symbol);
-				// if (changeItem.keyword === `select`) {
-				const target = changeItem.element[changeItem.index];
-				target.targetPc = command.pc + 2;
-				target.addEventListener(`change`, function () {
-					try {
-						program.run(target.targetPc);
-					} catch (err) {
-						console.log(err.message);
-						alert(err.message);
-					}
-					return false;
+				targetRecord = program.getSymbolRecord(command.symbol);
+				targetRecord.program = program.script;
+				targetRecord.element.forEach(function (target, index) {
+					target.targetRecord = targetRecord;
+					target.targetIndex = index;
+					target.targetPc = command.pc + 2;
+					target.addEventListener(`change`, (event) => {
+						event.stopPropagation();
+						if (program.length > 0) {
+							const eventTarget = event.target;
+							if (typeof eventTarget.targetRecord !== `undefined`) {
+								eventTarget.targetRecord.index = eventTarget.targetIndex;
+								setTimeout(function () {
+									EasyCoder.timestamp = Date.now();
+									let p = EasyCoder.scripts[eventTarget.targetRecord.program];
+									p.run(eventTarget.targetPc);
+								}, 1);
+							}
+						}
+					});
 				});
-				// }
 				break;
 			case `click`:
-				const targetRecord = program.getSymbolRecord(command.symbol);
+				targetRecord = program.getSymbolRecord(command.symbol);
 				targetRecord.program = program.script;
 				targetRecord.element.forEach(function (target, index) {
 					target.targetRecord = targetRecord;
@@ -1338,6 +1401,12 @@ const EasyCoder_Browser = {
 					return true;
 				};
 				break;
+			case `windowResize`:
+				program.onWindowResize = command.pc + 2;
+				window.addEventListener('resize', function() {
+					program.run(program.onWindowResize);
+				});
+				break;
 			case `browserBack`:
 				program.onBrowserBack = command.pc + 2;
 				break;
@@ -1350,6 +1419,18 @@ const EasyCoder_Browser = {
 				break;
 			}
 			return command.pc + 1;
+		}
+	},
+
+	OPTION: {
+
+		compile: (compiler) => {
+			compiler.compileVariable(`browser`, `option`, false, `dom`);
+			return true;
+		},
+
+		run: (program) => {
+			return program[program.pc].pc + 1;
 		}
 	},
 
@@ -1844,6 +1925,33 @@ const EasyCoder_Browser = {
 							return true;
 						}
 					}
+				} else if (token === `attributes`) {
+					if (compiler.nextTokenIs(`of`)) {
+						if (compiler.nextIsSymbol()) {
+							const symbolRecord = compiler.getSymbolRecord();
+							const symbolName = symbolRecord.name;
+							if (symbolRecord.extra !== `dom`) {
+								compiler.warning(`'${symbolName}' is not a DOM type`);
+								return false;
+							}
+							if (compiler.nextTokenIs(`to`)) {
+								const attributes = compiler.getNextValue();
+								if (attributes) {
+									compiler.addCommand({
+										domain: `browser`,
+										keyword: `set`,
+										lino,
+										type: `setAttributes`,
+										symbolName,
+										attributes
+									});
+									return true;
+								}
+							}
+						}
+					}
+					compiler.warning(`'${compiler.getToken()}' is not a symbol`);
+					return false;
 				} else if (token === `style`) {
 					if (compiler.nextTokenIs(`of`)) {
 						if (compiler.nextIsSymbol()) {
@@ -2016,7 +2124,9 @@ const EasyCoder_Browser = {
 					targetId = program.getValue(symbol.value[symbol.index]);
 					target = document.getElementById(targetId);
 				}
-				target.classList.add(program.getValue(command.value));
+				program.getValue(command.value).split().forEach(function(item) {
+					target.classList.add(item);
+				});
 				break;
 			case `setId`:
 				symbol = program.getSymbolRecord(command.symbolName);
@@ -2076,6 +2186,29 @@ const EasyCoder_Browser = {
 					target.setAttribute(attributeName, program.getValue(command.attributeValue));
 				}
 				break;
+			case `setAttributes`:
+					symbol = program.getSymbolRecord(command.symbolName);
+					target = symbol.element[symbol.index];
+					if (!target) {
+						targetId = program.getValue(symbol.value[symbol.index]);
+						target = document.getElementById(targetId);
+					}
+					for (let n = target.attributes.length - 1; n >= 0; n--) {
+						target.removeAttribute(target.attributes[n].name);
+					}
+					let attributes = program.getValue(command.attributes);
+					let list = attributes.split(" ");
+					for (let n = 0; n < list.length; n++) {
+						let attribute = list[n];
+						let p = attribute.indexOf(`=`);
+						if (p > 0) {
+							target.setAttribute(attribute.substr(0, p), attribute.substr(p + 1));
+						}
+						else {
+							target.setAttribute(attribute, attribute);
+						}
+					}
+					break;
 			case `setStyle`:
 			case `setStyles`:
 				symbol = program.getSymbolRecord(command.symbolName);
@@ -2105,7 +2238,15 @@ const EasyCoder_Browser = {
 				break;
 			case `setBodyStyle`:
 				const bodyStyleValue = program.getValue(command.styleValue);
-				document.body.style[command.styleName.content] = bodyStyleValue.content;
+				switch (command.styleName.content) {
+					case `background`:
+						document.body.style.background = bodyStyleValue;
+						break;
+					default:
+						program.runtimeError(command.lino,
+							 `Unsupported body attribute '${command.styleName.content}'`);
+						return 0;
+				}
 				break;
 			case `setTitle`:
 				document.title = program.getValue(command.value);
@@ -2457,6 +2598,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Mail;
 		case `on`:
 			return EasyCoder_Browser.On;
+		case `option`:
+			return EasyCoder_Browser.OPTION;
 		case `p`:
 			return EasyCoder_Browser.P;
 		case `play`:
@@ -2736,14 +2879,24 @@ const EasyCoder_Browser = {
 
 		getCoord: (compiler, type, offset) => {
 			if (compiler.nextTokenIs(`of`)) {
-				if (compiler.nextIsSymbol()) {
-					const symbol = compiler.getSymbolRecord();
+				if (compiler.nextTokenIs(`window`)) {
 					compiler.next();
-					if (symbol.extra === `dom`) {
+					return {
+						domain: `browser`,
+						type,
+						symbol: `window`,
+						offset
+					};
+				}
+				let symbolRecord = null;
+				if (compiler.isSymbol()) {
+					symbolRecord = compiler.getSymbolRecord();
+					if (symbolRecord.extra === `dom`) {
+						compiler.next();
 						return {
 							domain: `browser`,
 							type,
-							symbol: symbol.name,
+							symbol: symbolRecord.name,
 							offset
 						};
 					}
@@ -2858,6 +3011,13 @@ const EasyCoder_Browser = {
 					content
 				};
 			case `top`:
+				if (value.symbol == `window`) {
+					return {
+						type: `constant`,
+						numeric: true,
+						content: window.screenY
+					};
+				}
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				element = symbolRecord.element[symbolRecord.index];
 				content = Math.round(value.offset ? element.offsetTop : element.getBoundingClientRect().top);
@@ -2867,6 +3027,13 @@ const EasyCoder_Browser = {
 					content
 				};
 			case `bottom`:
+				if (value.symbol == `window`) {
+					return {
+						type: `constant`,
+						numeric: true,
+						content: window.screenY + window.innerHeight
+					};
+				}
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				content = Math.round(symbolRecord.element[symbolRecord.index].getBoundingClientRect().bottom);
 				return {
@@ -2875,6 +3042,13 @@ const EasyCoder_Browser = {
 					content
 				};
 			case `left`:
+				if (value.symbol == `window`) {
+					return {
+						type: `constant`,
+						numeric: true,
+						content: window.screenLeft
+					};
+				}
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				element = symbolRecord.element[symbolRecord.index];
 				content = Math.round(value.offset ? element.offsetLeft : element.getBoundingClientRect().left);
@@ -2884,6 +3058,13 @@ const EasyCoder_Browser = {
 					content
 				};
 			case `right`:
+				if (value.symbol == `window`) {
+					return {
+						type: `constant`,
+						numeric: true,
+						content: window.screenX + window.innerWidth
+					};
+				}
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				content = Math.round(symbolRecord.element[symbolRecord.index].getBoundingClientRect().right);
 				return {
@@ -2892,6 +3073,13 @@ const EasyCoder_Browser = {
 					content
 				};
 			case `width`:
+				if (value.symbol == `window`) {
+					return {
+						type: `constant`,
+						numeric: true,
+						content: window.innerWidth
+					};
+				}
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				content = Math.round(symbolRecord.element[symbolRecord.index].getBoundingClientRect().width);
 				return {
@@ -2900,6 +3088,13 @@ const EasyCoder_Browser = {
 					content
 				};
 			case `height`:
+				if (value.symbol == `window`) {
+					return {
+						type: `constant`,
+						numeric: true,
+						content: window.innerHeight
+					};
+				}
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				content = Math.round(symbolRecord.element[symbolRecord.index].getBoundingClientRect().height);
 				return {
