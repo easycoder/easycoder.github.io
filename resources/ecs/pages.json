@@ -128,7 +128,14 @@
     	"index":19,
         "file":"step18",
         "title":"Solitaire",
-        "prev":"step17"
+        "prev":"step17",
+        "next":"step19"
+    },
+	"step19": {
+    	"index":20,
+        "file":"step19",
+        "title":"Pan and Zoom",
+        "prev":"step18"
     },
 	"gap": {
     	"index":50,

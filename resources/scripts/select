@@ -1,0 +1,13 @@
+!	Select
+
+debug step
+	variable List
+    select Select
+	set List to array
+    append `One` to List
+    append `Two` to List
+    append `Three` to List
+    print List
+    create Select
+    set Select from List
+    stop

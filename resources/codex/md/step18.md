@@ -1,4 +1,5 @@
 # Solitaire #
+
 Solitaire is a generic name for a number of different activities/games/exercises for a single player. The most common variants are probably card games, but one of the most traditional is a game played on a wooden board having an array of holes initially filled with pegs. One hole is initially left empty and the rules are very simple; when you take a peg and jump over its neighbor into an empty space the neighbor is removed from the board. The challenge is to remove all but one peg. It's surprisingly difficult.
 
 Here we have an electronic version of Solitaire. Pegs are moved using drag and drop, as outlined in the previous page, but here it gets somewhat more complicated. Note: Although this script will run on a mobile device it is less than ideal as a finger tends to obscure the view of where the peg is being dragged, and there seems to be no reliable way to stop the browser dragging the entire screen contents along with the item picked. There is a version of this script at [https://easycoder.software/solitaire/](https://easycoder.software/solitaire/) that uses selection instead of dragging and is better suited to mobile browsers.
@@ -25,4 +26,4 @@ All that remains to be done is to check if there are any more possible moves, an
 
 Eagle-eyed programmers might notice that the algorithms for finding valid moves are implemented twice but differently. This is largely because the script is a derivative of an earler version (that didn't use drag and drop). The technique used to test if a given peg can be moved is more concise but I decided to leave as it was the code that checks if there are any moves available. Each technique uses a number of arithmetical calculations and it demonstrates how there are often 2 or more ways to achieve any given goal.
 
-~next:...~
+~next:Pan and Zoom~

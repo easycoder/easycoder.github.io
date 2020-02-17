@@ -808,7 +808,7 @@ Decorate:
   end
   else if left 5 of Payload is `code:`
   begin
-  	put `<span style="font-family:mono;font-size:90%;color:darkred">`
+  	put `<span style="font-family:Courier New;color:darkred">`
   	cat from 5 of Payload into Payload
     put Payload cat `</span>` into Payload
   end
@@ -988,5 +988,5 @@ GetPassword:
   return
 
 SetPasswordValid:
-	set PasswordValid
+  set PasswordValid
   return

@@ -1,0 +1,7 @@
+!	Test
+
+	variable V
+
+	set V to array
+	print V
+	exit
