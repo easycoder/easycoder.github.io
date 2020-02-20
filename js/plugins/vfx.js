@@ -170,11 +170,11 @@ const EasyCoder_VFX = {
 						let heightS = height * zoomS;
 						animation.leftS = width * zoomS * spec.start.left / 100;
 						animation.topS = height * zoomS * spec.start.top / 100;
-						let widthF = width * 100 / spec.finish.width;
-						let zoomF = widthF / width;
+						animation.widthF = width * 100 / spec.finish.width;
+						let zoomF = animation.widthF / width;
 						let heightF = height * zoomF;
-						let leftF = width * zoomF * spec.finish.left / 100;
-						let topF = height * zoomF * spec.finish.top / 100;
+						animation.leftF = width * zoomF * spec.finish.left / 100;
+						animation.topF = height * zoomF * spec.finish.top / 100;
 
 						if (spec.start.width > 100) {
 							throw new Error(`Start width too great for item ${targetRecord.index}`);
@@ -188,16 +188,12 @@ const EasyCoder_VFX = {
 						if (heightS - animation.topS < height) {
 							throw new Error(`Insufficient start height for item ${targetRecord.index}`);
 						}
-						if (widthF - leftF < width) {
+						if (animation.widthF - animation.leftF < width) {
 							throw new Error(`Insufficient finish width for item ${targetRecord.index}`);
 						}
-						if (heightF - topF < height) {
+						if (heightF - animation.topF < height) {
 							throw new Error(`Insufficient finish height for item ${targetRecord.index}`);
 						}
-
-						animation.stepL = (leftF - animation.leftS) / spec.steps;
-						animation.stepT = (topF - animation.topS) / spec.steps;
-						animation.stepW = (widthF - animation.widthS) / spec.steps;
 						animation.left = animation.leftS;
 						animation.top = animation.topS;
 						animation.width = animation.widthS;
@@ -274,9 +270,10 @@ const EasyCoder_VFX = {
 				const animation = targetRecord.animation[targetRecord.index];
 				if (animation.step < animation.spec.steps) {
 					animation.step++;
-					animation.left += animation.stepL;
-					animation.top += animation.stepT
-					animation.width += animation.stepW;
+					let proportion = parseFloat(animation.step) / animation.spec.steps;
+					animation.left = animation.leftS + (animation.leftF - animation.leftS) * proportion;
+					animation.top = animation.topS + (animation.topF - animation.topS)  * proportion;
+					animation.width = animation.widthS + (animation.widthF - animation.widthS) * proportion;
 					const image = animation.image;
 					image.style.left = `-${animation.left}px`;
 					image.style.top = `-${animation.top}px`;
