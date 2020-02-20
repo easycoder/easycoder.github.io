@@ -557,7 +557,7 @@ const EasyCoder_SVG = {
 		case `svgtext`:
 			return EasyCoder_SVG.SVGText;
 		default:
-			return false;
+			return null;
 		}
 	},
 

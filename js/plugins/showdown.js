@@ -54,7 +54,7 @@ const EasyCoder_Showdown = {
 		case `load`:
 			return EasyCoder_Showdown.Load;
 		default:
-			return false;
+			return null;
 		}
 	},
 

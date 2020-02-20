@@ -1,103 +1,63 @@
 !	Pan and Zoom
 
+	script PanZoom
+
     div Div
-    img Image
+    animation Anim
+    variable Spec
     variable AspectW
     variable AspectH
     variable Width
     variable Height
-    variable StartW
-    variable EndW
-    variable StartL
-    variable EndL
-    variable StartT
-    variable EndT
-    variable StepL
-    variable StepW
-    variable StepT
-    variable W
-    variable L
-    variable T
-    variable N
-    variable Steps
+    variable Item
+    variable Finished
     
-!	Set the aspect ratio of the container
     put 16 into AspectW
     put 9 into AspectH
+    
+    set Spec to object
+    set property `type` of Spec to `panzoom`
+    set property `width` of Spec to `100%`
+    set property `height` of Spec to `100%`
+    set property `url` of Spec to `/resources/img/demo3.jpg`
+    set property `steps` of Spec to 100
+    set property `trigger` of Spec to 100
+    set Item to object
+    set property `left` of Item to 30
+    set property `top` of Item to 37
+    set property `width` of Item to 20
+    set property `start` of Spec to Item
+    set Item to object
+    set property `left` of Item to 0
+    set property `top` of Item to 0
+    set property `width` of Item to 100
+    set property `finish` of Spec to Item
 
-!	Create the container
+!	Get the width and height
     create Div
-    set the style `position` of Div to `relative`
     set style `margin` of Div to `1em 0 0 5%`
     set style `width` of Div to `90%`
-    put the width of Div into Width
+	put the width of Div into Width
     multiply Width by AspectH giving Height
     divide Height by AspectW
     set style `height` of Div to Height cat `px`
-    set style `overflow` of Div to `hidden`
 
-!	Test values
-	put 0 into StartL
-    put -120 into EndL
-    put 0 into StartT
-    put -140 into EndT
-    put 100 into StartW
-    put 460 into EndW
-	put 200 into Steps
-
-!	Prepare to do the pan/zoom
-    take StartL from EndL giving L
-    multiply L by 1000
-    divide L by Steps giving StepL
-    take StartT from EndT giving T
-    multiply T by 1000
-    divide T by Steps giving StepT
-    take StartW from EndW giving W
-    multiply W by 1000
-    divide W by Steps giving StepW
-
-!	Create the image
-	create Image in Div
-    set style `position` of Image to `absolute`
-    set attribute `src` of Image to `/resources/img/demo0.jpg`
-    set style `left` of Image to StartL cat `%`
-    set style `top` of Image to StartT cat `%`
-    set style `width` of Image to StartW cat `%`
+!	Create the components
+    create Anim in Div
+    set style `width` of Anim to `100%`
+    set style `height` of Anim to Height cat `px`
+    set the specification of Anim to Spec
+    on trigger Anim set Finished
     
-    put StartL into L
-    multiply L by 1000
-    put StartT into T
-    multiply T by 1000
-    put StartW into W
-    multiply W by 1000
+    wait 2
 
-    wait 1
-
-	while true
+!	Start the animation
+	clear Finished
+    start Anim
+    while not Finished
     begin
-        wait 1
-        put 0 into N
-        while N is less than Steps
-        begin
-            add StepL to L
-            add StepT to T
-            add StepW to W
-            set style `left` of Image to `calc(` cat L cat `% / 1000)`
-            set style `top` of Image to `calc(` cat T cat `% / 1000)`
-            set style `width` of Image to `calc(` cat W cat `% / 1000)`
-            add 1 to N
-            wait 2 ticks
-        end
-        wait 1
-        while N is greater than 0
-        begin
-            take 1 from N
-            take StepL from L
-            take StepT from T
-            take StepW from W
-            set style `left` of Image to `calc(` cat L cat `% / 1000)`
-            set style `top` of Image to `calc(` cat T cat `% / 1000)`
-            set style `width` of Image to `calc(` cat W cat `% / 1000)`
-            wait 2 ticks
-        end
+    	step Anim
+        wait 5 ticks
     end
+    print `Finished`
+    stop

@@ -429,11 +429,8 @@ const EasyCoder_Browser = {
 					parent = parentRecord.element[parentRecord.index];
 				}
 				targetRecord.element[targetRecord.index] = document.createElement(targetRecord.keyword);
-				if (!program.elementId) {
-					program.elementId = 0;
-				}
 				targetRecord.element[targetRecord.index].id =
-					`ec-${targetRecord.name}-${targetRecord.index}-${program.elementId++}`;
+					`ec-${targetRecord.name}-${targetRecord.index}-${EasyCoder.elementId++}`;
 				if (targetRecord.keyword === `a`) {
 					targetRecord.element[targetRecord.index].setAttribute(`href`, `#`);
 				}
@@ -2639,7 +2636,7 @@ const EasyCoder_Browser = {
 		case `upload`:
 			return EasyCoder_Browser.Upload;
 		default:
-			return false;
+			return null;
 		}
 	},
 

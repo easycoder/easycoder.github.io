@@ -421,7 +421,7 @@ const EasyCoder_GMap = {
 		case `update`:
 			return EasyCoder_GMap.Update;
 		default:
-			return false;
+			return null;
 		}
 	},
 

@@ -100,7 +100,7 @@ const EasyCoder_WOF = {
 		case `wheel`:
 			return EasyCoder_WOF.Wheel;
 		default:
-			return false;
+			return null;
 		}
 	},
 

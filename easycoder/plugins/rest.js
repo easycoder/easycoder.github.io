@@ -14,12 +14,7 @@ const EasyCoder_Rest = {
 					if (targetRecord.keyword === `variable`) {
 						if (compiler.nextTokenIs(`from`)) {
 							const url = compiler.getNextValue();
-							var onError = null;
-							if (compiler.tokenIs(`or`)) {
-								compiler.next();
-								onError = compiler.getPc() + 1;
-								compiler.completeHandler();
-							}
+							let fixup = compiler.getPc();
 							compiler.addCommand({
 								domain: `rest`,
 								keyword: `rest`,
@@ -27,8 +22,13 @@ const EasyCoder_Rest = {
 								request: `get`,
 								target: targetRecord.name,
 								url,
-								onError
+								onError: null
 							});
+							if (compiler.tokenIs(`or`)) {
+								compiler.next();
+								compiler.getCommandAt(fixup).onError = compiler.getPc() + 1;
+								compiler.completeHandler();
+							} 
 							return true;
 						}
 					}
@@ -62,12 +62,6 @@ const EasyCoder_Rest = {
 						}
 					}
 				}
-				onError = null;
-				if (compiler.tokenIs(`or`)) {
-					compiler.next();
-					onError = compiler.getPc() + 1;
-					compiler.completeHandler();
-				}
 				compiler.addCommand({
 					domain: `rest`,
 					keyword: `rest`,
@@ -76,8 +70,14 @@ const EasyCoder_Rest = {
 					value,
 					url,
 					target,
-					onError
+					onError: compiler.getPc() + 2
 				});
+				onError = null;
+				if (compiler.tokenIs(`or`)) {
+					compiler.next();
+					// onError = compiler.getPc() + 1;
+					compiler.completeHandler();
+				}
 				return true;
 			}
 			return false;
@@ -120,12 +120,17 @@ const EasyCoder_Rest = {
 				program.runtimeError(command.lino, `CORS not supported`);
 				return;
 			}
-			// request.command = command;
+			request.script = program.script;
+			request.pc = program.pc;
 
 			request.onload = function () {
+				let s = request.script;
+				let p = EasyCoder.scripts[s];
+				let pc = request.pc;
+				let c = p[pc];
 				if (200 <= request.status && request.status < 400) {
 					var content = request.responseText.trim();
-					if (command.target) {
+					if (c.target) {
 						const targetRecord = program.getSymbolRecord(command.target);
 						targetRecord.value[targetRecord.index] = {
 							type: `constant`,
@@ -134,14 +139,14 @@ const EasyCoder_Rest = {
 						};
 						targetRecord.used = true;
 					}
-					program.run(command.pc + 1);
+					p.run(c.pc + 1);
 				} else {
 					const error = `${request.status} ${request.statusText}`;
-					if (command.onError) {
-						program.errorMessage = `Exception trapped: ${error}`;
-						program.run(command.onError);
+					if (c.onError) {
+						p.errorMessage = `Exception trapped: ${error}`;
+						p.run(c.onError);
 					} else {
-						program.runtimeError(command.lino, `Error: ${error}`);
+						p.runtimeError(c.lino, `Error: ${error}`);
 					}
 				}
 			};
@@ -158,23 +163,15 @@ const EasyCoder_Rest = {
 
 			switch (command.request) {
 			case `get`:
-				// alert(`GET from ${path}`);
 				// console.log(`GET from ${path}`);
-				// request.open(`GET`, path);
 				request.send();
 				break;
 			case `post`:
 				const value = program.getValue(command.value);
 				console.log(`POST to ${path}`);
-				// request.open(`POST`, path);
-				if (value.length >0 && value.charAt(0) === `{`) {
-					request.setRequestHeader(`Content-Type`, `application/json; charset=UTF-8`);
-					//            console.log(`value=${value}`);
-					request.send(value.charAt(0) === `{` ? value : value.toString());
-				} else {
-					request.setRequestHeader(`Content-Type`, `application/text; charset=UTF-8`);
-					request.send(value);
-				}
+				//console.log(`value=${value}`);
+				request.setRequestHeader(`Content-type`, `application/json; charset=UTF-8`);
+				request.send(value);
 				break;
 			}
 			return 0;
@@ -186,7 +183,7 @@ const EasyCoder_Rest = {
 		case `rest`:
 			return EasyCoder_Rest.Rest;
 		default:
-			return false;
+			return null;
 		}
 	},
 

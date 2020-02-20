@@ -142,7 +142,7 @@ const EasyCoder_CKEditor = {
 		case `ckeditor`:
 			return EasyCoder_CKEditor.CKEditor;
 		default:
-			return false;
+			return null;
 		}
 	},
 

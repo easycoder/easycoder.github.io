@@ -288,7 +288,7 @@ const EasyCoder_Compiler = {
 		// console.log(`Compile ${token}`);
 		this.mark();
 		for (const domainName of Object.keys(this.domain)) {
-			//      console.log(`Try domain ${domainName} for token ${token}`);
+			// console.log(`Try domain ${domainName} for token ${token}`);
 			const domain = this.domain[domainName];
 			if (domain) {
 				const handler = domain.getHandler(token);
@@ -3496,6 +3496,8 @@ const EasyCoder = {
 	domain: {
 		core: EasyCoder_Core
 	},
+
+	elementId: 0,
 
 	runtimeError: function (lino, message) {
 		this.lino = lino;

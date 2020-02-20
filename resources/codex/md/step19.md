@@ -4,18 +4,19 @@ When TV programmes show a series of images they often apply something called the
 
 In this tutorial step we'll just deal with the pan and zoom; the dissolve can wait till later.
 
+Most of the work in the animation is done by an ~ec~ `vfx` plugin module. All the script has to do is set things up and then run it.
+
 ~copy~
 
-The code here is designed to work with any size of image container, so all dimensions are calculated as a percentage of the parent element. ~ec~ only works with integers so we deal with floating point values by exploiting the fact that each one is just one integer divided by another. So the first thing is to define the aspect ratio of the main container as a width and a height component. Then we create the container, giving it 90% of the width of its parent. We can immediately ask the system how wide this is in pixels, then we calculate the corresponding height and set it. We also get it to hide any content that falls outside its boundary.
+The code here is designed to work with any size of image container, so all dimensions are calculated as a percentage of the parent element. The data for the animation is all held in a variable called ~code:Spec~, with 2blocks of data for the start and finish of the animation. The key items are the ~code:left~, ~code:top~ and ~code:width~ values. ~code:width~ is the percentage of the entire image that will be shown for the start or the finish of the animation. ~code:left~ is the percentage that will "hang off" to the left of the display area and ~code:top~ to the corresponding amount that will hang off the top. Since the height of the image always tracks its width, keeping the aspet ration the same, that's all we need. The data packalso includes the URL of the image, the number of steps involved and which step should cause the script to do something special, in this case to stop the animation.
 
-Next we set up some test values. All except the last one are percentages of the width or height of the container and they define the values at the start of the animatuion and at the finish. L is "left", T is "top" and W is "width". The final value is the number of steps in the animation.
+All we have to do now is send regular requests to step the animation. This is done by the script rather than the plugin as it enables us to keep control over the process.
 
-Next we calculate the sizes of each step for the left, top and width. Because these are actually fractional values we scale everything by a large value (1000) to maintain precision in the division operations. You'll see shortly how this is used to achieve a smooth pan or zoom.
+If you create more than one animation but put them all into the same variable as an array, the ~code:step~ command will run all of them, though the only ones that actually do anything will be those whose step counter hasn't yet reached its number of steps. You can restart an animation at any time by using
 
-Now we can create the image, give it a source URL and set its size and position to the initial values in the test data. The position style attribute is ~code:absolute~ so we can use specific dimensions inside the container.
+```
+    index Anim to N
+    start Anim
+```
 
-Next we create high-precision working variables L, T and W, initialised to the starting values.
-
-~code:while true~ ensures that the animation will run forever. Inside, each step of the animation adds the step values to the working variables and uses these to set the location and size of the image. Here we exploit a very clever feature of the browser's style processing engine, by giving it a calculation to do. To explain: if we ask for a position or size value using a calculation such as ~code:calc(142581px / 1000)~ the actual value used will be 142.581 pixels; a fractional value. The amazing thing is that the browser actually uses this value to position the image. If it were to just use the nearest integer the image would jitter badly as it moves or scales, but with the fractional value the jitter disappears and the movement is smooth. This technique works on all the browsers I've tested.
-
-~next:...~
+~next:The Ken Burns Effect~

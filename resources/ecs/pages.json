@@ -135,7 +135,14 @@
     	"index":20,
         "file":"step19",
         "title":"Pan and Zoom",
-        "prev":"step18"
+        "prev":"step18",
+        "next":"step20"
+    },
+	"step20": {
+    	"index":21,
+        "file":"step20",
+        "title":"The Ken Burns Effect",
+        "prev":"step19"
     },
 	"gap": {
     	"index":50,

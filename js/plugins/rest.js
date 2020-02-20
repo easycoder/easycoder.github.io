@@ -183,7 +183,7 @@ const EasyCoder_Rest = {
 		case `rest`:
 			return EasyCoder_Rest.Rest;
 		default:
-			return false;
+			return null;
 		}
 	},
 

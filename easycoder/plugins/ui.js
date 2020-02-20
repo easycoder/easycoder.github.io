@@ -280,7 +280,7 @@ const EasyCoder_UI = {
 		case `set`:
 			return EasyCoder_UI.Set;
 		default:
-			return false;
+			return null;
 		}
 	},
 

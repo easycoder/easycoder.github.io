@@ -140,7 +140,7 @@ const EasyCoder_CodeMirror = {
 		case `codemirror`:
 			return EasyCoder_CodeMirror.CodeMirror;
 		default:
-			return false;
+			return null;
 		}
 	},
 

@@ -6,6 +6,8 @@ const EasyCoder = {
 		core: EasyCoder_Core
 	},
 
+	elementId: 0,
+
 	runtimeError: function (lino, message) {
 		this.lino = lino;
 		this.reportError({

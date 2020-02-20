@@ -16,7 +16,7 @@ const EasyCoder_Plugins = {
 		 * When all the plugins have been added, EasyCoder starts up.
 		 */
 
-		setPluginCount(5); // *** IMPORTANT *** the number of plugins you will be adding
+		setPluginCount(6); // *** IMPORTANT *** the number of plugins you will be adding
 
 		getPlugin(`browser`,
 			`/easycoder/plugins/browser.js`,
@@ -46,6 +46,12 @@ const EasyCoder_Plugins = {
 			`/easycoder/plugins/showdown.js`,
 			function () {
 				addPlugin(`showdown`, EasyCoder_Showdown);
+			});
+
+		getPlugin(`vfx`,
+			`/easycoder/plugins/vfx.js`,
+			function () {
+				addPlugin(`vfx`, EasyCoder_VFX);
 			});
 
 	},

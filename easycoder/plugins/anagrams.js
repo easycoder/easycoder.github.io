@@ -32,7 +32,9 @@ const EasyCoder_Anagrams = {
 		}
 	},
 
-	getHandler: () => {},
+	getHandler: () => {
+		return null;
+	},
 
 	condition: {
 

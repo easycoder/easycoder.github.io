@@ -198,7 +198,7 @@ const EasyCoder_AWS = {
 		case `aws`:
 			return EasyCoder_AWS.AWS;
 		default:
-			return false;
+			return null;
 		}
 	},
 

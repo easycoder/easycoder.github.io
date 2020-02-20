@@ -397,7 +397,7 @@ const EasyCoder_Json = {
 		case `json`:
 			return EasyCoder_Json.Json;
 		default:
-			return false;
+			return null;
 		}
 	},
 
