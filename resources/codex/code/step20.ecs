@@ -199,12 +199,10 @@
     multiply Width by AspectH giving Height
     divide Height by AspectW
     set style `height` of Div to Height cat `px`
-    put Height into H
-    negate H
-    put 0 into H
 
 !	Create the components
     set the elements of Anim to the elements of Spec
+    put 0 into H
     put 0 into Index
     while Index is less than the elements of Spec
     begin
