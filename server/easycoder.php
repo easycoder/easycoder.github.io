@@ -3,7 +3,7 @@
   * Plugin Name: EasyCoder
   * Plugin URI: https://easycoder.software
   * Description: Control the appearance and behavior of your posts and pages by embedding simple English-like scripts, without the need to learn JavaScript.
-  * Version: 2.5.6
+  * Version: 2.6.0
   * Author: EasyCoder Software
   * Author URI: https://easycoder.software
   */
