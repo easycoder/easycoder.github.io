@@ -16,11 +16,11 @@ cd ~/EasyCoder
 npx google-closure-compiler --js=easycoder/easycoder.js --js_output_file=easycoder/easycoder-min.js --language_in ECMASCRIPT_2018
 echo "Closure finished"
 
-cp easycoder/easycoder.js ~/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/distribution/easycoder.js
-cp easycoder/easycoder-min.js ~/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/distribution/easycoder-min.js
+cp easycoder/easycoder.js ~/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/easycoder/easycoder.js
+cp easycoder/easycoder-min.js ~/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/easycoder/easycoder-min.js
 rm easycoder.zip
 zip -r easycoder.zip *
-mv easycoder.zip ~/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/distribution
+mv easycoder.zip ~/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/easycoder
 echo "Files copied"
 
 rm -rf ~/temp/lib
