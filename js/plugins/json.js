@@ -319,6 +319,14 @@ const EasyCoder_Json = {
 				if (content.domain.endsWith(`/`)) {
 					content.domain = content.domain.substr(0, content.domain.length - 1);
 				}
+				n = content.domain.indexOf(`/`);
+				if (n > 0) {
+					content.path = content.domain.substr(n + 1);
+					content.domain = content.domain.substr(0, n);
+				}
+				else {
+					content.path = ``;
+				}
 				targetRecord.value[targetRecord.index] = {
 					type: `constant`,
 					numeric: false,

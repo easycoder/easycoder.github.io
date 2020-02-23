@@ -286,7 +286,7 @@ Viewer:
 
   create Label in RowDiv
   set the style of Label to
-    `flex:39;padding-top:0.2em;font-size:2em;font-weight:bold;font-family:mono;color:#800`
+    `flex:39;padding-top:0.2em;font-size:2em;font-weight:bold;font-family:Courier New;color:#800`
   set the content of Label to Keyword
 
   create PaddingDiv in RowDiv
@@ -323,13 +323,13 @@ Viewer:
   set the style of TitleDiv to `margin-top:1em;font-weight:bold`
   set the content of TitleDiv to `Syntax:`
   create SyntaxDiv in ContentDiv
-  set the style of SyntaxDiv to `color:#800;font-family:mono`
+  set the style of SyntaxDiv to `color:#800;font-family:Courier New`
   set the content of SyntaxDiv to Syntax
   create TitleDiv in ContentDiv
   set the style of TitleDiv to `margin-top:1em;font-weight:bold`
   set the content of TitleDiv to `Examples:`
   create ExamplesDiv in ContentDiv
-  set the style of ExamplesDiv to `color:#800;font-family:mono`
+  set the style of ExamplesDiv to `color:#800;font-family:Courier New`
   set the content of ExamplesDiv to Examples
   create TitleDiv in ContentDiv
   set the style of TitleDiv to `margin-top:1em;font-weight:bold`
@@ -411,7 +411,7 @@ Decorate:
   stop
 
 ProcessMono:
-  put `<span style="color:#800;font-family:mono">` cat Data cat `</span>` into Payload
+  put `<span style="color:#800;font-family:Courier New">` cat Data cat `</span>` into Payload
   return
 
 ProcessQuote:
