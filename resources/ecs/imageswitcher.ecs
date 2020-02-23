@@ -14,6 +14,7 @@
     variable ImageCount
     variable N
     variable M
+    variable Width
     variable ECPayload
     variable Payload
   	callback DecoratorCallback
@@ -27,6 +28,7 @@
 Start:
 	clear Container
     
+    put `50px` into Width
 	put 9 into ImageCount
 	set the elements of Thumb to ImageCount
 	set the elements of Image to ImageCount
@@ -34,7 +36,7 @@ Start:
     set the style of Buttons to `text-align:center; padding:10px;border:1px solid lightgray`
     create Link in Buttons
     create Left in Link
-    set style `width` of Left to `60px`
+    set style `width` of Left to Width
     set attribute `src` of Left to `resources/icon/left.png`
     on click Left go to DoLeft
     put 0 into N
@@ -43,7 +45,7 @@ Start:
     	index Thumb to N
         create Link in Buttons
         create Thumb in Link
-        set style `width` of Thumb to `60px`
+        set style `width` of Thumb to Width
         set style `border` of Thumb to `1px solid white`
         if N is not 0 set style `margin-left` of Thumb to `10px`
         set attribute `src` of Thumb to `resources/img/imageswitcher/thumbs/img` cat N cat `.jpg`
@@ -52,7 +54,7 @@ Start:
     on click Thumb go to DoThumb
     create Link in Buttons
     create Right in Link
-    set style `width` of Right to `60px`
+    set style `width` of Right to Width
     set attribute `src` of Right to `resources/icon/right.png`
     on click Right go to DoRight
     put 0 into N
