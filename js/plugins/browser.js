@@ -1979,7 +1979,8 @@ const EasyCoder_Browser = {
 					const styleName = compiler.getValue();
 					let type = `setStyle`;
 					let symbolName = ``;
-					if (compiler.tokenIs(`of`)) {
+					token = compiler.getToken();
+					if (token === `of`) {
 						if (compiler.nextToken() === `body`) {
 							type = `setBodyStyle`;
 						} else if (compiler.isSymbol()) {
@@ -2005,6 +2006,20 @@ const EasyCoder_Browser = {
 								});
 								return true;
 							}
+						}
+					}
+					else if (token === `to`) {
+						const styleValue = compiler.getNextValue();
+						if (styleValue) {
+							compiler.addCommand({
+								domain: `browser`,
+								keyword: `set`,
+								lino,
+								type: `setHeadStyle`,
+								styleName,
+								styleValue
+							});
+							return true;
 						}
 					}
 				} else if (token === `default`) {
@@ -2232,6 +2247,13 @@ const EasyCoder_Browser = {
 					target.style.cssText = styleValue;
 					break;
 				}
+				break;
+			case `setHeadStyle`:
+				const headStyleName = program.getValue(command.styleName);
+				const headStyleValue = program.getValue(command.styleValue);
+				var style = document.createElement('style');
+				style.innerHTML = `${headStyleName} ${headStyleValue}`;
+				document.head.appendChild(style);
 				break;
 			case `setBodyStyle`:
 				const bodyStyleValue = program.getValue(command.styleValue);
