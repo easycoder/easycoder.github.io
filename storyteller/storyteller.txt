@@ -104,6 +104,9 @@
     create TitleDiv in Content
     create ButtonBar in Content
     create TopicText in Content
+    
+    rest get Title from `/stories/title.txt`
+    set the title to Title
 
     gosub to SetupTheme
     gosub to CreateButtons
