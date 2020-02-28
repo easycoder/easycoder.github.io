@@ -341,7 +341,7 @@ CreateButtons:
 	set style `position` of ButtonBar to `relative`
 	set style `margin` of ButtonBar to `0 1em 0.5em 1em`
 	create HomeButton in ButtonBar
-    set attribute `src` of HomeButton to `icons/home.png`
+    set attribute `src` of HomeButton to `https://easycoder.github.io/storyteller/icons/home.png`
     on click HomeButton
     begin
         put `home` into ID
@@ -351,7 +351,7 @@ CreateButtons:
 
 	create BackButton in ButtonBar
     set style `display` of BackButton to `none`
-    set attribute `src` of BackButton to `icons/arrow-back.png`
+    set attribute `src` of BackButton to `https://easycoder.github.io/storyteller/icons/arrow-back.png`
     on click BackButton
     begin
         put the elements of Stack into N
@@ -371,7 +371,7 @@ CreateButtons:
 
 	create ForwardButton in ButtonBar
     set style `display` of ForwardButton to `none`
-    set attribute `src` of ForwardButton to `icons/arrow-forward.png`
+    set attribute `src` of ForwardButton to `https://easycoder.github.io/storyteller/icons/arrow-forward.png`
     on click ForwardButton
     begin
 !trace Stack StackPointer N vertical
@@ -392,7 +392,7 @@ CreateButtons:
     end
 
 	create InfoButton in ButtonBar
-    set attribute `src` of InfoButton to `icons/info.png`
+    set attribute `src` of InfoButton to `https://easycoder.github.io/storyteller/icons/info.png`
     on click InfoButton
     begin
         put `info` into ID
