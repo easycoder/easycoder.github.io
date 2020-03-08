@@ -67,7 +67,9 @@ const EasyCoder_VFX = {
 			const image = document.createElement(`img`);
 			targetRecord.animation[targetRecord.index].image = image;
 			container.appendChild(image);
+			image.style[`display`] = `none`;
 			image.style[`position`] = `absolute`;
+			image.style[`max-width`] = `none`;
 			return command.pc + 1;
 		}
 	},
@@ -122,7 +124,7 @@ const EasyCoder_VFX = {
 			if (compiler.tokenIs(`the`)) {
 				type = compiler.nextToken();
 			}
-			if ([`url`, `specification`, `spec`].includes(type)) {
+			if ([`url`, `specification`, `spec`, `opacity`].includes(type)) {
 				if (compiler.nextTokenIs(`of`)) {
 					if (compiler.nextIsSymbol()) {
 						const symbolRecord = compiler.getSymbolRecord();
@@ -148,7 +150,7 @@ const EasyCoder_VFX = {
 			const command = program[program.pc];
 			let targetRecord = program.getSymbolRecord(command.target);
 			let container = targetRecord.element[targetRecord.index];
-			let animation = targetRecord.animation[targetRecord.index];
+			let animation;
 			switch (command.type) {
 				case `url`:
 					let url = program.getValue(command.value);
@@ -156,7 +158,7 @@ const EasyCoder_VFX = {
 					break;
 				case `specification`:
 				case `spec`:
-					let animation = targetRecord.animation[targetRecord.index];
+					animation = targetRecord.animation[targetRecord.index];
 					let spec = JSON.parse(program.getValue(command.value));
 					animation.spec = spec;
 					animation.step = spec.steps;
@@ -198,14 +200,19 @@ const EasyCoder_VFX = {
 						animation.top = animation.topS;
 						animation.width = animation.widthS;
 						let image = animation.image;
-						image.setAttribute(`src`, spec.url);
 						image.style.left = `-${animation.left}px`;
 						image.style.top = `-${animation.top}px`;
 						image.style.width = `${animation.width}px`;
+						image.setAttribute(`src`, spec.url);
 					} else {
 						program.runtimeError(command.lino, `Unknown animation type '${spec.type}'`);
 						return 0;
 					}
+				case `opacity`:
+					animation = targetRecord.animation[targetRecord.index];
+					let image = animation.image;
+					image.style.opacity = command.value;
+					break;
 			}
 			return command.pc + 1;
 		}
@@ -239,6 +246,7 @@ const EasyCoder_VFX = {
 			animation.left = animation.leftS;
 			animation.top = animation.topS;
 			animation.width = animation.widthS;
+			animation.image.style.display = `inline-block`;
 			return command.pc + 1;
 		}
 	},

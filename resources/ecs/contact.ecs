@@ -7,7 +7,7 @@
     variable Script
     variable Message
     
-    rest get Script from `/resources/codex/md/contact.md`
+    rest get Script from `/resources/md/contact.md`
 
     on message
     begin

@@ -101,6 +101,9 @@ L2:
   end
   load showdown
   on DecoratorCallback go to Decorate
+  
+!  rest get Content from `_list/docs`
+!  alert Content
 
   put `[]` into Packages
   put `[]` into Content
@@ -113,6 +116,7 @@ L2:
   append `showdown.json` to Content
   append `svg.json` to Content
   append `ui.json` to Content
+  append `vfx.json` to Content
   put 0 into Index
   while Index is less than the json count of Content
   begin

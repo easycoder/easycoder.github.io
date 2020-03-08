@@ -1,19 +1,23 @@
-!	Examples
+!   Examples
 
-	script Examples
+    script Examples
     
     import module Showdown
     
     module ImageSwitcherModule
     div ImageSwitcher
     button ShowImageSwitcher
+    module UserCaptureModule
+    div UserCapture
+    button ShowUserCapture
+    div Status
     variable Content
     variable Script
     variable Message
-    variable ImageSwitcherRunning
     
     rest get Content from `/resources/md/examples.md`
     replace `/SHOW-IMAGESWITCHER/` with `<button id="show-imageswitcher">Show</button>` in Content
+    replace `/SHOW-USERCAPTURE/` with `<button id="show-usercapture">Show</button>` in Content
 
     on message
     begin
@@ -23,31 +27,53 @@
         else go to Start
     end
     
+    attach Status to `ec-status`
     set ready
     stop
 
 Start:
+	scroll to 0
     send Content to Showdown
-    if not ImageSwitcherRunning
+    if ImageSwitcherModule is not running
     begin
     	wait 10 ticks
     	rest get Script from `/resources/ecs/imageswitcher.ecs`
         run Script as ImageSwitcherModule
-        set ImageSwitcherRunning
         attach ImageSwitcher to `ex-imageswitcher`
         attach ShowImageSwitcher to `show-imageswitcher`
-        fork to ClickImageSwitcher
+        fork to InitImageSwitcher
     end
     send to ImageSwitcherModule
+
+    if UserCaptureModule is not running
+    begin
+    	wait 10 ticks
+    	rest get Script from `/resources/ecs/usercapture.ecs`
+        run Script as UserCaptureModule
+        attach UserCapture to `ex-usercapture`
+        attach ShowUserCapture to `show-usercapture`
+        fork to InitUserCapture
+    end
     stop
 
-ClickImageSwitcher:
+InitImageSwitcher:
     set style `display` of ImageSwitcher to `none`
     set the text of ShowImageSwitcher to `Show`
     on click ShowImageSwitcher
     begin
         set style `display` of ImageSwitcher to `block`
         set the text of ShowImageSwitcher to `Hide`
-        on click ShowImageSwitcher go to ClickImageSwitcher
+        on click ShowImageSwitcher go to InitImageSwitcher
+    end
+	stop
+
+InitUserCapture:
+	send `hide` to UserCaptureModule
+    set the text of ShowUserCapture to `Show`
+    on click ShowUserCapture
+    begin
+        set the text of ShowUserCapture to `Hide`
+        on click ShowUserCapture go to InitUserCapture
+    	send `show` to UserCaptureModule
     end
 	stop

@@ -13,7 +13,9 @@ const EasyCoder = {
 		this.reportError({
 			message: `Line ${(lino >= 0) ? lino : ``}: ${message}`
 		}, this.program);
-		this.program.aborted = true;
+		if (this.program) {
+			this.program.aborted = true;
+		}
 	},
 	nonNumericValueError: function (lino) {
 		this.runtimeError(lino, `Non-numeric value`);

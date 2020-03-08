@@ -22,8 +22,8 @@
         },
         "json parse": {
             "syntax": "json parse {url} as {variable}",
-            "description": "This parses a URL, splitting it up into its component parts so they can be easily worked on. In the example above, the result in ~m:ParsedValue~ would be%0a%0a~m:{<br \/>~%0a~m:&nbsp;&nbsp;&quot;protocol&quot;:&quot;https&quot;,<br \/>~%0a~m:&nbsp;&nbsp;&quot;domain&quot;:&quot;easycoder.software&quot;,<br \/>~%0a~m:&nbsp;&nbsp;&quot;arg&quot;:&quot;value=56&quot;<br \/>~%0a~m:}~",
-            "examples": "json parse `https:\/\/easycoder.software\/?value=56` as ParsedValue"
+            "description": "This parses a URL, splitting it up into its component parts so they can be easily worked on. In the example above these parts are:\n\n~m:protocol~: The protocol: ~m:https:\/\/~\n\n~m:domain~: The domain: ~m:easycoder.software~\n\n~m:path~: The path: ~demos\/first~\n\n~m:arg~: The CGI parameters: ~value=56~\n\nHere, the result in ~m:ParsedValue~ would be\n\n~m:{<br \/>~\n~m:&nbsp;&nbsp;&quot;protocol&quot;:&quot;https:\/\/&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;domain&quot;:&quot;easycoder.software&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;path&quot;:&quot;demos\/first&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;arg&quot;:&quot;value=56&quot;<br \/>~\n~m:}~",
+            "examples": "json parse `https:\/\/easycoder.software\/demos\/first\/?value=56` as ParsedValue"
         },
         "json rename": {
             "syntax": "json rename {property} to {new name} in {object}",

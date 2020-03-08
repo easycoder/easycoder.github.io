@@ -209,6 +209,11 @@
             "syntax": "filter {array} with {function}",
             "description": "This is a generalized filter function that will extract wanted values from a JSON array using a function supplied in the script. In the following description, refer to the example above.%0a%0aThe filter function is called once for every element in the array, each with the element. This is always called ~m:a~ and is supplied as a named argument in the array variable. The function does whatever is needed in the context and places the result value (true or false) into a ~m:v~ argument.%0a%0aSee also ~l:sort~ and ~l:append~.",
             "examples": "&nbsp;&nbsp;variable Items%0a&nbsp;&nbsp;variable A%0a&nbsp;&nbsp;variable V%0a    %0a&nbsp;&nbsp;put empty into Items%0a&nbsp;&nbsp;append `fish` to Items%0a&nbsp;&nbsp;append `cabbage` to Items%0a&nbsp;&nbsp;append `sugar` to Items%0a&nbsp;&nbsp;append `beef` to Items%0a&nbsp;&nbsp;append `potatoes` to Items%0a&nbsp;&nbsp;filter Items with MyFilter%0a&nbsp;&nbsp;alert Items%0a&nbsp;&nbsp;exit%0a%0aMyFilter:%0a&nbsp;&nbsp;put arg `a` of Items into A%0a&nbsp;&nbsp;if the length of A is greater than 5%0a&nbsp;&nbsp;&nbsp;&nbsp;set V%0a&nbsp;&nbsp;&nbsp;&nbsp;else clear V%0a&nbsp;&nbsp;set arg `v` of Items to V%0a&nbsp;&nbsp;stop"
+        },
+        "CORE": {
+            "syntax": "Core variables and commands",
+            "description": "The ~m:core~ package contains all the basic stuff required of any programming language: variables, control structures, values and conditionals. With these it's possible to write and run simple command-line programs.\n\nThe other packages all provide features related to specific areas of programming, such as for browsers, storage, comms and special things like maps and text editors.",
+            "examples": ""
         }
     },
     "values": {

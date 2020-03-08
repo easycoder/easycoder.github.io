@@ -9,6 +9,7 @@
 	div Sidebar
 	div Document
 	div Notes
+    div Status
 	img Banner
 	ul ButtonList
 	li ButtonItem
@@ -88,6 +89,9 @@ BuildPage:
 		create Document in Main
 		set the style of Document to `flex:1`
 	end
+    
+    create Status in Body
+    set the id of Status to `ec-status`
 
 	rest get Script from `/resources/ecs/showdown.ecs`
 	run Script with Document as ShowdownModule

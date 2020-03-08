@@ -1,7 +1,62 @@
-!	Test
+!	'Smashing' example
 
-	variable V
+	script Smashing
+    div Body
+    div Container
+    div MainPanel
+    div Title
+    div Subtitle
+    div DemoText
+    a Button
+    variable W
+    variable H
+    
+    create Body
+    set the style of Body to `width:100%;height:100%`
+    put the width of Body into W
+    put the height of Body into H
+    
+    set style `.container` to 
+    	`{width:calc(` cat W cat `px - 2em);`
+        cat `height:calc(` cat H cat `px - 3em);`
+        cat `margin:1em auto;`
+        cat `text-align:center}`
+    set style `.main` to 
+    	`{background-color:#333;width:width:100%;height:100%;`
+        cat `font-family:sans-serif;color:white;padding-top:1em}`
+    set style `.title` to `{font-size:3em;margin-top:0.5em}`
+    set style `.subtitle` to `{font-size:1.4em;margin:0 0.5em 2em 0.5em}`
+    set style `a.button` to 
+    	`{font-size:2em;background:gray;border-radius:0.2em;`
+        cat `padding:0.7em;text-decoration:none;color:white}`
+    set style `a.button:hover` to `{background:#666}`
+    set style `.demo` to `{margin-top:2em;font-size:1.2em}`
+    
+    create Container in Body
+    set the class of Container to `container`
+    
+    create MainPanel in Container
+    set the class of MainPanel to `main`
+    
+    create Title in MainPanel
+    set the class of Title to `title`
+    set the content of Title to `New widget launching soon.`
+    
+    create Subtitle in MainPanel
+    set the class of Subtitle to `subtitle`
+    set the content of Subtitle to
+    	`Not long to go until Acme Inc launch their latest product.`
 
-	set V to array
-	print V
-	exit
+	create Button in MainPanel
+    set the class of Button to `button`
+    set the content of Button to `Get in touch`
+    on click Button go to GetDetails
+    
+    create DemoText in MainPanel
+    set the class of DemoText to `demo`
+    set the content of DemoText to `Demo of EasyCoder for Dev.to`
+
+    stop
+
+GetDetails:
+	stop

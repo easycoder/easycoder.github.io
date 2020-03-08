@@ -1979,7 +1979,8 @@ const EasyCoder_Browser = {
 					const styleName = compiler.getValue();
 					let type = `setStyle`;
 					let symbolName = ``;
-					if (compiler.tokenIs(`of`)) {
+					token = compiler.getToken();
+					if (token === `of`) {
 						if (compiler.nextToken() === `body`) {
 							type = `setBodyStyle`;
 						} else if (compiler.isSymbol()) {
@@ -2005,6 +2006,20 @@ const EasyCoder_Browser = {
 								});
 								return true;
 							}
+						}
+					}
+					else if (token === `to`) {
+						const styleValue = compiler.getNextValue();
+						if (styleValue) {
+							compiler.addCommand({
+								domain: `browser`,
+								keyword: `set`,
+								lino,
+								type: `setHeadStyle`,
+								styleName,
+								styleValue
+							});
+							return true;
 						}
 					}
 				} else if (token === `default`) {
@@ -2121,7 +2136,8 @@ const EasyCoder_Browser = {
 					targetId = program.getValue(symbol.value[symbol.index]);
 					target = document.getElementById(targetId);
 				}
-				program.getValue(command.value).split().forEach(function(item) {
+				program.getValue(command.value).split(` `).forEach(function(item) {
+					target.classList.remove(item);
 					target.classList.add(item);
 				});
 				break;
@@ -2232,6 +2248,23 @@ const EasyCoder_Browser = {
 					target.style.cssText = styleValue;
 					break;
 				}
+				break;
+			case `setHeadStyle`:
+				const headStyleName = program.getValue(command.styleName);
+				const headStyleValue = program.getValue(command.styleValue);
+				var style = document.createElement('style');
+				style.innerHTML = `${headStyleName} ${headStyleValue}`;
+				for (let i = 0; i < document.head.childNodes.length; i++) {
+					let node = document.head.childNodes[i];
+					if (node.tagName === `STYLE`) {
+						let data = node.innerHTML;
+						if (data.indexOf(`${headStyleName} `) === 0) {
+							document.head.removeChild(node);
+							break;
+						}
+					}
+				}	
+				document.head.appendChild(style);
 				break;
 			case `setBodyStyle`:
 				const bodyStyleValue = program.getValue(command.styleValue);

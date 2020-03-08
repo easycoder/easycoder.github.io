@@ -1,0 +1,26 @@
+{
+    "commands": {
+        "VFX": {
+            "syntax": "A plugin to do special video effects",
+            "description": "This package contains special video effects such as advanced transitions that are used in slideshows. At the time of writing, only one effect is implemented, in the ~l:animation~ type.\n\nFor an example of how to use video effects, see the Pan and Zoom page in the Codex Tutorial.",
+            "examples": ""
+        },
+        "animation": {
+            "syntax": "animation {name}",
+            "description": "Declares an animation or array of animations. Each of these is a DIV with an image inside it. See ~l:create~, ~l:set~, ~l:start~ and ~l:step~.",
+            "examples": "animation Anim1"
+        },
+        "create": {
+            "syntax": "create {animation} in {parent}",
+            "description": "Creates a new ~l:animation~ as a child element of the given parent. See also ~l:set~, ~l:start~ and ~l:step~.",
+            "examples": "create Anim in MainContainer"
+        },
+        "set": {
+            "syntax": "set the specification of {animation} to {specification}",
+            "description": "This sets all the parameters of an ~l:animation~ by passing it a JSON structure looking like this:\n\n```\n    {\n        \"type\":\"panzoom\",\n        \"width\":\"100%\",\n        \"height\":\"100%\",\n        \"url\":{the path to the image},\n        \"steps\":160,\n        \"trigger\":120,\n        \"start\":\n        {\n            \"left\":20,\n            \"top\":15,\n            \"width\":80\n        },\n        \"finish\":\n        {\n            \"left\":0,\n            \"top\":15,\n            \"width\":80\n        }\n    }\n```\n\n~m:type~ one of the supported animation types (currently only ~m:panzoom~ is available)\n\n~m:width~ the width of the animation\n\n~m:height~ the height of the animation\n\n~m:url~ The URL of the image used for the animation\n\n~m:steps~ the number of steps in the animation\n\n~m:trigger~ the step at which a trigger event should be raised\n\n~m:start~ and ~m:finish~ contain values for the first and the last step in the animation:\n\n~m:left~ the percentage of the image that should \"overhang\" the left edge of the container. Adjusting this value moves the image left or right.\n\n~m:top~ the percentage of the image that should \"overhang\" the top edge of the container. Adjusting this value moves the image up or down.\n\n~m:width~ the percentage of the image that should be used in this step. This is the inverse of the magnification factor required, so a value of 50 means a 2 times magnification and one of 33 means a 3 times magnification.\n\nIn all cases, ~m:left~ added to ~m:width~ may not exceed 100; neither may ~m:top~ added to ~m:width~.\n\nSee also ~l:animation~, ~l:create~, ~l:start~, ~l:set~, ~l:start~ and ~l:step~.",
+            "examples": "set the specification of Anim to element N of Spec"
+        }
+    },
+    "values": {},
+    "conditions": {}
+}
