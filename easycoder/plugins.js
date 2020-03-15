@@ -19,37 +19,37 @@ const EasyCoder_Plugins = {
 		setPluginCount(6); // *** IMPORTANT *** the number of plugins you will be adding
 
 		getPlugin(`browser`,
-			`/plugins/browser.js`,
+			`plugins/browser.js`,
 			function () {
 				addPlugin(`browser`, EasyCoder_Browser);
 			});
 
 		getPlugin(`json`,
-			`/plugins/json.js`,
+			`plugins/json.js`,
 			function () {
 				addPlugin(`json`, EasyCoder_Json);
 			});
 
 		getPlugin(`rest`,
-			`/plugins/rest.js`,
+			`plugins/rest.js`,
 			function () {
 				addPlugin(`rest`, EasyCoder_Rest);
 			});
 
 		getPlugin(`svg`,
-			`/plugins/svg.js`,
+			`plugins/svg.js`,
 			function () {
 				addPlugin(`svg`, EasyCoder_SVG);
 			});
 
 		getPlugin(`showdown`,
-			`/plugins/showdown.js`,
+			`plugins/showdown.js`,
 			function () {
 				addPlugin(`showdown`, EasyCoder_Showdown);
 			});
 
 		getPlugin(`vfx`,
-			`/plugins/vfx.js`,
+			`plugins/vfx.js`,
 			function () {
 				addPlugin(`vfx`, EasyCoder_VFX);
 			});
@@ -67,42 +67,42 @@ const EasyCoder_Plugins = {
 		switch (name) {
 		case `codemirror`:
 			getPlugin(name,
-				`/plugins/codemirror.js`,
+				`plugins/codemirror.js`,
 				function () {
 					addPlugin(name, EasyCoder_CodeMirror, callback);
 				});
 			break;
 		case `ckeditor`:
 			getPlugin(name,
-				`/plugins/ckeditor.js`,
+				`plugins/ckeditor.js`,
 				function () {
 					addPlugin(name, EasyCoder_CKEditor, callback);
 				});
 			break;
 		case `ui`:
 			getPlugin(name,
-				`/plugins/ui.js`,
+				`plugins/ui.js`,
 				function () {
 					addPlugin(name, EasyCoder_UI, callback);
 				});
 			break;
 		case `anagrams`:
 			getPlugin(name,
-				`/plugins/anagrams.js`,
+				`plugins/anagrams.js`,
 				function () {
 					addPlugin(name, EasyCoder_Anagrams, callback);
 				});
 			break;
 		case `gmap`:
 			getPlugin(name,
-				`/plugins/gmap.js`,
+				`plugins/gmap.js`,
 				function () {
 					addPlugin(name, EasyCoder_GMap, callback);
 				});
 			break;
 		case `wof`:
 			getPlugin(name,
-				`/plugins/wof.js`,
+				`plugins/wof.js`,
 				function () {
 					addPlugin(name, EasyCoder_WOF, callback);
 				});

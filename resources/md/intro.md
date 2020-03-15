@@ -1,11 +1,38 @@
 # Introduction #
-So you've built yourself a website and you'd like to add some interactivity. For this you need a program - otherwise known as a script - and some element on your page to make interactive. You may have been told that JavaScript is your only option and you may have already tried it and found it rather intimidating; if so, here's a simpler alternative. (Note for WordPress users: these instructions also apply to you; check /WP/ for some further details.)
+So you've built yourself a website and you'd like to add some interactivity. For this you need a program - otherwise known as a script - and some element on your page to make interactive. You may have been told that JavaScript is your only option and you may have already tried it and found it rather intimidating; if so, here's a simpler alternative. (Note for WordPress users: a plugin is available for ~ec~; just search for it by name. It also has [its own website](https://easycoder.software)).
 
 To help you get started, let's do something super simple. I'm assuming you already have access to your own hosting plan or are able to borrow some space on a friend's site. If you haven't yet built any kind of working web page - from the level of Hello, World upwards - I recommend you get familiar with that first; it's rather outside the scope of these instructions.
 
-Once you have edit access to an empty server directory, download [helloworld.zip](#) into it and unzip it. If all is well, when you type the URL of the site into your browser the message **Hello, world!** should appear at the top of the window.
+Once you have edit access to an empty server directory, create an `index.html` file with the following contents:
 
-Then open `index.html` into your editor. This is the file we'll be using for this short demo. Replace the existing `<body>...</body>` section with the following:
+```
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh
+/easycoder/easycoder.github.io@master/easycoder/easycoder.js'></script>
+  </head>
+
+  <body>
+
+    <pre id="easycoder-script" style="display:none">
+
+      alert `Hello, world!`
+
+    </pre>
+
+  </body>
+</html>
+```
+
+If all is well, when you type the URL of the site into your browser the message **Hello, world!** should appear at the top of the window.
+
+The upper half of the file is the _HEAD_ of the document. In here is a call to load the ~ec~ JavaScript engine that we'll be using instead of regular JavaScript. It's called from a _Content Delivery Network_ that takes files from the main source-code repository for ~ec~. Don't worry if this is all a bit too technical; it's not necessary to understand in order to use it.
+
+The lower half of the file is the _BODY_ of the document, which contains everything your users are going to see. This example, being as simple as you can get, has a single element, a preformatted (`<pre>`) element, inside which is the 1-line script that displays the popup message you just saw. ~ec~ scripts look a lot like English, and like human languages they use very few symbols. It's very easy to learn the basics and whatever you write always goes inside the `<pre>` element we see here.
+
+Now open `index.html` into your editor. This is the file we'll be using for this short demo. Replace the existing `<body>...</body>` section with the following:
 
 /1/
 Load the page into your browser and check the text appears. Note that only text that's outside of any angle braces will appear; the rest is all HTML tags. In this case there's a single ~code:&lt;div&gt;~ (division) that contains our text; it also has an identifier string that we'll use shortly.
