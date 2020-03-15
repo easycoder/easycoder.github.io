@@ -3912,6 +3912,7 @@ const EasyCoder = {
 	loadPluginJs: function(path) {
 		console.log(`${Date.now() - this.timestamp} ms: Load ${path}/easycoder/plugins.js`);
 		const script = document.createElement(`script`);
+		let location = document.scripts[0].src;
 		script.src = `${window.location.origin}${path}/easycoder/plugins.js?ver=${this.version}`;
 		script.type = `text/javascript`;
 		script.onload = () => {
