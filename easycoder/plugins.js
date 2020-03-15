@@ -19,37 +19,37 @@ const EasyCoder_Plugins = {
 		setPluginCount(6); // *** IMPORTANT *** the number of plugins you will be adding
 
 		getPlugin(`browser`,
-			`/easycoder/plugins/browser.js`,
+			`/plugins/browser.js`,
 			function () {
 				addPlugin(`browser`, EasyCoder_Browser);
 			});
 
 		getPlugin(`json`,
-			`/easycoder/plugins/json.js`,
+			`/plugins/json.js`,
 			function () {
 				addPlugin(`json`, EasyCoder_Json);
 			});
 
 		getPlugin(`rest`,
-			`/easycoder/plugins/rest.js`,
+			`/plugins/rest.js`,
 			function () {
 				addPlugin(`rest`, EasyCoder_Rest);
 			});
 
 		getPlugin(`svg`,
-			`/easycoder/plugins/svg.js`,
+			`/plugins/svg.js`,
 			function () {
 				addPlugin(`svg`, EasyCoder_SVG);
 			});
 
 		getPlugin(`showdown`,
-			`/easycoder/plugins/showdown.js`,
+			`/plugins/showdown.js`,
 			function () {
 				addPlugin(`showdown`, EasyCoder_Showdown);
 			});
 
 		getPlugin(`vfx`,
-			`/easycoder/plugins/vfx.js`,
+			`/plugins/vfx.js`,
 			function () {
 				addPlugin(`vfx`, EasyCoder_VFX);
 			});
@@ -61,48 +61,48 @@ const EasyCoder_Plugins = {
 		/*
 		 * This lets you add a plugin before launching a script, using the 'plugin' command.
 		 * You must provide a case for every plugin you will be adding;
-		 * use 'ckeditor' as the pattern to follow.
+		 * use any one of them as the pattern to follow.
 		 */
 
 		switch (name) {
 		case `codemirror`:
 			getPlugin(name,
-				`/easycoder/plugins/codemirror.js`,
+				`/plugins/codemirror.js`,
 				function () {
 					addPlugin(name, EasyCoder_CodeMirror, callback);
 				});
 			break;
 		case `ckeditor`:
 			getPlugin(name,
-				`/easycoder/plugins/ckeditor.js`,
+				`/plugins/ckeditor.js`,
 				function () {
 					addPlugin(name, EasyCoder_CKEditor, callback);
 				});
 			break;
 		case `ui`:
 			getPlugin(name,
-				`/easycoder/plugins/ui.js`,
+				`/plugins/ui.js`,
 				function () {
 					addPlugin(name, EasyCoder_UI, callback);
 				});
 			break;
 		case `anagrams`:
 			getPlugin(name,
-				`/easycoder/plugins/anagrams.js`,
+				`/plugins/anagrams.js`,
 				function () {
 					addPlugin(name, EasyCoder_Anagrams, callback);
 				});
 			break;
 		case `gmap`:
 			getPlugin(name,
-				`/easycoder/plugins/gmap.js`,
+				`/plugins/gmap.js`,
 				function () {
 					addPlugin(name, EasyCoder_GMap, callback);
 				});
 			break;
 		case `wof`:
 			getPlugin(name,
-				`/easycoder/plugins/wof.js`,
+				`/plugins/wof.js`,
 				function () {
 					addPlugin(name, EasyCoder_WOF, callback);
 				});
