@@ -3878,7 +3878,9 @@ const EasyCoder = {
 		}
 		const script = document.createElement(`script`);
 		script.type = `text/javascript`;
-		script.src = `${src}?ver=${EasyCoder.version}`;
+		let location = document.scripts[0].src;
+		location = location.substring(0, location.indexOf(`/easycoder.js`));
+		script.src = `${location}/${src}?ver=${EasyCoder.version}`;
 		script.onload = function () {
 			console.log(`${Date.now() - EasyCoder.timestamp} ms: Plugin ${src} loaded`);
 			onload();
