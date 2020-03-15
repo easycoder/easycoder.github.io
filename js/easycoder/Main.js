@@ -421,10 +421,10 @@ const EasyCoder = {
 	},
 
 	loadPluginJs: function(path) {
-		console.log(`${Date.now() - this.timestamp} ms: Load ${path}/easycoder/plugins.js`);
-		const script = document.createElement(`script`);
 		let location = document.scripts[0].src;
 		location = location.substring(0, location.indexOf(`/easycoder.js`));
+		console.log(`${Date.now() - this.timestamp} ms: Load ${location}/plugins.js`);
+		const script = document.createElement(`script`);
 		script.src = `${location}/plugins.js?ver=${this.version}`;
 		script.type = `text/javascript`;
 		script.onload = () => {
