@@ -462,7 +462,7 @@ const EasyCoder = {
 			pathname = ``;
 		}
 		if (typeof EasyCoder_Plugins === `undefined`) {
-			this.loadPluginJs(`${window.location.href}plugins.js`);
+			this.loadPluginJs(`${window.location.href}`);
 		} else {
 			this.pluginsPath = pathname;
 			EasyCoder_Plugins.getGlobalPlugins(
