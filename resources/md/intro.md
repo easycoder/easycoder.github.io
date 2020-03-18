@@ -16,11 +16,11 @@ Once you have edit access to an empty server directory, create an `index.html` f
 
   <body>
 
-    <pre id="easycoder-script" style="display:none">
+    <div id="easycoder-script" style="display:none">
 
       alert `Hello, world!`
 
-    </pre>
+    </div>
 
   </body>
 </html>
@@ -30,7 +30,7 @@ If all is well, when you type the URL of the site into your browser the message 
 
 The upper half of the file is the _HEAD_ of the document. In here is a call to load the ~ec~ JavaScript engine that we'll be using instead of regular JavaScript. It's called from a _Content Delivery Network_ that takes files from the main source-code repository for ~ec~. Don't worry if this is all a bit too technical; it's not necessary to understand in order to use it.
 
-The lower half of the file is the _BODY_ of the document, which contains everything your users are going to see. This example, being as simple as you can get, has a single element, a preformatted (`<pre>`) element, inside which is the 1-line script that displays the popup message you just saw. ~ec~ scripts look a lot like English, and like human languages they use very few symbols. It's very easy to learn the basics and whatever you write always goes inside the `<pre>` element we see here.
+The lower half of the file is the _BODY_ of the document, which contains everything your users are going to see. This example, being as simple as you can get, has a single element, a `<div>` element inside which is the 1-line script that displays the popup message you just saw. ~ec~ scripts look a lot like English, and like human languages they use very few symbols. It's very easy to learn the basics and whatever you write always goes inside the `<div>` element we see here.
 
 Now open `index.html` into your editor. This is the file we'll be using for this short demo. Replace the existing `<body>...</body>` section with the following:
 
