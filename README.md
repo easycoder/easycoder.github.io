@@ -1,6 +1,6 @@
 # EasyCoder #
 
-**_EasyCoder_** is a WordPress or standalone plugin that lets you write highly readable scripts to control the appearance and behavior of your web pages. This is what JavaScript does, but **_EasyCoder_** is a lot easier to learn. Here are its main benefits:
+**_EasyCoder_** is a high-level scripting language that lets you write highly readable scripts to control the appearance and behavior of your web pages. This is what JavaScript does, but **_EasyCoder_** is a lot easier to learn. Here are its main benefits:
 
  1. It's quick to write browser applications in **_EasyCoder_**. Website development is faster and sites are more reliable.
  1. **_EasyCoder_** scripts are smaller than the corresponding JavaScript and are easy to read by most people, not just by programmers. This matters later on when maintenance is needed and the original programmer may no longer be available.
@@ -12,6 +12,8 @@
  1. **_EasyCoder_** has a fully pluggable architecture. This allows any owner of JavaScript functionality to 'wrap' this in script commands and offer it as a plugin, allowing any site developer to use it without the need to learn JavaScript. Typical examples of such wrappers that are already provided are Google Maps or and CKEditor, each of which presents a concise API and has functionality that's easily understood and easy to describe in plain English. Well-encapsulated products are ideal candidates for implementation as **_EasyCoder_** plug-ins.
  1. **_EasyCoder_** includes a REST server that permits scripts to access resources on demand from the server rather than having them embedded in the page. Resources include scripts, HTML components, CSS and general data, and all can be loaded and unloaded dynamically.
  1. **_EasyCoder_** is well suited to the construction of single-page web designs of unlimited size. The memory space occupied by JavaScript remains roughly the same no matter how many scripts and data you load and unload using REST. There is no memory or performance hit as the size of the project grows, because modules remain on the server, ready for use, instead of taking up browser space.
+
+To use **_EasyCoder_** all you need is to include its main JavaScript file in the _HEAD_ of your web page. It will call in any other JavaScript files it needs. An example is given in the Intro page of [our website](https://easycoder.github.io). You can alternatively build a standalone page where all the files are present on your own server, which avoids any possible risk of your site breaking when updates occur. SWe do our best to prevent this happening but it's impossible to cover all possibilities.
 
 It is said that there's a shortage of competent programmers, a belief that's confirmed by the huge number of job vacancies all asking for skills such as React. If that's true then the use of React or similar tools in any project that is not managed by a permanent team is almost guaranteed to result in problems later with maintenance. If it's hard to find developers now then the chances of locating a skilled React engineer in 5-10 years' time at a price compatible with effective maintenance are vanishingly small.
 
@@ -29,7 +31,7 @@ There's a lot more information on [our website](https://easycoder.github.io), wh
 
 ## The Codex ##
 
-The Codex is a page on [our website](https://easycoder.github.io) that provides a tutorial series plus a programming playground to try out code and a complete programmers' reference to the **_EasyCoder_** language. We also offer a zip file that can be unpacked on any suitable host.
+The Codex is a page on [our website](https://easycoder.github.io) that provides a tutorial series plus a programming playground to try out code and a complete programmers' reference to the **_EasyCoder_** language.
 
 ## License ##
 
