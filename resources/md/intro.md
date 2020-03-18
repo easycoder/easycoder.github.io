@@ -26,7 +26,7 @@ Once you have edit access to an empty server directory, create an `index.html` f
 </html>
 ```
 
-If all is well, when you type the URL of the site into your browser the message **Hello, world!** should appear in a popup message window.
+If all is well, when you type the URL of the page into your browser the message **Hello, world!** should appear in a popup message window.
 
 The upper half of the file is the _HEAD_ of the document. In here is a call to load the ~ec~ JavaScript engine that we'll be using instead of regular JavaScript. It's called from a _Content Delivery Network_ that takes files from the main source-code repository for ~ec~. Don't worry if this is all a bit too technical; it's not necessary to understand in order to use it.
 
