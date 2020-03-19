@@ -4,7 +4,7 @@
 
  1. It's quick to write browser applications in **_EasyCoder_**. Website development is faster and sites are more reliable because they are more compact and easier to read.
  1. **_EasyCoder_** scripts are smaller than the corresponding JavaScript and are easy to read by most people, not just by programmers. This matters later on when maintenance is needed and the original programmer may no longer be available.
-  1. **_EasyCoder_** plugin has the ability to single-step its scripts, showing you its variables at each step, which makes it easier to see what's happening.
+  1. **_EasyCoder_** has the ability to single-step its scripts, showing you its variables at each step, which makes it easier to see what's happening.
  1. When things go wrong an error message pops up, showing you which line of the code you reached. The error message also gets written to the browser console.
  1. The language has plain English commands to do things that are complex to do in JavaScript, such as handling REST dialogs, custom GUI elements and vector graphics. These are all written in JavaScript and supplied as seamless extensions in the form of plug-in modules.
  1. Program data can be put into JSON files and either provided as a hidden block in your HTML or downloaded on demand using the REST commands. This allows you to keep your HTML as just structure and to write the content in from the script.
