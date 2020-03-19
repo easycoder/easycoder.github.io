@@ -1,6 +1,6 @@
 # EasyCoder #
 
-**_EasyCoder_** is a high-level English-like scripting language that runs entirely inthe browser and lets you write highly readable scripts to control the appearance and behavior of your web pages. It's much easier to learn than JavaScript but does many of the same things. Here are its main benefits:
+**_EasyCoder_** is a high-level English-like scripting language that runs entirely in the browser and lets you write highly readable scripts to control the appearance and behavior of your web pages. It's much easier to learn than JavaScript but does many of the same things. Here are its main benefits:
 
  1. It's quick to write browser applications in **_EasyCoder_**. Website development is faster and sites are more reliable because they are more compact and easier to read.
  1. **_EasyCoder_** scripts are smaller than the corresponding JavaScript and are easy to read by most people, not just by programmers. This matters later on when maintenance is needed and the original programmer may no longer be available.
