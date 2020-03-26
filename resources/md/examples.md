@@ -17,3 +17,7 @@ Storyteller is a tool for building static websites using Markdown instead of HTM
 To use Storyteller all you need is to copy a short `index.html` file to your server and provide the topics as described. This is all covered by the documentation on the [Storyteller website](https://storyteller20.neocities.org).
 
 Storyteller is written in ~ec~; its source code is in the [Storyteller repository](https://github.com/easycoder/storyteller).
+
+## Others
+
+There are a number of other examples in the pages of the **CODEX** - see the link in the contents panel.
