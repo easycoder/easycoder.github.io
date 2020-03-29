@@ -34,6 +34,8 @@
 	variable Script
 	variable ButtonStyle
 	variable Message
+    variable Args
+    variable Arg
 	
 !  create Tracer
 !  set attribute `id` of Tracer to `easycoder-tracer`
@@ -216,14 +218,7 @@ BuildPage:
 	set the style of CodexButton to ButtonStyle
 	set style `margin-top` of CodexButton to `0.25em`
 	set the text of CodexButton to `Codex`
-	on click CodexButton
-	begin
-		load plugin `codemirror`
-		rest get Script from `/resources/ecs/codex.ecs`
-		send `pause` to CurrentModule
-		set style `display` of Body to `none`
-		run Script
-	end
+	on click CodexButton go to RunCodex
 
 	create Notes in Main
 	create ShowNotes in Notes
@@ -241,7 +236,19 @@ DoNotes:
 		end
 	end
 
+  	json parse url the location as Args
+    put property `arg` of Args into Arg
+    if Arg is not empty go to RunCodex
 	stop
+
+RunCodex:
+	load plugin `codemirror`
+	rest get Script from `/resources/ecs/codex.ecs`
+	send `pause` to CurrentModule
+	set style `display` of Body to `none`
+	run Script
+    stop
+
 
 DeselectAllButtons:
 	set style `background` of HomeButton to ``

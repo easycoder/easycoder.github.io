@@ -47,7 +47,10 @@
     variable PasswordRequested
     variable PasswordValid
     variable ReadOnly
+    variable Args
+    variable Arg
     variable Name
+    variable CallStack
     variable CurrentName
     variable Content
     variable Current
@@ -92,6 +95,7 @@
     
     load showdown
     rest get ECPayload from `/resources/fragment/ec.txt`
+  	json parse url the location as Args
 
 !    create Tracer
 !    set attribute `id` of Tracer to `easycoder-tracer`
@@ -107,7 +111,19 @@
     end
 L2:
     clear PasswordRequested
-    
+    put empty into CallStack
+    history set
+    on restore
+    begin
+        put the json count of CallStack into N
+        if N is less than 2 stop
+        take 1 from N
+        json delete element N of CallStack
+        take 1 from N
+        put element N of CallStack into Step
+        go to SHP2
+    end
+
     if portrait
     begin
     	if mobile set Mobile else clear Mobile
@@ -487,6 +503,13 @@ L2:
             end
         end
     end
+
+    put property `arg` of Args into Arg
+    if Arg is not empty
+    begin
+    	put from 2 of Arg into Step
+        gosub to SHP2
+    end
     
     set ready
     stop
@@ -651,6 +674,10 @@ ShowContents:
     stop
 
 ShowHelpPage:
+    append Step to CallStack
+SHP1:
+    history push url `?s=` cat Step
+SHP2:
 	put Step into storage as `.step`
     put `/resources/codex/code/` cat Step cat `.ecs` into Item
     rest get Fragment from Item or begin end
