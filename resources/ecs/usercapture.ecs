@@ -31,7 +31,11 @@
     attach Body to `ex-usercapture`
     on message
     begin
-    	if the message is `hide` clear Body
+    	if the message is `hide`
+        begin
+        	clear Body
+            set style `height` of Body to 0
+        end
     	else go to Start
     end
     set ready
@@ -114,8 +118,6 @@ Start:
     create DemoText in MainPanel
     set the class of DemoText to `demo`
     set the content of DemoText to `Demo of EasyCoder for Dev.to`
-    
-    gosub to AddDescription
 
     stop
 
@@ -176,13 +178,6 @@ GetDetails:
 EmptyField:
 	alert `Please complete both fields`
     stop
-
-AddDescription:
- 	on DecoratorCallback go to Decorate
-	rest get Markup from `/resources/md/usercapture.md`
-	create Text in Body
-    set the content of Text to showdown decode Markup with DecoratorCallback
-    return
 
 Decorate:
   put the payload of DecoratorCallback into Payload

@@ -2087,7 +2087,7 @@ const EasyCoder_Core = {
 				if (symbol.elements > oldCount) {
 					for (var n = oldCount; n < symbol.elements; n++) {
 						symbol.value.push({});
-						symbol.element.push({});
+						symbol.element.push(null);
 					}
 				} else {
 					symbol.value = symbol.value.slice(0, symbol.elements);
@@ -2841,7 +2841,7 @@ const EasyCoder_Core = {
 			const type = compiler.getToken();
 			switch (type) {
 			case `elements`:
-				if (compiler.nextTokenIs(`of`)) {
+				if ([`of`, `in`].includes(compiler.nextToken())) {
 					if (compiler.nextIsSymbol()) {
 						const name = compiler.getToken();
 						compiler.next();
@@ -3953,7 +3953,7 @@ const EasyCoder = {
 			pathname = ``;
 		}
 		if (typeof EasyCoder_Plugins === `undefined`) {
-			this.loadPluginJs(`${window.location.href}`);
+			this.loadPluginJs(`${window.location.host}`);
 		} else {
 			this.pluginsPath = pathname;
 			EasyCoder_Plugins.getGlobalPlugins(

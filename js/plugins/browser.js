@@ -1165,54 +1165,61 @@ const EasyCoder_Browser = {
 		},
 
 		run: (program) => {
+			let targetRecord;
 			const command = program[program.pc];
 			switch (command.action) {
 			case `change`:
 				targetRecord = program.getSymbolRecord(command.symbol);
 				targetRecord.program = program.script;
 				targetRecord.element.forEach(function (target, index) {
-					target.targetRecord = targetRecord;
-					target.targetIndex = index;
-					target.targetPc = command.pc + 2;
-					target.addEventListener(`change`, (event) => {
-						event.stopPropagation();
-						if (program.length > 0) {
-							const eventTarget = event.target;
-							if (typeof eventTarget.targetRecord !== `undefined`) {
-								eventTarget.targetRecord.index = eventTarget.targetIndex;
-								setTimeout(function () {
-									EasyCoder.timestamp = Date.now();
-									let p = EasyCoder.scripts[eventTarget.targetRecord.program];
-									p.run(eventTarget.targetPc);
-								}, 1);
+					if (target) {
+						target.targetRecord = targetRecord;
+						target.targetIndex = index;
+						target.targetPc = command.pc + 2;
+						target.addEventListener(`change`, (event) => {
+							event.stopPropagation();
+							if (program.length > 0) {
+								const eventTarget = event.target;
+								if (typeof eventTarget.targetRecord !== `undefined`) {
+									eventTarget.targetRecord.index = eventTarget.targetIndex;
+									setTimeout(function () {
+										EasyCoder.timestamp = Date.now();
+										let p = EasyCoder.scripts[eventTarget.targetRecord.program];
+										p.run(eventTarget.targetPc);
+									}, 1);
+								}
 							}
-						}
-					});
+						});
+					}
 				});
 				break;
 			case `click`:
 				targetRecord = program.getSymbolRecord(command.symbol);
 				targetRecord.program = program.script;
 				targetRecord.element.forEach(function (target, index) {
-					target.targetRecord = targetRecord;
-					target.targetIndex = index;
-					target.targetPc = command.pc + 2;
-					target.onclick = function (event) {
-						event.stopPropagation();
-						if (program.length > 0) {
-							const eventTarget = event.target;
-							eventTarget.blur();
-							if (typeof eventTarget.targetRecord !== `undefined`) {
-								eventTarget.targetRecord.index = eventTarget.targetIndex;
-								setTimeout(function () {
-									EasyCoder.timestamp = Date.now();
-									let p = EasyCoder.scripts[eventTarget.targetRecord.program];
-									p.run(eventTarget.targetPc);
-								}, 1);
+					if (target) {
+						target.targetRecord = targetRecord;
+						target.targetIndex = index;
+						target.targetPc = command.pc + 2;
+						target.onclick = function (event) {
+							event.stopPropagation();
+							if (program.length > 0) {
+								const eventTarget = event.target;
+								if (eventTarget.type != `radio`) {
+									eventTarget.blur();
+								}
+								if (typeof eventTarget.targetRecord !== `undefined`) {
+									eventTarget.targetRecord.index = eventTarget.targetIndex;
+									setTimeout(function () {
+										EasyCoder.timestamp = Date.now();
+										let p = EasyCoder.scripts[eventTarget.targetRecord.program];
+										p.run(eventTarget.targetPc);
+									}, 1);
+								}
 							}
-						}
-						return false;
-					};
+							return false;
+						};
+					}
 				});
 				break;
 			case `clickDocument`:
@@ -1606,7 +1613,9 @@ const EasyCoder_Browser = {
 			case `removeElement`:
 				const elementRecord = program.getSymbolRecord(command.element);
 				const element = elementRecord.element[elementRecord.index];
-				element.parentElement.removeChild(element);
+				if (element) {
+					element.parentElement.removeChild(element);
+				}
 				break;
 			case `removeStorage`:
 				const key = program.getValue(command.key);
@@ -2869,6 +2878,15 @@ const EasyCoder_Browser = {
 					};
 				}
 				return null;
+			case `storage`:
+				if (compiler.nextTokenIs(`keys`)) {
+					compiler.next();
+					return {
+						domain: `browser`,
+						type: `storageKeys`
+					};
+				}
+				return null;
 			case `parent`:
 				switch (compiler.nextToken()) {
 				case `name`:
@@ -3145,6 +3163,12 @@ const EasyCoder_Browser = {
 					type: `constant`,
 					numeric: false,
 					content: program.docPath
+				};
+			case `storageKeys`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: JSON.stringify(Object.keys(localStorage))
 				};
 			case `location`:
 				return {

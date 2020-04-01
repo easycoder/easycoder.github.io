@@ -10,6 +10,9 @@
     module UserCaptureModule
     div UserCapture
     button ShowUserCapture
+    module LifeModule
+    div Life
+    button ShowLife
     div Status
     variable Content
     variable Script
@@ -18,6 +21,7 @@
     rest get Content from `/resources/md/examples.md`
     replace `/SHOW-IMAGESWITCHER/` with `<button id="show-imageswitcher">Show</button>` in Content
     replace `/SHOW-USERCAPTURE/` with `<button id="show-usercapture">Show</button>` in Content
+    replace `/SHOW-LIFE/` with `<button id="show-life">Show</button>` in Content
 
     on message
     begin
@@ -54,6 +58,17 @@ Start:
         attach ShowUserCapture to `show-usercapture`
         fork to InitUserCapture
     end
+    
+    if LifeModule is not running
+    begin
+    	wait 10 ticks
+    	rest get Script from `/resources/ecs/life.ecs`
+        run Script as LifeModule
+        attach Life to `ex-life`
+        attach ShowLife to `show-life`
+        fork to InitLife
+    end
+    send to ImageSwitcherModule
     stop
 
 InitImageSwitcher:
@@ -75,5 +90,18 @@ InitUserCapture:
         set the text of ShowUserCapture to `Hide`
         on click ShowUserCapture go to InitUserCapture
     	send `show` to UserCaptureModule
+    end
+	stop
+
+InitLife:
+    set style `display` of Life to `none`
+    send `hide` to LifeModule
+    set the text of ShowLife to `Show`
+    on click ShowLife
+    begin
+        set style `display` of Life to `block`
+        set the text of ShowLife to `Hide`
+        on click ShowLife go to InitLife
+    	send `show` to LifeModule
     end
 	stop

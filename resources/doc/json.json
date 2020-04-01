@@ -11,9 +11,9 @@
             "examples": "json add `Egypt` to Countries"
         },
         "json delete": {
-            "syntax": "json delete property {name} from\/of {object}%0ajson delete element {index} from\/of {object}",
+            "syntax": "json delete property {name} from\/of {object}\njson delete element {index} from\/of {array}",
             "description": "This deletes the named property, or the element at a specific index, from the JSON array given.",
-            "examples": "json delete property `name` from PersonalDetails%0ajson delete element 5 of TheArray"
+            "examples": "json delete property `name` from PersonalDetails\njson delete element 5 of TheArray"
         },
         "json format": {
             "syntax": "json format {item}",
@@ -22,7 +22,7 @@
         },
         "json parse": {
             "syntax": "json parse {url} as {variable}",
-            "description": "This parses a URL, splitting it up into its component parts so they can be easily worked on. In the example above these parts are:\n\n~m:protocol~: The protocol: ~m:https:\/\/~\n\n~m:domain~: The domain: ~m:easycoder.software~\n\n~m:path~: The path: ~demos\/first~\n\n~m:arg~: The CGI parameters: ~value=56~\n\nHere, the result in ~m:ParsedValue~ would be\n\n~m:{<br \/>~\n~m:&nbsp;&nbsp;&quot;protocol&quot;:&quot;https:\/\/&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;domain&quot;:&quot;easycoder.software&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;path&quot;:&quot;demos\/first&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;arg&quot;:&quot;value=56&quot;<br \/>~\n~m:}~",
+            "description": "This parses a URL, splitting it up into its component parts so they can be easily worked on. In the example above these parts are:\n\n~m:protocol~: The protocol: ~m:https:\/\/~\n\n~m:domain~: The domain: ~m:easycoder.software~\n\n~m:path~: The path: ~demos\/first~\n\n~m:arg~: The CGI parameters: ~value=56~\n\nHere, the result in ~m:ParsedValue~ would be\n\n~m:{<br \/>~\n~m:&nbsp;&nbsp;&quot;protocol&quot;:&quot;https:\/\/&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;domain&quot;:&quot;easycoder.software&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;path&quot;:&quot;demos\/first&quot;,<br \/>~\n~m:&nbsp;&nbsp;&quot;arg&quot;:&quot;value=56&quot;<br \/>~\n~m:}~\n\nSee also ~l:history|k|browser!history~ for managing the browser history",
             "examples": "json parse `https:\/\/easycoder.software\/demos\/first\/?value=56` as ParsedValue"
         },
         "json rename": {

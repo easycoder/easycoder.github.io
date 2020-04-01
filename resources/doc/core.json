@@ -197,8 +197,8 @@
         },
         "append": {
             "syntax": "append {value} to {array}",
-            "description": "Appends an item to a JSON array. This is a value held in a single variable element (not to be confused with a multi-element variable). See also ~l:sort~ and ~l:element|v~.",
-            "examples": "put empty into ItemArray%0aappend `First value` to ItemArray%0aappend `Second value` to ItemArray"
+            "description": "Appends an item to a JSON array, which is is a string value held in a single variable element (not to be confused with a multi-element variable). See also ~l:sort~ and ~l:element|v~.",
+            "examples": "put empty into ItemArray\nappend `First value` to ItemArray\nappend `Second value` to ItemArray"
         },
         "sort": {
             "syntax": "sort {array} with {function}",
