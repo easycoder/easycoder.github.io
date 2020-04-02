@@ -230,6 +230,7 @@ DoSave:
     end
     put prompt `File name:` with `` into FileName
     put JSON into storage as `life-` cat FileName
+    gosub to ResetKeySelector
 	stop
 
 !	Load a saved map
