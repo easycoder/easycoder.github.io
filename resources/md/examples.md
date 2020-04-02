@@ -22,6 +22,8 @@ Storyteller is written in ~ec~; its source code is in the [Storyteller repositor
 ## The Game of Life /SHOW-LIFE/
 
 This is a "cellular automaton" - a no-player game devised in 1970 by John Conway. The "player" sets up an initial configuration and observes the game running according to a simple set of rules.
+
+Click /LIFEDOC/ for a description of the program.
 ~<div id="ex-life" style="width:100%;max-width:400px"></div>~
 
 ## Others
