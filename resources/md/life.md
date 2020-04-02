@@ -60,7 +60,7 @@ When a saved item is selected in the `Load` dropdown this subroutine restores th
 
 **`SetNCells`**
 
-Sets the number of cells and updates the saved value. This falls into `SetupMap`** to refresh the display.
+Sets the number of cells and updates the saved value. This falls into **`SetupMap`** to refresh the display.
 
 **`SetupMap`**
 
