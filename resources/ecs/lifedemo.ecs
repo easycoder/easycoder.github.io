@@ -1,0 +1,572 @@
+!	Life
+
+	script LifeDemo
+
+    div Screen
+    div CellPanel
+    div Panel
+    div Cell
+    input Button
+    input OffsetXInput
+    input OffsetYInput
+    input FlipHButton
+    input FlipVButton
+    select Keys
+    option Option
+    span Span
+    span CellNumber
+    button ClearButton
+    button RunButton
+    button SaveButton
+    variable Map
+    variable NewMap
+    variable Rows
+    variable Columns
+    variable Width
+    variable Height
+    variable CellSize
+    variable Cells
+    variable Top
+    variable Left
+    variable CenterX
+    variable CenterY
+    variable N
+    variable M
+    variable C
+    variable R
+    variable W
+    variable H
+    variable CC
+    variable RR
+    variable CMin
+    variable CMax
+    variable RMin
+    variable RMax
+    variable WW
+    variable HH
+    variable Row
+    variable Column
+    variable R2
+    variable C2
+    variable Count
+    variable Dead
+    variable Center
+    variable Alive
+    variable Changed
+    variable Pause
+    variable JSON
+    variable JSON2
+    variable Key
+    variable Item
+    variable FileName
+    variable Flag
+    
+	put `#eca` into Dead
+	put `#db9` into Center
+    put `blue` into Alive
+
+!    create Screen
+	attach Screen to `ex-life`
+
+    on message
+    begin
+    	if the message is `hide` clear Screen
+    	else go to Start
+    end
+    set ready
+    stop
+
+Start:
+!	Set up the screen
+    set the style of Screen to `width:100%`
+    put the width of Screen into Width
+    put Width into Height
+    create CellPanel in Screen
+    set style `width` of CellPanel to `100%`
+    set style `height` of CellPanel to Height cat `px`
+    set the style of CellPanel to
+    	`width:100%;height:` cat Height cat `px;position:relative`
+
+    get Cells from storage as `ncells`
+    if Cells is empty
+    begin
+    	put 20 into Cells
+        put Cells into storage as `ncells`
+    end
+    gosub to SetupMap
+    
+    create Panel in Screen
+    set the style of Panel to `margin:1em`
+    set the content of Panel to `Number of cells:&nbsp;&nbsp;&nbsp;`
+    
+    create CellNumber in Panel
+    set style `float` of CellNumber to `right`
+
+!	Do the radio buttons
+    set the elements of Button to 3
+    index Button to 0
+    create Button in Panel
+    set attribute `type` of Button to `radio`
+    set attribute `name` of Button to `size`
+    set attribute `value` of Button to `20`
+    set the content of Button to `20`
+    if Cells is 20 set attribute `checked` of Button
+    on change Button go to SetNCells
+    create Span in Panel
+    set the content of Span to `20&nbsp;&nbsp;&nbsp;`
+
+    index Button to 1
+    create Button in Panel
+    set attribute `type` of Button to `radio`
+    set attribute `name` of Button to `size`
+    set attribute `value` of Button to `40`
+    set the content of Button to `40`
+    if Cells is 40 set attribute `checked` of Button
+    on change Button go to SetNCells
+    create Span in Panel
+    set the content of Span to `40&nbsp;&nbsp;&nbsp;`
+
+    index Button to 2
+    create Button in Panel
+    set attribute `type` of Button to `radio`
+    set attribute `name` of Button to `size`
+    set attribute `value` of Button to `60`
+    set the content of Button to `60`
+    if Cells is 60 set attribute `checked` of Button
+    on change Button go to SetNCells
+    create Span in Panel
+    set the content of Span to `60&nbsp;&nbsp;&nbsp;`
+
+!	Do the offset and flip controls
+    create Panel in Screen
+    set the style of Panel to `margin:1em`
+    create Span in Panel
+    set the content of Span to `Offset X: `
+    create OffsetXInput in Panel
+    set the style of OffsetXInput to `display:inline;width:4em`
+    set the text of OffsetXInput to 10
+    create Span in Panel
+    set the content of Span to `&nbsp;&nbsp;Offset Y: `
+    create OffsetYInput in Panel
+    set the style of OffsetYInput to `display:inline;width:4em`
+    set the text of OffsetYInput to 10
+    create Span in Panel
+    set the content of Span to `&nbsp;&nbsp;&nbsp;&nbsp;Flip H `
+    create FlipHButton in Panel
+    set attribute `type` of FlipHButton to `checkbox`
+    create Span in Panel
+    set the content of Span to `&nbsp;&nbsp;Flip V `
+    create FlipVButton in Panel
+    set attribute `type` of FlipVButton to `checkbox`
+
+!	Do the Clear, Save, Load and Run buttons
+    create Panel in Screen
+    set the style of Panel to `margin:1em`
+    create ClearButton in Panel
+    set the text of ClearButton to `Clear`
+    on click ClearButton go to DoClear
+    create SaveButton in Panel
+    set style `margin-left` of SaveButton to `1em`
+    set style `margin-right` of SaveButton to `1em`
+    set the text of SaveButton to `Save`
+    on click SaveButton go to DoSave
+    create Keys in Panel
+    gosub to ResetKeySelector
+    on change Keys
+    begin
+        get Option from Keys
+        put attribute `value` of Option into Key
+        go to DoLoad
+    end
+    create RunButton in Panel
+    set style `margin-left` of RunButton to `1em`
+    set the text of RunButton to `Run`
+    on click RunButton go to DoRun
+
+	stop
+!	End of screen setup
+
+!	Clear the map
+DoClear:
+	put 0 into N
+    while N is less than the elements in Map
+    begin
+    	index Map to N
+        clear Map
+        index Cell to N
+        set style `background` of Cell to Dead
+        add 1 to N
+    end
+    multiply CenterY by Columns giving N
+    add CenterX to N
+    index Cell to N
+    set style `background` of Cell to Center
+	stop
+
+!	Save the current map
+DoSave:
+	set JSON to array
+    put 0 into Row
+    while Row is less than Rows
+    begin
+    	put 0 into Column
+        while Column is less than Columns
+        begin
+        	multiply Row by Columns giving N
+            add Column to N
+            index Map to N
+            if Map
+            begin
+            	set Item to object
+                take CenterY from Row giving R
+                take CenterX from Column giving C
+                set property `row` of Item to R
+                set property `column` of Item to C
+                append Item to JSON
+            end
+            add 1 to Column
+        end
+        add 1 to Row
+    end
+    put prompt `File name:` with `` into FileName
+    put JSON into storage as `life-` cat FileName
+	stop
+
+!	Load a saved map
+DoLoad:
+	get JSON from storage as `life-` cat Key
+    if attribute `checked` of FlipHButton gosub to FlipHorizontal
+    if attribute `checked` of FlipVButton gosub to FlipVertical
+    put the value of OffsetXInput into Column
+    put the value of OffsetYInput into Row
+    put 0 into N
+    while N is less than the json count of JSON
+    begin
+    	put element N of JSON into Item
+        put property `column` of Item into C
+        put property `row` of Item into R
+        add C to Column giving CC
+        if CC is less than 0 go to DL2
+        if CC is not less than Columns go to DL2
+        add R to Row giving RR
+        if RR is less than 0 go to DL2
+        if RR is not less than Rows go to DL2
+        multiply RR by Columns giving M
+        add CC to M
+        index Map to M
+        set Map
+        index Cell to M
+        set style `background` of Cell to Alive
+DL2:
+    	add 1 to N
+    end
+    gosub to ResetKeySelector
+	stop
+
+!	Flip an item horizontally
+FlipHorizontal:
+	put 99999 into CMin
+	put -99999 into CMax
+!	Measure the item to get the minimum and maximum column
+    put 0 into N
+    while N is less than the json count of JSON
+    begin
+    	put element N of JSON into Item
+        put the value of property `column` of Item into C
+        if C is less than CMin put C into CMin
+        if C is greater than CMax put C into CMax
+    	add 1 to N
+    end
+!	Flip each cell
+	put JSON into JSON2
+    set JSON to array
+    put 0 into N
+    while N is less than the json count of JSON2
+    begin
+    	put element N of JSON2 into Item
+        put the value of property `column` of Item into C
+        take CMin from C ! Distance from the left
+        take C from CMax giving C ! Make it the distance from the right
+        set property `column` of Item to C
+        append Item to JSON
+    	add 1 to N
+    end
+	return
+
+!	Flip an item vertically
+FlipVertical:
+	put 99999 into RMin
+	put -99999 into RMax
+!	Measure the item to get the minimum and maximum column
+    put 0 into N
+    while N is less than the json count of JSON
+    begin
+    	put element N of JSON into Item
+        put the value of property `row` of Item into R
+        if R is less than RMin put R into RMin
+        if R is greater than RMax put R into RMax
+    	add 1 to N
+    end
+!	Flip each cell
+	put JSON into JSON2
+    set JSON to array
+    put 0 into N
+    while N is less than the json count of JSON2
+    begin
+    	put element N of JSON2 into Item
+        put the value of property `row` of Item into R
+        take RMin from R ! Distance from the top
+        take R from RMax giving R ! Make it the distance from the bottom
+        set property `row` of Item to R
+        append Item to JSON
+    	add 1 to N
+    end
+	return
+
+!	Run the game
+DoRun:
+	set the text of RunButton to `Pause`
+    on click RunButton go to DoPause
+    clear Pause
+    set Changed
+    while Changed
+    begin
+    	if Pause stop
+	    wait 1 tick
+        gosub to ComputeNextGeneration
+    end
+    set the text of RunButton to `Run`
+    on click RunButton go to DoRun
+    stop
+
+!	Pause the game
+DoPause:
+	set the text of RunButton to `Resume`
+    on click RunButton go to DoRun
+    set Pause
+	stop
+
+!	Reset the Keys selector
+ResetKeySelector:
+	clear Keys
+    set style `display` of Keys to `none`
+    put the storage keys into JSON
+    clear Flag
+    put 0 into N
+    while N is less than the json count of JSON
+    begin
+        put element N of JSON into Key
+        if left 5 of Key is `life-`
+        begin
+        	if not Flag
+            begin
+            	set Flag
+                create Option in Keys
+                set the content of Option to `Load`
+                set the attributes of Option to `selected disabled hidden`
+            end
+        	put from 5 of Key into Key
+            create Option in Keys
+        	set the content of Option to Key
+        end
+        add 1 to N
+    end
+    set style `display` of Keys to `inline`
+    return
+
+!	Set the number of cells (rows and columns)
+SetNCells:
+	put the value of attribute `value` of Button into Cells
+    put Cells into storage as `ncells`
+
+!	Set up the map
+SetupMap:
+	clear CellPanel
+
+!	Compute the cell size, row and column count
+	divide Width by Cells giving CellSize
+	put Cells into Columns
+    put Cells into Rows
+    divide Columns by 2 giving CenterX
+    divide Rows by 2 giving CenterY
+    
+!	Initialise the map
+    multiply Rows by Columns giving N
+    set the elements of Map to N
+    set the elements of NewMap to N
+    set the elements of Cell to N
+    divide Rows by 2 giving R2
+    divide Columns by 2 giving C2
+    put 0 into Row
+    while Row is less than Rows
+    begin
+    	put 0 into Column
+        while Column is less than Columns
+        begin
+        	multiply Row by Columns giving N
+            add Column to N
+            index Map to N
+            clear Map
+            divide Width by 2 giving W
+            take Column from Columns giving C
+            take C2 from C
+            multiply C by CellSize giving WW
+            take WW from W giving Left
+            divide Height by 2 giving H
+            take Row from Rows giving R
+            take R2 from R
+            multiply R by CellSize giving HH
+            take HH from H giving Top
+            index Cell to N
+            create Cell in CellPanel
+            set the style of Cell to
+                `position:absolute;top:` cat Top cat `;left:` cat Left
+                cat `;width:` cat CellSize cat `px;height:` cat CellSize cat `px;`
+                cat `;border:1px solid #fff`
+            gosub to SetDeadBackground
+            add 1 to Column
+        end
+        add 1 to Row
+    end
+    on click Cell
+    begin
+    	put the index of Cell into N
+        divide N by Columns giving Row
+        put N modulo Columns into Column
+    	index Map to N
+        toggle Map
+        if Map set style `background` of Cell to Alive
+        else gosub to SetDeadBackground
+        if Map set the text of CellNumber to
+        	`Column ` cat Column cat `, row ` cat Row
+        else set the text of CellNumber to ``
+    end
+	return
+
+SetDeadBackground:
+	if Column is not CenterX go to SDB2
+    if Row is not CenterY go to SDB2
+    set style `background` of Cell to Center
+    return
+SDB2:
+    set style `background` of Cell to Dead
+    return
+
+!	Compute the next generation and display it
+ComputeNextGeneration:
+	put 0 into Row
+	while Row is less than Rows
+    begin
+    	put 0 into Column
+        while Column is less than Columns
+        begin
+        	multiply Row by Columns giving N
+            add Column to N
+            index NewMap to N
+            clear NewMap
+            index Map to N
+            if Map
+            begin
+                ! A live cell
+                gosub to CountNeighbours
+                if Count is 2 set NewMap
+                if Count is 3 set NewMap
+            end
+            else
+            begin
+                ! A dead cell
+                gosub to CountNeighbours
+                if Count is 3 set NewMap
+            end
+            add 1 to Column
+        end
+        add 1 to Row
+    end
+
+!	Redraw the screen
+Redraw:
+	clear Changed
+	put 0 into Row
+    while Row is less than Rows
+    begin
+    	put 0 into Column
+        while Column is less than Columns
+        begin
+        	multiply Row by Columns giving N
+            add Column to N
+            index NewMap to N
+            index Map to N
+            index Cell to N
+            if NewMap is not Map
+            begin
+            	set Changed
+                if NewMap
+                begin
+                    set Map
+                    set style `background` of Cell to Alive
+                end
+                else
+                begin
+                    clear Map
+                    gosub to SetDeadBackground
+                end
+            end
+        	add 1 to Column
+        end
+    	add 1 to Row
+    end
+    return
+
+!	Count the neighbours of the cell given by Row and Column
+CountNeighbours:
+    put 0 into Count
+
+!	Do the center row
+    put Row into RR
+    multiply RR by Columns giving R
+    put -1 into C
+    while C is less than 2
+    begin
+        if C is not 0 gosub to CheckCell
+        add 1 to C
+    end
+
+!	Do the row above
+    take 1 from Row giving RR
+    if RR is not less than 0
+    begin
+        multiply RR by Columns giving R
+        put -1 into C
+        while C is less than 2
+        begin
+            gosub to CheckCell
+            add 1 to C
+        end
+    end
+
+!	Do the row below
+    add 1 to Row giving RR
+    if RR is less than Rows
+    begin
+        multiply RR by Columns giving R
+        put -1 into C
+        while C is less than 2
+        begin
+            gosub to CheckCell
+            add 1 to C
+        end
+    end
+	return
+
+!	Check a single cell at row R, column C
+CheckCell:
+    add C to Column giving CC
+    if CC is less than 0 return
+    if CC is not less than Columns return
+    add R to CC
+    index Map to CC
+    if Map
+    begin
+    	add 1 to Count
+    end
+	return

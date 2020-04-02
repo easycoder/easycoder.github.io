@@ -13,6 +13,7 @@
     module LifeModule
     div Life
     button ShowLife
+    button ShowLifeDoc
     div Status
     variable Content
     variable Script
@@ -22,6 +23,7 @@
     replace `/SHOW-IMAGESWITCHER/` with `<button id="show-imageswitcher">Show</button>` in Content
     replace `/SHOW-USERCAPTURE/` with `<button id="show-usercapture">Show</button>` in Content
     replace `/SHOW-LIFE/` with `<button id="show-life">Show</button>` in Content
+    replace `/LIFEDOC/` with `<button id="show-lifedoc">Here</button>` in Content
 
     on message
     begin
@@ -62,12 +64,15 @@ Start:
     if LifeModule is not running
     begin
     	wait 10 ticks
-    	rest get Script from `/resources/ecs/life.ecs`
+    	rest get Script from `/resources/ecs/lifedemo.ecs`
         run Script as LifeModule
         attach Life to `ex-life`
         attach ShowLife to `show-life`
         fork to InitLife
     end
+    attach ShowLifeDoc to `show-lifedoc`
+    on click ShowLifeDoc send `life` to parent
+
     send to ImageSwitcherModule
     stop
 
