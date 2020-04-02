@@ -80,7 +80,7 @@ Redraws the map in its new state.
 
 **`CountNeighbours`**
 
-For each cell in the map, count how many neighbours it has in the 'alive' state. This is by far the most time-consuming part of the entire script and is the first candidate for optimisation. in a 20x20 map it calls **`CheckCell`** 400 times; for a 60x60 map that's 3600 times. This puts a severe limit on the speed of the animation and also causes the computer itself to run hot.
+For each cell in the map, count how many neighbours it has in the 'alive' state. This is by far the most time-consuming part of the entire script and is the first candidate for optimisation. in a 20x20 map it calls **`CheckCell`** 400 times; for a 60x60 map that's 3600 times. This puts a severe limit on the speed of the animation and also causes the computer itself to run hot. This is a good example of the relative merits of system programming languages and high-level scripts. The latter are very good at expressing _intentions_, that is, the look and feel of an app, but rather poor at handling _algorithms_. System languages, on the other hand, do algorithms well but are very clumsy when asked to express intentions.
 
 **`CheckCell`**
 
