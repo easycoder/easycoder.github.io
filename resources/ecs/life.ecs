@@ -64,19 +64,8 @@
 	put `#db9` into Center
     put `blue` into Alive
 
-!    create Screen
-	attach Screen to `ex-life`
-
-    on message
-    begin
-    	if the message is `hide` clear Screen
-    	else go to Start
-    end
-    set ready
-    stop
-
-Start:
 !	Set up the screen
+    create Screen
     set the style of Screen to `width:100%`
     put the width of Screen into Width
     put Width into Height
@@ -229,6 +218,7 @@ DoSave:
     end
     put prompt `File name:` with `` into FileName
     put JSON into storage as `life-` cat FileName
+    gosub to ResetKeySelector
 	stop
 
 !	Load a saved map
