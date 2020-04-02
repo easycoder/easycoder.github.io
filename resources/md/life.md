@@ -24,64 +24,64 @@ Finally, the code sets up the screen; the map and the various controls under it,
 
 After this are the various subroutines, that I'll describe briefly:
 
-`**DoClear**`
+**`DoClear`**
 
 Clears the entire map.
 
-`**DoSave**`
+**`DoSave`**
 
 Save the current map contents. The saved value is a JSON string giving the column and row numbers for each of the 'alive' cells. The origin is set at the center of the map; values to the left and above are negative. This is to permit the saved value to be reimported into any map with optional column and row offsets.
 
 Data is saved to browser storage. You will be asked for a name for the item. All the saved items will appear under the `Load` button when it is clicked.
 
-`**DoLoad**`
+**`DoLoad`**
 
 Load a saved configuration. The contents will be loaded at a position given by the top left of the screen plus the values given in the `Offset X` and `Offset Y` boxes. If either of the `Flip` checkboxes is checked, the corresponding transformation will be made before the item is placed on the map.
 
-`**FlipHorizontal**`
+**`FlipHorizontal`**
 
 Flips the item horizontally as it is loaded.
 
-`**FlipVertical**`
+**`FlipVertical`**
 
 Flips the item vertically as it is loaded.
 
-`**DoRun**`
+**`DoRun`**
 
 Run the game from the current configuration.
 
-`**DoPause**`
+**`DoPause`**
 
 Pause the game.
 
-`**ResetKeySelector**`
+**`ResetKeySelector`**
 
 When a saved item is selected in the `Load` dropdown this subroutine restores the selector to its default state. It is also called after a new item is saved, to ensure it appears in the list.
 
-`**SetNCells**`
+**`SetNCells`**
 
-Sets the number of cells and updates the saved value. This falls into `**SetupMap**` to refresh the display.
+Sets the number of cells and updates the saved value. This falls into `SetupMap`** to refresh the display.
 
-`**SetupMap**`
+**`SetupMap`**
 
 Sets up the map, computing the appropriate dimensions from the size of the container provided. It initialises the `Map` and `Cell` arrays and sets click listeners on each cell. Note that in ~ec~ an array only needs a single `on click` listener.
 
-`**SetDeadBackground**`
+**`SetDeadBackground`**
 
 Sets a cell to its 'dead' state. The center cell is a special case; it has a slightly darker background. This is to help with positioning shapes by hand.
 
-`**ComputeNextGeneration**`
+**`ComputeNextGeneration`**
 
-Computes the next generation from the current one, using the standard rules. At the end it falls into `**Redraw**`.
+Computes the next generation from the current one, using the standard rules. At the end it falls into **`Redraw`**.
 
-`**Redraw**`
+**`Redraw`**
 
 Redraws the map in its new state.
 
-`**CountNeighbours**`
+**`CountNeighbours`**
 
-For each cell in the map, count how many neighbours it has in the 'alive' state. This is by far the most time-consuming part of the entire script and is the first candidate for optimisation. in a 20x20 map it calls `**CheckCell**` 400 times; for a 60x60 map that's 3600 times. This puts a severe limit on the speed of the animation and also causes the computer itself to run hot.
+For each cell in the map, count how many neighbours it has in the 'alive' state. This is by far the most time-consuming part of the entire script and is the first candidate for optimisation. in a 20x20 map it calls **`CheckCell`** 400 times; for a 60x60 map that's 3600 times. This puts a severe limit on the speed of the animation and also causes the computer itself to run hot.
 
-`**CheckCell**`
+**`CheckCell`**
 
 Check if a specified cell is alive, using one of the 8 neighbour offsets added to the current column and row numbers.
