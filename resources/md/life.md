@@ -14,7 +14,7 @@ This implementation aims to meet all the following:
  - When run, the speed of the simulation can be varied by the user.
  - The simulation will run at a reasonable speed, e.g. up to 10 generations/sec or better depending on the size of the map.
 
- The entire script can be seen at the [~ec~ repository](https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/resources/ecs/life.ecs). Note: The formattion may look a little uneven because all editing was done in a tabbed editor. There's just one ~ec~ script, comprised mostly of subroutines. Here's a brief description of the functionality:
+The entire script can be seen at the [~ec~ repository](https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/resources/ecs/life.ecs). Note: The formattion may look a little uneven because all editing was done in a tabbed editor. There's just one ~ec~ script, comprised mostly of subroutines. Here's a brief description of the functionality:
 
 The script starts by defining all the variables it will use. Many of these are just temporary values; of the rest, the most important are `Map` and `Cell`, which hold information about the array of cells. `Map` is an array of true/false values to say which cells are occupied, and `Cell` is an array of DIVs, one for each cell.
 
