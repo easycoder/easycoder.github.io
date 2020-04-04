@@ -2986,11 +2986,13 @@ const EasyCoder_Core = {
 				break;
 			case `message`:
 			case `error`:
+			case `millisecond`:
 				compiler.next();
 				return {
 					domain: `core`,
 					type
 				};
+
 			}
 			return null;
 		},
@@ -3147,6 +3149,12 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: true,
 					content: Math.floor(Date.now() / 1000)
+				};
+			case `millisecond`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: Math.floor(Date.now())
 				};
 			case `today`:
 				const date = new Date();
