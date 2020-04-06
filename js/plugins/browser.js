@@ -808,12 +808,15 @@ const EasyCoder_Browser = {
 				compiler.next();
 				let url = ``;
 				let state = ``;
+				let title = ``;
 				while (true) {
 					const token = compiler.getToken();
 					if (token === `url`) {
 						url = compiler.getNextValue();
 					} else if (token === `state`) {
 						state = compiler.getNextValue();
+					} else if (token === `title`) {
+						title = compiler.getNextValue();
 					} else {
 						break;
 					}
@@ -824,7 +827,8 @@ const EasyCoder_Browser = {
 					lino,
 					type,
 					url,
-					state
+					state,
+					title
 				});
 				return true;
 			case `pop`:
@@ -851,6 +855,7 @@ const EasyCoder_Browser = {
 			if (!state) {
 				state = `{"script":"${program.script}"}`;
 			}
+			let title = program.getValue(command.title);
 			const url = program.getValue(command.url);
 			switch (command.type) {
 			case `push`:
@@ -862,7 +867,7 @@ const EasyCoder_Browser = {
 				break;
 			case `set`:
 			case `replace`:
-				window.history.replaceState(state, ``, url);
+				window.history.replaceState(state, title, url);
 				break;
 			case `pop`:
 			case `back`:
