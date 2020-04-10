@@ -1,5 +1,13 @@
 # Examples
 
+The following websites were all built entirely in EasyCoder script:
+
+ - This site: [EasyCoder](https://easycoder.github.io)
+ - [Yorkshirewoman](https://yorkshirewoman.uk)
+ - [Here on the map](https://hereonthemap.com)
+ - [Rembrandt.ie](https://rembrandt.ie)
+ - [Storyteller](https://storyteller20.neocities.org)
+
 ## Image switcher /SHOW-IMAGESWITCHER/
 
 There are 9 images with only 1 showing. A row of thumbnail icons lets the user move left or right or select a specific image.
