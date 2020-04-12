@@ -292,17 +292,17 @@ L2:
     create HelpInner in HelpOuter
     set the style of HelpInner to `width:100%;line-height:1.5em`
 
-		create HelpPanel in HelpInner
-		set the style of HelpPanel to `display:none;width:100%;height:100%`
-		create ReferencePanel in HelpInner
-		set the style of ReferencePanel to `display:none;width:100%;height:100%`
+	create HelpPanel in HelpInner
+	set the style of HelpPanel to `display:none;width:100%;height:100%`
+	create ReferencePanel in HelpInner
+	set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
-		gosub to ShowHelpPage
-		rest get Script from `/resources/ecs/docman.ecs`
-		run Script with ReferencePanel as DocManModule
-		put empty into storage as `.ref`
+	gosub to ShowHelpPage
+	rest get Script from `/resources/ecs/docman.ecs`
+	run Script with ReferencePanel as DocManModule
+	put empty into storage as `.ref`
 
-		get Item from storage as `.ref`
+	get Item from storage as `.ref`
     if Item
     begin
 	    set style `display` of ReferencePanel to `block`
@@ -310,27 +310,28 @@ L2:
     end
     else set style `display` of HelpPanel to `block`
 
-		on click Back go to StepBack
-		on click Forward go to StepForward
+    on click Back go to StepBack
+    on click Forward go to StepForward
     on click Contents go to ShowContents
-		on click Reference
+    on click Reference
     begin
 	    set style `display` of ReferencePanel to `block`
         set style `display` of HelpPanel to `none`
         set style `display` of HelpButtons to `none`
         put `y` into storage as `.ref`
     end
-		on click Tools
+    on click Tools
     begin
     	put `tools` into Step
 		gosub to ShowHelpPage
     end
-		on click Exit
+	on click Exit
     begin
-			stop DocManModule
+		stop DocManModule
     	remove element Body
-      send `restore` to parent
-      exit
+        send `restore` to parent
+        history set url `.`
+        exit
     end
     
     on message
@@ -509,6 +510,7 @@ L2:
     begin
     	put from 2 of Arg into Step
         gosub to SHP2
+        history set url `.`
     end
     
     set ready
@@ -680,7 +682,7 @@ SHP1:
 SHP2:
 	put Step into storage as `.step`
     put `/resources/codex/code/` cat Step cat `.ecs` into Item
-    rest get Fragment from Item or begin end
+    rest get Fragment from Item or put empty into storage as `.step`
     put property Step of Pages into Page
     if property `prev` of Page is empty set style `visibility` of Back to `hidden`
     else set style `visibility` of Back to `visible`

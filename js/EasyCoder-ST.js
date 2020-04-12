@@ -1,7 +1,9 @@
 EasyCoder.version = `2.6.1`;
 EasyCoder.timestamp = Date.now();
+console.log(`EasyCoder loaded; waiting for page`);
 
 function EasyCoder_Startup() {
+	console.log(`${Date.now() - EasyCoder.timestamp} ms: Page loaded; reset timer & start EasyCoder`);
 	EasyCoder.timestamp = Date.now();
 	EasyCoder.scripts = {};
 	window.EasyCoder = EasyCoder;

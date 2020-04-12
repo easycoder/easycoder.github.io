@@ -317,7 +317,7 @@ const EasyCoder_Json = {
 					content.domain = source;
 				}
 				if (content.domain.endsWith(`/`)) {
-					content.domain = content.domain.substr(0, content.domain.length - 1);
+					content.domain = content.domain.slice(0, -1);
 				}
 				n = content.domain.indexOf(`/`);
 				if (n > 0) {

@@ -389,7 +389,8 @@ const EasyCoder = {
 		script.type = `text/javascript`;
 		let location = document.scripts[0].src;
 		location = location.substring(0, location.indexOf(`/easycoder.js`));
-		script.src = `${location}/${src}?ver=${EasyCoder.version}`;
+		// script.src = `${location}/${src}?ver=${EasyCoder.version}`;
+		script.src = `${src}?ver=${EasyCoder.version}`;
 		script.onload = function () {
 			console.log(`${Date.now() - EasyCoder.timestamp} ms: Plugin ${src} loaded`);
 			onload();
@@ -421,16 +422,21 @@ const EasyCoder = {
 	},
 
 	loadPluginJs: function(path) {
-		let location = path;
-		if (!location) {
-			location = document.scripts[0].src;
-			location = location.substring(0, location.indexOf(`/easycoder.js`));
+		if (!path) {
+			path = document.scripts[0].src;
+			path = path.substring(0, path.indexOf(`/easycoder.js`));
 		}
-		console.log(`${Date.now() - this.timestamp} ms: Load ${location}/plugins.js`);
+		this.path = path;
+		let src = `${path}/easycoder/plugins.js?ver=${this.version}`
+		console.log(`${Date.now() - this.timestamp} ms: Load ${src}`);
 		const script = document.createElement(`script`);
-		script.src = `${location}/plugins.js?ver=${this.version}`;
+		script.src = src;
 		script.type = `text/javascript`;
 		script.onload = () => {
+			let path = this.path.substr(window.location.origin.length);
+			if (path.endsWith(`/`)) {
+				path = path.slice(0, -1);
+			}
 			EasyCoder_Plugins.getGlobalPlugins(
 				this.timestamp,
 				path,
@@ -455,14 +461,16 @@ const EasyCoder = {
 	start: function(source) {
 		this.source = source;
 		this.scriptIndex = 0;
-		let pathname = window.location.pathname;
+		let pathname = window.location.href;
+		let q = pathname.indexOf('?');
+		if (q > 0) {
+			pathname = pathname.substr(0, q);
+		}
 		if (pathname.endsWith(`/`)) {
 			pathname = pathname.slice(0, -1);
-		} else {
-			pathname = ``;
-		}
+		} 
 		if (typeof EasyCoder_Plugins === `undefined`) {
-			this.loadPluginJs(`${window.location.host}`);
+			this.loadPluginJs(pathname);
 		} else {
 			this.pluginsPath = pathname;
 			EasyCoder_Plugins.getGlobalPlugins(
