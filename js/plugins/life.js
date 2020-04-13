@@ -89,3 +89,6 @@ const EasyCoder_Life = {
 		compile: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.life = EasyCoder_Life;

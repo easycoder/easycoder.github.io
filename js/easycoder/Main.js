@@ -3,7 +3,10 @@ const EasyCoder = {
 	name: `EasyCoder_Main`,
 
 	domain: {
-		core: EasyCoder_Core
+		core: EasyCoder_Core,
+		browser: EasyCoder_Browser,
+		json: EasyCoder_Json,
+		rest: EasyCoder_Rest
 	},
 
 	elementId: 0,
@@ -144,22 +147,26 @@ const EasyCoder = {
 	},
 
 	require: function(type, src, cb) {
+		let prefix = ``;
+		if (src[0] == `/`) {
+			prefix = window.location + `/`;
+		}
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
 		case `css`:
 			element.type = `text/css`;
-			element.href = src;
+			element.href = `${prefix}${src}`;
 			element.rel = `stylesheet`;
 			break;
 		case `js`:
 			element.type = `text/javascript`;
-			element.src = src;
+			element.src = `${prefix}${src}`;
 			break;
 		default:
 			return;
 		}
 		element.onload = function () {
-			console.log(`${Date.now() - EasyCoder.timestamp} ms: Library ${src} loaded`);
+			console.log(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
 			cb();
 		};
 		document.head.appendChild(element);
@@ -239,10 +246,6 @@ const EasyCoder = {
 		program.require = this.require;
 		program.isUndefined = this.isUndefined;
 		program.isJsonString = this.isJsonString;
-		program.checkPlugin = this.checkPlugin;
-		program.getPlugin = this.getPlugin;
-		program.addLocalPlugin = this.addLocalPlugin;
-		program.getPluginsPath = this.getPluginsPath;
 		program.getSymbolRecord = this.getSymbolRecord;
 		program.verifySymbol = this.verifySymbol;
 		program.runtimeError = this.runtimeError;
@@ -325,9 +328,9 @@ const EasyCoder = {
 		const source = this.tokeniseFile(file);
 		try {
 			program = this.compileScript(source, imports, module, parent);
-			this.scriptIndex++;
 			if (!program.script) {
-				program.script = this.scriptIndex;
+				program.script = EasyCoder.scriptIndex;
+				EasyCoder.scriptIndex++;
 			}
 			const finishCompile = Date.now();
 			console.log(`${finishCompile - this.timestamp} ms: ` +
@@ -359,7 +362,8 @@ const EasyCoder = {
 		}
 	},
 
-	tokenise: function(source) {
+	start: function(source) {
+		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);
 		if (!this.tokenising) {
 			try {
@@ -370,104 +374,4 @@ const EasyCoder = {
 			this.tokenising = true;
 		}
 	},
-
-	setPluginCount: function(count) {
-		EasyCoder.plugins = [];
-		EasyCoder.pluginCount = count;
-	},
-
-	checkPlugin: function(name) {
-		return EasyCoder.domain[name];
-	},
-
-	getPlugin: function(name, src, onload) {
-		if (EasyCoder.domain[name]) {
-			onload();
-			return;
-		}
-		const script = document.createElement(`script`);
-		script.type = `text/javascript`;
-		let location = document.scripts[0].src;
-		location = location.substring(0, location.indexOf(`/easycoder.js`));
-		// script.src = `${location}/${src}?ver=${EasyCoder.version}`;
-		script.src = `${src}?ver=${EasyCoder.version}`;
-		script.onload = function () {
-			console.log(`${Date.now() - EasyCoder.timestamp} ms: Plugin ${src} loaded`);
-			onload();
-		};
-		document.head.appendChild(script);
-	},
-
-	addGlobalPlugin: function(name, handler) {
-		// alert(`Add plugin ${name}`);
-		EasyCoder.plugins.push({
-			name,
-			handler
-		});
-		if (EasyCoder.plugins.length === EasyCoder.pluginCount) {
-			EasyCoder.plugins.forEach(function (plugin) {
-				EasyCoder.domain[plugin.name] = plugin.handler;
-			});
-			EasyCoder.tokenise(EasyCoder.source);
-		}
-	},
-
-	addLocalPlugin: function(name, handler, callback) {
-		EasyCoder.domain[name] = handler;
-		callback();
-	},
-
-	getPluginsPath: function() {
-		return EasyCoder.pluginsPath;
-	},
-
-	loadPluginJs: function(path) {
-		console.log(`${Date.now() - this.timestamp} ms: Load ${path}/easycoder/plugins.js`);
-		const script = document.createElement(`script`);
-		script.src = `${window.location.origin}${path}/easycoder/plugins.js?ver=${this.version}`;
-		script.type = `text/javascript`;
-		script.onload = () => {
-			EasyCoder_Plugins.getGlobalPlugins(
-				this.timestamp,
-				path,
-				this.setPluginCount,
-				this.getPlugin,
-				this.addGlobalPlugin
-			);
-		};
-		script.onerror = () => {
-			if (path) {
-				this.loadPluginJs(path.slice(0, path.lastIndexOf(`/`)));
-			} else {
-				this.reportError({
-					message: `Can't load plugins.js`
-				}, this.program, this.source);
-			}
-		};
-		document.head.appendChild(script);
-		this.pluginsPath = path;
-	},
-
-	start: function(source) {
-		this.source = source;
-		this.scriptIndex = 0;
-		let pathname = window.location.pathname;
-		if (pathname.endsWith(`/`)) {
-			pathname = pathname.slice(0, -1);
-		} else {
-			pathname = ``;
-		}
-		if (typeof EasyCoder_Plugins === `undefined`) {
-			this.loadPluginJs(pathname);
-		} else {
-			this.pluginsPath = pathname;
-			EasyCoder_Plugins.getGlobalPlugins(
-				this.timestamp,
-				pathname,
-				this.setPluginCount,
-				this.getPlugin,
-				this.addGlobalPlugin
-			);
-		}
-	}
 };

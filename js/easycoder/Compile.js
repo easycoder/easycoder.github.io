@@ -315,6 +315,7 @@ const EasyCoder_Compiler = {
 		this.tokens = tokens;
 		this.index = 0;
 		this.program = [];
+		this.program.script = 0;
 		this.program.symbols = {};
 		this.symbols = this.program.symbols;
 		this.warnings = [];

@@ -616,3 +616,6 @@ const EasyCoder_SVG = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.svg = EasyCoder_SVG;

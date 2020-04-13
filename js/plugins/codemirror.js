@@ -168,3 +168,6 @@ const EasyCoder_CodeMirror = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.codemirror = EasyCoder_CodeMirror;

@@ -368,3 +368,6 @@ const EasyCoder_UI = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.ui = EasyCoder_UI;
