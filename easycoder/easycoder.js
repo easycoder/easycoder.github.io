@@ -5619,7 +5619,7 @@ const EasyCoder_Browser = {
 					}
 				};
 				program.ajaxCommand = command;
-				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}/${EasyCoder_Plugins.rest()}/${path}`;
+				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}//${path}`;
 				ajax.open(`POST`, postpath);
 				ajax.send(formData);
 			}
@@ -7026,10 +7026,8 @@ const EasyCoder_Rest = {
 		run: (program) => {
 			const command = program[program.pc];
 			const url = program.getValue(command.url);
-			const rest = EasyCoder_Plugins.rest();
 			const path = url.startsWith(`http`) ? url
-				: url[0] === `/` ? url.substr(1)
-					: `${window.location.origin}${rest ? `/${rest}` : ``}/${url}`;
+				: url[0] === `/` ? url.substr(1) : `${window.location.origin}/${url}`;
 
 			const request = EasyCoder_Rest.Rest.createCORSRequest(command.request, path);
 			if (!request) {

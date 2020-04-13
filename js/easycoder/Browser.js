@@ -2558,7 +2558,7 @@ const EasyCoder_Browser = {
 					}
 				};
 				program.ajaxCommand = command;
-				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}/${EasyCoder_Plugins.rest()}/${path}`;
+				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}//${path}`;
 				ajax.open(`POST`, postpath);
 				ajax.send(formData);
 			}
