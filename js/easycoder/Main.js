@@ -422,21 +422,11 @@ const EasyCoder = {
 	},
 
 	loadPluginJs: function(path) {
-		if (!path) {
-			path = document.scripts[0].src;
-			path = path.substring(0, path.indexOf(`/easycoder.js`));
-		}
-		this.path = path;
-		let src = `${path}/easycoder/plugins.js?ver=${this.version}`
-		console.log(`${Date.now() - this.timestamp} ms: Load ${src}`);
+		console.log(`${Date.now() - this.timestamp} ms: Load ${path}/easycoder/plugins.js`);
 		const script = document.createElement(`script`);
-		script.src = src;
+		script.src = `${window.location.origin}${path}/easycoder/plugins.js?ver=${this.version}`;
 		script.type = `text/javascript`;
 		script.onload = () => {
-			let path = this.path.substr(window.location.origin.length);
-			if (path.endsWith(`/`)) {
-				path = path.slice(0, -1);
-			}
 			EasyCoder_Plugins.getGlobalPlugins(
 				this.timestamp,
 				path,
@@ -447,7 +437,7 @@ const EasyCoder = {
 		};
 		script.onerror = () => {
 			if (path) {
-				this.loadPluginJs(null);
+				this.loadPluginJs(path.slice(0, path.lastIndexOf(`/`)));
 			} else {
 				this.reportError({
 					message: `Can't load plugins.js`
@@ -461,14 +451,12 @@ const EasyCoder = {
 	start: function(source) {
 		this.source = source;
 		this.scriptIndex = 0;
-		let pathname = window.location.href;
-		let q = pathname.indexOf('?');
-		if (q > 0) {
-			pathname = pathname.substr(0, q);
-		}
+		let pathname = window.location.pathname;
 		if (pathname.endsWith(`/`)) {
 			pathname = pathname.slice(0, -1);
-		} 
+		} else {
+			pathname = ``;
+		}
 		if (typeof EasyCoder_Plugins === `undefined`) {
 			this.loadPluginJs(pathname);
 		} else {
