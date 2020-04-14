@@ -14,7 +14,7 @@
 	script ScriptEditor
 
 	variable Script
-	load plugin `codemirror`
+	require js `dist/plugins/codemirror.js`
 	rest get Script from `/resources/ecs/scripted.ecs`
 	run Script
 </pre>
