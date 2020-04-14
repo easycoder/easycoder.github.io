@@ -16,7 +16,7 @@
   add_action('wp_enqueue_scripts', 'easycoder_enqueue_script', 2);
   function easycoder_enqueue_script() {   
     wp_enqueue_script('easycoder_script', plugin_dir_url( __FILE__ )
-            . 'easycoder-min.js', array(), '2.5.6');
+            . 'easycoder-min.js', array(), '2.6.0');
   }
   
   // Set up default plugin and REST scripts
