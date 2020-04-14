@@ -131,8 +131,8 @@ L2:
 !    set Mobile
     set ShowRun
     
-    load plugin `gmap`
-    load plugin `svg`
+    require js `dist/plugins/gmap.js`
+    require js `dist/plugins/svg.js`
     
     codemirror init basic profile `https://` cat the hostname cat `/easycoder/plugins/codemirror-ecs.js`
     require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
