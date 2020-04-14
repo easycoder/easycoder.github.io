@@ -1,0 +1,26 @@
+# The properties file for EasyCoder
+# It is required mostly by the REST server - see the documentation
+# Modify as required and install it above the root of your WordPress installation (if possible)
+# Rename it to {your website URL}.txt
+# Do not include the braces shown below
+
+# The URL of the MySQL server
+sqlhost={your mysql server}
+
+# The name of the database user
+sqluser={your mysql user name}
+
+# The database password
+sqlpassword={your mysql password}
+
+# The database to use
+sqldatabase={the name of your database}
+
+# An encrypted password, if needed, e.g. for restricted admin access to your site.
+# If you use 'rest get Result from `_verify/` cat {password}'
+# the REST server will encrypt the value of {password} and compare it with
+# the value held here. It will return 'yes' if there is a match; 'no' if not
+# and place it in the Result variable.
+# You can create a hash value using this URL:
+# {Your website}/wp-content/plugins/easycoder/rest.php/_hash/{password}
+password={encrypted password}
