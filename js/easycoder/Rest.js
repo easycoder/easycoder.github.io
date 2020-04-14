@@ -110,8 +110,19 @@ const EasyCoder_Rest = {
 		run: (program) => {
 			const command = program[program.pc];
 			const url = program.getValue(command.url);
-			const path = url.startsWith(`http`) ? url
-				: url[0] === `/` ? url.substr(1) : `${window.location.origin}/${url}`;
+			const rest = document.getElementById(`easycoder-rest`);
+			let path = url;
+			if (!url.startsWith(`http`)) {
+				if (url[0] == `/`) {
+					path = url.substr(1);
+				} else {
+					const rest = document.getElementById(`easycoder-rest`).innerText;
+					if (!rest) {
+						program.runtimeError(command.lino, `No REST server defined`);
+					}
+					path = `${window.location.origin}${rest}/${url}`;
+				}
+			}
 
 			const request = EasyCoder_Rest.Rest.createCORSRequest(command.request, path);
 			if (!request) {

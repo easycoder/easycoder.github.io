@@ -2558,7 +2558,11 @@ const EasyCoder_Browser = {
 					}
 				};
 				program.ajaxCommand = command;
-				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}//${path}`;
+				const rest = document.getElementById(`easycoder-rest`);
+				if (!rest) {
+					program.runtimeError(command.lino, `No REST server defined`);
+				}
+				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}${rest}/${path}`;
 				ajax.open(`POST`, postpath);
 				ajax.send(formData);
 			}

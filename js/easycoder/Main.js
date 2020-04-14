@@ -363,6 +363,8 @@ const EasyCoder = {
 	},
 
 	start: function(source) {
+		EasyCoder.restPath = `rest.php`;
+		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);
 		if (!this.tokenising) {
