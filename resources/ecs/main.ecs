@@ -98,6 +98,8 @@ BuildPage:
     create Status in Body
     set the id of Status to `ec-status`
 
+	require js `dist/plugins/showdown.js`
+
 	rest get Script from `/resources/ecs/showdown.ecs`
 	run Script with Document as ShowdownModule
 	rest get Script from `/resources/ecs/home.ecs`
@@ -240,8 +242,6 @@ DoNotes:
 			go to DoNotes
 		end
 	end
-
-	require js `dist/plugins/showdown.js`
 
   	json parse url the location as Args
     put property `arg` of Args into Arg
