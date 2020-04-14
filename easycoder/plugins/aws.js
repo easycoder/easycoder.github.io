@@ -229,3 +229,6 @@ const EasyCoder_AWS = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.aws = EasyCoder_AWS;

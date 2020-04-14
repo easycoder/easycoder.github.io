@@ -64,3 +64,6 @@ const EasyCoder_Dummy = {
 		return handler.run(program);
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.dummy = EasyCoder_Dummy;

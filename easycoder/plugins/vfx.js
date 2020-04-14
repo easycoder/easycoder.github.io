@@ -341,3 +341,6 @@ const EasyCoder_VFX = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.vfx = EasyCoder_VFX;

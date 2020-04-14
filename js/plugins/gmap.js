@@ -556,3 +556,6 @@ const EasyCoder_GMap = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.gmap = EasyCoder_GMap;

@@ -317,7 +317,7 @@ const EasyCoder_Json = {
 					content.domain = source;
 				}
 				if (content.domain.endsWith(`/`)) {
-					content.domain = content.domain.substr(0, content.domain.length - 1);
+					content.domain = content.domain.slice(0, -1);
 				}
 				n = content.domain.indexOf(`/`);
 				if (n > 0) {
@@ -366,7 +366,7 @@ const EasyCoder_Json = {
 				targetRecord = program.getSymbolRecord(command.target);
 				const existing = targetRecord.value[targetRecord.index].content;
 				record = existing ? JSON.parse(existing) : [];
-				record.push((`[`, `{`).includes(content[0]) ? JSON.parse(content) :content);
+				record.push([`[`, `{`].includes(content[0]) ? JSON.parse(content) :content);
 				targetRecord.value[targetRecord.index] = {
 					type: `constant`,
 					numeric: false,

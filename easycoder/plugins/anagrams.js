@@ -41,3 +41,6 @@ const EasyCoder_Anagrams = {
 		compile: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.anagrams = EasyCoder_Anagrams;

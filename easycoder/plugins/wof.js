@@ -280,3 +280,6 @@ const EasyCoder_roulette_wheel = {
 		$.rotateWheel($);
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.wof = EasyCoder_WOF;

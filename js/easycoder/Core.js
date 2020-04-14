@@ -870,46 +870,6 @@ const EasyCoder_Core = {
 		}
 	},
 
-	Load: {
-
-		compile: compiler => {
-			const lino = compiler.getLino();
-			const type = compiler.nextToken();
-			switch (type) {
-			case `plugin`:
-				const name = compiler.getNextValue();
-				compiler.addCommand({
-					domain: `core`,
-					keyword: `load`,
-					lino,
-					name
-				});
-				return true;
-			}
-			return false;
-		},
-
-		run: program => {
-			const command = program[program.pc];
-			const name = program.getValue(command.name);
-			switch (command.keyword) {
-			case `load`:
-				if (program.checkPlugin(name)) {
-					return command.pc + 1;
-				}
-				EasyCoder_Plugins.getLocalPlugin(
-					program.getPluginsPath,
-					name,
-					program.getPlugin,
-					program.addLocalPlugin,
-					function () {
-						program.run(command.pc + 1);
-					});
-				return 0;
-			}
-		}
-	},
-
 	Module: {
 
 		compile: compiler => {
@@ -2184,8 +2144,6 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Import;
 		case `index`:
 			return EasyCoder_Core.Index;
-		case `load`:
-			return EasyCoder_Core.Load;
 		case `module`:
 			return EasyCoder_Core.Module;
 		case `multiply`:

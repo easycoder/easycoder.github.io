@@ -170,3 +170,6 @@ const EasyCoder_CKEditor = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.ckeditor = EasyCoder_CKEditor;

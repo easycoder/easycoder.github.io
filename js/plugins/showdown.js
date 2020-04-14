@@ -119,3 +119,6 @@ const EasyCoder_Showdown = {
 		test: () => {}
 	}
 };
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.showdown = EasyCoder_Showdown;
