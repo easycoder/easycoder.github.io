@@ -128,7 +128,6 @@ L2:
     begin
     	if mobile set Mobile else clear Mobile
     end
-!    set Mobile
     set ShowRun
     
     require js `dist/plugins/gmap.js`
