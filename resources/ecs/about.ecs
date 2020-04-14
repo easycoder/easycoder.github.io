@@ -36,7 +36,7 @@
     end
     
     set ready
-    load plugin `codemirror`
+    require js `dist/plugins/codemirror.js`
     stop
 
 Start:
@@ -54,7 +54,7 @@ Start:
     attach CodexButton to `about-codex`
     on click CodexButton
     begin
-	    load plugin `codemirror`
+	    require js `dist/plugins/codemirror.js`
     	rest get Codex from `/resources/ecs/codex`
     	send `hide` to parent
     	run Codex

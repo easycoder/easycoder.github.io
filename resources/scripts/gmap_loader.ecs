@@ -1,1 +1,1 @@
-load plugin `gmap`
+require js `dist/plugins/gmap.js`

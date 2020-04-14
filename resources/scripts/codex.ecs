@@ -93,7 +93,7 @@
 !    set Mobile
     set ShowRun
     
-    load plugin `svg`
+    require js `dist/plugins/svg.js`
     
     codemirror init basic profile `/easycoder/plugins/codemirror-ecs.js`
     require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
