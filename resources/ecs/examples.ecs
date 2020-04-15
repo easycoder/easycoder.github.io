@@ -4,6 +4,9 @@
     
     import module Showdown
     
+    module DiceRollerModule
+    div DiceRoller
+    button ShowDiceRoller
     module ImageSwitcherModule
     div ImageSwitcher
     button ShowImageSwitcher
@@ -20,6 +23,7 @@
     variable Message
     
     rest get Content from `/resources/md/examples.md`
+    replace `/SHOW-DICEROLLER/` with `<button id="show-diceroller">Show</button>` in Content
     replace `/SHOW-IMAGESWITCHER/` with `<button id="show-imageswitcher">Show</button>` in Content
     replace `/SHOW-USERCAPTURE/` with `<button id="show-usercapture">Show</button>` in Content
     replace `/SHOW-LIFE/` with `<button id="show-life">Show</button>` in Content
@@ -40,6 +44,17 @@
 Start:
 	scroll to 0
     send Content to Showdown
+
+    if DiceRollerModule is not running
+    begin
+    	wait 10 ticks
+    	rest get Script from `/resources/ecs/diceroller.ecs`
+        run Script as DiceRollerModule
+        attach DiceRoller to `ex-diceroller`
+        attach ShowDiceRoller to `show-diceroller`
+        fork to InitDiceRoller
+    end
+
     if ImageSwitcherModule is not running
     begin
     	wait 10 ticks
@@ -73,8 +88,18 @@ Start:
     attach ShowLifeDoc to `show-lifedoc`
     on click ShowLifeDoc send `life` to parent
 
-    send to ImageSwitcherModule
     stop
+
+InitDiceRoller:
+	send `hide` to DiceRollerModule
+    set the text of ShowDiceRoller to `Show`
+    on click ShowDiceRoller
+    begin
+        set the text of ShowDiceRoller to `Hide`
+        on click ShowDiceRoller go to InitDiceRoller
+        send `show` to DiceRollerModule
+    end
+	stop
 
 InitImageSwitcher:
     set style `display` of ImageSwitcher to `none`

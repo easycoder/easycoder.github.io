@@ -1,0 +1,94 @@
+!	Twin dice roller
+
+	script DiceRoller
+    
+    div Container
+    div Dice
+    div Dot
+    variable NDice
+    variable M
+    variable N
+    variable D
+    variable Index
+    variable Row
+    variable Dots
+    variable Patterns
+    variable Left
+    variable Top
+    
+    attach Container to `ex-diceroller`
+    on message
+    begin
+    	if the message is `hide`
+    	begin
+            clear Container
+            set style `height` of Container to 0
+        end
+    	else go to Start
+    end
+    set ready
+    stop
+
+Start:
+    set style `height` of Container to ``
+    put 2 into NDice
+    set style `.ec-dice` to `{width:100px;height:100px;margin-right:20px;`
+        cat `background:yellow;border:1px solid black;display:inline-block;`
+        cat `position:relative}`
+    set style `.ec-dot` to `{width:20px;height:20;position:absolute;`
+        cat `background:black;border-radius:10px}`
+    
+    set Patterns to
+    	40 40  0  0  0  0  0  0  0  0  0  0
+        10 40 70 40  0  0  0  0  0  0  0  0
+        10 40 40 40 70 40  0  0  0  0  0  0
+        10 10 70 10 10 70 70 70  0  0  0  0
+        10 10 70 10 10 70 70 70 40 40  0  0
+        10 10 10 70 40 10 40 70 70 10 70 70
+    
+    set the elements of Dice to NDice
+
+Redraw:
+    put 0 into M
+    while M is less than 10
+    begin
+        clear Container
+        put 0 into N
+        while N is less than NDice
+        begin
+            index Dice to N
+            create Dice in Container
+            set the class of Dice to `ec-dice`
+            gosub to RandomiseDots
+            add 1 to N
+        end
+        wait 10 ticks
+        add 1 to M
+    end
+    on click Dice go to Redraw
+    stop
+
+RandomiseDots:
+	put random 6 into Dots
+    multiply Dots by 12 giving Row
+    put 0 into D
+    while D is less than 12
+    begin
+    	add D to Row giving Index
+    	index Patterns to Index
+        put Patterns into Top
+        add 1 to D
+        if Top is not 0
+        begin
+        	add 1 to Index
+    		index Patterns to Index
+        	put Patterns into Left
+            create Dot in Dice
+            set the class of Dot to `ec-dot`
+            set style `top` of Dot to Top
+            set style `left` of Dot to Left
+    		on click Dot go to Redraw
+        end
+    	add 1 to D
+    end
+	return

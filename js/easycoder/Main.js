@@ -44,7 +44,7 @@ const EasyCoder = {
 			scriptLines
 		} = source ? source : program.source;
 		const lino = this.compiling ? tokens[EasyCoder_Compiler.getIndex()].lino : program[program.pc].lino;
-		var errString = this.compiling ? `Compile error` : `Runtime error in '${program.script}'`;
+		var errString = (this.compiling  ? `Compile` : `Runtime`) + ` error in '${program.script}'`;
 		errString += `:\n`;
 		var start = lino - 5;
 		start = start < 0 ? 0 : start;

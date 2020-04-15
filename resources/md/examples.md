@@ -8,6 +8,11 @@ The following websites were all built entirely in EasyCoder script:
  - [Rembrandt.ie](https://rembrandt.ie)
  - [Storyteller](https://storyteller20.neocities.org)
 
+## Dice roller /SHOW-DICEROLLER/
+
+This simple demo shows two dice with a random choice of faces. Click either dice to select a new pair of value. A simple animation simulates the rolling of the dice.
+~<div id="ex-diceroller"></div>~
+
 ## Image switcher /SHOW-IMAGESWITCHER/
 
 There are 9 images with only 1 showing. A row of thumbnail icons lets the user move left or right or select a specific image.
@@ -17,7 +22,7 @@ There are 9 images with only 1 showing. A row of thumbnail icons lets the user m
 
 This is a rewrite of a script published in [Smashing Magazine](https://www.smashingmagazine.com/2020/03/introduction-alpinejs-javascript-framework/) as an example of how to use the Alpine.js micro-framework. It represents a block added to a web page, that displays an announcement and handles feedback from users.
 ~<div id="ex-usercapture"></div>~
-The User Capture can be run as an independent web page; see [User Capture](/usercapture.html). If you view the page source you will see the entire script inside its special preformatted element.
+The User Capture can be run as an independent web page; see [User Capture](https://easycoder.github.io/examples/usercapture). If you view the page source you will see the entire script inside its special preformatted element.
 
 ## Storyteller
 
