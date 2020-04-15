@@ -6,7 +6,7 @@ There are two ways to use Storyteller:
 
  1. Open a Neocities account and build your site using the instructions below.
  
- 1. Download Storyteller files from the [Storyteller repository](https://github.com/easycoder/storyteller) and copy them to your server. This is the option for advanced users.
+ 1. Download Storyteller files from the [repository](https://github.com/easycoder/easycoder.github.io/tree/master/storyteller) and copy them to your server. This is the option for people who have direct access to their own websites.
 
 ## Setting up using Neocities
 
