@@ -1,0 +1,184 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+    <body>
+        <div id="ex-usercapture"></div>
+        <pre id="easycoder-script" style="display:none">
+    !  User Capture
+
+    script UserCapture
+
+!   Declare variables
+    div Body
+    div Container
+    div MainPanel
+    div Title
+    div Subtitle
+    div DemoText
+    div Dialog
+    div Row
+    div Label
+    span Cell
+    input Name
+    input Email
+    hr Rule
+    a Button
+    a Close
+    a Submit
+    variable Mobile
+    variable W
+    variable H
+    variable Message
+
+    set the title to `User Capture`
+!   Attach to the parent DIV
+    attach Body to `ex-usercapture`
+    clear Mobile
+	if mobile
+    begin
+    	if portrait set Mobile
+    end
+
+!   Detect and deal with mobile
+    if Mobile set style `width` of Body to `100%`
+    else set style `width` of Body to `500px`
+    put the width of Body into W
+    if Mobile put W into H
+    else
+    begin
+	    multiply W by 3 giving H
+	    divide H by 4
+    end
+    set style `height` of Body to H cat `px`
+
+!   Set up all CSS styles
+    set style `.container` to 
+    	`{width:calc(` cat W cat `px - 2em);`
+        cat `height:calc(` cat H cat `px - 3em);`
+        cat `margin:1em auto;`
+        cat `text-align:center;`
+        cat `font-size:0.5em;`
+        cat `position:relative}`
+    set style `.main` to 
+    	`{background-color:#333;width:100%;height:100%;`
+        cat `font-family:sans-serif;color:white;padding-top:1em}`
+    set style `.title` to `{font-size:3em;margin-top:0.5em}`
+    set style `.subtitle` to `{font-size:1.4em;margin:0 0.5em 2em 0.5em}`
+    set style `a.button` to 
+    	`{font-size:2em;background:gray;border-radius:0.2em;`
+        cat `padding:0.7em;text-decoration:none;color:white}`
+    set style `a.button:hover` to `{background:#666}`
+    set style `.demo` to `{margin-top:3em}`
+    set style `.dialog` to `{background-color:white;`
+    	cat `border-radius:0.2em;`
+        cat `width:calc(` cat W cat `px - 4em);`
+        cat `position:absolute;left:1em;top:1em;`
+        cat `font-size:1.5em}`
+    set style `.row` to `{font-size:1.5em;margin:1em 0;display:flex}`
+    set style `.cell-left` to `{margin-left:1em;text-align:left;flex:2}`
+    set style `.cell-right` to `{margin-right:1em;text-align:right;flex:1}`
+    set style `a.closedialog` to 
+    	`{font-weight:bold;color:gray;text-decoration:none}`
+    set style `a.closedialog:hover` to `{color:black}`
+    set style `input` to `{width:90%;margin:1em 0;padding:0.5em}`
+    set style `.right` to `{text-align:right;padding:0.5em 1em 1em 0}`
+    set style `a.submit` to 
+    	`{font-weight:bold;background:#88f;color:white;`
+        cat `border-radius:0.2em;text-decoration:none;padding:0.5em;`
+        cat `float:right:margin:1em 1em 0 0}`
+    set style `a.submit:hover` to `{background:#44f}`
+
+!   Create and run the main screen
+    create Container in Body
+    set the class of Container to `container`
+    
+    create MainPanel in Container
+    set the class of MainPanel to `main`
+    
+    create Title in MainPanel
+    set the class of Title to `title`
+    set the content of Title to `New widget launching soon.`
+    
+    create Subtitle in MainPanel
+    set the class of Subtitle to `subtitle`
+    set the content of Subtitle to
+    	`Not long to go until Acme Inc launch their latest product.`
+
+	create Button in MainPanel
+    set the class of Button to `button`
+    set the content of Button to `Get in touch`
+    on click Button go to GetDetails
+    
+    create DemoText in MainPanel
+    set the class of DemoText to `demo`
+    set the content of DemoText to `Demo of EasyCoder for Dev.to`
+
+    stop
+
+!   Create and run the dialog screen
+GetDetails:
+	create Dialog in Container
+    set the class of Dialog to `dialog`
+    
+    create Row in Dialog
+    set the class of Row to `row`
+    
+    create Cell in Row
+    set the class of Cell to `cell-left`
+    set the content of Cell to `Get in touch`
+    
+    create Cell in Row
+    set the class of Cell to `cell-right`
+    
+    create Close in Cell
+    set the class of Close to `closedialog`
+    set the content of Close to `&times;`
+    on click Close remove element Dialog
+    
+    create Rule in Dialog
+    
+    create Label in Dialog
+    set the content of Label to `Your name`
+    
+    create Name in Dialog
+    
+    create Label in Dialog
+    set the content of Label to `Your email`
+    
+    create Email in Dialog
+    
+    create Rule in Dialog
+    
+    create Row in Dialog
+    set the class of Row to `right`
+    
+    create Submit in Row
+    set the class of Submit to `submit`
+    set the content of Submit to `Submit`
+    on click Submit
+    begin
+    	if Name is empty go to EmptyField
+    	if Email is empty go to EmptyField
+    	set Message to object
+        set property `name` of Message to Name
+        set property `email` of Message to Email
+        alert `Sending ` cat Message
+        rest post Message to `https://bad.url`
+        or begin
+        	alert `The message could not be sent`
+        end
+    end
+	stop
+    
+EmptyField:
+	alert `Please complete both fields`
+    stop
+</pre>
+
+    <script src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=2.6.0'></script>
+
+    </body>
+</html>
