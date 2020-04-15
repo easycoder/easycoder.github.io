@@ -37,7 +37,7 @@ Once you have chosen your name your website will be live and can be seen by anyo
   <body>
 
     <pre id="storyteller-branch" style="display:none">master</pre>
-    <pre id="storyteller-stories" style="display:none">storyteller</pre>
+    <pre id="storyteller-stories" style="display:none">(Name of my stories folder)</pre>
     <pre id="easycoder-script" style="display:none">
 
       script Boot
