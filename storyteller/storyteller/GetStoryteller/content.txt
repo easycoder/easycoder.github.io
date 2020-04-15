@@ -32,13 +32,12 @@ Once you have chosen your name your website will be live and can be seen by anyo
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/storyteller/storyteller.js?v=200407'></script>
   </head>
 
   <body>
 
-    <pre id="storyteller-branch" style="display:none">dev</pre>
-    <pre id="storyteller-stories" style="display:none">(Name of my stories folder)</pre>
+    <pre id="storyteller-branch" style="display:none">master</pre>
+    <pre id="storyteller-stories" style="display:none">storyteller</pre>
     <pre id="easycoder-script" style="display:none">
 
       script Boot
@@ -47,10 +46,13 @@ Once you have chosen your name your website will be live and can be seen by anyo
       variable Script
       attach Branch to `storyteller-branch`
       put the content of Branch into B
-      rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/storyteller@` cat B cat `/storyteller.txt?v=200411`
+      require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io@` cat B cat `/dist/plugins/showdown.js?v=200413`
+      rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/storyteller@` cat B cat `/storyteller.txt?v=200413`
       run Script
 
     </pre>
+
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=200413'></script>
 
   </body>
 </html>
