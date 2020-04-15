@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+  </head>
+
+  <body>
+
+<pre id="easycoder-script" style="display:none">!
+
+!	Twin dice roller
+
+	script DiceRoller
+    
+    div Screen
+    div Dice
+    div Dot
+    variable NDice
+    variable M
+    variable N
+    variable D
+    variable Index
+    variable Row
+    variable Dots
+    variable Patterns
+    variable Left
+    variable Top
+    
+    put 2 into NDice
+    set style `.ec-dice` to `{width:100px;height:100px;margin:20px;`
+        cat `background:yellow;border:1px solid black;display:inline-block;`
+        cat `position:relative}`
+    set style `.ec-dot` to `{width:20px;height:20;position:absolute;`
+        cat `background:black;border-radius:10px}`
+    
+    set Patterns to
+    	40 40  0  0  0  0  0  0  0  0  0  0
+        10 40 70 40  0  0  0  0  0  0  0  0
+        10 40 40 40 70 40  0  0  0  0  0  0
+        10 10 70 10 10 70 70 70  0  0  0  0
+        10 10 70 10 10 70 70 70 40 40  0  0
+        10 10 10 70 40 10 40 70 70 10 70 70
+    
+    create Screen
+    set the style of Screen to `padding:1em`
+    set the elements of Dice to NDice
+
+Redraw:
+    put 0 into M
+    while M is less than 10
+    begin
+        put 0 into N
+        while N is less than NDice
+        begin
+            index Dice to N
+            remove element Dice
+            create Dice in Screen
+            set the class of Dice to `ec-dice`
+            gosub to RandomiseDots
+            add 1 to N
+        end
+        wait 10 ticks
+        add 1 to M
+    end
+    on click Dice go to Redraw
+    stop
+
+RandomiseDots:
+	put random 6 into Dots
+    multiply Dots by 12 giving Row
+    put 0 into D
+    while D is less than 12
+    begin
+    	add D to Row giving Index
+    	index Patterns to Index
+        put Patterns into Top
+        add 1 to D
+        if Top is not 0
+        begin
+        	add 1 to Index
+    		index Patterns to Index
+        	put Patterns into Left
+            create Dot in Dice
+            set the class of Dot to `ec-dot`
+            set style `top` of Dot to Top
+            set style `left` of Dot to Left
+    		on click Dot go to Redraw
+        end
+    	add 1 to D
+    end
+	return
+</pre>
+
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=200413'></script>
+
+    </body>
+</html>
