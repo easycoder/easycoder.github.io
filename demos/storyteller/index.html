@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+  </head>
+
+  <body>
+
+    <pre id="storyteller-branch" style="display:none">dev</pre>
+    <pre id="storyteller-stories" style="display:none">stories</pre>
+    <pre id="easycoder-script" style="display:none">
+
+      script Boot
+      pre Branch
+      variable B
+      variable Script
+      attach Branch to `storyteller-branch`
+      put the content of Branch into B
+      require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io@` cat B cat `/dist/plugins/showdown.js?v=200413`
+      rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/storyteller@` cat B cat `/storyteller.txt?v=200413`
+      run Script
+
+    </pre>
+
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=200413'></script>
+
+  </body>
+</html>

@@ -1,0 +1,33 @@
+Links: ~select:-:Select a subject!selected disabled hidden|S-GetStoryteller:Getting started with Storyteller|S-Markdown:Using Markdown|S-Images:Handling images~~space:3~Next: ~sid:Markdown:Using Markdown~
+
+# The structure of a Storyteller website
+
+A Storyteller website has an `index.html` file and a folder containing your stories. Inside the stories folder are a number of other folders and two text files. One of these is `theme.txt`; it contains the name of the _theme_ you will use for your site. A small number of themes are available. The second text file is `title.txt`, which contains the title that goes in the browser's title bar.
+
+The folders in your stories folder are _Subjects_, which are groups of pages that belong together. Every Subject can have as many _Topics_ as you like, where a Topic is another page belonging to the same Subject. Every Storyteller website starts with a subject called called `home`, which will be shown when the user clicks the Home button at the top of the screen. The `home` Subject and its various Topics form the home page for the website. You can also add an `info` subject folder and use it to provide information not directly related to the website itself. All other folders in your stories folder are Subjects chosen by the site builder. For example, this site has a number of Subjects in addition to `home`, all of which are linked to at the bottom of each page.
+
+As an example, suppose we are building a car maintenance website. Doing an oil change, checking the brakes, replacing a hose etc could each be Sections and the steps involved in each one of the jobs could be Topics. If it were a classic car catalog there might be a Section for each car model, with Topics for the various aspects of interest such as History, Specification, Performance and so on. The division is rather arbitrary and entirely up to the site builder.
+
+## Subject folders
+
+All Subject folders, including `home` and `info`, contain at least 2 files; `title.txt` and `content.txt`. The first of these, `title.txt`, contains a single line of text comprising the name of the Subject, which is displayed at the top of the page all the time you are in the same Subject. If `title.txt` is empty the system will use the name of the Subject. The page you are in now is part of the `Structure` Subject and its `title.txt` contains the word `Storyteller`.
+
+The second file, `content.txt`, contains the content of the main Topic. This is the text and images that will be seen by visitors to your website. Rather than expect you to be an HTML expert we use Markdown, a far simpler system that is very widely used for a variety of documentation projects. Markdown is less comprehensive than HTML but is very quick to learn and much more forgiving of mistakes. See our ~sid:Markdown:Markdown Guide~.
+
+If your Subject has additional Topics, each of these appears in the Subject folder as `{topicname}.txt`. You can have as many as you like. It's your responsibility to take care of linking between Subjects and Topics. In general, the more links the better as it makes it easier for users to discover all the parts of your website.
+
+## Custom themes
+
+The themes provided are rather basic and some may like to create their own. You can do this by creating a `themes` folder at the top level of your website, then copying one of the standard theme folders from the GitHub repository, giving it a new name on arrival. Themes comprise the graphic from which the borders are taken (this isn't actually used but we provide it in case it might be useful). Then there are 3 other graphics; the top, middle and bottom of the frame. The top and bottom should be no taller than is needed to include everything. The middle graphic is any section taken from the border graphic. It will be stretched to fit the window and placed beneath the top and the bottom.
+
+Finally there's a JSON file that defines various constants. First there are the aspect width and height; normally 4:3 but you can experiment with other ratios. Then there are the border percentages for left, top, right and bottom, and finally the font scaling value, which is roughly the number of lines of text to fill the page. The larger this value the smaller the text, but the right value can only be arrived at by experiment.
+
+To use your theme, put its name into the `theme.txt` file at the top level of your stories folder. Put a forward slash - `/` - in front of the name so the system will take it from your local folder rather than ask the CDN for it.
+
+~sid:GetStoryteller:Getting started with Storyteller~
+
+~sid:Markdown:Using Markdown in Storyteller~
+
+~sid:Images:Handling images~
+
+[Click here to see the source code for this page](/storyteller/Structure/source.txt)
