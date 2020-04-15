@@ -1,5 +1,7 @@
- # EasyCoder server files
+# EasyCoder server files
  
- These are mostly server-side files. The most significant are 2 small REST servers written in PHP and Python, which perform the same functions. The former is for setting up a `localhost` server and the latter is for use on LAMP servers.
+Here are 2 small REST servers written in Python and PHP, which both perform the same functions. The former is for setting up a `localhost` server and the latter is for use on LAMP servers.
 
- The files `easycoder.php`, `ec-rest.txt` and `readme.txt` are for WordPress installations.
+These REST servers give your browser scripts read and write access to files on your own website and to remote servers if CORS has been set up.
+
+The files `easycoder.php`, `ec-rest.txt` and `readme.txt` are for WordPress installations.
