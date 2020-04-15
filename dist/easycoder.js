@@ -7030,16 +7030,17 @@ const EasyCoder_Rest = {
 		run: (program) => {
 			const command = program[program.pc];
 			const url = program.getValue(command.url);
-			const rest = document.getElementById(`easycoder-rest`);
+			// Default is the path for a WordPress installation
+			let rest = `/wp-content/plugins/easycoder/rest.php`
+			const restDef = document.getElementById(`easycoder-rest`);
+			if (restDef) {
+				rest = restDef.innerText;
+			}
 			let path = url;
 			if (!url.startsWith(`http`)) {
 				if (url[0] == `/`) {
 					path = url.substr(1);
 				} else {
-					const rest = document.getElementById(`easycoder-rest`).innerText;
-					if (!rest) {
-						program.runtimeError(command.lino, `No REST server defined`);
-					}
 					path = `${window.location.origin}${rest}/${url}`;
 				}
 			}
