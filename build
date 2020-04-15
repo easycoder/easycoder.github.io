@@ -1,0 +1,12 @@
+#!/bin/sh
+
+rm -rf dist/*
+mkdir dist/plugins
+cp js/plugins/* dist/plugins
+cp server/* dist
+
+cat js/easycoder/Core.js js/easycoder/Browser.js js/easycoder/Json.js js/easycoder/Rest.js js/easycoder/Compare.js js/easycoder/Condition.js js/easycoder/Value.js js/easycoder/Run.js js/easycoder/Compile.js js/easycoder/Main.js js/easycoder/EasyCoder.js > dist/easycoder.js
+echo "Merge completed"
+
+npx google-closure-compiler --js=dist/easycoder.js --js_output_file=dist/easycoder-min.js --language_in ECMASCRIPT_2018
+echo "Closure finished"

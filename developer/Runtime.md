@@ -13,12 +13,14 @@ run: program => {
 	const replacement = program.getValue(command.replacement);
 	const target = program.getSymbolRecord(command.target);
 	const value = program.getValue(target.value[target.index]);
+
 	const content = value.split(original).join(replacement);
 	target.value[target.index] = {
 		type: `constant`,
 		numeric: false,
 		content
 	};
+	
 	return command.pc + 1;
 }
 ```
