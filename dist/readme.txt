@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.6.1 16-apr 2020 =
+* Use CDN to deliver all files
+
 = 2.6.0 21-feb 2020 =
 * Added a VFX plugin; many other updates & bug fixes
 
