@@ -1,0 +1,60 @@
+Links: ~select:-:Select a subject!selected disabled hidden|S-GetStoryteller:Getting started with Storyteller|S-Structure:The structure of a Storyteller website|S-Images:Handling images~~space:3~Next: ~sid:Images:Handling images~
+
+# Using Markdown in Storyteller
+
+Markdown is a standard, widely used lightweight document formatting system. It’s possible you’ve encountered Markdown without realizing it. Facebook chat, Skype, and Reddit all let you use different flavors of Markdown to format your messages.
+
+There are many resources on the Web that describe the standard syntax of Markdown. Try Googling _markdown cheatsheet_ or _try markdown_, the latter of which lets you try out various constructs and see the results.
+
+Storyteller adds custom enhancements to Markdown, to do things that would be impossible otherwise. (They would be pretty hard to do in in HTML too, not to mention inconvenient.) For example, although you can easily define a link to another page outside the current one there's no standard construct that will tell Markdown you want to go to another Topic in the same Subject. So here's a list of our custom additions. Each one is text you put inside a pair of &#126; symbols. Please note that StoryTeller is a new product so more custom Markdown additions may be added over the course of time.
+
+ - &#126;`sid:{name}:{link text}`&#126; sets up a hyperlink that looks like any other hyperlink, with a blue underline, but when the user clicks it the page changes to the Subject whose name is `{name}`. You can use the first part and leave out the second colon and what follows it; the system will simply use the same text for both.
+
+ - &#126;`tid:{name}:{link text}`&#126; sets up a hyperlink that when the user clicks it the page changes to the Topic whose name is `{name}` in the current Subject. In this case the `.txt` part of the name is omitted. As with `sid`, id the colon and the second part are omitted the system will use the same text for both.
+
+ - &#126;`img:{url}:{class}!{options}`&#126; Although standard Markdown has markup to add an image, this takes it further. The first part, `{url}` is the URL of the image. If this begins with `http` it's taken to be an external image at the full path given. If not, then it's assumed to be an image in the `images` folder of the current Subject. So the images for each Subject are independent.
+ 
+ The second part, `class`, separated from the first part by a colon, is a list of space-delimited styles you want to apply to the image, for example to have it float left or right, add a border around it or whatever. The current list of styles available are:
+     - `border` Place a thin border around the image
+     - `left` Make the image float to the left
+     - `right` Make the image float to the right
+     - `center` Make the image sit in the middle of the page
+     - `clear` Make the image sit below anything else already on the page
+     - `10%` Make the width of the image 10% of the page
+     - `25%` Make the width of the image 25% of the page
+     - `33%` Make the width of the image 33% of the page
+     - `50%` Make the width of the image 50% of the page
+     - `90%` Make the width of the image 90% of the page
+     - `100%` Make the width of the image 100% of the page
+ 
+ The final part is optional. When used, an exclamation mark is followed by a list of options. At present there is only one; `nolink`. The standard behavior of a link is to display it as a bigger image when the user clicks it. If you don't want this to happen, use `nolink`.
+
+ - &#126;`select:item|item|item...  ...`&#126; specifies a drop-down list with as many items as you like, separated from each other by the vertical pipe (|) symbol. Each item is in 2 or 3 parts as follows:
+ 
+ 1. The first part is the _value_ of the item. This is either a Subject or a Topic; the value has S- or T- prefixed to indicate which. See the example below.
+ 
+ 1. A colon, then the text that will appear in the drop-down list for the item
+ 
+ 1. Optionally, an exclamation mark then a list of attributes for the item
+ 
+ Example: &#126;select:-:Select a subject!selected disabled hidden|S-Food:Food and drink|S-Transport:Transport links|S-Entertainment:Cinemas, theaters and clubs|T-More:Other resources&#126;
+ 
+ In this example, the first option is is a prompt ("Select a subject") which is marked as being selected but also disabled and hidden, so it shows when the selector is closed but not in the list itself. The next 3 options are all Sections and will take you there when selected. The last option is a Topic in the current Subject.
+
+ - &#126;`clear`&#126; adds a 'clear', that forces all following content to be below anything already on the page. This is not usually an issue except where you use the `left` or `right` classes for an image, which causes text to flow around the image. Don't try to get the next paragraph to appear in the right place by adding blank lines, as this will not give the same resuts on all browsers. Instead, use a 'clear' before adding the next paragraph.
+ 
+ - &#126;`space:{n}`&#126; adds non-breaking spaces, the number of spaces being the value of `{n}`. If the page is running on a smartphone in portrait mode a single new line is added instead of the spaces.
+
+## Page style
+
+As well as content, the page style itself is also a variable. At present we have a single style, that of a bordered page. In future we'll add a convential scrolling page option too. There's also the theme, being the appearance and size of the border. This only applies to the _bordered_ style; scrolling pages may well have their own themes in due course. We'll be offering a selection of themes that you can try out here or even in your own page. To do this you need a special Markdown tag, as follows:
+
+ - &#126;`theme:{prompt}`&#126; invokes the theme selector. If you choose a theme from the list offered it overrides the one named in your `theme.txt` file, but only for your current browser and computer. Nobody else is affected. If that's not clear, try it and see by clicking ~theme:here~.
+
+~sid:GetStoryteller:Getting started with Storyteller~
+
+~sid:Structure:The structure of a Storyteller website~
+
+~sid:Images:Handling images~
+
+[Click here to see the source code for this page](/storyteller/Markdown/source.txt)

@@ -1,0 +1,8 @@
+storyteller
+grass
+herbal
+pencil
+thin-gold
+wood1
+wood2
+none

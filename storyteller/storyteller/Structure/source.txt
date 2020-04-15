@@ -1,0 +1,29 @@
+Source code of the 'Structure' page
+
+Below the line is the page source as typed by the site author.
+-----------------------------------------------------------------------------------------------------------
+Links: ~select:-:Select a subject!selected disabled hidden|S-GetStoryteller:Getting started with Storyteller|S-Markdown:Using Markdown|S-Images:Handling images~~space:3~Next: ~sid:Markdown:Using Markdown~
+
+# The structure of a Storyteller website
+
+A Storyteller website has an `index.html` file and a `stories` folder. Inside `stories` are a number of other folders and two text files. One of these is `theme.txt`; it contains the name of the _theme_ you will use for your site. A small number of themes are available. The second text file is `title.txt`, which contains the title that goes in the browser's title bar.
+
+The folders in `stories` are _Subjects_, which are groups of pages that belong together. Every Subject can have as many _Topics_ as you like, where a Topic is another page belonging to the same Subject. Every Storyteller website starts with a subject called called `home`, which will be shown when the user clicks the Home button at the top of the screen. The `home` Subject and its various Topics form the home page for the website. You can also add an `info` subject folder and use it to provide information not directly related to the website itself. All other folders in `stories` are Subjects chosen by the site builder. For example, this site has a number of Subjects in addition to `home`, all of which are linked to at the bottom of each page. (The link for the current Subject is disabled as there's no point in clicking it.).
+
+As an example, suppose we are building a car maintenance website. Doing an oil change, checking the brakes, replacing a hose etc could each be Sections and the steps involved in each one of the jobs could be Topics. If it were a classic car catalog there might be a Section for each car model, with Topics for the various aspects of interest such as History, Specification, Performance and so on. The division is rather arbitrary and entirely up to the site builder.
+
+## Subject folders
+
+All Subject folders, including `home` and `info`, contain at least 2 files; `title.txt` and `content.txt`. The first of these, `title.txt`, contains a single line of text comprising the name of the Subject, which is displayed at the top of the page all the time you are in the same Subject. If `title.txt` is empty the system will use the name of the Subject. The page you are in now is part of the `Structure` Subject and its `title.txt` contains the word `Storyteller`.
+
+The second file, `content.txt`, contains the content of the main Topic. This is the text and images that will be seen by visitors to your website. Rather than expect you to be an HTML expert we use Markdown, a far simpler system that is very widely used for a variety of documentation projects. Markdown is less comprehensive than HTML but is very quick to learn and much more forgiving of mistakes. See our ~sid:Markdown:Markdown Guide~.
+
+If your Subject has additional Topics, each of these appears in the Subject folder as `{topicname}.txt`. You can have as many as you like. It's your responsibility to take care of linking between Subjects and Topics. In general, the more links the better as it makes it easier for users to discover all the parts of your website.
+
+~sid:GetStoryteller:Getting started with Storyteller~
+
+~sid:Markdown:Using Markdown in Storyteller~
+
+~sid:Images:Handling images~
+
+[Click here to see the source code for this page](/stories/Structure/source.txt)
