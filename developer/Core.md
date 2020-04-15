@@ -47,7 +47,6 @@ compile: compiler => {
 	return false;
 },
 ```
-
 Every compile function starts by recording the current source line number. This one then asks the compiler for the next _value_ from the token stream. I'll talk about values in a while. Then it checks the current token is _with_ and gets the replacement value. Another check next, for _in_ and one to ensure the item that follows is a symbol. It asks the compiler to retrieve the record for the symbol and checks it's able to hold a value, as not all variables can do this. At this point it's sure it has valid syntax so it builds the runtime structure, calls for it to be added to the end of the program array then returns _true_.
 
 There are 2 failure modes. The first is if the variable wasn't able to hold a value; this is an unrecoverable error that causes compilation to fail. The second is if any of the other tests failed. It doesn't necessarily signify an error, only that the syntax can't be handled here, so the function passes back _false_, allowing the compiler to call the next plugin.
