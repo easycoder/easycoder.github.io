@@ -1,6 +1,6 @@
 ## Notes
 
-The Image Switcher can be run as an independent web page; see [Image Switcher](/imageswitcher.html). If you view the page source you will see the entire script inside its special preformatted element.
+The Image Switcher can be run as an independent web page; see [Image Switcher](https://easycoder.github.io/examples/imageswitcher). If you view the page source you will see the entire script inside its special preformatted element.
 
 After declaring all its variables, the script attaches its ~code:Container~ variable to the ~code:div~ element defined at the top of the file. It then sets the size of two arrays, ~code:Thumb~ and ~code:Image~, each of which will hold a set of 9 images as either thumbnails or full-size images. The script then creates the button bar with its 9 thumbnails and arrows at each end to move forward or back.
 
