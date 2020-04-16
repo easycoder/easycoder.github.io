@@ -10,11 +10,11 @@
     img Thumb
     img Image
     a Link
-    variable Markup
     variable ImageCount
     variable N
     variable M
     variable Width
+    variable Markup
     variable ECPayload
     variable Payload
   	callback DecoratorCallback
@@ -101,6 +101,7 @@ DoThumb:
     index Image to N
     go to Select
 
+!   Add the description text
 AddDescription:
  	 on DecoratorCallback go to Decorate
 	rest get Markup from `/resources/md/imageswitcher.md`

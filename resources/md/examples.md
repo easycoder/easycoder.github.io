@@ -10,7 +10,7 @@ The following websites were all built entirely in EasyCoder script:
 
 ## Dice roller /SHOW-DICEROLLER/
 
-This simple demo shows two dice with a random choice of faces. Click either dice to select a new pair of value. A simple animation simulates the rolling of the dice.
+This simple demo shows two dice with a random choice of faces. Click either dice to select a new pair of value. A simple animation mimics the rolling of the dice.
 ~<div id="ex-diceroller"></div>~
 
 ## Image switcher /SHOW-IMAGESWITCHER/
