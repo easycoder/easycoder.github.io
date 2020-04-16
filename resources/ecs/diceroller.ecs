@@ -5,6 +5,7 @@
     div Container
     div Dice
     div Dot
+    div Text
     variable NDice
     variable M
     variable N
@@ -15,6 +16,10 @@
     variable Patterns
     variable Left
     variable Top
+    variable Markup
+    variable ECPayload
+    variable Payload
+  	callback DecoratorCallback
     
     attach Container to `ex-diceroller`
     on message
@@ -47,17 +52,24 @@ Start:
         10 10 10 70 40 10 40 70 70 10 70 70
     
     set the elements of Dice to NDice
+    put 0 into N
+    while N is less than NDice
+    begin
+        index Dice to N
+        create Dice in Container
+        add 1 to N
+    end
+    gosub to AddDescription
 
 Redraw:
     put 0 into M
     while M is less than 10
     begin
-        clear Container
         put 0 into N
         while N is less than NDice
         begin
             index Dice to N
-            create Dice in Container
+            clear Dice
             set the class of Dice to `ec-dice`
             gosub to RandomiseDots
             add 1 to N
@@ -92,3 +104,26 @@ RandomiseDots:
     	add 1 to D
     end
 	return
+
+!   Add the description text
+AddDescription:
+ 	 on DecoratorCallback go to Decorate
+	rest get Markup from `/resources/md/diceroller.md`
+	create Text in Container
+    set the content of Text to showdown decode Markup with DecoratorCallback
+    return
+
+Decorate:
+  put the payload of DecoratorCallback into Payload
+  if Payload is `ec` put ECPayload into Payload
+  else if left 5 of Payload is `code:`
+  begin
+  	put `<span style="font-family:mono;color:darkred">` cat from 5 of Payload into Payload
+    put Payload cat `</span>` into Payload
+  end
+  else if left 5 of Payload is `html:`
+  begin
+  	put from 5 of Payload into Payload
+  end
+  set the payload of DecoratorCallback to Payload
+  stop
