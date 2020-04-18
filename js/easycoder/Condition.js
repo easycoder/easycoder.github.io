@@ -11,10 +11,7 @@ const EasyCoder_Condition = {
 			const domain = compiler.domain[domainName];
 			const code = domain.condition.compile(compiler);
 			if (code) {
-				return {
-					domain: name,
-					...code
-				};
+				return code;
 			}
 			compiler.rewind();
 		}
