@@ -7187,7 +7187,10 @@ const EasyCoder_Condition = {
 			const domain = compiler.domain[domainName];
 			const code = domain.condition.compile(compiler);
 			if (code) {
-				return code;
+				return {
+					domain: name,
+					...code
+				};
 			}
 			compiler.rewind();
 		}
@@ -7745,8 +7748,11 @@ const EasyCoder_Compiler = {
 	},
 
 	addCommand: function(item) {
-		item.pc = this.program.length;
-		this.program.push(item);
+		const pc = this.program.length;
+		this.program.push({
+			pc,
+			...item
+		});
 	},
 
 	addSymbol: function(name, pc) {
