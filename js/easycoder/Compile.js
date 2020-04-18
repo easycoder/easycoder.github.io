@@ -157,11 +157,8 @@ const EasyCoder_Compiler = {
 	},
 
 	addCommand: function(item) {
-		const pc = this.program.length;
-		this.program.push({
-			pc,
-			...item
-		});
+		item.pc = this.program.length;
+		this.program.push(item);
 	},
 
 	addSymbol: function(name, pc) {
