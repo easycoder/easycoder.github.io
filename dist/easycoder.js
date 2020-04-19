@@ -7041,7 +7041,7 @@ const EasyCoder_Rest = {
 				if (url[0] == `/`) {
 					path = url.substr(1);
 				} else {
-					path = `${window.location.origin}${rest}/${url}`;
+					path = `${rest}/${url}`;
 				}
 			}
 
@@ -7187,10 +7187,7 @@ const EasyCoder_Condition = {
 			const domain = compiler.domain[domainName];
 			const code = domain.condition.compile(compiler);
 			if (code) {
-				return {
-					domain: name,
-					...code
-				};
+				return code;
 			}
 			compiler.rewind();
 		}
@@ -7748,11 +7745,8 @@ const EasyCoder_Compiler = {
 	},
 
 	addCommand: function(item) {
-		const pc = this.program.length;
-		this.program.push({
-			pc,
-			...item
-		});
+		item.pc = this.program.length;
+		this.program.push(item);
 	},
 
 	addSymbol: function(name, pc) {
