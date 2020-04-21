@@ -2692,7 +2692,7 @@ const EasyCoder_Core = {
 							: date.toLocaleDateString(spec.locale, spec.options);
 						return {
 							type: `constant`,
-							numeric: true,
+							numeric: false,
 							content
 						};
 					}

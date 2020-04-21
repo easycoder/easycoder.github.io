@@ -121,7 +121,7 @@ const EasyCoder_Rest = {
 				if (url[0] == `/`) {
 					path = url.substr(1);
 				} else {
-					path = `${window.location.origin}${rest}/${url}`;
+					path = `${rest}/${url}`;
 				}
 			}
 
