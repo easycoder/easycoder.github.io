@@ -1172,7 +1172,11 @@ const EasyCoder_Core = {
 			const replacement = program.getValue(command.replacement);
 			const target = program.getSymbolRecord(command.target);
 			const value = program.getValue(target.value[target.index]);
-			const content = value.split(original).join(replacement);
+			let content = ``;
+			try {
+				content = value.split(original).join(replacement);
+			} catch (err) {
+			}
 			target.value[target.index] = {
 				type: `constant`,
 				numeric: false,
