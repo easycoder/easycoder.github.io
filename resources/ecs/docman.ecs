@@ -639,9 +639,15 @@ DeleteKeyword:
 SaveKeyword:
   if Keyword is empty return
   put empty into Value
-  set property `syntax` of Value to the text of SyntaxInput
-  set property `description` of Value to the text of DescriptionInput
-  set property `examples` of Value to the text of ExamplesInput
+  put the text of SyntaxInput into Item
+!  replace newline with `0x0a` in Item
+  set property `syntax` of Value to Item
+  put the text of DescriptionInput into Item
+!  replace newline with `0x0a` in Item
+  set property `description` of Value to Item
+  put the text of ExamplesInput into Item
+!  replace newline with `0x0a` in Item
+  set property `examples` of Value to Item
   set property Keyword of Keywords to Value
   set property Group of Package to Keywords
   return
