@@ -2692,7 +2692,7 @@ const EasyCoder_Core = {
 							: date.toLocaleDateString(spec.locale, spec.options);
 						return {
 							type: `constant`,
-							numeric: true,
+							numeric: false,
 							content
 						};
 					}
@@ -3261,6 +3261,35 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			return program[program.pc].pc + 1;
+		}
+	},
+
+	Click: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const targetRecord = compiler.getSymbolRecord();
+				if (targetRecord.keyword === `select`) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `browser`,
+						keyword: `click`,
+						lino,
+						target: targetRecord.name
+					});
+					return true;
+				}
+			}
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const targetRecord = program.getSymbolRecord(command.target);
+			const element = targetRecord.element[targetRecord.index];
+			element.dispatchEvent(new Event('click'));
+			return command.pc + 1;
 		}
 	},
 
@@ -5649,6 +5678,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.CANVAS;
 		case `clear`:
 			return EasyCoder_Browser.Clear;
+		case `click`:
+			return EasyCoder_Browser.Click;
 		case `convert`:
 			return EasyCoder_Browser.Convert;
 		case `create`:
@@ -5831,7 +5862,7 @@ const EasyCoder_Browser = {
 					throw new Error(`'${compiler.getToken()}' is not a symbol`);
 				}
 				return null;
-				case `selected`:
+			case `selected`:
 					let arg = compiler.nextToken();
 					if ([`index`, `item`].includes(arg)) {
 						if ([`in`, `of`].includes(compiler.nextToken())) {
@@ -5850,7 +5881,7 @@ const EasyCoder_Browser = {
 						}
 					}
 					return null;
-				case `color`:
+			case `color`:
 				compiler.next();
 				const value = compiler.getValue();
 				return {
