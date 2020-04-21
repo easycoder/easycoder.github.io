@@ -11,6 +11,7 @@
     div Dialog
     div Row
     div Label
+    div Text
     span Cell
     input Name
     input Email
@@ -22,6 +23,7 @@
     variable W
     variable H
     variable Message
+    variable Markup
     variable ECPayload
     variable Payload
   	callback DecoratorCallback

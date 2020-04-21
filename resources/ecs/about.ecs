@@ -36,7 +36,6 @@
     end
     
     set ready
-    require js `dist/plugins/codemirror.js`
     stop
 
 Start:
