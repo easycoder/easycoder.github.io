@@ -641,13 +641,13 @@ SaveKeyword:
   put empty into Value
   put the text of SyntaxInput into Item
 !  replace newline with `0x0a` in Item
-  set property `syntax` of Value to Item
+  set property `syntax` of Value to encode Item
   put the text of DescriptionInput into Item
 !  replace newline with `0x0a` in Item
-  set property `description` of Value to Item
+  set property `description` of Value to encode Item
   put the text of ExamplesInput into Item
 !  replace newline with `0x0a` in Item
-  set property `examples` of Value to Item
+  set property `examples` of Value to encode Item
   set property Keyword of Keywords to Value
   set property Group of Package to Keywords
   return
