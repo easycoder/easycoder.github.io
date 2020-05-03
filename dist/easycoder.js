@@ -4302,6 +4302,11 @@ const EasyCoder_Browser = {
 						target.targetPc = command.pc + 2;
 						target.onclick = function (event) {
 							event.stopPropagation();
+							EasyCoder_Browser.clickData = {
+								target,
+								clientX: event.clientX,
+								clientY: event.clientY
+							};
 							if (program.length > 0) {
 								const eventTarget = event.target;
 								if (eventTarget.type != `radio`) {
@@ -6026,6 +6031,16 @@ const EasyCoder_Browser = {
 						type: `${type}Position`
 					};
 				}
+			case `click`:
+				const which = compiler.nextToken();
+				if ([`left`, `top`].includes(which)) {
+					compiler.next();
+					return {
+						domain:`browser`,
+						type: `click`,
+						which
+					};
+				}
 			}
 			return null;
 		},
@@ -6340,6 +6355,19 @@ const EasyCoder_Browser = {
 						"x": document.dragX,
 						"y": document.dragY
 					})
+				};
+			case `click`:
+				const clickData = EasyCoder_Browser.clickData;
+				if (typeof clickData === `undefined`) {
+					return 0;
+				}
+				const boundingRect = clickData.target.getBoundingClientRect();
+				return {
+					type: `constant`,
+					numeric: true,
+					content: value.which === `left`
+						? clickData.clientX - Math.round(boundingRect.left)
+						: clickData.clientY - Math.round(boundingRect.top)
 				};
 			}
 		}
