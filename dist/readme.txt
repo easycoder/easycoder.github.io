@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.0 04-may 2020 =
+* Added 'click left' and 'click top'
+
 = 2.6.1 16-apr 2020 =
 * Use CDN to deliver all files
 

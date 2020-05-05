@@ -2982,12 +2982,16 @@ const EasyCoder_Browser = {
 
 		getCoord: (compiler, type, offset) => {
 			if (compiler.nextTokenIs(`of`)) {
-				if (compiler.nextTokenIs(`window`)) {
+				if (compiler.nextTokenIs(`the`)) {
+					compiler.nextToken();
+				}
+				const symbol = compiler.getToken();
+				if ([`window`, `viewport`].includes(symbol)) {
 					compiler.next();
 					return {
 						domain: `browser`,
 						type,
-						symbol: `window`,
+						symbol,
 						offset
 					};
 				}

@@ -6047,12 +6047,16 @@ const EasyCoder_Browser = {
 
 		getCoord: (compiler, type, offset) => {
 			if (compiler.nextTokenIs(`of`)) {
-				if (compiler.nextTokenIs(`window`)) {
+				if (compiler.nextTokenIs(`the`)) {
+					compiler.nextToken();
+				}
+				const symbol = compiler.getToken();
+				if ([`window`, `viewport`].includes(symbol)) {
 					compiler.next();
 					return {
 						domain: `browser`,
 						type,
-						symbol: `window`,
+						symbol,
 						offset
 					};
 				}
@@ -8363,7 +8367,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.6.1`;
+EasyCoder.version = `2.7.0`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
