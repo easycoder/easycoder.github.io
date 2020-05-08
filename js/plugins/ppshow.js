@@ -156,7 +156,10 @@ const EasyCoder_PP = {
             let element;
             let inner;
             let newInner;
+            let text;
+            let newText;
             let container;
+            let padding;
             let steps;
             let pp;
             let values;
@@ -181,7 +184,7 @@ const EasyCoder_PP = {
             const setupContainer = (program, container) => {
                 EasyCoder_PP.pp.container = container;
                 container.style[`position`] = `relative`;
-                container.style[`overflow`] = `hidden`;
+                // container.style[`overflow`] = `hidden`;
                 const defaults =  EasyCoder_PP.pp.defaults;
                 const height = parseFloat(container.offsetWidth)
                     * program.getValue(defaults.aspectH) / program.getValue(defaults.aspectW);
@@ -292,25 +295,31 @@ const EasyCoder_PP = {
                     element.style[`width`] = `${program.getValue(values.panelWidth) * w / 1000}px`;
                     element.style[`height`] = `${program.getValue(values.panelHeight) * h / 1000}px`;
                     element.style[`background`] = program.getValue(values.panelBackground);
-                    element.style[`border`] = `${program.getValue(values.panelBorder)}`;
+                    element.style[`border`] = program.getValue(values.panelBorder);
                     container.appendChild(element);
+                    padding = program.getValue(values.panelPadding);
                     inner = document.createElement(`div`);
                     inner.style[`position`] = `absolute`;
-                    inner.style[`margin`] = `${program.getValue(values.panelPadding)}`;
-                    inner.style[`font-face`] = program.getValue(values.fontFace);
-                    inner.style[`font-size`] = `${program.getValue(values.fontSize) * h / 1000}px`;
-                    inner.style[`font-weight`] = program.getValue(values.fontWeight);
-                    inner.style[`font-style`] = program.getValue(values.fontStyle);
-                    inner.style[`color`] = program.getValue(values.fontColor);
-                    inner.style[`text-align`] = program.getValue(values.textAlign);
+                    inner.style[`left`] = padding;
+                    inner.style[`top`] = padding;
+                    inner.style[`width`] = `calc(100% - ${padding} - ${padding})`;
                     element.appendChild(inner);
                     element.inner = inner;
+                    text = document.createElement(`div`);
+                    text.style[`font-face`] = program.getValue(values.fontFace);
+                    text.style[`font-size`] = `${program.getValue(values.fontSize) * h / 1000}px`;
+                    text.style[`font-weight`] = program.getValue(values.fontWeight);
+                    text.style[`font-style`] = program.getValue(values.fontStyle);
+                    text.style[`color`] = program.getValue(values.fontColor);
+                    text.style[`text-align`] = program.getValue(values.textAlign);
+                    inner.appendChild(text);
+                    inner.text = text;
                     break;
                 case`setText`:
                     symbolRecord = program.getSymbolRecord(command.name);
                     element = symbolRecord.element[symbolRecord.index];
                     value = program.getValue(command.value);
-                    element.inner.innerHTML = value.split(`\n`).join(`<br>`);
+                    element.inner.text.innerHTML = value.split(`\n`).join(`<br>`);
                     break;
                 case `dissolve`:
                     symbolRecord = program.getSymbolRecord(command.name);
@@ -318,19 +327,25 @@ const EasyCoder_PP = {
                     value = program.getValue(command.value);
                     steps = Math.round(parseFloat(program.getValue(command.duration)) * 10);
                     inner = element.inner;
+                    text = inner.text;
                     newInner = document.createElement(`div`);
                     newInner.style[`position`] = `absolute`;
-                    newInner.style[`margin`] = inner.style[`margin`];
-                    newInner.style[`font-face`] = inner.style[`font-face`];
-                    newInner.style[`font-size`] = inner.style[`font-size`];
-                    newInner.style[`font-weight`] = inner.style[`font-weight`];
-                    newInner.style[`font-style`] = inner.style[`font-style`];
-                    newInner.style[`color`] = inner.style[`color`];
-                    newInner.style[`text-align`] = inner.style[`text-align`];
-                    newInner.innerHTML = value.split(`\n`).join(`<br>`);
+                    newInner.style[`left`] = inner.style[`left`];
+                    newInner.style[`top`] = inner.style[`top`];
+                    newInner.style[`width`] = inner.style[`width`];
                     element.appendChild(newInner);
+                    newText = document.createElement(`div`);
+                    newText.style[`font-face`] = text.style[`font-face`];
+                    newText.style[`font-size`] = text.style[`font-size`];
+                    newText.style[`font-weight`] = text.style[`font-weight`];
+                    newText.style[`font-style`] = text.style[`font-style`];
+                    newText.style[`color`] = text.style[`color`];
+                    newText.style[`text-align`] = text.style[`text-align`];
+                    newText.innerHTML = value.split(`\n`).join(`<br>`);
+                    newInner.appendChild(newText);
+                    newInner.text = newText;
                     step(0, function () {
-                        inner.innerHTML = newInner.innerHTML;
+                        text.innerHTML = newText.innerHTML;
                         inner.style[`opacity`] = 1.0;
                         element.removeChild(newInner);
                     });
