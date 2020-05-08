@@ -21,7 +21,7 @@ const EasyCoder_VFX = {
 			if (compiler.nextIsSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
 				const keyword = symbolRecord.keyword;
-				if (keyword == `animation`) {
+				if (keyword === `animation`) {
 					if (compiler.nextTokenIs(`in`)) {
 						if (compiler.nextIsSymbol()) {
 							const parentRecord = compiler.getSymbolRecord();
