@@ -5,7 +5,7 @@ const EasyCoder_PP = {
     pp: {
         defaults: {}
     },
-    
+
 	PP: {
 
 		compile: (compiler) => {
@@ -18,6 +18,10 @@ const EasyCoder_PP = {
             let id;
             const lino = compiler.getLino();
             const action = compiler.nextToken();
+            const styles = [`fontFace`, `fontSize`, `fontWeight`, `fontStyle`, `fontColor`,
+                `textAlign`, `panelLeft`, `panelTop`, `panelWidth`, `panelHeight`,
+                `panelBorder`, `panelPadding`, `panelBackground`];
+        
             if (compiler.isSymbol()) {
                 symbolRecord = compiler.getSymbolRecord();
                 if (symbolRecord.keyword === `pppanel`) {
@@ -102,26 +106,11 @@ const EasyCoder_PP = {
                     item = `0`;
                     while (item) {
                         item = compiler.getToken();
-                        switch (item) {
-                            case `fontFace`:
-                            case `fontSize`:
-                            case `fontWeight`:
-                            case `fontStyle`:
-                            case `fontColor`:
-                            case `textAlign`:
-                            case `panelLeft`:
-                            case `panelTop`:
-                            case `panelWidth`:
-                            case `panelHeight`:
-                            case `panelBorder`:
-                            case `panelPadding`:
-                            case `panelBackground`:
-                                value = compiler.getNextValue();
-                                overrides.push({item,value});
-                                break;
-                            default:
-                                item = null;
-                                break;
+                        if (styles.includes(item)) {
+                            value = compiler.getNextValue();
+                            overrides.push({item, value});
+                        } else {
+                            item = null;
                         }
                     }
                     compiler.addCommand({
@@ -137,11 +126,7 @@ const EasyCoder_PP = {
                     pp = {};
                     while (true) {
                         item = compiler.getToken();
-                        if ([`panelLeft`, `panelTop`, `panelWidth`, `panelHeight`,
-                            `panelBorder`, `panelPadding`, `panelBackground`,
-                            `fontFace`, `fontSize`, `fontWeight`, `fontStyle`, `fontColor`,
-                            `textAlign`]
-                            .includes(item)) {
+                        if (styles.includes(item)) {
                             value = compiler.getNextValue();
                             pp[item] = value;
                         }
