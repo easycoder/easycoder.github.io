@@ -37,13 +37,18 @@ const EasyCoder_PP = {
                         case `dissolve`:
                             if (compiler.nextTokenIs(`to`)) {
                                 value = compiler.getNextValue();
+                                let duration = EasyCoder_Value.constant(`1.0`, false);
+                                if (compiler.tokenIs(`duration`)){
+                                    duration= compiler.getNextValue();
+                                }
                                 compiler.addCommand({
                                     domain: `pp`,
                                     keyword: `pp`,
                                     lino,
                                     action: `dissolve`,
                                     name: symbolRecord.name,
-                                    value
+                                    value,
+                                    duration
                                 });
                                 return true;
                             }
@@ -165,12 +170,15 @@ const EasyCoder_PP = {
             let symbolRecord;
             let element;
             let inner;
+            let newInner;
             let container;
+            let steps;
             let pp;
             let values;
             let value;
             let w;
             let h;
+            let n;
             const nConst = (content) => {
                 return {
                     type: `constant`,
@@ -193,6 +201,18 @@ const EasyCoder_PP = {
                 const height = parseFloat(container.offsetWidth)
                     * program.getValue(defaults.aspectH) / program.getValue(defaults.aspectW);
                 container.style[`height`] = `${Math.round(height)}px`;
+            };
+            const step = (n, then) => {
+                const opacity = parseFloat(n) / steps;
+                newInner.style[`opacity`] = opacity;
+                inner.style[`opacity`] = 1.0 - opacity;
+                if (n < steps) {
+                    setTimeout(function () {
+                        step(n + 1, then);
+                    }, 100);
+                } else {
+                    then();
+                }
             };
             switch (action) {
                 case `attachDiv`:
@@ -290,6 +310,7 @@ const EasyCoder_PP = {
                     element.style[`border`] = `${program.getValue(values.panelBorder)}`;
                     container.appendChild(element);
                     inner = document.createElement(`div`);
+                    inner.style[`position`] = `absolute`;
                     inner.style[`margin`] = `${program.getValue(values.panelPadding)}`;
                     inner.style[`font-face`] = program.getValue(values.fontFace);
                     inner.style[`font-size`] = `${program.getValue(values.fontSize) * h / 1000}px`;
@@ -310,7 +331,24 @@ const EasyCoder_PP = {
                     symbolRecord = program.getSymbolRecord(command.name);
                     element = symbolRecord.element[symbolRecord.index];
                     value = program.getValue(command.value);
-                    element.inner.innerHTML = value.split(`\n`).join(`<br>`);
+                    steps = Math.round(parseFloat(program.getValue(command.duration)) * 10);
+                    inner = element.inner;
+                    newInner = document.createElement(`div`);
+                    newInner.style[`position`] = `absolute`;
+                    newInner.style[`margin`] = inner.style[`margin`];
+                    newInner.style[`font-face`] = inner.style[`font-face`];
+                    newInner.style[`font-size`] = inner.style[`font-size`];
+                    newInner.style[`font-weight`] = inner.style[`font-weight`];
+                    newInner.style[`font-style`] = inner.style[`font-style`];
+                    newInner.style[`color`] = inner.style[`color`];
+                    newInner.style[`text-align`] = inner.style[`text-align`];
+                    newInner.innerHTML = value.split(`\n`).join(`<br>`);
+                    element.appendChild(newInner);
+                    step(0, function () {
+                        inner.innerHTML = newInner.innerHTML;
+                        inner.style[`opacity`] = 1.0;
+                        element.removeChild(newInner);
+                    });
                     break;
             }
 			return command.pc + 1;
