@@ -1,0 +1,158 @@
+{
+    "title": "JSON:Presenter",
+    "description": "A demo presentation that outlines some features of JSON:Presenter",
+    "aspectW": 16,
+    "aspectH": 9,
+    "container": {
+        "border": "1px solid black",
+        "background": "black"
+    },
+    "defaults": {
+        "fontFace": "Times New Roman,serif",
+        "fontSize": 40,
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "fontColor": "white",
+        "textAlign": "left",
+        "blockLeft" : 0,
+        "blockTop" : 0,
+        "blockWidth": 1000,
+        "blockBackground" : "none",
+        "blockBorder": "none",
+        "blockPaddingLeft": 20,
+        "blockPaddingTop": 0
+    },
+    "blocks": {
+        "title": {
+            "type": "text",
+            "spec": {
+                "blockTop": 300,
+                "blockHeight": 300,
+                "textAlign": "center",
+                "fontSize": 200,
+                "fontWeight": "bold",
+                "fontColor": "#800000"
+            }
+        },
+        "title 2": {
+            "type": "text",
+            "spec": {
+                "blockTop": 50,
+                "blockHeight": 150,
+                "textAlign": "center",
+                "fontSize": 100,
+                "fontWeight": "bold",
+                "fontColor": "#00dddd"
+            }
+        },
+        "body": {
+            "type": "text",
+            "spec": {
+                "blockTop": 200,
+                "blockHeight": 800,
+                "blockPaddingLeft": 80,
+                "blockPaddingTop": 40,
+                "fontFace": "Helvetica,sans-serif",
+                "fontColor": "#00ffff"
+            }
+        }
+    },
+    "content":  {
+        "presenter title": "JSON:Presenter",
+        "slide 1": [
+            "JSON:Presenter<sup>&copy;</sup> is a presentation format using JSON scripts and an engine that runs those scripts in a browser to create presentations. These may be similar to those created using PowerPoint or they can be considerably more elaborate, with extensive animation and even sound. In some cases they can take the place of video yet still offer a dynamic experience.",
+            
+            "Presentations can run from any host, including static; all you need is one CDN-hosted JavaScript file and you're good to go.",
+            
+            "The JSON:Presenter<sup>&copy;</sup> engine is pure JavaScript. It can be used with any JavaScript framework, or with none."
+        ]
+    },
+    "steps": [
+        {
+            "comment": "-------------------- Create the title and body blocks",
+            "action": "create",
+            "blocks": [
+                "title",
+                "body"
+            ]
+        },
+        {
+            "comment": "---------------------------------- Set up the content",
+            "action": "set content",
+            "blocks": [
+                {
+                    "block": "title",
+                    "content": "presenter title"
+                },
+                {
+                    "block": "body",
+                    "content": "slide 1"
+                }
+            ]
+        },
+        {
+            "comment": "----------------------------- A pause before we start",
+            "action": "hold",
+            "duration": 2
+        },
+        {
+            "comment": "-------------------------------- Show the intro title",
+            "action": "fade up",
+            "blocks": "title",
+            "duration": 3,
+            "wait": true
+        },
+        {
+            "comment": "-------------------------------------- Wait 4 seconds",
+            "action": "hold",
+            "duration": 4
+        },
+        {
+            "comment": "------------------------------------ Move the title",
+            "action": "transform",
+            "type": "block",
+            "block": "title",
+            "target": "title 2",
+            "duration": 1
+        },
+        {
+            "comment": "------------------------------ Change the title color",
+            "action": "transform",
+            "type": "font color",
+            "block": "title",
+            "target": "title 2",
+            "duration": 1
+        },
+        {
+            "comment": "------------------------------------ Resize the title",
+            "action": "transform",
+            "type": "font size",
+            "block": "title",
+            "target": "title 2",
+            "duration": 1,
+            "wait": true
+        },
+        {
+            "comment": "-------------------------------- Show the first slide",
+            "action": "fade up",
+            "blocks": "body",
+            "duration": 1,
+            "wait": true
+        },
+        {
+            "comment": "------------------------------------- Wait 10 seconds",
+            "action": "hold",
+            "duration": 10
+        },
+        {
+            "comment": "------------------------ Fade down the title and body",
+            "action": "fade down",
+            "blocks": [
+                "title",
+                "body"
+            ],
+            "duration": 3,
+            "wait": true
+        }
+    ]
+}
