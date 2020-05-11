@@ -8,7 +8,7 @@
         "background": "black"
     },
     "defaults": {
-        "fontFace": "Times New Roman,serif",
+        "fontFamily": "Times New Roman,serif",
         "fontSize": 40,
         "fontWeight": "normal",
         "fontStyle": "normal",
@@ -52,7 +52,7 @@
                 "blockHeight": 800,
                 "blockPaddingLeft": 80,
                 "blockPaddingTop": 40,
-                "fontFace": "Helvetica,sans-serif",
+                "fontFamily": "Helvetica,sans-serif",
                 "fontColor": "#00ffff"
             }
         }

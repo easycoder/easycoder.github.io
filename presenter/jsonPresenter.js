@@ -143,7 +143,7 @@ const JSON_Presenter = {
             element.appendChild(inner);
             element.inner = inner;
             const text = document.createElement(`div`);
-            text.style[`font-face`] = properties.fontFace;
+            text.style[`font-family`] = properties.fontFamily;
             text.style[`font-size`] = `${properties.fontSize * h / 1000}px`;
             text.style[`font-weight`] = properties.fontWeight;
             text.style[`font-style`] = properties.fontStyle;
