@@ -112,7 +112,9 @@ const JSON_Presenter = {
     doStep: (script, stepno) => {
         const goto = (script, stepno) => {
             if (stepno < script.steps.length) {
-                JSON_Presenter.doStep(script, stepno);
+                setTimeout(function () {
+                    JSON_Presenter.doStep(script, stepno);
+                }, 1);
             }
         };
 
@@ -252,57 +254,59 @@ const JSON_Presenter = {
             }
         };
 
-        // Process a single transform step
-        const doTransformStep = (block, target, nSteps, n, transform, onFinish) => {
-            transform(block, target, nSteps, n);
+        // Process a single transition step
+        const doTransitionStep = (block, target, step, nSteps, n, transition, onFinish) => {
+            transition(block, target, step, nSteps, n);
             if (n < nSteps) {
                 setTimeout(function () {
-                    doTransformStep(block, target, nSteps, n + 1, transform, onFinish);
+                    doTransitionStep(block, target, step, nSteps, n + 1, transition, onFinish);
                 }, 40);
             } else {
                 onFinish();
             }
         };
 
-        // Transform block
-        const transformBlock = (block, target, nSteps, n) => {
-            const boundingRect = script.element.getBoundingClientRect();
+        // Compute a block size
+        const setComputedBlockSize = (block, target, nSteps, n) => {
+            const boundingRect = block.container.getBoundingClientRect();
             w = Math.round(boundingRect.width);
             h = Math.round(boundingRect.height);
-            const left = block.properties.blockLeft * w / 1000;
-            const top = block.properties.blockTop * h / 1000;
             const width = block.properties.blockWidth * w / 1000;
             const height = block.properties.blockHeight * h / 1000;
-            const endLeft = target.properties.blockLeft * w / 1000;
-            const endTop = target.properties.blockTop * h / 1000;
             const endWidth = target.properties.blockWidth * w / 1000;
             const endHeight = target.properties.blockHeight * h / 1000;
-            block.element.style[`left`] = 
-                left + Math.round((endLeft - left) * n / nSteps);
-            block.element.style[`top`] = 
-                top + Math.round((endTop - top) * n / nSteps);
             block.element.style[`width`] = 
                 `${width + Math.round((endWidth - width) * n / nSteps)}px`;
             block.element.style[`height`] = 
                 `${height + Math.round((endHeight - height) * n / nSteps)}px`;
         };
 
-        const doTransformBlock = (script, step, stepno) => {
-            const block = script.blocks[step.block];
-            const target = script.blocks[step.target];
-            const nSteps = Math.round(parseFloat(step.duration) * 25);
-            doTransformStep(block, target, nSteps, 0, transformBlock, function() {
-                if (step.wait) {
-                    goto(script, stepno + 1);
-                }
-            });
-            if (!step.wait) {
-                goto(script, stepno + 1);
-            }
+        // Compute a block position
+        const setComputedBlockPosition = (block, target, nSteps, n) => {
+            const boundingRect = block.container.getBoundingClientRect();
+            w = Math.round(boundingRect.width);
+            h = Math.round(boundingRect.height);
+            const left = block.properties.blockLeft * w / 1000;
+            const top = block.properties.blockTop * h / 1000;
+            const endLeft = target.properties.blockLeft * w / 1000;
+            const endTop = target.properties.blockTop * h / 1000;
+            block.element.style[`left`] = 
+                left + Math.round((endLeft - left) * n / nSteps);
+            block.element.style[`top`] = 
+                top + Math.round((endTop - top) * n / nSteps);
         };
 
-        // Transform font color
-        const setComputedColor = (block, target, nSteps, n) => {
+        // Compute a font size
+        const setComputedFontSize = (block, target, nSteps, n) => {
+            h = Math.round(script.element.getBoundingClientRect().height);
+            const size = block.properties.fontSize * h / 1000;
+            const endSize = target.properties.fontSize * h / 1000;
+            block.element.inner.text.style[`font-size`] = 
+                `${size + Math.round((endSize - size) * n / nSteps)}px`;
+        };
+
+        // Compute a font color
+        const setComputedFontColor = (block, target, nSteps, n) => {
             const color = block.spec.fontColor;
             const endColor = target.spec.fontColor;
             const rStart = parseInt(color.slice(1, 3), 16);
@@ -320,22 +324,36 @@ const JSON_Presenter = {
             block.element.inner.text.style[`color`] = `#${r}${g}${b}`;
         };
 
-        const doTransformFontColor = (script, step, stepno) => {
-            const block = script.blocks[step.block];
-            const target = script.blocks[step.target];
-            const nSteps = Math.round(parseFloat(step.duration) * 25);
-            doTransformStep(block, target, nSteps, 0, setComputedColor, function() {
-                if (step.wait) {
-                    goto(script, stepno + 1);
+        const computeTransitionValues = (block, target, step, nSteps, n) => {
+            for (const type of step.type) {
+                switch (type) {
+                    case `block size`:
+                        setComputedBlockSize(block, target, nSteps, n);
+                        break;
+                    case `block position`:
+                        setComputedBlockPosition(block, target, nSteps, n);
+                        break;
+                    case `font size`:
+                        setComputedFontSize(block, target, nSteps, n);
+                        break;
+                    case `font color`:
+                        setComputedFontColor(block, target, nSteps, n);
+                        break;
+                    default:
+                        throw Error(`Unknown transition type: '${type}'`);
                 }
-            });
-            if (!step.wait) {
-                goto(script, stepno + 1);
             }
         };
 
-        // Transform font size
-        const setComputedFontSize = (block, target, nSteps, n) => {
+        // Do the transition
+        const computeTransitionStep = (block, target, types, nSteps, n) => {
+            if (Array.isArray(types)) {
+                for (const type of types) {
+                    computeTransitionValues(block, target, type, nSteps, n);
+                }
+            } else {
+                computeTransitionValues(block, target, types, nSteps, n);
+            }
             h = Math.round(script.element.getBoundingClientRect().height);
             const size = block.properties.fontSize * h / 1000;
             const endSize = target.properties.fontSize * h / 1000;
@@ -343,34 +361,17 @@ const JSON_Presenter = {
                 `${size + Math.round((endSize - size) * n / nSteps)}px`;
         };
 
-        const doTransformFontSize = (script, step, stepno) => {
+        const doTransition = (script, step, stepno) => {
             const block = script.blocks[step.block];
             const target = script.blocks[step.target];
             const nSteps = Math.round(parseFloat(step.duration) * 25);
-            doTransformStep(block, target, nSteps, 0, setComputedFontSize, function() {
+            doTransitionStep(block, target, step, nSteps, 0, computeTransitionStep, function() {
                 if (step.wait) {
                     goto(script, stepno + 1);
                 }
             });
             if (!step.wait) {
                 goto(script, stepno + 1);
-            }
-        };
-
-        // Transform an element
-        const doTransform = (script, step, stepno) => {
-            switch (step.type) {
-                case `block`:
-                    doTransformBlock(script, step, stepno);
-                    break;
-                case `font color`:
-                    doTransformFontColor(script, step, stepno);
-                    break;
-                case `font size`:
-                    doTransformFontSize(script, step, stepno);
-                    break;
-                default:
-                    throw Error(`Unknown transform type: '${step.type}'`);
             }
         };
 
@@ -404,8 +405,8 @@ const JSON_Presenter = {
             case `fade down`:
                 doFade(script, step, stepno, false);
                 break;
-            case`transform`:
-                doTransform(script, step, stepno);
+            case`transition`:
+                doTransition(script, step, stepno);
                 break;
             default:
                 throw Error(`Unknown action: '${step.action}'`);

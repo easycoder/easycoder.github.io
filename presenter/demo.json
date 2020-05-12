@@ -108,25 +108,14 @@
             "duration": 4
         },
         {
-            "comment": "------------------------------------ Move the title",
-            "action": "transform",
-            "type": "block",
-            "block": "title",
-            "target": "title 2",
-            "duration": 1
-        },
-        {
-            "comment": "------------------------------ Change the title color",
-            "action": "transform",
-            "type": "font color",
-            "block": "title",
-            "target": "title 2",
-            "duration": 1
-        },
-        {
-            "comment": "------------------------------------ Resize the title",
-            "action": "transform",
-            "type": "font size",
+            "comment": "-------------------------------- Transition the title",
+            "action": "transition",
+            "type": [
+                "block position",
+                "block size",
+                "font color",
+                "font size"
+            ],
             "block": "title",
             "target": "title 2",
             "duration": 1,
