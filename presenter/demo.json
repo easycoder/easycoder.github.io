@@ -1,8 +1,8 @@
 {
-    "title": "JSON:Presenter",
-    "description": "A demo presentation that outlines some features of JSON:Presenter",
-    "aspectW": 16,
-    "aspectH": 9,
+    "title": "JSON::Presenter",
+    "description": "A demo presentation that outlines some features of JSON::Presenter",
+    "aspectW": 160,
+    "aspectH": 89,
     "container": {
         "border": "1px solid black",
         "background": "black"
@@ -14,67 +14,104 @@
         "fontStyle": "normal",
         "fontColor": "white",
         "textAlign": "left",
-        "blockLeft" : 0,
-        "blockTop" : 0,
+        "textMarginLeft": 0,
+        "textMarginTop": 0,
+        "blockLeft": 0,
+        "blockTop": 0,
         "blockWidth": 1000,
-        "blockBackground" : "none",
+        "blockBackground": "none",
         "blockBorder": "none",
-        "blockPaddingLeft": 20,
-        "blockPaddingTop": 0
+        "blockBorderRadius": 0
     },
     "blocks": {
         "title": {
-            "type": "text",
-            "spec": {
-                "blockTop": 300,
-                "blockHeight": 300,
-                "textAlign": "center",
-                "fontSize": 200,
-                "fontWeight": "bold",
-                "fontColor": "#800000"
-            }
+            "blockTop": 300,
+            "blockHeight": 300,
+            "textAlign": "center",
+            "fontSize": 200,
+            "fontWeight": "bold",
+            "fontColor": "#800000"
         },
         "title 2": {
-            "type": "text",
-            "spec": {
-                "blockTop": 50,
-                "blockHeight": 150,
-                "textAlign": "center",
-                "fontSize": 100,
-                "fontWeight": "bold",
-                "fontColor": "#00dddd"
-            }
+            "blockTop": 50,
+            "blockHeight": 150,
+            "textAlign": "center",
+            "fontSize": 100,
+            "fontWeight": "bold",
+            "fontColor": "#dddd00"
         },
         "body": {
-            "type": "text",
-            "spec": {
-                "blockTop": 200,
-                "blockHeight": 800,
-                "blockPaddingLeft": 80,
-                "blockPaddingTop": 40,
-                "fontFamily": "Helvetica,sans-serif",
-                "fontColor": "#00ffff"
-            }
+            "blockLeft": 80,
+            "blockTop": 240,
+            "blockWidth": 840,
+            "blockHeight": 800,
+            "fontFamily": "Helvetica,sans-serif",
+            "fontColor": "#dddddd"
+        },
+        "body right": {
+            "blockLeft": 500,
+            "blockTop": 200,
+            "blockWidth": 420,
+            "blockHeight": 800,
+            "fontFamily": "Helvetica,sans-serif",
+            "fontColor": "#dddddd"
+        },
+        "left image": {
+            "blockLeft": 80,
+            "blockTop": 200,
+            "blockWidth": 370,
+            "blockHeight": 700,
+            "blockBorder": "1px solid black",
+            "blockBorderRadius": "1em"
         }
     },
     "content":  {
-        "presenter title": "JSON:Presenter",
-        "slide 1": [
-            "JSON:Presenter<sup>&copy;</sup> is a presentation format using JSON scripts and an engine that runs those scripts in a browser to create presentations. These may be similar to those created using PowerPoint or they can be considerably more elaborate, with extensive animation and even sound. In some cases they can take the place of video yet still offer a dynamic experience.",
-            
-            "Presentations can run from any host, including static; all you need is one CDN-hosted JavaScript file and you're good to go.",
-            
-            "The JSON:Presenter<sup>&copy;</sup> engine is pure JavaScript. It can be used with any JavaScript framework, or with none."
-        ]
+        "presenter title": {
+            "type": "text",
+            "content": "JSON::Presenter"
+        },
+        "slide 1": {
+            "type": "text",
+            "content": [
+                "JSON::Presenter is a presentation format using JSON scripts, and an engine that runs those scripts in a browser to create presentations. These may be similar to those created using PowerPoint or they can be considerably more elaborate, with extensive animation and even sound. In some cases they can take the place of video yet still offer a dynamic experience.",
+                
+                "Presentations can run from any host, including static; all you need is one CDN-hosted JavaScript file and you're good to go.",
+                
+                "The JSON::Presenter engine is pure JavaScript. It can be used with any JavaScript framework, or with none."
+            ]
+        },
+        "slide 2": {
+            "type": "text",
+            "content": [
+                "JSON::Presenter offers a range of block types and transitions that make it easy to create slick, effective presentations.",
+                
+                "This short demo illustrates some of the features of the system."
+            ]
+        },
+        "slide 3": {
+            "type": "text",
+            "content": [
+                "Text and image blocks can be manipulated in a variety of different ways.",
+                
+                "Any block can be resized or moved; text can be substituted or have its size or color change; images can be assigned to blocks. Any block can be faded or transformed using animations.",
+                
+                "The JSON::Presenter scripting language uses simple data JSON structures and is easy to read or write."
+            ]
+        },
+        "flowers": {
+            "type": "image",
+            "url": "img/flowers.jpg"
+        },
+        "moon": {
+            "type": "image",
+            "url": "img/moon.jpg"
+        }
     },
     "steps": [
         {
-            "comment": "-------------------- Create the title and body blocks",
-            "action": "create",
-            "blocks": [
-                "title",
-                "body"
-            ]
+            "comment": "------------------------------- Pause before we start",
+            "action": "pause",
+            "duration": 2
         },
         {
             "comment": "---------------------------------- Set up the content",
@@ -87,20 +124,18 @@
                 {
                     "block": "body",
                     "content": "slide 1"
+                },
+                {
+                    "block": "left image",
+                    "content": "flowers"
                 }
             ]
         },
         {
-            "comment": "----------------------------- A pause before we start",
-            "action": "hold",
-            "duration": 2
-        },
-        {
-            "comment": "-------------------------------- Show the intro title",
+            "comment": "----------------------------- Fade up the intro title",
             "action": "fade up",
             "blocks": "title",
-            "duration": 3,
-            "wait": true
+            "duration": 3
         },
         {
             "comment": "-------------------------------------- Wait 4 seconds",
@@ -119,14 +154,75 @@
             "block": "title",
             "target": "title 2",
             "duration": 1,
-            "wait": true
+            "continue": true
+        },
+        {
+            "comment": "----------------------------- Pause for half a second",
+            "action": "pause",
+            "duration": 0.5
         },
         {
             "comment": "-------------------------------- Show the first slide",
             "action": "fade up",
             "blocks": "body",
-            "duration": 1,
-            "wait": true
+            "duration": 1
+        },
+        {
+            "comment": "------------------------------------- Wait 10 seconds",
+            "action": "hold",
+            "duration": 10
+        },
+        {
+            "comment": "-------------------------------- Change the body text",
+            "action": "crossfade",
+            "block": "body",
+            "target": "slide 2",
+            "duration": 1
+        },
+        {
+            "comment": "------------------------------------- Wait 5 seconds",
+            "action": "hold",
+            "duration": 5
+        },
+        {
+            "comment": "-------------------------- Move the body to the right",
+            "action": "transition",
+            "type": [
+                "block position",
+                "block size"
+            ],
+            "block": "body",
+            "target": "body right",
+            "duration": 1
+        },
+        {
+            "comment": "----------------------------- Fade up the image block",
+            "action": "fade up",
+            "blocks": "left image",
+            "duration": 2
+        },
+        {
+            "comment": "-------------------------------------- Wait 8 seconds",
+            "action": "hold",
+            "duration": 8
+        },
+        {
+            "comment": "--------------------------------- Crossfade the image",
+            "action": "crossfade",
+            "block": "left image",
+            "target": "moon",
+            "duration": 1
+        },
+        {
+            "comment": "-------------------------------------- Wait 2 seconds",
+            "action": "hold",
+            "duration": 2
+        },
+        {
+            "comment": "-------------------------------- Change the body text",
+            "action": "set content",
+            "block": "body",
+            "content": "slide 3"
         },
         {
             "comment": "------------------------------------- Wait 10 seconds",
@@ -138,10 +234,10 @@
             "action": "fade down",
             "blocks": [
                 "title",
-                "body"
+                "body",
+                "left image"
             ],
-            "duration": 3,
-            "wait": true
+            "duration": 3
         }
     ]
 }
