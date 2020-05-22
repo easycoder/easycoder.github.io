@@ -1,0 +1,12 @@
+!	Content
+
+	script Content
+    
+    import div Panel and variable Presentation
+    
+    on message go to Start
+    set ready
+    stop
+    
+Start:
+	stop

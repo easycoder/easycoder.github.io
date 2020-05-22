@@ -1,0 +1,194 @@
+!	Steps
+
+	script Steps
+    
+    import div Panel and variable Presentation
+    
+    div StepsPanel
+    div EditPanel
+    button Step
+    table Table
+    tr TR
+    td TD
+    input TitleInput
+    input ActionInput
+    input BlocksInput
+    input BlockInput
+    input TargetInput
+    input TypesInput
+    input DurationInput
+    input URLInput
+    variable Steps
+    variable Comment
+    variable Action
+    variable Blocks
+    variable Block
+    variable Target
+    variable Types
+    variable Duration
+    variable URL
+    variable Item
+    variable N
+    variable S
+    
+    create EditPanel in Panel
+    set the style of EditPanel to `height:auto;border:1px solid gray;margin:0.5em 0;padding:1em`
+    
+    create StepsPanel in Panel
+	set the style of StepsPanel to `flex:1;overflow-y:scroll`
+    
+    on message go to Start
+    set ready
+    stop
+    
+Start:
+	set style `display` of Panel to `flex`
+	set style `flex-direction` of Panel to `column`
+    
+	put property `steps` of Presentation into Steps
+    set the elements of Step to the json count of Steps
+    put 0 into N
+    while N is less than the elements of Step
+    begin
+    	index Step to N
+    	create Step in StepsPanel
+        set the style of Step to `width:100%;font-size:1.2em;margin:0.2em 0`
+        put element N of Steps into Item
+        gosub to CheckActionSyntax
+        set the text of Step to property `comment` of Item
+    	add 1 to N
+    end
+    on click Step
+    begin
+    	put the index of Step into S
+        put 0 into N
+        while N is less than the elements of Step
+        begin
+        	index Step to N
+            set style `background` of Step to ``
+            add 1 to N
+        end
+        put element S of Steps into Item
+        index Step to S
+        set style `background` of Step to `lightgray`
+        go to EditStep
+    end
+    return
+
+CheckActionSyntax:
+    put property `action` of Item into Action
+    put property `comment` of Item into Comment
+    if Comment is empty set property `comment` of Item to Action
+    if Action is `set content`
+    begin
+    	put property `blocks` of Item into Blocks
+        if Blocks is empty
+        begin
+        	set Blocks to array
+            set property `blocks` of Item to Blocks
+        end
+    end
+    else if Action is `show`
+    begin
+    	put property `blocks` of Item into Blocks
+        if Blocks is empty
+        begin
+        	set Blocks to array
+            set property `blocks` of Item to Blocks
+        end
+    end
+ 	else if Action is `hide`
+    begin
+    	put property `blocks` of Item into Blocks
+        if Blocks is empty
+        begin
+        	set Blocks to object
+            set property `blocks` of Item to Blocks
+        end
+    end
+	else if Action is `pause`
+    begin
+    	put property `duration` of Item into Duration
+        if Duration is empty set property `duration` of Item to 1
+    end
+	else if Action is `hold`
+    begin
+    	put property `duration` of Item into Duration
+        if Duration is empty set property `duration` of Item to 1
+    end
+	else if Action is `fade up`
+    begin
+    	put property `blocks` of Item into Blocks
+        if Blocks is empty
+        begin
+        	set Blocks to array
+            set property `blocks` of Item to Blocks
+        end
+    	put property `duration` of Item into Duration
+        if Duration is empty set property `duration` of Item to 1
+    end
+	else if Action is `fade down`
+    begin
+    	put property `blocks` of Item into Blocks
+        if Blocks is empty
+        begin
+        	set Blocks to array
+            set property `blocks` of Item to Blocks
+        end
+    	put property `duration` of Item into Duration
+        if Duration is empty set property `duration` of Item to 1
+    end
+	else if Action is `crossfade`
+    begin
+    	put property `block` of Item into Block
+        if Block is empty set property `block` of Item to `******`
+    	put property `target` of Item into Target
+        if Target is empty set property `target` of Item to `******`
+    	put property `duration` of Item into Duration
+        if Duration is empty set property `duration` of Item to 1
+    end
+	else if Action is `transition`
+    begin
+    	put property `types` of Item into Types
+        if Types is empty
+        begin
+        	set Types to array
+            set property `types` of Item to Types
+        end
+    	put property `target` of Item into Target
+        if Target is empty set property `target` of Item to `******`
+    	put property `duration` of Item into Duration
+        if Duration is empty set property `duration` of Item to 1
+    end
+	else if Action is `goto`
+    begin
+    	put property `target` of Item into Target
+        if Target is empty set property `target` of Item to `******`
+    end
+	else if Action is `load`
+    begin
+    	put property `url` of Item into URL
+        if URL is empty set property `url` of Item to `******`
+    end
+	return
+
+EditStep:
+	clear EditPanel
+    create Table in EditPanel
+    set the style of Table to `width:100%`
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `Title:`
+    create TD in TR
+    create TitleInput in TD
+    set the style of TitleInput to `width:100%`
+    set the content of TitleInput to property `comment` of Item
+    create TR in Table
+    create TD in TR
+    set the content of TD to `Action:`
+    create TD in TR
+    create ActionInput in TD
+    set the style of ActionInput to `width:100%`
+    set the content of ActionInput to property `action` of Item
+	stop

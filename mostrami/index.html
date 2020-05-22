@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=200521'></script>
+  </head>
+
+  <body>
+
+    <pre id="easycoder-rest" style="display:none">rest.php</pre>
+    <pre id="easycoder-script" style="display:none">
+    !	EasyCoder Presenter
+
+        script Launcher
+
+        variable Script
+        require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror.js?v=` cat now
+        rest get Script from `/resources/ecs/presenter.txt`
+        run Script
+
+  </body>
+</html>
