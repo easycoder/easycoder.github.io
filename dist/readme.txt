@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.1 04-may 2020 =
+* Fix bug in 'set styles'
+
 = 2.7.0 04-may 2020 =
 * Added 'click left' and 'click top'
 

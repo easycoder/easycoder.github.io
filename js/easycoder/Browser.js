@@ -2284,8 +2284,8 @@ const EasyCoder_Browser = {
 					target = document.getElementById(targetId);
 				}
 				const styleValue = program.getValue(command.styleValue);
-				if (!symbol.value[symbol.index]) {
-					program.runtimeError(command.lino, `Variable '${symbol.name}' has not been assigned.`);
+				if (!symbol.element[symbol.index]) {
+					program.runtimeError(command.lino, `Variable '${symbol.name}' has no DOM element.`);
 					return 0;
 				}
 				switch (command.type) {
