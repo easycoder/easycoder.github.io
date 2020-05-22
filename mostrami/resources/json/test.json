@@ -142,7 +142,9 @@
         {
             "comment": "----------------------------- Fade up the intro title",
             "action": "fade up",
-            "blocks": "title",
+            "blocks": [
+                "title"
+            ],
             "duration": 3
         },
         {
@@ -172,7 +174,9 @@
         {
             "comment": "-------------------------------- Show the first slide",
             "action": "fade up",
-            "blocks": "body",
+            "blocks": [
+                "body"
+            ],
             "duration": 1
         },
         {
@@ -213,7 +217,9 @@
         {
             "comment": "----------------------------- Fade up the image block",
             "action": "fade up",
-            "blocks": "left image",
+            "blocks": [
+                "left image"
+            ],
             "duration": 2
         },
         {
@@ -236,8 +242,12 @@
         {
             "comment": "-------------------------------- Change the body text",
             "action": "set content",
-            "block": "body",
-            "content": "slide 3"
+            "blocks": [
+                {
+                    "block": "body",
+                    "content": "slide 3"
+                }
+            ]
         },
         {
             "comment": "------------------------------------- Wait 10 seconds",

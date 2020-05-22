@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Script Editor</title>
-	<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=200413'></script>
+	<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=2.7.1'></script>
 </head>
 
 <body>
@@ -15,8 +15,8 @@
         script Launcher
 
         variable Script
-        require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror.js?v=` cat now
-        rest get Script from `/resources/ecs/scripted.txt`
+        require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror.js?v=2.7.1`
+        rest get Script from `/resources/ecs/scripted.txt?v=` cat now
         run Script
     </pre>
 </body>
