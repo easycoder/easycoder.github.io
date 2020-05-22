@@ -1,6 +1,6 @@
-!	Presenter
+!	Mostrami
 
-	script Presenter
+	script Mostrami
     
     div Body
     div Left
@@ -50,6 +50,7 @@
     variable Message
     variable Section
     variable Item
+    variable Array
     variable N
 
   ! The browser
@@ -212,51 +213,16 @@ L2:
     put -1 into Section
     on click SectionButton
     begin
+    	put the index of SectionButton into N
     	if Section is not -1
         begin
         	index SectionButton to Section
             set style `background` of SectionButton to ``
         end
-        set style `display` of GlobalsPanel to `none`
-        set style `display` of ContainerPanel to `none`
-        set style `display` of DefaultsPanel to `none`
-        set style `display` of BlocksPanel to `none`
-        set style `display` of ContentPanel to `none`
-        set style `display` of StepsPanel to `none`
-    	put the index of SectionButton into Section
+    	put N into Section
         index SectionButton to Section
         set style `background` of SectionButton to `lightgray`
-        
-        if Section is 0
-        begin
-        	gosub to SetupGlobalsModule
-            send to GlobalsModule
-        end
-        else if Section is 1
-        begin
-        	gosub to SetupContainerModule
-            send to ContainerModule
-        end
-        else if Section is 2
-        begin
-        	gosub to SetupDefaultsModule
-            send to DefaultsModule
-        end
-        else if Section is 3
-        begin
-        	gosub to SetupBlocksModule
-            send to BlocksModule
-        end
-        else if Section is 4
-        begin
-        	gosub to SetupContentModule
-            send to ContentModule
-        end
-        else if Section is 5
-        begin
-        	gosub to SetupStepsModule
-            send to StepsModule
-        end
+        gosub to UpdateCurrentSection
     end
     
 !	Create the file browser
@@ -355,14 +321,124 @@ L2:
             go to ResetStatus
         end
     end
+    
+    set Presentation to object
+    set Item to object
+    set property `global` of Presentation to Item
+    set property `container` of Presentation to Item
+    set property `defaults` of Presentation to Item
+    set property `blocks` of Presentation to Item
+    set property `content` of Presentation to Item
+    set Item to object
+    set property `comment` of Item to `Pause for a second`
+    set property `action` of Item to `pause`
+    set property `duration` of Item to 1
+    set Array to array
+    json add Item to Array
+    set property `steps` of Presentation to Array
+    put Presentation into Current
+    gosub to SetupGlobals
+    gosub to SetupContainer
+    gosub to SetupDefaults
+    gosub to SetupBlocks
+    gosub to SetupContent
+    gosub to SetupSteps
+    gosub to UpdateCurrentSection
 	stop
+
+SetupGlobals:
+    if GlobalsModule is not running
+    begin
+    	rest get Script from `/resources/ecs/globals.txt`
+        run Script with GlobalsPanel and Presentation as GlobalsModule
+    end
+    return
+
+SetupContainer:
+    if ContainerModule is not running
+    begin
+    	rest get Script from `/resources/ecs/container.txt`
+        run Script with ContainerPanel and Presentation as ContainerModule
+    end
+    return
+
+SetupDefaults:
+    if DefaultsModule is not running
+    begin
+    	rest get Script from `/resources/ecs/defaults.txt`
+        run Script with DefaultsPanel and Presentation as DefaultsModule
+    end
+    return
+
+SetupBlocks:
+    if BlocksModule is not running
+    begin
+    	rest get Script from `/resources/ecs/blocks.txt`
+        run Script with BlocksPanel and Presentation as BlocksModule
+    end
+    return
+
+SetupContent:
+    if ContentModule is not running
+    begin
+    	rest get Script from `/resources/ecs/content.txt`
+        run Script with ContentPanel and Presentation as ContentModule
+    end
+    return
+
+SetupSteps:
+    if StepsModule is not running
+    begin
+    	rest get Script from `/resources/ecs/steps.txt`
+        run Script with StepsPanel and Presentation as StepsModule
+    end
+    return
+
+UpdateCurrentSection:
+    set style `display` of GlobalsPanel to `none`
+    set style `display` of ContainerPanel to `none`
+    set style `display` of DefaultsPanel to `none`
+    set style `display` of BlocksPanel to `none`
+    set style `display` of ContentPanel to `none`
+    set style `display` of StepsPanel to `none`
+    if Section is 0
+    begin
+    	set style `display` of GlobalsPanel to `block`
+    	send to GlobalsModule
+    end
+    if Section is 1
+    begin
+    	set style `display` of ContainerPanel to `block`
+    	send to ContainerModule
+    end
+    if Section is 2
+    begin
+    	set style `display` of DefaultsPanel to `block`
+    	send to DefaultsModule
+    end
+    if Section is 3
+    begin
+    	set style `display` of BlocksPanel to `block`
+    	send to BlocksModule
+    end
+    if Section is 4
+    begin
+    	set style `display` of ContentPanel to `block`
+    	send to ContentModule
+    end
+    if Section is 5
+    begin
+    	set style `display` of StepsPanel to `block`
+    	send to StepsModule
+    end
+	return
 
 DoOpen:
 !	gosub to StopTestModule
     gosub to GetPassword
 
     clear FileIsOpen
-    if Content is not Current
+    if Presentation is not Current
     begin
       if confirm `Content has changed. Do you want to save it?`
       begin
@@ -461,12 +537,7 @@ SelectFile:
 	if PasswordValid rest get Presentation from `/resources/json/` cat File
     else get Presentation from storage as File
     put Presentation into Current
-    gosub to SetupGlobalsModule
-    gosub to SetupContainerModule
-    gosub to SetupDefaultsModule
-    gosub to SetupBlocksModule
-    gosub to SetupContentModule
-    gosub to SetupStepsModule
+    gosub to UpdateCurrentSection
     set the content of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     set ShowRun
@@ -481,54 +552,6 @@ ResetStatus:
     wait 2
     set the content of Status to ``
     stop
-
-SetupGlobalsModule:
-    if GlobalsModule is not running
-    begin
-    	rest get Script from `/resources/ecs/globals.txt`
-        run Script with GlobalsPanel and Presentation as GlobalsModule
-    end
-    return
-
-SetupContainerModule:
-    if ContainerModule is not running
-    begin
-    	rest get Script from `/resources/ecs/container.txt`
-        run Script with ContainerPanel and Presentation as ContainerModule
-    end
-    return
-
-SetupDefaultsModule:
-    if DefaultsModule is not running
-    begin
-    	rest get Script from `/resources/ecs/defaults.txt`
-        run Script with DefaultsPanel and Presentation as DefaultsModule
-    end
-    return
-
-SetupBlocksModule:
-    if BlocksModule is not running
-    begin
-    	rest get Script from `/resources/ecs/blocks.txt`
-        run Script with BlocksPanel and Presentation as BlocksModule
-    end
-    return
-
-SetupContentModule:
-    if ContentModule is not running
-    begin
-    	rest get Script from `/resources/ecs/content.txt`
-        run Script with ContentPanel and Presentation as ContentModule
-    end
-    return
-
-SetupStepsModule:
-    if StepsModule is not running
-    begin
-    	rest get Script from `/resources/ecs/steps.txt`
-        run Script with StepsPanel and Presentation as StepsModule
-    end
-    return
 
 GetPassword:
 	if ReadOnly
