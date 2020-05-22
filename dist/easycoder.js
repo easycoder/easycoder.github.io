@@ -8367,7 +8367,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.7.0`;
+EasyCoder.version = `2.7.1`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
