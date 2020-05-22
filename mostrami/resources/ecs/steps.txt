@@ -24,6 +24,9 @@
     select ContentSelect
     input TitleInput
     input LabelInput
+    input DurationInput
+    input TargetInput
+    input URLInput
     img PlusIcon
     img DeleteIcon
     variable Steps
@@ -256,7 +259,7 @@ EditStep:
     set the style of LabelInput to `width:100%`
     set the content of LabelInput to property `label` of Item
     
-!	Add the buttons belo the table
+!	Add the buttons below the table
     create TR in Table
     create TD in TR
     create TD in TR
@@ -295,22 +298,22 @@ EditSetContent:
     create TD in TR
     set the content of TD to `Blocks:`
     create TD in TR
-    put property `blocks` of Item into Blocks
 	create BlockTable in TD
     set the style of BlockTable to `width:100%;border:1px solid gray`
     create BlockRow in BlockTable
     set the style of BlockRow to `display:flex`
     create Header in BlockRow
     set the style of Header to `flex:1`
-    set the content of Header to `Block names`
+    set the content of Header to `Blocks`
     create Header in BlockRow
     set the style of Header to `flex:1`
-    set the content of Header to `Content names`
+    set the content of Header to `Content`
     create BlockData in BlockRow
     set the style of BlockData to `width:2em;text-align:center`
     create PlusIcon in BlockData
     set the style of PlusIcon to `width:1em;margin-top:0.1em`
     set attribute `src` of PlusIcon to `resources/icon/plus.png`
+    put property `blocks` of Item into Blocks
     put the json count of Blocks into N
     set the elements of BlockSelect to N
     set the elements of ContentSelect to N
@@ -341,14 +344,18 @@ EditSetContent:
 
 EditShow:
 EditHide:
+	gosub to EditBlockList
 	return
 
 EditPause:
 EditHold:
+    gosub to EditDuration
 	return
 
 EditFadeUp:
 EditFadeDown:
+	gosub to EditBlockList
+    gosub to EditDuration
 	return
 
 EditCrossfade:
@@ -358,10 +365,75 @@ EditTransition:
 	return
 
 EditGoto:
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `Target:`
+    create TD in TR
+    create TargetInput in TD
+    set the style of TargetInput to `width:100%`
+    set the content of TargetInput to property `target` of Item
 	return
 
 EditLoad:
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `URL:`
+    create TD in TR
+    create URLInput in TD
+    set the style of URLInput to `width:100%`
+    set the content of URLInput to property `url` of Item
 	return
 
 EditBlockList:
+	create TR in Table
+    create TD in TR
+    set the content of TD to `Blocks:`
+    create TD in TR
+	create BlockTable in TD
+    set the style of BlockTable to `width:100%;border:1px solid gray`
+    create BlockRow in BlockTable
+    set the style of BlockRow to `display:flex`
+    create Header in BlockRow
+    set the style of Header to `flex:1`
+    set the content of Header to `Blocks`
+    create BlockData in BlockRow
+    set the style of BlockData to `width:2em;text-align:center`
+    create PlusIcon in BlockData
+    set the style of PlusIcon to `width:1em;margin-top:0.1em`
+    set attribute `src` of PlusIcon to `resources/icon/plus.png`
+    put property `blocks` of Item into Blocks
+    put the json count of Blocks into N
+    set the elements of BlockSelect to N
+    set the elements of DeleteIcon to N
+    put 0 into B
+    while B is less than N
+    begin
+	   	put element B of Blocks into Block
+        create BlockRow in BlockTable
+        set the style of BlockRow to `display:flex`
+        index BlockSelect to B
+        create BlockSelect in BlockRow
+        set the style of BlockSelect to `flex:1`
+        set BlockSelect from BlockNames as Block
+        create BlockData in BlockRow
+        set the style of BlockData to `width:2em;text-align:center`
+        index DeleteIcon to B
+        create DeleteIcon in BlockData
+        set the style of DeleteIcon to `width:1em;margin-top:0.1em`
+        set attribute `src` of DeleteIcon to `resources/icon/stop.png`
+    	add 1 to B
+    end
     return
+
+EditDuration:
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `Duration:`
+    create TD in TR
+    create DurationInput in TD
+    set the style of DurationInput to `width:100%`
+    set the content of DurationInput to property `duration` of Item
+	return
