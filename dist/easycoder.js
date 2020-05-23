@@ -1666,8 +1666,11 @@ const EasyCoder_Core = {
 				targetRecord = program.getSymbolRecord(command.target);
 				const index = program.getValue(command.index);
 				const elements = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
-				const value = program.getValue(command.value);
-				elements[index] = JSON.parse(value);
+				let value = program.getValue(command.value);
+				if (program.isJsonString(value)) {
+					value = JSON.parse(value);
+				}
+				elements[index] = value;
 				targetRecord.value[targetRecord.index].content = JSON.stringify(elements);
 				break;
 			case `setProperty`:
