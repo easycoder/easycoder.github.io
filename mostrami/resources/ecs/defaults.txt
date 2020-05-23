@@ -4,9 +4,46 @@
     
     import div Panel and variable Presentation
     
+    div GlobalTitle
+    div GlobalPanel
+    div ContainerTitle
+    div ContainerPanel
+    div DefaultsTitle
+    div DefaultsPanel
+    
+    create GlobalTitle in Panel
+    set the style of GlobalTitle to
+    	`font-weight:bold;font-size:110%;background:lightgray;padding:0.2em;text-align:center`
+    
+    create GlobalPanel in Panel
+	set the style of GlobalPanel to `height:auto;max-height:30%;flex:1;overflow-y:scroll;margin-top:0.5em`
+    
+    create ContainerTitle in Panel
+    set the style of ContainerTitle to
+    	`font-weight:bold;font-size:110%;background:lightgray;padding:0.2em;text-align:center`
+    
+    create ContainerPanel in Panel
+	set the style of ContainerPanel to `height:auto;max-height:30%;flex:1;overflow-y:scroll;margin-top:0.5em`
+    
+    create DefaultsTitle in Panel
+    set the style of DefaultsTitle to
+    	`font-weight:bold;font-size:110%;background:lightgray;padding:0.2em;text-align:center`
+    
+    create DefaultsPanel in Panel
+	set the style of DefaultsPanel to `flex:1;overflow-y:scroll;margin-top:0.5em`
+    
     on message go to Start
     set ready
     stop
     
 Start:
+	set style `display` of Panel to `flex`
+	set style `flex-direction` of Panel to `column`
+    
+	clear GlobalPanel
+    clear ContainerPanel
+	clear DefaultsPanel
+    set the content of GlobalTitle to `Global defaults`
+    set the content of ContainerTitle to `Container defaults`
+    set the content of DefaultsTitle to `Block defaults`
 	stop
