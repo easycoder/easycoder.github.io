@@ -11,8 +11,6 @@
     div Tabs
     div Tab
     div ScriptName
-    div GlobalsPanel
-    div ContainerPanel
     div DefaultsPanel
     div BlocksPanel
     div ContentPanel
@@ -28,8 +26,6 @@
     img Delete
     img Cycle
     a Link
-    module GlobalsModule
-    module ContainerModule
     module DefaultsModule
     module BlocksModule
     module ContentModule
@@ -91,7 +87,7 @@ L2:
     	if mobile set Mobile else clear Mobile
     end
     
-    set the title to `JSON::Prsenter`
+    set the title to `Mostrami Pro`
     create Body
     if Mobile
 	    set the style of Body to `width:100%;height:100%`
@@ -159,27 +155,11 @@ L2:
     create Tabs in Controls
     set the style of Tabs to `width:100%;padding-bottom:0.5em;text-align:center`
     put the width of Tabs into N
-    divide N by 6
-    set the elements of SectionButton to 6
+    divide N by 4
+    set the elements of SectionButton to 4
     create Tab in Tabs
     set the style of Tab to `display:inline-block;width:` cat N cat `px`
     index SectionButton to 0
-    create SectionButton in Tab
-    set the style of SectionButton to `width:100%`
-    set the content of SectionButton to `Global`
-    create GlobalsPanel in ContentDiv
-    set the style of GlobalsPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
-    create Tab in Tabs
-    set the style of Tab to `display:inline-block;width:` cat N cat `px`
-    index SectionButton to 1
-    create SectionButton in Tab
-    set the style of SectionButton to `width:100%`
-    set the content of SectionButton to `Container`
-    create ContainerPanel in ContentDiv
-    set the style of ContainerPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
-    create Tab in Tabs
-    set the style of Tab to `display:inline-block;width:` cat N cat `px`
-    index SectionButton to 2
     create SectionButton in Tab
     set the style of SectionButton to `width:100%`
     set the content of SectionButton to `Defaults`
@@ -187,7 +167,7 @@ L2:
     set the style of DefaultsPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
     create Tab in Tabs
     set the style of Tab to `display:inline-block;width:` cat N cat `px`
-    index SectionButton to 3
+    index SectionButton to 1
     create SectionButton in Tab
     set the style of SectionButton to `width:100%`
     set the content of SectionButton to `Blocks`
@@ -195,7 +175,7 @@ L2:
     set the style of BlocksPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
     create Tab in Tabs
     set the style of Tab to `display:inline-block;width:` cat N cat `px`
-    index SectionButton to 4
+    index SectionButton to 2
     create SectionButton in Tab
     set the style of SectionButton to `width:100%`
     set the content of SectionButton to `Content`
@@ -203,7 +183,7 @@ L2:
     set the style of ContentPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
     create Tab in Tabs
     set the style of Tab to `display:inline-block;width:` cat N cat `px`
-    index SectionButton to 5
+    index SectionButton to 3
     create SectionButton in Tab
     set the style of SectionButton to `width:100%`
     set the content of SectionButton to `Steps`
@@ -337,30 +317,12 @@ L2:
     json add Item to Array
     set property `steps` of Presentation to Array
     put Presentation into Current
-    gosub to SetupGlobals
-    gosub to SetupContainer
     gosub to SetupDefaults
     gosub to SetupBlocks
     gosub to SetupContent
     gosub to SetupSteps
     gosub to UpdateCurrentSection
 	stop
-
-SetupGlobals:
-    if GlobalsModule is not running
-    begin
-    	rest get Script from `/resources/ecs/globals.txt`
-        run Script with GlobalsPanel and Presentation as GlobalsModule
-    end
-    return
-
-SetupContainer:
-    if ContainerModule is not running
-    begin
-    	rest get Script from `/resources/ecs/container.txt`
-        run Script with ContainerPanel and Presentation as ContainerModule
-    end
-    return
 
 SetupDefaults:
     if DefaultsModule is not running
@@ -395,38 +357,26 @@ SetupSteps:
     return
 
 UpdateCurrentSection:
-    set style `display` of GlobalsPanel to `none`
-    set style `display` of ContainerPanel to `none`
     set style `display` of DefaultsPanel to `none`
     set style `display` of BlocksPanel to `none`
     set style `display` of ContentPanel to `none`
     set style `display` of StepsPanel to `none`
     if Section is 0
     begin
-    	set style `display` of GlobalsPanel to `block`
-    	send to GlobalsModule
-    end
-    if Section is 1
-    begin
-    	set style `display` of ContainerPanel to `block`
-    	send to ContainerModule
-    end
-    if Section is 2
-    begin
     	set style `display` of DefaultsPanel to `block`
     	send to DefaultsModule
     end
-    if Section is 3
+    else if Section is 1
     begin
     	set style `display` of BlocksPanel to `block`
     	send to BlocksModule
     end
-    if Section is 4
+    else if Section is 2
     begin
     	set style `display` of ContentPanel to `block`
     	send to ContentModule
     end
-    if Section is 5
+    else if Section is 3
     begin
     	set style `display` of StepsPanel to `block`
     	send to StepsModule
