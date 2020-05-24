@@ -101,10 +101,10 @@ L2:
 	set the style of Right to `flex:1;height:100%;display:flex;flex-direction: column`
     
     create Controls in Left
-    set the style of Controls to `flex:1;background:lightgray`
+    set the style of Controls to `flex:1;background:lightgray;padding:0 0.5em`
 
     create Buttons in Controls
-    set the style of Buttons to `width:100%;padding:0.5em`
+    set the style of Buttons to `width:100%;padding:0.5em 0`
 
 	create ContentDiv in Left
     set the style of ContentDiv to `width:100%;height:100%;position:relative`
@@ -140,11 +140,11 @@ L2:
    	set attribute `title` of Cycle to `Cycle screens`
     
     create Status in Buttons
-    if Mobile set the style of Status to `height:1em;color:green`
-    else set the style of Status to `float:right;margin:0.5em 2em 0 0;color:green`
+    if Mobile set the style of Status to `height:1em`
+    else set the style of Status to `float:right;margin:0.5em 0 0 0;color:green`
 
     create ScriptName in Controls
-    set the style of ScriptName to `display:flex;margin:0.5em 0;padding:0.5em`
+    set the style of ScriptName to `display:flex`
     if Mobile set style `display` of ScriptName to `none`
     create Span in ScriptName
     set the style of Span to `flex:15`
@@ -153,7 +153,7 @@ L2:
     set the style of NameEditor to `flex:85;display:inline-block`
     
     create Tabs in Controls
-    set the style of Tabs to `width:100%;padding-bottom:0.5em;text-align:center`
+    set the style of Tabs to `width:100%;padding:0.5em 0;text-align:center`
     put the width of Tabs into N
     divide N by 4
     set the elements of SectionButton to 4
@@ -229,6 +229,7 @@ L2:
       			put the content of NameEditor into Name
       			if Name is empty
       			begin
+                	gosub to SetStatusRed
         			set the content of Status to `No script name has been given`
         			go to ResetStatus
       			end
@@ -252,6 +253,7 @@ L2:
         put the content of NameEditor into Name
         if Name is empty
         begin
+            gosub to SetStatusRed
             set the content of Status to `No script name has been given`
             go to ResetStatus
         end
@@ -264,12 +266,14 @@ L2:
             if PasswordValid rest post Presentation to `_save/json/` cat Name
             else put Presentation into storage as Name
             put Presentation into Current
+            gosub to SetStatusGreen
             set the content of Status to `Presentation '` cat Name cat `' saved`
             put Name into CurrentScriptName
             fork to ResetStatus
         end
         else
         begin
+            gosub to SetStatusGreen
             set the content of Status to `Nothing has changed`
             fork to ResetStatus
         end
@@ -281,13 +285,15 @@ L2:
         put the content of NameEditor into Name
         if Name is empty
         begin
-            alert `Nothing to delete.`
-            stop
+            gosub to SetStatusGreen
+            set the content of Status to `Nothing to delete`
+            go to ResetStatus
         end
         if confirm `Are you sure you want to delete "` cat Name cat `"?`
         begin
             if PasswordValid rest post to `_delete/json/` cat Name
             else remove Name from storage
+            gosub to SetStatusGreen
             set the content of Status to `Script "` cat Name cat `" deleted`
             set the content of NameEditor to empty
             put empty into CurrentScriptName
@@ -486,6 +492,14 @@ CloseBrowser:
     set style `display` of Overlay to `none`
     set style `display` of Media to `none`
     stop
+
+SetStatusRed:
+	set style `color` of Status to `red`
+	return
+
+SetStatusGreen:
+	set style `color` of Status to `green`
+	return
 
 ResetStatus:
     wait 2
