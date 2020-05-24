@@ -130,7 +130,7 @@
     put the content of ContentEditor into Content
     if Content is not Current
     begin
-      rest post Content to `_save/resources/ecs/` cat Name
+      rest post Content to `_save/ecs/` cat Name
       put Content into Current
       set the content of Status to `Script '` cat Name cat `' saved`
       fork to ResetStatus
@@ -156,7 +156,7 @@
     if confirm `Are you sure you want to delete '` cat Name cat `'?`
     begin
       codemirror close ContentEditor
-      rest post to `_delete/resources/ecs/` cat Name
+      rest post to `_delete/ecs/` cat Name
       set the content of Status to `Script '` cat Name cat `' deleted`
       set the content of NameEditor to empty
       put empty into Content
@@ -168,15 +168,21 @@
   stop
 
 DoOpen:
-  if FileIsOpen codemirror close ContentEditor
   put the content of ContentEditor into Content
   if Content is not Current
   begin
     if confirm `Content has changed. Do you want to save it?`
     begin
-      rest post Content to `_save/resources/ecs/' cat CurrentName
+      rest post Content to `_save/ecs/' cat CurrentName
     end
+    else stop
+!    begin
+!  		codemirror attach to ContentEditor
+!  		codemirror set content of ContentEditor to Content
+!    	stop
+!    end
   end
+  if FileIsOpen codemirror close ContentEditor
 
 ! Animate the background
   set style `display` of Overlay to `block`

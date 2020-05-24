@@ -10,9 +10,9 @@
     div BlockTable
     div BlockRow
     div BlockData
+    div Row
+    div Cell
     button Step
-    button Save
-    button Delete
     button Header
     button InsertBefore
     button InsertAfter
@@ -32,6 +32,7 @@
     input URLInput
     img PlusIcon
     img DeleteIcon
+    img DeleteStep
     a Link
     variable Steps
     variable SelectedStep
@@ -53,6 +54,7 @@
     variable TransitionType
     variable ContinueTypes
     variable TrueFalse
+    variable Array
     variable N
     variable B
     
@@ -75,21 +77,34 @@ Start:
 	set style `display` of Panel to `flex`
 	set style `flex-direction` of Panel to `column`
     
+    if Presentation is empty gosub to CreateNewPresentation
+    
 	clear EditPanel
 	clear StepsPanel
     set the content of StepsTitle to `Steps`
 	put property `steps` of Presentation into Steps
     set the elements of Step to the json count of Steps
+    set the elements of DeleteStep to the json count of Steps
     put 0 into N
     while N is less than the elements of Step
     begin
     	index Step to N
-        dummy
-    	create Step in StepsPanel
-        set the style of Step to `width:100%;font-size:1.2em;margin:0.2em 0`
+    	create Row in StepsPanel
+        set the style of Row to `display:flex;margin:0.2em 0`
+    	create Step in Row
+        set the style of Step to `flex:1;font-size:1.2em`
         put element N of Steps into Item
         gosub to CheckActionSyntax
         set the text of Step to property `comment` of Item
+        create Cell in Row
+        set the style of Cell to `width:2.2em;text-align:center`
+        if N is greater than 0
+        begin
+	        index DeleteStep to N
+	        create DeleteStep in Cell
+	        set the style of DeleteStep to `width:1.8em`
+	        set attribute `src` of DeleteStep to `resources/icon/stop.png`
+        end
     	add 1 to N
     end
     on click Step
@@ -131,6 +146,24 @@ Start:
     json add `false` to ContinueTypes
     
     stop
+
+CreateNewPresentation:
+    set Presentation to object
+    set Item to object
+    set property `global` of Presentation to Item
+    set property `container` of Presentation to Item
+    set property `defaults` of Presentation to Item
+    set property `blocks` of Presentation to Item
+    set property `content` of Presentation to Item
+    set Item to object
+    set property `comment` of Item to `Wait for user input`
+    set property `action` of Item to `hold`
+    set property `duration` of Item to 0
+    set property `label` of Item to ``
+    set Array to array
+    json add Item to Array
+    set property `steps` of Presentation to Array
+	return
 
 !	Edit a single step
 EditStep:
@@ -201,29 +234,15 @@ ReloadStepEditor:
     create TD in TR
     create TD in TR
     create InsertBefore in TD
-    set the style of InsertBefore to `width:10%`
-    set the text of InsertBefore to `<+`
+    set the style of InsertBefore to `width:50%`
+    set the text of InsertBefore to `Add Step Before`
     on click InsertBefore
     begin
     	alert `Insert Before`
     end
-    create Save in TD
-    set the style of Save to `width:40%`
-    set the text of Save to `Save`
-    on click Save
-    begin
-    	alert `Save`
-    end
-    create Delete in TD
-    set the style of Delete to `width:40%`
-    set the text of Delete to `Delete`
-    on click Delete
-    begin
-    	alert `Delete`
-    end
     create InsertAfter in TD
-    set the style of InsertAfter to `width:10%`
-    set the text of InsertAfter to `+>`
+    set the style of InsertAfter to `width:50%`
+    set the text of InsertAfter to `Add Step After`
     on click InsertAfter
     begin
     	alert `Insert After`
