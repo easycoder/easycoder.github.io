@@ -11,10 +11,10 @@
     div Tabs
     div Tab
     div ScriptName
-    div DefaultsPanel
+    div StepsPanel
     div BlocksPanel
     div ContentPanel
-    div StepsPanel
+    div DefaultsPanel
     span Status
     span Span
     input NameEditor
@@ -26,10 +26,10 @@
     img Delete
     img Cycle
     a Link
-    module DefaultsModule
+    module StepsModule
     module BlocksModule
     module ContentModule
-    module StepsModule
+    module DefaultsModule
     variable Mobile
     variable Current
     variable Content
@@ -46,7 +46,7 @@
     variable Message
     variable Section
     variable Item
-    variable Array
+    variable CurrentScriptName
     variable N
 
   ! The browser
@@ -162,9 +162,9 @@ L2:
     index SectionButton to 0
     create SectionButton in Tab
     set the style of SectionButton to `width:100%`
-    set the content of SectionButton to `Defaults`
-    create DefaultsPanel in ContentDiv
-    set the style of DefaultsPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
+    set the content of SectionButton to `Steps`
+    create StepsPanel in ContentDiv
+    set the style of StepsPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
     create Tab in Tabs
     set the style of Tab to `display:inline-block;width:` cat N cat `px`
     index SectionButton to 1
@@ -186,24 +186,13 @@ L2:
     index SectionButton to 3
     create SectionButton in Tab
     set the style of SectionButton to `width:100%`
-    set the content of SectionButton to `Steps`
-    create StepsPanel in ContentDiv
-    set the style of StepsPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
+    set the content of SectionButton to `Defaults`
+    create DefaultsPanel in ContentDiv
+    set the style of DefaultsPanel to `position:absolute;left:0;top:0;width:100%;height:100%;`
     
-    put -1 into Section
-    on click SectionButton
-    begin
-    	put the index of SectionButton into N
-    	if Section is not -1
-        begin
-        	index SectionButton to Section
-            set style `background` of SectionButton to ``
-        end
-    	put N into Section
-        index SectionButton to Section
-        set style `background` of SectionButton to `lightgray`
-        gosub to UpdateCurrentSection
-    end
+    put 0 into Section
+    index SectionButton to 0
+    on click SectionButton gosub to SelectSection
     
 !	Create the file browser
     create Overlay in Body
@@ -232,8 +221,8 @@ L2:
     
     on click New
     begin
-    	gosub to StopTestModule
-    	if Content is not Current
+!    	gosub to StopTestModule
+    	if Presentation is not Current
     	begin
 			if confirm `Content has changed. Do you want to save it?`
 			begin
@@ -243,14 +232,16 @@ L2:
         			set the content of Status to `No script name has been given`
         			go to ResetStatus
       			end
-    	  		if PasswordValid rest post Content to `_save/json~` cat Name
-      			else put Content into storage as CurrentName
+    	  		if PasswordValid rest post Presentation to `_save/json/` cat Name
+      			else put Presentation into storage as CurrentName
             end
     	end
     	clear FileIsOpen
         set the content of NameEditor to empty
-        put empty into Content
-        put Content into Current
+        put empty into CurrentScriptName
+        put empty into Presentation
+        put empty into Current
+    	gosub to UpdateCurrentSection
 	end
 
     on click Open go to DoOpen
@@ -264,14 +255,17 @@ L2:
             set the content of Status to `No script name has been given`
             go to ResetStatus
         end
-        if the position of `.ecs` in Name is -1 put Name cat `.ecs` into Name
+        if the position of `.json` in Name is -1 put Name cat `.json` into Name
         replace ` ` with `_` in Name
-        if Content is not Current
+        set the content of NameEditor to Name
+        if Name is not CurrentScriptName put empty into Current
+        if Presentation is not Current
         begin
-            if PasswordValid rest post Content to `_save/json~` cat Name
-            else put Content into storage as Name
-            put Content into Current
+            if PasswordValid rest post Presentation to `_save/json/` cat Name
+            else put Presentation into storage as Name
+            put Presentation into Current
             set the content of Status to `Presentation '` cat Name cat `' saved`
+            put Name into CurrentScriptName
             fork to ResetStatus
         end
         else
@@ -292,43 +286,29 @@ L2:
         end
         if confirm `Are you sure you want to delete "` cat Name cat `"?`
         begin
-            if PasswordValid rest post Content to `_delete/json~` cat Name
+            if PasswordValid rest post to `_delete/json/` cat Name
             else remove Name from storage
             set the content of Status to `Script "` cat Name cat `" deleted`
             set the content of NameEditor to empty
-            put empty into Content
-            put Content into Current
+            put empty into CurrentScriptName
+            put empty into Presentation
+            put Presentation into Current
             go to ResetStatus
         end
     end
     
-    set Presentation to object
-    set Item to object
-    set property `global` of Presentation to Item
-    set property `container` of Presentation to Item
-    set property `defaults` of Presentation to Item
-    set property `blocks` of Presentation to Item
-    set property `content` of Presentation to Item
-    set Item to object
-    set property `comment` of Item to `Pause for a second`
-    set property `action` of Item to `pause`
-    set property `duration` of Item to 1
-    set Array to array
-    json add Item to Array
-    set property `steps` of Presentation to Array
-    put Presentation into Current
-    gosub to SetupDefaults
+    gosub to SetupSteps
     gosub to SetupBlocks
     gosub to SetupContent
-    gosub to SetupSteps
-    gosub to UpdateCurrentSection
+    gosub to SetupDefaults
+    gosub to SelectSection
 	stop
 
-SetupDefaults:
-    if DefaultsModule is not running
+SetupSteps:
+    if StepsModule is not running
     begin
-    	rest get Script from `/resources/ecs/defaults.txt`
-        run Script with DefaultsPanel and Presentation as DefaultsModule
+    	rest get Script from `/resources/ecs/steps.txt`
+        run Script with StepsPanel and Presentation as StepsModule
     end
     return
 
@@ -348,23 +328,31 @@ SetupContent:
     end
     return
 
-SetupSteps:
-    if StepsModule is not running
+SetupDefaults:
+    if DefaultsModule is not running
     begin
-    	rest get Script from `/resources/ecs/steps.txt`
-        run Script with StepsPanel and Presentation as StepsModule
+    	rest get Script from `/resources/ecs/defaults.txt`
+        run Script with DefaultsPanel and Presentation as DefaultsModule
     end
     return
 
+SelectSection:
+    put the index of SectionButton into N
+    index SectionButton to Section
+    set style `background` of SectionButton to ``
+    put N into Section
+    index SectionButton to Section
+    set style `background` of SectionButton to `lightgray`
+
 UpdateCurrentSection:
-    set style `display` of DefaultsPanel to `none`
+    set style `display` of StepsPanel to `none`
     set style `display` of BlocksPanel to `none`
     set style `display` of ContentPanel to `none`
-    set style `display` of StepsPanel to `none`
+    set style `display` of DefaultsPanel to `none`
     if Section is 0
     begin
-    	set style `display` of DefaultsPanel to `block`
-    	send to DefaultsModule
+    	set style `display` of StepsPanel to `block`
+    	send to StepsModule
     end
     else if Section is 1
     begin
@@ -378,8 +366,8 @@ UpdateCurrentSection:
     end
     else if Section is 3
     begin
-    	set style `display` of StepsPanel to `block`
-    	send to StepsModule
+    	set style `display` of DefaultsPanel to `block`
+    	send to DefaultsModule
     end
 	return
 
@@ -392,7 +380,7 @@ DoOpen:
     begin
       if confirm `Content has changed. Do you want to save it?`
       begin
-      	if PasswordValid rest post Content to `_save/json~` cat Name
+      	if PasswordValid rest post Content to `_save/json/` cat Name
       	else put Content into storage as Name
       end
     end
@@ -484,6 +472,7 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
+    put File into CurrentScriptName
 	if PasswordValid rest get Presentation from `/resources/json/` cat File
     else get Presentation from storage as File
     put Presentation into Current

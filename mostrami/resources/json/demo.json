@@ -102,14 +102,19 @@
         },
         "flowers": {
             "type": "image",
-            "url": "img/flowers.jpg"
+            "url": "resources/img/flowers.jpg"
         },
         "moon": {
             "type": "image",
-            "url": "img/moon.jpg"
+            "url": "resources/img/moon.jpg"
         }
     },
     "steps": [
+        {
+            "comment": "-------------------------------- Load the test module",
+            "action": "load",
+            "url": "resources/plugins/test.js"
+        },
         {
             "comment": "------------------------------- Pause before we start",
             "action": "pause",
@@ -137,7 +142,9 @@
         {
             "comment": "----------------------------- Fade up the intro title",
             "action": "fade up",
-            "blocks": "title",
+            "blocks": [
+                "title"
+            ],
             "duration": 3
         },
         {
@@ -167,8 +174,16 @@
         {
             "comment": "-------------------------------- Show the first slide",
             "action": "fade up",
-            "blocks": "body",
+            "blocks": [
+                "body"
+            ],
             "duration": 1
+        },
+        {
+            "comment": "--------------------------------- Run the test plugin",
+            "action": "test",
+            "block": "title",
+            "duration": 0.5
         },
         {
             "comment": "------------------------------------- Wait 10 seconds",
@@ -180,7 +195,8 @@
             "action": "crossfade",
             "block": "body",
             "target": "slide 2",
-            "duration": 1
+            "duration": 1,
+            "label": "loop"
         },
         {
             "comment": "-------------------------------------- Wait 5 seconds",
@@ -201,7 +217,9 @@
         {
             "comment": "----------------------------- Fade up the image block",
             "action": "fade up",
-            "blocks": "left image",
+            "blocks": [
+                "left image"
+            ],
             "duration": 2
         },
         {
@@ -224,8 +242,12 @@
         {
             "comment": "-------------------------------- Change the body text",
             "action": "set content",
-            "block": "body",
-            "content": "slide 3"
+            "blocks": [
+                {
+                    "block": "body",
+                    "content": "slide 3"
+                }
+            ]
         },
         {
             "comment": "------------------------------------- Wait 10 seconds",
@@ -241,10 +263,6 @@
                 "left image"
             ],
             "duration": 3
-        },
-        {
-            "comment": "----------------------------------------------- Reset",
-            "action": "reset"
         },
         {
             "comment": "-------------------------------- Go back to the start",

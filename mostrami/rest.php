@@ -176,7 +176,7 @@
                 case '_save':
                     // Save data to a file in the resources folder
                     // Endpoint: {site root}/easycoder/rest.php/_save/{path}
-                    $path = getcwd() . '/' . join('/', $request);
+                    $path = getcwd() . '/resources/' . join('/', $request);
                     $p = strrpos($path, '/');
                     $dir = substr($path, 0, $p);
                     mkdir($dir, 0777, true);
@@ -190,7 +190,7 @@
                 case '_delete':
                     // Delete a file in the resources folder
                     // Endpoint: {site root}/easycoder/rest.php/_delete/{path}
-                    $path = getcwd() . '/' . join('/', $request);
+                    $path = getcwd() . '/resources/' . join('/', $request);
                     if (is_dir($path)) {
                         rmdir($path);
                     } else {
