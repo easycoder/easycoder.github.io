@@ -4,9 +4,159 @@
     
     import div Panel and variable Presentation
     
+    div Editor
+    div Row
+    div Cell
+    table Table
+    tr TR
+    td TD
+    select PropertySelect
+    input PropertyValue
+    button EditButton
+    img Add
+    img Delete
+    a Link
+    variable Blocks
+    variable Block
+    variable BlockNames
+    variable BlockName
+    variable BlockProperties
+    variable PropertyNames
+    variable PropertyName
+    variable Name
+    variable Action
+    variable N
+    variable B
+    
     on message go to Start
     set ready
     stop
     
 Start:
+	if the message is `save`
+    begin
+    	stop
+    end
+
+    set BlockProperties to array
+    json add `fontFamily` to BlockProperties
+    json add `fontSize` to BlockProperties
+    json add `fontWeight` to BlockProperties
+    json add `fontStyle` to BlockProperties
+    json add `fontColor` to BlockProperties
+    json add `textAlign` to BlockProperties
+    json add `textMarginLeft` to BlockProperties
+    json add `textMarginTop` to BlockProperties
+    json add `blockLeft` to BlockProperties
+    json add `blockTop` to BlockProperties
+    json add `blockWidth` to BlockProperties
+    json add `blockHeight` to BlockProperties
+    json add `blockBackground` to BlockProperties
+    json add `blockBorder` to BlockProperties
+    json add `blockBorderRadius` to BlockProperties
+    
+	put property `blocks` of Presentation into Blocks
+    put the json keys of Blocks into BlockNames
+    create Table in Panel
+    set the style of Table to `width:100%;border:1px solid black`
+    put the json count of BlockNames into N
+    set the elements of EditButton to N
+    set the elements of Editor to N
+    set the elements of Add to N
+    put 0 into B
+    while B is less than the elements of EditButton
+    begin
+    	put element B of BlockNames into Name
+        create TR in Table
+        create TD in TR
+        set the style of TD to `width:8em;border:1px solid black`
+        set the content of TD to Name
+        create TD in TR
+    	set the style of TD to `border:1px solid black`
+        index EditButton to B
+        index Add to B
+        index Editor to B
+        create Row in TD
+        set the style of Row to `display:flex`
+        create EditButton in Row
+        set the style of EditButton to `flex:1`
+        set the text of EditButton to `Edit`
+        create Cell in Row
+        set the style of Cell to `width:1.4em;text-align:center`
+        create Link in Cell
+        create Add in Link
+        set the style of Add to `width:1em;margin-top:0.1em;display:none`
+        set attribute `src` of Add to `/resources/icon/plus.png`
+        create Editor in TD
+        set the style of Editor to `display:none`
+    	add 1 to B
+    end
+    on click EditButton
+    begin
+        put the index of EditButton into B
+        put the text of EditButton into Action
+        put 0 into N
+        while N is less than the json count of BlockNames
+        begin
+           	index EditButton to N
+        	set style `background` of EditButton to ``
+            set the text of EditButton to `Edit`
+            index Add to N
+            set style `display` of Add to `none`
+            index Editor to N
+            set style `display` of Editor to `none`
+            add 1 to N
+        end
+        index EditButton to B
+    	if Action is `Edit`
+        begin
+        	set style `background` of EditButton to `lightgray`
+        	set the text of EditButton to `Close`
+            index Add to B
+            set style `display` of Add to `inline-block`
+            index Editor to B
+            set style `display` of Editor to `block`
+            clear Editor
+            put element B of BlockNames into BlockName
+            put property BlockName of Blocks into Block
+            put the json keys of Block into PropertyNames
+            put the json count of PropertyNames into N
+            set the elements of PropertySelect to N
+            set the elements of PropertyValue to N
+            set the elements of Delete to N
+            put 0 into N
+            while N is less than the json count of PropertyNames
+            begin
+                create Row in Editor
+                set the style of Row to `display:flex`
+                put element N of PropertyNames into PropertyName
+                index PropertySelect to N
+                create PropertySelect in Row
+                set the style of PropertySelect to `flex:1`
+                set PropertySelect from BlockProperties as PropertyName
+                index PropertyValue to N
+                create PropertyValue in Row
+                set the style of PropertyValue to `flex:1`
+                set the content of PropertyValue to property PropertyName of Block
+                create Cell in Row
+                set the style of Cell to `width:1.4em;text-align:center`
+                create Link in Cell
+                create Delete in Link
+                set the style of Delete to `width:1em;margin-top:0.1em`
+                set attribute `src` of Delete to `resources/icon/stop.png`
+                add 1 to N
+            end
+            on click Delete
+            begin
+            	alert `Delete ` cat the index of Delete
+            end
+        end
+        else
+        begin
+        end
+    end
+    on click Add
+    begin
+    	alert `Add ` cat the index of Add
+    end
 	stop

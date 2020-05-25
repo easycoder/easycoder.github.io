@@ -5,13 +5,14 @@
     import div Panel and variable Presentation
     
     div StepsPanel
-    div EditPanel
-    div StepsTitle
     div BlockTable
     div BlockRow
     div BlockData
     div Row
+    div Row1
     div Cell
+    div Editor
+    div Title
     button Step
     button Header
     button InsertBefore
@@ -30,6 +31,7 @@
     input DurationInput
     input TargetInput
     input URLInput
+    img AddStep
     img PlusIcon
     img DeleteIcon
     img DeleteStep
@@ -58,14 +60,6 @@
     variable N
     variable B
     
-    create EditPanel in Panel
-    set the style of EditPanel to
-    	`height:auto;max-height:50%;border:1px solid gray;margin:0.5em 0;padding:1em;overflow-y:scroll`
-    
-    create StepsTitle in Panel
-    set the style of StepsTitle to
-    	`font-weight:bold;font-size:110%;background:lightgray;padding:0.2em;text-align:center`
-    
     create StepsPanel in Panel
 	set the style of StepsPanel to `flex:1;overflow-y:scroll;margin-top:0.5em`
     
@@ -74,53 +68,100 @@
     stop
     
 Start:
+	if the message is `save`
+    begin
+    	stop
+    end
+
 	set style `display` of Panel to `flex`
 	set style `flex-direction` of Panel to `column`
     
     if Presentation is empty gosub to CreateNewPresentation
     
-	clear EditPanel
+Restart:
 	clear StepsPanel
-    set the content of StepsTitle to `Steps`
+    create Row in StepsPanel
+    set the style of Row to `display:flex`
+    create Title in Row
+    set the style of Title to `flex:1;font-size:120%;background:lightgray;text-align:center`
+    set the content of Title to `Steps`
+    create Cell in Row
+    set the style of Cell to `width:1.4em;text-align:center`
+    create Link in Cell
+    create AddStep in Link
+    set the style of AddStep to `width:1em;margin-top:0.1em`
+    set attribute `src` of AddStep to `resources/icon/plus.png`
+    on click AddStep
+    begin
+    	gosub to AddNewStep
+        go to Restart
+    end
+
 	put property `steps` of Presentation into Steps
-    set the elements of Step to the json count of Steps
-    set the elements of DeleteStep to the json count of Steps
+    put the json count of Steps into N
+    set the elements of Step to N
+    set the elements of DeleteStep to N
+    set the elements of Editor to N
     put 0 into N
     while N is less than the elements of Step
     begin
     	index Step to N
     	create Row in StepsPanel
-        set the style of Row to `display:flex;margin:0.2em 0`
-    	create Step in Row
-        set the style of Step to `flex:1;font-size:1.2em`
+        set the style of Row to `width:100%`
+        create Row1 in Row
+        set the style of Row1 to `display:flex;margin:0.2em 0`
+    	create Step in Row1
+        set the style of Step to `flex:1`
         put element N of Steps into Item
         gosub to CheckActionSyntax
         set the text of Step to property `comment` of Item
-        create Cell in Row
-        set the style of Cell to `width:2.2em;text-align:center`
-        if N is greater than 0
+        create Cell in Row1
+        set the style of Cell to `width:1.4em;text-align:center`
+        if the elements of Step is greater than 1
         begin
 	        index DeleteStep to N
-	        create DeleteStep in Cell
-	        set the style of DeleteStep to `width:1.8em`
+            create Link in Cell
+	        create DeleteStep in Link
+	        set the style of DeleteStep to `width:1em;margin-top:0.1em`
 	        set attribute `src` of DeleteStep to `resources/icon/stop.png`
         end
+        index Editor to N
+        create Editor in Row
     	add 1 to N
     end
     on click Step
     begin
-    	put the index of Step into SelectedStep
-        put 0 into N
-        while N is less than the elements of Step
+    	put SelectedStep into N
+        put the index of Step into SelectedStep
+        if SelectedStep is N
         begin
-        	index Step to N
+            index Editor to N
+            set style `display` of Editor to `none`
+            index Step to N
             set style `background` of Step to ``
-            add 1 to N
+            put -1 into SelectedStep
         end
-        put element SelectedStep of Steps into Item
-        index Step to SelectedStep
-        set style `background` of Step to `lightgray`
-        go to EditStep
+        else
+        begin
+            if N is not -1
+            begin
+                put 0 into N
+                while N is less than the elements of Step
+                begin
+                    index Editor to N
+                    set style `display` of Editor to `none`
+                    index Step to N
+                    set style `background` of Step to ``
+                    add 1 to N
+                end
+            end
+            put element SelectedStep of Steps into Item
+            index Step to SelectedStep
+            set style `background` of Step to `lightgray`
+            index Editor to SelectedStep
+            set style `display` of Editor to `block`
+            go to EditStep
+      	end
     end
 
 !	Set up the fixed lists
@@ -145,6 +186,8 @@ Start:
     json add `true` to ContinueTypes
     json add `false` to ContinueTypes
     
+    put -1 into SelectedStep
+    
     stop
 
 CreateNewPresentation:
@@ -155,15 +198,19 @@ CreateNewPresentation:
     set property `defaults` of Presentation to Item
     set property `blocks` of Presentation to Item
     set property `content` of Presentation to Item
-    set Item to object
-    set property `comment` of Item to `Wait for user input`
-    set property `action` of Item to `hold`
-    set property `duration` of Item to 0
-    set property `label` of Item to ``
     set Array to array
-    json add Item to Array
     set property `steps` of Presentation to Array
 	return
+
+!	Add a new step after the current one
+AddNewStep:
+    set Item to object
+    set property `comment` of Item to `New step`
+    set property `action` of Item to ``
+    put property `steps` of Presentation into Array
+    json add Item to Array
+    set property `steps` of Presentation to Array
+    return
 
 !	Edit a single step
 EditStep:
@@ -172,8 +219,8 @@ EditStep:
     put the json keys of Blocks into BlockNames
     put the json keys of Content into ContentNames
 
-	clear EditPanel
-    create Table in EditPanel
+    clear Editor
+    create Table in Editor
 
 ReloadStepEditor:
     set the style of Table to `width:100%`

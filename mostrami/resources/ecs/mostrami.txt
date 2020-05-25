@@ -308,6 +308,7 @@ L2:
     gosub to SetupContent
     gosub to SetupDefaults
     gosub to SelectSection
+    put Presentation into Current
 	stop
 
 SetupSteps:
