@@ -42,7 +42,7 @@ Start:
     
     create GlobalTitle in Panel
     set the style of GlobalTitle to `font-weight:bold;font-size:110%;background:lightgray;`
-    	cat `padding:0.2em;text-align:center;margin-top:1em`
+    	cat `padding:0.2em;text-align:center;margin-top:0.5em`
     
     create GlobalPanel in Panel
 	set the style of GlobalPanel to

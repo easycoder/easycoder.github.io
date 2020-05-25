@@ -240,8 +240,8 @@ L2:
     	clear FileIsOpen
         set the content of NameEditor to empty
         put empty into CurrentScriptName
-        put empty into Presentation
-        put empty into Current
+        gosub to CreateNewPresentation
+        put Presentation into Current
     	gosub to UpdateCurrentSection
 	end
 
@@ -303,6 +303,7 @@ L2:
         end
     end
     
+    gosub to CreateNewPresentation
     gosub to SetupSteps
     gosub to SetupBlocks
     gosub to SetupContent
@@ -310,6 +311,18 @@ L2:
     gosub to SelectSection
     put Presentation into Current
 	stop
+
+CreateNewPresentation:
+    set Presentation to object
+    set Item to object
+    set property `global` of Presentation to Item
+    set property `container` of Presentation to Item
+    set property `defaults` of Presentation to Item
+    set property `blocks` of Presentation to Item
+    set property `content` of Presentation to Item
+    set Item to array
+    set property `steps` of Presentation to Item
+	return
 
 SetupSteps:
     if StepsModule is not running

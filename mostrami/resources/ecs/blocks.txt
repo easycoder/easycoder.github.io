@@ -7,6 +7,7 @@
     div Editor
     div Row
     div Cell
+    div Title
     table Table
     tr TR
     td TD
@@ -14,6 +15,7 @@
     input PropertyValue
     button EditButton
     img Add
+    img AddBlock
     img Delete
     a Link
     variable Blocks
@@ -23,6 +25,7 @@
     variable BlockProperties
     variable PropertyNames
     variable PropertyName
+    variable SelectedBlock
     variable Name
     variable Action
     variable N
@@ -54,15 +57,39 @@ Start:
     json add `blockBackground` to BlockProperties
     json add `blockBorder` to BlockProperties
     json add `blockBorderRadius` to BlockProperties
-    
+
+Restart:
 	put property `blocks` of Presentation into Blocks
     put the json keys of Blocks into BlockNames
-    create Table in Panel
-    set the style of Table to `width:100%;border:1px solid black`
-    put the json count of BlockNames into N
+
+	clear Panel
+    create Row in Panel
+    set the style of Row to `display:flex;margin-top:0.5em`
+    create Title in Row
+    set the style of Title to
+    	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center`
+    set the content of Title to `Blocks`
+    create Cell in Row
+    set the style of Cell to `width:1.4em;text-align:center`
+    create Link in Cell
+    create AddBlock in Link
+    set the style of AddBlock to `width:1em;margin-top:0.1em`
+    set attribute `src` of AddBlock to `resources/icon/plus.png`
+    on click AddBlock
+    begin
+    	put prompt `Name of new block:` with `new block` into BlockName
+        set Block to object
+        set property BlockName of Blocks to Block
+        set property `blocks` of Presentation to Blocks
+        go to Restart
+    end
+
+	put the json count of BlockNames into N
     set the elements of EditButton to N
     set the elements of Editor to N
     set the elements of Add to N
+    create Table in Panel
+    if N is greater than 0 set the style of Table to `width:100%;border:1px solid black`
     put 0 into B
     while B is less than the elements of EditButton
     begin
@@ -93,7 +120,7 @@ Start:
     end
     on click EditButton
     begin
-        put the index of EditButton into B
+        put the index of EditButton into SelectedBlock
         put the text of EditButton into Action
         put 0 into N
         while N is less than the json count of BlockNames
@@ -107,9 +134,10 @@ Start:
             set style `display` of Editor to `none`
             add 1 to N
         end
-        index EditButton to B
+        index EditButton to SelectedBlock
     	if Action is `Edit`
         begin
+RestartEditor:
         	set style `background` of EditButton to `lightgray`
         	set the text of EditButton to `Close`
             index Add to B
@@ -157,6 +185,11 @@ Start:
     end
     on click Add
     begin
-    	alert `Add ` cat the index of Add
+    	index BlockNames to SelectedBlock
+        put property BlockNames of Blocks into Block
+    	set property ` ` of Block to ` `
+        set property BlockNames of Blocks to Block
+        set property `blocks` of Presentation to Blocks
+        go to RestartEditor
     end
 	stop
