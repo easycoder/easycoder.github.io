@@ -168,21 +168,23 @@
   stop
 
 DoOpen:
+  if FileIsOpen codemirror close ContentEditor
   put the content of ContentEditor into Content
   if Content is not Current
   begin
     if confirm `Content has changed. Do you want to save it?`
     begin
       rest post Content to `_save/ecs/' cat CurrentName
+	  codemirror attach to ContentEditor
+	  codemirror set content of ContentEditor to Content
     end
-    else stop
-!    begin
-!  		codemirror attach to ContentEditor
-!  		codemirror set content of ContentEditor to Content
-!    	stop
-!    end
+    else
+    begin
+      codemirror attach to ContentEditor
+      codemirror set content of ContentEditor to Content
+      stop
+    end
   end
-  if FileIsOpen codemirror close ContentEditor
 
 ! Animate the background
   set style `display` of Overlay to `block`
