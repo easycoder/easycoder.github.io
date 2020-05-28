@@ -26,6 +26,7 @@
     select TargetSelect
     select TransitionSelect
     select ContinueSelect
+    input InitInput
     input TitleInput
     input LabelInput
     input DurationInput
@@ -39,11 +40,10 @@
     variable Steps
     variable SelectedStep
     variable CurrentStep
-    variable PreviousStep
-    variable Comment
     variable Action
     variable Blocks
     variable Block
+    variable Contents
     variable Content
     variable Target
     variable Types
@@ -51,16 +51,20 @@
     variable URL
     variable Names
     variable ActionNames
+    variable InitProperties
+    variable InitProperty
     variable BlockNames
     variable ContentNames
     variable TransitionTypes
     variable TransitionType
     variable ContinueTypes
     variable TrueFalse
-    variable Array
+    variable Response
     variable N
     variable B
-    
+
+    put -1 into SelectedStep
+
     create StepsPanel in Panel
 	set the style of StepsPanel to `flex:1;overflow-y:scroll;margin-top:0.5em`
     
@@ -71,7 +75,12 @@
 Start:
 	if the message is `save`
     begin
-    	stop
+    	if SelectedStep is not -1
+        begin
+	        gosub to SaveCurrentStep
+	        put -1 into SelectedStep
+        end
+        stop
     end
 
 	set style `display` of Panel to `flex`
@@ -91,16 +100,14 @@ Restart:
     create AddStep in Link
     set the style of AddStep to `width:1em;margin-top:0.1em`
     set attribute `src` of AddStep to `resources/icon/plus.png`
-    on click AddStep
-    begin
-    	gosub to AddNewStep
-        go to Restart
-    end
+    on click AddStep go to AddNewStep
 
 	put property `steps` of Presentation into Steps
     put the json count of Steps into N
     set the elements of StepButton to N
     set the elements of DeleteStep to N
+    set the elements of TitleInput to N
+    set the elements of LabelInput to N
     set the elements of Editor to N
     put 0 into N
     while N is less than the elements of StepButton
@@ -127,7 +134,7 @@ Restart:
     end
     on click StepButton
     begin
-    	gosub to SaveCurrentStep
+       	gosub to SaveCurrentStep
     	put SelectedStep into N
         put the index of StepButton into SelectedStep
         if SelectedStep is N
@@ -136,12 +143,14 @@ Restart:
             set style `display` of Editor to `none`
             index StepButton to N
             set style `background` of StepButton to ``
+        	gosub to SaveCurrentStep
             put -1 into SelectedStep
         end
         else
         begin
             if N is not -1
             begin
+    			gosub to SaveCurrentStep
                 put 0 into N
                 while N is less than the elements of StepButton
                 begin
@@ -170,6 +179,7 @@ Restart:
 
 !	Set up the fixed lists
     set ActionNames to array
+    json add `init` to ActionNames
     json add `set content` to ActionNames
     json add `show` to ActionNames
     json add `hide` to ActionNames
@@ -181,6 +191,11 @@ Restart:
     json add `transition` to ActionNames
     json add `goto` to ActionNames
     json add `load` to ActionNames
+    set InitProperties to array
+    json add `title` to InitProperties
+    json add `aspect ratio` to InitProperties
+    json add `background` to InitProperties
+    json add `border` to InitProperties
     set TransitionTypes to array
     json add `block position` to TransitionTypes
     json add `block size` to TransitionTypes
@@ -190,29 +205,59 @@ Restart:
     json add `true` to ContinueTypes
     json add `false` to ContinueTypes
     
-    put -1 into SelectedStep
     put property `steps` of Presentation into Steps
     
     stop
 
-!	Add a new step after the current one
+!	Add a new step to the list
 AddNewStep:
+	gosub to CreateNewStep
+    json add CurrentStep to Steps
+    go to ASA3
+
+!	Add a step before the current one
+AddStepBefore:
+    put the json count of Steps into N
+    set CurrentStep to object
+    json add CurrentStep to Steps
+    go to ASA2
+
+!	Add a step after the current one
+AddStepAfter:
+    put the json count of Steps into N
+    set CurrentStep to object
+    json add CurrentStep to Steps
+    add 1 to SelectedStep
+ASA2:
+    while N is greater than SelectedStep
+    begin
+    	take 1 from N
+        put element N of Steps into CurrentStep
+        add 1 to N
+        set element N of Steps to CurrentStep
+        take 1 from N
+    end
+    gosub to CreateNewStep
+    set element N of Steps to CurrentStep
+ASA3:
+    put -1 into SelectedStep
+    set property `steps` of Presentation to Steps
+    go to Restart
+
+CreateNewStep:
     set CurrentStep to object
     set property `comment` of CurrentStep to `New step`
     set property `action` of CurrentStep to ``
     set property `label` of CurrentStep to ``
-    json add CurrentStep to Steps
-    set property `steps` of Presentation to Steps
-    return
+	return
 
 !	Edit a single step
 EditStep:
 	put property `blocks` of Presentation into Blocks
-    put property `content` of Presentation into Content
+    put property `content` of Presentation into Contents
     put the json keys of Blocks into BlockNames
-    put the json keys of Content into ContentNames
+    put the json keys of Contents into ContentNames
     put element SelectedStep of Steps into CurrentStep
-    put CurrentStep into PreviousStep
 
     clear Editor
     create Table in Editor
@@ -224,9 +269,19 @@ ReloadStepEditor:
     set the style of TD to `width:6em`
     set the content of TD to `Title:`
     create TD in TR
+    index TitleInput to SelectedStep
     create TitleInput in TD
     set the style of TitleInput to `width:100%`
     set the content of TitleInput to property `comment` of CurrentStep
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `Label:`
+    create TD in TR
+    index LabelInput to SelectedStep
+    create LabelInput in TD
+    set the style of LabelInput to `width:100%`
+    set the content of LabelInput to property `label` of CurrentStep
     create TR in Table
     create TD in TR
     set the content of TD to `Action:`
@@ -235,7 +290,8 @@ ReloadStepEditor:
     set the style of ActionSelect to `width:100%`
     put property `action` of CurrentStep into Action
     set ActionSelect from ActionNames as Action
-    if Action is `set content` gosub to EditSetContent
+    if Action is `init` gosub to EditInit
+    else if Action is `set content` gosub to EditSetContent
     else if Action is `show` gosub to EditShow
     else if Action is `hide` gosub to EditHide
     else if Action is `pause` gosub to EditPause
@@ -251,22 +307,23 @@ ReloadStepEditor:
     end
     on change ActionSelect
     begin
-    	if confirm `Changing the action will remove all step data. Do you want to continue?`
+    	set Response
+    	if Action is not empty
         begin
-        	put the selected item in ActionSelect into Action
+            if not confirm `Changing the action will remove all step data. Do you want to continue?`
+            	clear Response
+        end
+        if Response
+        begin
+        	index StepButton to SelectedStep
+            set property `comment` of CurrentStep to TitleInput
+            put the selected item in ActionSelect into Action
             gosub to CreateNewAction
             clear Table
             go to ReloadStepEditor
         end
+        else set ActionSelect from ActionNames as property `action` of CurrentStep
     end
-    create TR in Table
-    create TD in TR
-    set the style of TD to `width:6em`
-    set the content of TD to `Label:`
-    create TD in TR
-    create LabelInput in TD
-    set the style of LabelInput to `width:100%`
-    set the content of LabelInput to property `label` of CurrentStep
     
 !	Add the buttons below the table
     create TR in Table
@@ -275,20 +332,40 @@ ReloadStepEditor:
     create InsertBefore in TD
     set the style of InsertBefore to `width:50%`
     set the text of InsertBefore to `Add Step Before`
-    on click InsertBefore
-    begin
-    	alert `Insert Before`
-    end
+    on click InsertBefore go to AddStepBefore
     create InsertAfter in TD
     set the style of InsertAfter to `width:50%`
     set the text of InsertAfter to `Add Step After`
-    on click InsertAfter
-    begin
-    	alert `Insert After`
-    end
+    on click InsertAfter go to AddStepAfter
 	stop
 
 !	Editors for the various Action types
+
+EditInit:
+	create TR in Table
+    create TD in TR
+    set the content of TD to `Properties:`
+    create TD in TR
+	create BlockTable in TD
+    set the style of BlockTable to `width:100%;border:1px solid gray`
+    put the json count of InitProperties into N
+    set the elements of InitInput to N
+    put 0 into B
+    while B is less than N
+    begin
+	   	put element B of InitProperties into InitProperty
+        create BlockRow in BlockTable
+        set the style of BlockRow to `display:flex`
+        create Cell in BlockRow
+        set the style of Cell to `width:6em;padding-left:0.2em`
+        set the content of Cell to InitProperty
+        index InitInput to B
+        create InitInput in BlockRow
+        set the style of InitInput to `flex:1`
+        set the content of InitInput to property InitProperty of CurrentStep
+    	add 1 to B
+    end
+	return
 
 EditSetContent:
 	create TR in Table
@@ -353,17 +430,19 @@ EditSetContent:
     begin
     	put the index of BlockSelect into N
         put element N of Blocks into Block
-        set property `block` of Block to the selected item in BlockSelect
+        set property `block` of Block to BlockSelect
         set element N of Blocks to Block
         set property `blocks` of CurrentStep to Blocks
+        set element SelectedStep of Steps to CurrentStep
     end
     on change ContentSelect
     begin
     	put the index of ContentSelect into N
         put element N of Blocks into Block
-        set property `content` of Block to the selected item in ContentSelect
+        set property `content` of Block to ContentSelect
         set element N of Blocks to Block
         set property `blocks` of CurrentStep to Blocks
+        set element SelectedStep of Steps to CurrentStep
     end
     on click DeleteIcon
     begin
@@ -600,10 +679,25 @@ EditContinue:
 
 !	Create a new action with a full set of empty properties
 CreateNewAction:
-    set property `comment` of CurrentStep to `New step: ` cat Action
+	index TitleInput to SelectedStep
+    if the text of TitleInput is empty
+    begin
+    	set property `comment` of CurrentStep to `New step: ` cat Action
+    end
     set property `action` of CurrentStep to Action
     set property `label` of CurrentStep to empty
-    if Action is `set content`
+    if Action is `init`
+    begin
+    	put 0 into N
+        while N is less than the json count of InitProperties
+        begin
+        	put element N of InitProperties into InitProperty
+        	set property InitProperty of CurrentStep to empty
+        	add 1 to N
+        end
+        set property `aspect ratio` of CurrentStep to `WW:HH`
+    end
+    else if Action is `set content`
     begin
     	put property `blocks` of CurrentStep into Blocks
         if Blocks is empty
@@ -700,9 +794,27 @@ CreateNewAction:
 
 !	Save the current step
 SaveCurrentStep:
-print CurrentStep
+	if SelectedStep is -1 return
+	index TitleInput to SelectedStep
+    put element SelectedStep of Steps into CurrentStep
+    set property `comment` of CurrentStep to the text of TitleInput
+    index StepButton to SelectedStep
+    set the text of StepButton to the content of TitleInput
+	index LabelInput to SelectedStep
+    set property `label` of CurrentStep to the content of LabelInput
 	put property `action` of CurrentStep into Action
-    if Action is `set content`
+    if Action is `init`
+    begin
+        put 0 into N
+        while N is less than the json count of InitProperties
+        begin
+            put element N of InitProperties into InitProperty
+            index InitInput to N
+            set property InitProperty of CurrentStep to the content of InitInput
+            add 1 to N
+        end
+    end
+    else if Action is `set content`
     begin
     	put property `blocks` of CurrentStep into Blocks
         if Blocks is empty
