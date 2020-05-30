@@ -722,104 +722,42 @@ const IWSY = (container, script) => {
         handler(step);
     };
 
-    // Initialization
-    const setup = () => {
-        container.innerHTML = ``;
-        document.removeEventListener(`click`, init);
-        if (mode === `auto`) {
-            document.addEventListener(`click`, onClick);
-        }
-        document.onkeydown = null;
-        script.container = container;
-        container.style.position = `relative`;
-        container.style.overflow = `hidden`;
-        container.style.cursor = 'none';
-        container.style[`background-size`] = `cover`;
-        script.speed = `normal`;
-        script.labels = {};
-        for (const [index, step] of script.steps.entries()) {
-            step.index = index;
-            step.script = script;
-            if (typeof step.label !== `undefined`) {
-                script.labels[step.label] = index;
-            }
-            if (index < script.steps.length - 1) {
-                step.next = () => {
-                    const next = step.index + 1;
-                    setTimeout(() => {
-                        doStep(script.steps[next]);
-                    }, 0);
-                }
-            }
-            else {
-                step.next = () => {
-                    console.log(`Step ${index + 1}: Finished`);  
-                    container.style.cursor = 'pointer';
-                }
-            };
-        }
-        IWSY.plugins = {};
-        initBlocks();
-        preloadImages();
-        doStep(script.steps[0]);
-    };
-
-    // Wait for a click/tap or a keypress to start
-    document.addEventListener(`click`, init);
-    document.onkeydown = function (event) {
-        if (event.code === `Enter`) {
-            mode = `auto`;
-        }
-        setup();
-        return true;
-    };
-};
-
-window.onload = () => {
-    const createCORSRequest = (url) => {
-        let xhr = new XMLHttpRequest();
-        if (`withCredentials` in xhr) {
-    
-            // Check if the XMLHttpRequest object has a "withCredentials" property.
-            // "withCredentials" only exists on XMLHTTPRequest2 objects.
-            xhr.open(`GET`, url, true);
-    
-        } else if (typeof XDomainRequest != `undefined`) {
-    
-            // Otherwise, check if XDomainRequest.
-            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-            xhr = new XDomainRequest();
-            xhr.open(`GET`, url);
-    
-        } else {
-    
-            // Otherwise, CORS is not supported by the browser.
-            xhr = null;
-    
-        }
-        return xhr;
-    };
-
-    const scriptElement = document.getElementById(`iwsy-script`);
-    if (scriptElement) {
-        const request = createCORSRequest(`${scriptElement.innerText}?v=${Math.floor(Date.now())}`);
-        if (!request) {
-            throw Error(`Unable to access the JSON script`);
-        }
-
-        request.onload = () => {
-            if (200 <= request.status && request.status < 400) {
-                const script = JSON.parse(request.responseText);
-                IWSY(document.getElementById(`iwsy-container`), script);
-        } else {
-                throw Error(`Unable to access the JSON script`);
-            }
-        };
-
-        request.onerror = () => {
-            throw Error(`Unable to access the JSON script`);
-        };
-
-        request.send();
+    container.innerHTML = ``;
+    document.removeEventListener(`click`, init);
+    if (mode === `auto`) {
+        document.addEventListener(`click`, onClick);
     }
+    document.onkeydown = null;
+    script.container = container;
+    container.style.position = `relative`;
+    container.style.overflow = `hidden`;
+    container.style.cursor = 'none';
+    container.style[`background-size`] = `cover`;
+    script.speed = `normal`;
+    script.labels = {};
+    for (const [index, step] of script.steps.entries()) {
+        step.index = index;
+        step.script = script;
+        if (typeof step.label !== `undefined`) {
+            script.labels[step.label] = index;
+        }
+        if (index < script.steps.length - 1) {
+            step.next = () => {
+                const next = step.index + 1;
+                setTimeout(() => {
+                    doStep(script.steps[next]);
+                }, 0);
+            }
+        }
+        else {
+            step.next = () => {
+                console.log(`Step ${index + 1}: Finished`);  
+                container.style.cursor = 'pointer';
+            }
+        };
+    }
+    IWSY.plugins = {};
+    initBlocks();
+    preloadImages();
+    doStep(script.steps[0]);
 };

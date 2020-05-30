@@ -36,6 +36,7 @@
     img PlusIcon
     img DeleteIcon
     img DeleteStep
+    img ShowStep
     a Link
     variable Steps
     variable SelectedStep
@@ -44,7 +45,6 @@
     variable Blocks
     variable Block
     variable Contents
-    variable Content
     variable Target
     variable Types
     variable Duration
@@ -104,6 +104,7 @@ Restart:
 
 	put property `steps` of Presentation into Steps
     put the json count of Steps into N
+    set the elements of ShowStep to N
     set the elements of StepButton to N
     set the elements of DeleteStep to N
     set the elements of TitleInput to N
@@ -117,10 +118,17 @@ Restart:
         set the style of Row to `width:100%`
         create Row1 in Row
         set the style of Row1 to `display:flex;margin-bottom:0.2em`
+        create Cell in Row1
+        set the style of Cell to `width:1.4em;text-align:center`
+        create Link in Cell
+    	index ShowStep to N
+        create ShowStep in Link
+        set the style of ShowStep to `width:1em;margin-top:0.1em`
+        set attribute `src` of ShowStep to `resources/icon/binoculars.png`
     	create StepButton in Row1
         set the style of StepButton to `flex:1`
         put element N of Steps into CurrentStep
-        set the text of StepButton to property `comment` of CurrentStep
+        set the text of StepButton to property `title` of CurrentStep
         create Cell in Row1
         set the style of Cell to `width:1.4em;text-align:center`
         index DeleteStep to N
@@ -131,7 +139,7 @@ Restart:
         index Editor to N
         create Editor in Row
     	add 1 to N
-    end
+	end
     on click StepButton
     begin
        	gosub to SaveCurrentStep
@@ -246,7 +254,7 @@ ASA3:
 
 CreateNewStep:
     set CurrentStep to object
-    set property `comment` of CurrentStep to `New step`
+    set property `title` of CurrentStep to `New step`
     set property `action` of CurrentStep to ``
     set property `label` of CurrentStep to ``
 	return
@@ -272,7 +280,7 @@ ReloadStepEditor:
     index TitleInput to SelectedStep
     create TitleInput in TD
     set the style of TitleInput to `width:100%`
-    set the content of TitleInput to property `comment` of CurrentStep
+    set the content of TitleInput to property `title` of CurrentStep
     create TR in Table
     create TD in TR
     set the style of TD to `width:6em`
@@ -316,7 +324,7 @@ ReloadStepEditor:
         if Response
         begin
         	index StepButton to SelectedStep
-            set property `comment` of CurrentStep to TitleInput
+            set property `title` of CurrentStep to TitleInput
             put the selected item in ActionSelect into Action
             gosub to CreateNewAction
             clear Table
@@ -682,7 +690,7 @@ CreateNewAction:
 	index TitleInput to SelectedStep
     if the text of TitleInput is empty
     begin
-    	set property `comment` of CurrentStep to `New step: ` cat Action
+    	set property `title` of CurrentStep to `New step: ` cat Action
     end
     set property `action` of CurrentStep to Action
     set property `label` of CurrentStep to empty
@@ -797,7 +805,7 @@ SaveCurrentStep:
 	if SelectedStep is -1 return
 	index TitleInput to SelectedStep
     put element SelectedStep of Steps into CurrentStep
-    set property `comment` of CurrentStep to the text of TitleInput
+    set property `title` of CurrentStep to the text of TitleInput
     index StepButton to SelectedStep
     set the text of StepButton to the content of TitleInput
 	index LabelInput to SelectedStep

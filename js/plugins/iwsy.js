@@ -11,16 +11,34 @@ const EasyCoder_IWSY = {
         
 			const lino = compiler.getLino();
 			const action = compiler.nextToken();
-			if ([`init`, `show`].includes(action)) {
-				compiler.next();
-				compiler.addCommand({
-					domain: `iwsy`,
-					keyword: `iwsy`,
-					lino,
-					action
-				});
-				return true;
-            }
+			switch (action) {
+				case `load`:
+					if (compiler.nextIsSymbol()) {
+						const playerRecord = compiler.getSymbolRecord();
+						if (playerRecord.keyword === `div`) {
+							const script = compiler.getNextValue();
+							compiler.addCommand({
+								domain: `iwsy`,
+								keyword: `iwsy`,
+								lino,
+								action,
+								player: playerRecord.name,
+								script
+							});
+							return true;
+						}
+					}
+					break;
+				default:
+					compiler.next();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action
+					});
+					return true;
+			}
 			return false;
 		},
 
@@ -33,6 +51,12 @@ const EasyCoder_IWSY = {
 					function () {
 						program.run(command.pc + 1);
 					});
+					return 0;
+				case `load`:
+					const playerRecord = program.getSymbolRecord(command.player);
+					const player = playerRecord.element[playerRecord.index];
+					const script = program.getValue(command.script);
+					IWSY(player, JSON.parse(script));
 					break;
 				case `show`:
 					break;
