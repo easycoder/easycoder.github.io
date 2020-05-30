@@ -52,10 +52,10 @@ Restart:
 
 	clear Panel
     create Row in Panel
-    set the style of Row to `display:flex;margin-top:0.5em`
+    set the style of Row to `display:flex`
     create Title in Row
     set the style of Title to
-    	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center`
+    	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center;margin-bottom:0.5em`
     set the content of Title to `Blocks`
     create Cell in Row
     set the style of Cell to `width:1.4em;text-align:center`
@@ -86,7 +86,7 @@ Restart:
     set the elements of Editor to N
     set the elements of DeleteBlock to N
     create Table in Panel
-    if N is greater than 0 set the style of Table to `width:100%;border:1px solid black`
+    set the style of Table to `width:100%`
     put 0 into B
     while B is less than the elements of EditButton
     begin
