@@ -1,6 +1,6 @@
-// JSON::Presenter
+// Mostrami
 
-const JSON_Presenter = (container, script) => {
+const Mostrami = (container, script) => {
 
     let mode = `manual`;
     let clicked = false;
@@ -275,6 +275,19 @@ const JSON_Presenter = (container, script) => {
     // Fade up or down
     const doFade = (step, upDown) => {
         const stepBlocks = step.blocks;
+        for (const b of stepBlocks) {
+            const block = script.blocks[b];
+            if (!block.element) {
+                switch (block.type) {
+                    case `text`:
+                        createTextBlock(block);
+                        break;
+                    case `image`:
+                        createImageBlock(block);
+                        break;
+                }
+            }
+        }
         if (script.speed === `scan`) {
             if (Array.isArray(stepBlocks)) {
                 for (const block of stepBlocks)
@@ -692,8 +705,8 @@ const JSON_Presenter = (container, script) => {
                 }
             }
         } else {
-            if (step.comment) {
-                console.log(`Step ${step.index}: ${step.comment}`);
+            if (step.title) {
+                console.log(`Step ${step.index}: ${step.title}`);
             } else {
                 console.log(`Step ${step.index}: ${step.action}`);
             }
@@ -701,7 +714,7 @@ const JSON_Presenter = (container, script) => {
         const actionName = step.action.split(` `).join(``);
         let handler = actions[actionName];
         if (typeof handler === `undefined`) {
-            handler = JSON_Presenter.plugins[actionName];
+            handler = Mostrami.plugins[actionName];
             if (typeof handler === `undefined`) {
                 throw Error(`Unknown action: '${step.action}'`);
             }
@@ -717,22 +730,11 @@ const JSON_Presenter = (container, script) => {
             document.addEventListener(`click`, onClick);
         }
         document.onkeydown = null;
-        // if (script.global.title) {
-        //     document.title = script.global.title;
-        // }
-        // script.container.element = container;
-        // const height = Math.round(parseFloat(container.offsetWidth)
-        //     * script.global.aspectH / script.global.aspectW);
-        // container.style.height = `${Math.round(height)}px`;
-        // container.style.position = `relative`;
-        // container.style.overflow = `hidden`;
-        // container.style.cursor = 'none';
-        // container.style[`background-size`] = `cover`;
-        // for (const property of containerStyles) {
-        //     if (typeof script.container[property] !== 'undefined') {
-        //         container.style[property] = script.container[property];
-        //     }
-        // }
+        script.container = container;
+        container.style.position = `relative`;
+        container.style.overflow = `hidden`;
+        container.style.cursor = 'none';
+        container.style[`background-size`] = `cover`;
         script.speed = `normal`;
         script.labels = {};
         for (const [index, step] of script.steps.entries()) {
@@ -756,7 +758,8 @@ const JSON_Presenter = (container, script) => {
                 }
             };
         }
-        JSON_Presenter.plugins = {};
+        console.log(JSON.stringify(script, 0, 2));
+        Mostrami.plugins = {};
         initBlocks();
         preloadImages();
         doStep(script.steps[0]);
@@ -808,7 +811,7 @@ window.onload = () => {
         request.onload = () => {
             if (200 <= request.status && request.status < 400) {
                 const script = JSON.parse(request.responseText);
-                JSON_Presenter(document.getElementById(`jp-container`), script);
+                Mostrami(document.getElementById(`jp-container`), script);
         } else {
                 throw Error(`Unable to access the JSON script`);
             }
