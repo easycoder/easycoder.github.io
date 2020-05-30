@@ -66,7 +66,7 @@
     put -1 into SelectedStep
 
     create StepsPanel in Panel
-	set the style of StepsPanel to `flex:1;overflow-y:scroll;margin-top:0.5em`
+	set the style of StepsPanel to `flex:1;overflow-y:scroll`
     
     on message go to Start
     set ready
@@ -92,7 +92,7 @@ Restart:
     set the style of Row to `display:flex`
     create Title in Row
     set the style of Title to
-    	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center`
+    	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center;margin-bottom:0.5em`
     set the content of Title to `Steps`
     create Cell in Row
     set the style of Cell to `width:1.4em;text-align:center`
@@ -116,7 +116,7 @@ Restart:
     	create Row in StepsPanel
         set the style of Row to `width:100%`
         create Row1 in Row
-        set the style of Row1 to `display:flex;margin:0.2em 0`
+        set the style of Row1 to `display:flex;margin-bottom:0.2em`
     	create StepButton in Row1
         set the style of StepButton to `flex:1`
         put element N of Steps into CurrentStep
