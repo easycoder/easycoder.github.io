@@ -60,6 +60,7 @@
     variable ContinueTypes
     variable TrueFalse
     variable Response
+    variable Message
     variable N
     variable B
 
@@ -186,8 +187,20 @@ Restart:
     end
     on click ShowStep
     begin
+    	put 0 into N
+        while N is less than the json count of Steps
+        begin
+        	index StepButton to N
+        	set style `background` of StepButton to ``
+        	add 1 to N
+        end
     	put the index of ShowStep into N
-        send N to parent
+        index StepButton to N
+        set style `background` of StepButton to `#ccf`
+        set Message to object
+        set property `action` of Message to `goto`
+        set property `index` of Message to N
+        send Message to parent
     end
 
 !	Set up the fixed lists
@@ -921,4 +934,8 @@ SaveCurrentStep:
     end
     set element SelectedStep of Steps to CurrentStep
     set property `steps` of Presentation to Steps
+    set Message to object
+    set property `action` of Message to `script`
+    set property `script` of Message to Presentation
+    send Message to parent
 	return

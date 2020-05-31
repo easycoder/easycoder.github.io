@@ -1,7 +1,8 @@
 // IWSY
 
-const IWSY = (container, script) => {
+const IWSY = (container, text) => {
 
+    let script = text;
     let mode = `manual`;
     let clicked = false;
 
@@ -94,7 +95,6 @@ const IWSY = (container, script) => {
 
     // Create a block.
     const createBlock = (block) => {
-        const container = block.container;
         if (block.element) {
             container.removeChild(block.element);
         }
@@ -104,6 +104,9 @@ const IWSY = (container, script) => {
         const element = document.createElement(`div`);
         container.appendChild(element);
         block.element = element;
+        if (script.speed === `scan`) {
+            element.style[`display`] = `none`;
+        }
         element.style[`position`] = `absolute`;
         element.style[`opacity`] = `0.0`;
         let val = properties.left;
@@ -564,13 +567,6 @@ const IWSY = (container, script) => {
         }
     };
 
-    // Go to a specified step number
-    const gotoStep = (target) => {
-        script.scanTarget = target;
-        script.singleStep = true;
-        scan();
-    };
-
     // Load a plugin action
     const load = step => {
         if (script.speed === `scan`) {
@@ -616,13 +612,65 @@ const IWSY = (container, script) => {
 
     // Chain to another presentation
     const chain = step => {
-        step.next()
+        step.next();
     };
 
     // Embed another presentation
     const embed = step => {
-        step.next()
+        step.next();
     };
+
+    // Go to a specified step number
+    const gotoStep = (target) => {
+        script.scanTarget = target;
+        script.singleStep = true;
+        scan();
+    };
+
+    // Replace the script
+    const setScript = newScript => {
+        script = newScript;
+        initScript();
+        initBlocks();
+    };
+
+    // Initialize the script
+    const initScript = () => {
+        document.onkeydown = null;
+        script.container = container;
+        container.style.position = `relative`;
+        container.style.overflow = `hidden`;
+        container.style.cursor = 'none';
+        container.style[`background-size`] = `cover`;
+        script.speed = `normal`;
+        script.singleStep = true;
+        script.labels = {};
+        for (const [index, step] of script.steps.entries()) {
+            step.index = index;
+            step.script = script;
+            if (typeof step.label !== `undefined`) {
+                script.labels[step.label] = index;
+            }
+            if (index < script.steps.length - 1) {
+                step.next = () => {
+                    if (script.singleStep && script.speed != `scan`) {
+                        console.log(`Single-step`);
+                    } else {
+                        const next = step.index + 1;
+                        setTimeout(() => {
+                            doStep(script.steps[next]);
+                        }, 0);
+                    }
+                }
+            }
+            else {
+                step.next = () => {
+                    console.log(`Step ${index + 1}: Finished`);  
+                    container.style.cursor = 'pointer';
+                }
+            };
+        };
+    }
 
     const actions = {
         init,
@@ -649,7 +697,7 @@ const IWSY = (container, script) => {
                 for (const name in script.blocks) {
                     const block = script.blocks[name];
                     if (block.element) {
-                        block.element.style.opacity = block.opacity;
+                        block.element.style.display = `block`;
                     }
                 }
             }
@@ -676,43 +724,13 @@ const IWSY = (container, script) => {
     if (mode === `auto`) {
         document.addEventListener(`click`, onClick);
     }
-    document.onkeydown = null;
-    script.container = container;
-    container.style.position = `relative`;
-    container.style.overflow = `hidden`;
-    container.style.cursor = 'none';
-    container.style[`background-size`] = `cover`;
-    script.speed = `normal`;
-    script.singleStep = true;
-    script.labels = {};
-    for (const [index, step] of script.steps.entries()) {
-        step.index = index;
-        step.script = script;
-        if (typeof step.label !== `undefined`) {
-            script.labels[step.label] = index;
-        }
-        if (index < script.steps.length - 1) {
-            step.next = () => {
-                if (script.singleStep && script.speed != `scan`) {
-                    console.log(`Single-step`);
-                } else {
-                    const next = step.index + 1;
-                    setTimeout(() => {
-                        doStep(script.steps[next]);
-                    }, 0);
-                }
-            }
-        }
-        else {
-            step.next = () => {
-                console.log(`Step ${index + 1}: Finished`);  
-                container.style.cursor = 'pointer';
-            }
-        };
-    }
+    initScript();
     IWSY.plugins = {};
     initBlocks();
     preloadImages();
     doStep(script.steps[0]);
-    return gotoStep;
+    return {
+        setScript,
+        gotoStep
+    };
 };
