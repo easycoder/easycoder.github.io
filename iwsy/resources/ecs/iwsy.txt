@@ -46,6 +46,7 @@
     variable Section
     variable Item
     variable CurrentScriptName
+    variable Action
     variable N
 
   ! The browser
@@ -308,14 +309,16 @@ L2:
     put Presentation into LastSavedState
     gosub to SetupSteps
     gosub to SetupBlocks
-    gosub to SetupContent
+    gosub to SetupContent 
     put 0 into N
     gosub to SelectSection
     
     on message
     begin
-    	put the message into N
-        iwsy goto N
+    	put the message into Message
+        put property `action` of Message into Action
+        if Action is `goto` iwsy goto property `index` of Message
+        else if Action is `script` iwsy script property `script` of Message
     end
 	stop
 

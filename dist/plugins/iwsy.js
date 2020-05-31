@@ -48,6 +48,16 @@ const EasyCoder_IWSY = {
 						target
 					});
 					return true;
+				case `script`:
+					const script = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						script
+					});
+					return true;
 				default:
 					break;
 			}
@@ -71,12 +81,15 @@ const EasyCoder_IWSY = {
 					player.style.background = `none`;
 					player.style.border = `none`;
 					const script = program.getValue(command.script);
-					EasyCoder.iwsyGotoStep = IWSY(player, JSON.parse(script));
+					EasyCoder.iwsyFunctions = IWSY(player, JSON.parse(script));
 					break;
 				case `goto`:
-					EasyCoder.iwsyGotoStep(program.getValue(command.target));
+					EasyCoder.iwsyFunctions.gotoStep(program.getValue(command.target));
 					break;
-			}
+				case `script`:
+					EasyCoder.iwsyFunctions.setScript(JSON.parse(program.getValue(command.script)));
+					break;
+				}
 			return command.pc + 1;
 		}
 	},

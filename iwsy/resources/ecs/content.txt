@@ -12,9 +12,7 @@
     tr TR
     td TD
     span ItemNameSpan
-    span Span
     input ItemNameInput
-    select TypeSelect
     textarea TextArea
     button EditButton
     img AddItem
@@ -24,18 +22,12 @@
     variable Item
     variable ItemNames
     variable ItemName
-    variable TypeNames
-    variable Content
     variable SelectedItem
     variable Action
     variable N
     variable B
     
     put -1 into SelectedItem
-    
-    set TypeNames to array
-    json add `text` to TypeNames
-    json add `image` to TypeNames
     
     on message go to Start
     set ready
@@ -44,8 +36,8 @@
 Start:
 	if the message is `save`
     begin
-    	if SelectedItem is -1 stop
-        go to SaveSelectedItem
+        gosub to SaveSelectedItem
+        stop
     end
 
 Restart:
@@ -78,7 +70,6 @@ Restart:
     set the elements of EditButton to N
     set the elements of Editor to N
     set the elements of DeleteItem to N
-    set the elements of TypeSelect to N
     set the elements of TextArea to N
     create Table in Panel
     set the style of Table to `width:100%`
@@ -116,6 +107,7 @@ Restart:
     end
     on click EditButton
     begin
+    	gosub to SaveSelectedItem
         put the index of EditButton into SelectedItem
         put the text of EditButton into Action
         put 0 into N
@@ -137,10 +129,9 @@ Restart:
     	if Action is `Edit`
         begin
         	set style `background` of EditButton to `lightgray`
-        	set the text of EditButton to `Content`
+        	set the text of EditButton to `Close`
             index ItemNameSpan to SelectedItem
             index ItemNameInput to SelectedItem
-            index TypeSelect to SelectedItem
             index TextArea to SelectedItem
             set style `display` of ItemNameSpan to `none`
             set style `display` of ItemNameInput to `inline`
@@ -148,23 +139,13 @@ Restart:
             set style `display` of Editor to `block`
             clear Editor
             put property ItemName of Items into Item
-            create Row in Editor
-            set the style of Row to `width:100%;display:flex`
-            create Span in Row
-            set the style of Span to `flex:1`
-            set the content of Span to `Type:`
-            create TypeSelect in Row
-            set the style of TypeSelect to `flex:1`
-            set TypeSelect from TypeNames as property `type` of Item
             create TextArea in Editor
             set the style of TextArea to `width:100%;max-width:100%;height:8em`
             put element SelectedItem of ItemNames into ItemName
-            put property `content` of Item into Content
-            replace `%0a` with newline in Content
-            set the content of TextArea to Content
-            put property ItemName of Items into Item
+            replace `%0a` with newline in Item
+            set the content of TextArea to Item
         end
-        else go to SaveSelectedItem
+        else gosub to SaveSelectedItem
     end
     on click DeleteItem
     begin
@@ -179,10 +160,9 @@ Restart:
 
 !	Save the seleced content
 SaveSelectedItem:
-	set property `type` of Item to TypeSelect
-    put the content of TextArea into Content
-    replace newline with `%0a` in Content
-    set property `content` of Item to Content
+	if SelectedItem is -1 return
+    put the content of TextArea into Item
+    replace newline with `%0a` in Item
     set property ItemName of Items to Item
     index ItemNameInput to SelectedItem
     if ItemNameInput is not ItemName
@@ -193,4 +173,4 @@ SaveSelectedItem:
     	set property ItemName of Items to Item
     end
     set property `content` of Presentation to Items
-	stop
+	return
