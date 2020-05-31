@@ -631,6 +631,7 @@ EditBlockList:
     	put the index of BlockSelect into N
         set element N of Blocks to the selected item in BlockSelect
         set property `blocks` of CurrentStep to Blocks
+        set element SelectedStep of Steps to CurrentStep
     end
     on click DeleteIcon
     begin
