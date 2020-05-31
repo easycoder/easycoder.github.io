@@ -47,6 +47,7 @@
     variable Item
     variable CurrentScriptName
     variable Action
+    variable Source
     variable N
 
   ! The browser
@@ -318,7 +319,11 @@ L2:
     	put the message into Message
         put property `action` of Message into Action
         if Action is `goto` iwsy goto property `index` of Message
-        else if Action is `script` iwsy script property `script` of Message
+        else if Action is `refresh`
+        begin
+        	iwsy script Presentation
+            gosub to UpdateCurrentSection
+        end
     end
 	stop
 

@@ -543,9 +543,8 @@ const IWSY = (container, text) => {
         }
     };
 
-    // Scan the script
-    const scan = () => {
-        script.speed = `scan`;
+    // Remove all the blocks from the player
+    const removeBlocks = () => {
         for (const name in script.blocks) {
             const block = script.blocks[name];
             if (block.element) {
@@ -553,6 +552,12 @@ const IWSY = (container, text) => {
                 block.element = null;
             }
         }
+    };
+
+    // Scan the script
+    const scan = () => {
+        script.speed = `scan`;
+        removeBlocks();
         doStep(script.steps[0]);
     };
 
@@ -629,6 +634,7 @@ const IWSY = (container, text) => {
 
     // Replace the script
     const setScript = newScript => {
+        removeBlocks();
         script = newScript;
         initScript();
         initBlocks();

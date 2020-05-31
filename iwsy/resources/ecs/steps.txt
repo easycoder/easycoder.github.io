@@ -934,8 +934,10 @@ SaveCurrentStep:
     end
     set element SelectedStep of Steps to CurrentStep
     set property `steps` of Presentation to Steps
+
+!	Tell the parent to refresh the script
     set Message to object
-    set property `action` of Message to `script`
-    set property `script` of Message to Presentation
+    set property `action` of Message to `refresh`
+    set property `source` of Message to `steps`
     send Message to parent
 	return

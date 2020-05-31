@@ -24,6 +24,7 @@
     variable ItemName
     variable SelectedItem
     variable Action
+    variable Message
     variable N
     variable B
     
@@ -173,4 +174,10 @@ SaveSelectedItem:
     	set property ItemName of Items to Item
     end
     set property `content` of Presentation to Items
+
+!	Tell the parent to refresh the script
+    set Message to object
+    set property `action` of Message to `refresh`
+    set property `source` of Message to `content`
+    send Message to parent
 	return
