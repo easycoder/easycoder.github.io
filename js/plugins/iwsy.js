@@ -29,7 +29,7 @@ const EasyCoder_IWSY = {
 						}
 					}
 					break;
-				default:
+				case `init`:
 					compiler.next();
 					compiler.addCommand({
 						domain: `iwsy`,
@@ -38,6 +38,18 @@ const EasyCoder_IWSY = {
 						action
 					});
 					return true;
+				case `goto`:
+					const target = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						target
+					});
+					return true;
+				default:
+					break;
 			}
 			return false;
 		},
@@ -55,10 +67,14 @@ const EasyCoder_IWSY = {
 				case `load`:
 					const playerRecord = program.getSymbolRecord(command.player);
 					const player = playerRecord.element[playerRecord.index];
+					player.innerHTML = ``;
+					player.style.background = `none`;
+					player.style.border = `none`;
 					const script = program.getValue(command.script);
-					IWSY(player, JSON.parse(script));
+					EasyCoder.iwsyGotoStep = IWSY(player, JSON.parse(script));
 					break;
-				case `show`:
+				case `goto`:
+					EasyCoder.iwsyGotoStep(program.getValue(command.target));
 					break;
 			}
 			return command.pc + 1;

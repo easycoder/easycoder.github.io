@@ -184,6 +184,11 @@ Restart:
     	set property `steps` of Presentation to Steps
         go to Restart
     end
+    on click ShowStep
+    begin
+    	put the index of ShowStep into N
+        send N to parent
+    end
 
 !	Set up the fixed lists
     set ActionNames to array

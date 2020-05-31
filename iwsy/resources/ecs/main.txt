@@ -311,6 +311,8 @@ L2:
     gosub to SetupContent
     put 0 into N
     gosub to SelectSection
+    
+    on message iwsy goto the message
 	stop
 
 CreateNewPresentation:

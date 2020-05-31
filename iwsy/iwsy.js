@@ -105,38 +105,40 @@ const IWSY = (container, script) => {
         block.element = element;
         element.style[`position`] = `absolute`;
         element.style[`opacity`] = `0.0`;
-        let val = properties.blockLeft;
+        let val = properties.left;
         if (!isNaN(val)) {
             val *= w;
         }
         element.style[`left`] = val;
-        val = properties.blockTop;
+        val = properties.top;
         if (!isNaN(val)) {
             val *= h;
         }
         element.style[`top`] = val;
-        val = properties.blockWidth;
+        val = properties.width;
         if (!isNaN(val)) {
-            val *= w;
+            val = `${val * w}px`;
         }
-        element.style[`width`] = `${val}px`;
-        val = properties.blockHeight;
+        element.style[`width`] = val;
+        val = properties.height;
         if (!isNaN(val)) {
-            val *= h;
+            val = `${val * h}px`;
         }
-        element.style[`height`] = `${val}px`;
-        element.style[`background`] = properties.blockBackground;
-        element.style[`border`] = properties.blockBorder;
+        element.style[`height`] = val;
+        element.style[`background`] = properties.background;
+        element.style[`border`] = properties.border;
         container.appendChild(element);
         val = properties.textMarginLeft;
         if (!isNaN(val)) {
-            val *= w;
+            val = `${val * w}px`;
         }
+        element.style[`width`] = val;
         const marginLeft = val;
         val = properties.textMarginTop;
         if (!isNaN(val)) {
-            val *= h;
+            val = `${val * h}px`;
         }
+        element.style[`height`] = val;
         const marginTop = val;
         const inner = document.createElement(`div`);
         inner.style[`position`] = `absolute`;
@@ -176,30 +178,30 @@ const IWSY = (container, script) => {
         block.element = element;
         element.style[`position`] = `absolute`;
         element.style[`opacity`] = `0.0`;
-        let val = properties.blockLeft;
+        let val = properties.left;
         if (!isNaN(val)) {
             val *= w;
         }
         element.style[`left`] = val;
-        val = properties.blockTop;
+        val = properties.top;
         if (!isNaN(val)) {
             val *= h;
         }
         element.style[`top`] = val;
         element.style[`top`] = val;
-        val = properties.blockWidth;
+        val = properties.width;
         if (!isNaN(val)) {
-            val *= w;
+            val = `${val * w}px`;
         }
-        element.style[`width`] = `${val}px`;
-        val = properties.blockHeight;
+        element.style[`width`] = val;
+        val = properties.height;
         if (!isNaN(val)) {
-            val *= h;
+            val = `${val * h}px`;
         }
-        element.style[`height`] = `${val}px`;
-        element.style[`background`] = properties.blockBackground;
-        element.style[`border`] = properties.blockBorder;
-        element.style[`border-radius`] = properties.blockBorderRadius;
+        element.style[`height`] = val;
+        element.style[`background`] = properties.background;
+        element.style[`border`] = properties.border;
+        element.style[`border-radius`] = properties.borderRadius;
         container.appendChild(element);
         if (script.speed === `scan`) {
             element.style.opacity = 0;
@@ -634,6 +636,13 @@ const IWSY = (container, script) => {
         }
     };
 
+    // Go to a specified step number
+    const gotoStep = (target) => {
+        script.scanTarget = target;
+        script.singleStep = true;
+        scan();
+    };
+
     // Load a plugin action
     const load = step => {
         if (script.speed === `scan`) {
@@ -652,7 +661,7 @@ const IWSY = (container, script) => {
         }
     };
 
-    // Initialize the presenttion
+    // Initialize the presentation
     const init = step => {
         if (step.title) {
             document.title = step.title;
@@ -677,6 +686,16 @@ const IWSY = (container, script) => {
         step.next();
     };
 
+    // Chain to another presentation
+    const chain = step => {
+        step.next()
+    };
+
+    // Embed another presentation
+    const embed = step => {
+        step.next()
+    };
+
     const actions = {
         init,
         setcontent,
@@ -689,7 +708,9 @@ const IWSY = (container, script) => {
         crossfade,
         transition,
         goto,
-        load
+        load,
+        chain,
+        embed
     };
 
     // Process a single step
@@ -734,6 +755,7 @@ const IWSY = (container, script) => {
     container.style.cursor = 'none';
     container.style[`background-size`] = `cover`;
     script.speed = `normal`;
+    script.singleStep = true;
     script.labels = {};
     for (const [index, step] of script.steps.entries()) {
         step.index = index;
@@ -743,10 +765,14 @@ const IWSY = (container, script) => {
         }
         if (index < script.steps.length - 1) {
             step.next = () => {
-                const next = step.index + 1;
-                setTimeout(() => {
-                    doStep(script.steps[next]);
-                }, 0);
+                if (script.singleStep && script.speed != `scan`) {
+                    console.log(`Single-step`);
+                } else {
+                    const next = step.index + 1;
+                    setTimeout(() => {
+                        doStep(script.steps[next]);
+                    }, 0);
+                }
             }
         }
         else {
@@ -760,4 +786,5 @@ const IWSY = (container, script) => {
     initBlocks();
     preloadImages();
     doStep(script.steps[0]);
+    return gotoStep;
 };
