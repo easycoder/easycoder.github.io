@@ -27,6 +27,7 @@
     variable Properties
     variable SelectedBlock
     variable Action
+    variable Message
     variable N
     variable B
     
@@ -205,4 +206,10 @@ SaveSelectedBlock:
     	set property BlockName of Blocks to Block
     end
     set property `blocks` of Presentation to Blocks
+
+!	Tell the parent to refresh the script
+    set Message to object
+    set property `action` of Message to `refresh`
+    set property `source` of Message to `blocks`
+    send Message to parent
 	return
