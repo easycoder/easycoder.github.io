@@ -105,38 +105,40 @@ const IWSY = (container, script) => {
         block.element = element;
         element.style[`position`] = `absolute`;
         element.style[`opacity`] = `0.0`;
-        let val = properties.blockLeft;
+        let val = properties.left;
         if (!isNaN(val)) {
             val *= w;
         }
         element.style[`left`] = val;
-        val = properties.blockTop;
+        val = properties.top;
         if (!isNaN(val)) {
             val *= h;
         }
         element.style[`top`] = val;
-        val = properties.blockWidth;
+        val = properties.width;
         if (!isNaN(val)) {
-            val *= w;
+            val = `${val * w}px`;
         }
-        element.style[`width`] = `${val}px`;
-        val = properties.blockHeight;
+        element.style[`width`] = val;
+        val = properties.height;
         if (!isNaN(val)) {
-            val *= h;
+            val = `${val * h}px`;
         }
-        element.style[`height`] = `${val}px`;
-        element.style[`background`] = properties.blockBackground;
-        element.style[`border`] = properties.blockBorder;
+        element.style[`height`] = val;
+        element.style[`background`] = properties.background;
+        element.style[`border`] = properties.border;
         container.appendChild(element);
         val = properties.textMarginLeft;
         if (!isNaN(val)) {
-            val *= w;
+            val = `${val * w}px`;
         }
+        element.style[`width`] = val;
         const marginLeft = val;
         val = properties.textMarginTop;
         if (!isNaN(val)) {
-            val *= h;
+            val = `${val * h}px`;
         }
+        element.style[`height`] = val;
         const marginTop = val;
         const inner = document.createElement(`div`);
         inner.style[`position`] = `absolute`;
@@ -176,30 +178,30 @@ const IWSY = (container, script) => {
         block.element = element;
         element.style[`position`] = `absolute`;
         element.style[`opacity`] = `0.0`;
-        let val = properties.blockLeft;
+        let val = properties.left;
         if (!isNaN(val)) {
             val *= w;
         }
         element.style[`left`] = val;
-        val = properties.blockTop;
+        val = properties.top;
         if (!isNaN(val)) {
             val *= h;
         }
         element.style[`top`] = val;
         element.style[`top`] = val;
-        val = properties.blockWidth;
+        val = properties.width;
         if (!isNaN(val)) {
-            val *= w;
+            val = `${val * w}px`;
         }
-        element.style[`width`] = `${val}px`;
-        val = properties.blockHeight;
+        element.style[`width`] = val;
+        val = properties.height;
         if (!isNaN(val)) {
-            val *= h;
+            val = `${val * h}px`;
         }
-        element.style[`height`] = `${val}px`;
-        element.style[`background`] = properties.blockBackground;
-        element.style[`border`] = properties.blockBorder;
-        element.style[`border-radius`] = properties.blockBorderRadius;
+        element.style[`height`] = val;
+        element.style[`background`] = properties.background;
+        element.style[`border`] = properties.border;
+        element.style[`border-radius`] = properties.borderRadius;
         container.appendChild(element);
         if (script.speed === `scan`) {
             element.style.opacity = 0;
@@ -634,6 +636,13 @@ const IWSY = (container, script) => {
         }
     };
 
+    // Go to a specified step number
+    const gotoStep = (target) => {
+        script.scanTarget = target;
+        script.singleStep = true;
+        scan();
+    };
+
     // Load a plugin action
     const load = step => {
         if (script.speed === `scan`) {
@@ -652,7 +661,7 @@ const IWSY = (container, script) => {
         }
     };
 
-    // Initialize the presenttion
+    // Initialize the presentation
     const init = step => {
         if (step.title) {
             document.title = step.title;
@@ -677,6 +686,16 @@ const IWSY = (container, script) => {
         step.next();
     };
 
+    // Chain to another presentation
+    const chain = step => {
+        step.next()
+    };
+
+    // Embed another presentation
+    const embed = step => {
+        step.next()
+    };
+
     const actions = {
         init,
         setcontent,
@@ -689,7 +708,9 @@ const IWSY = (container, script) => {
         crossfade,
         transition,
         goto,
-        load
+        load,
+        chain,
+        embed
     };
 
     // Process a single step
@@ -722,104 +743,48 @@ const IWSY = (container, script) => {
         handler(step);
     };
 
-    // Initialization
-    const setup = () => {
-        container.innerHTML = ``;
-        document.removeEventListener(`click`, init);
-        if (mode === `auto`) {
-            document.addEventListener(`click`, onClick);
+    container.innerHTML = ``;
+    document.removeEventListener(`click`, init);
+    if (mode === `auto`) {
+        document.addEventListener(`click`, onClick);
+    }
+    document.onkeydown = null;
+    script.container = container;
+    container.style.position = `relative`;
+    container.style.overflow = `hidden`;
+    container.style.cursor = 'none';
+    container.style[`background-size`] = `cover`;
+    script.speed = `normal`;
+    script.singleStep = true;
+    script.labels = {};
+    for (const [index, step] of script.steps.entries()) {
+        step.index = index;
+        step.script = script;
+        if (typeof step.label !== `undefined`) {
+            script.labels[step.label] = index;
         }
-        document.onkeydown = null;
-        script.container = container;
-        container.style.position = `relative`;
-        container.style.overflow = `hidden`;
-        container.style.cursor = 'none';
-        container.style[`background-size`] = `cover`;
-        script.speed = `normal`;
-        script.labels = {};
-        for (const [index, step] of script.steps.entries()) {
-            step.index = index;
-            step.script = script;
-            if (typeof step.label !== `undefined`) {
-                script.labels[step.label] = index;
-            }
-            if (index < script.steps.length - 1) {
-                step.next = () => {
+        if (index < script.steps.length - 1) {
+            step.next = () => {
+                if (script.singleStep && script.speed != `scan`) {
+                    console.log(`Single-step`);
+                } else {
                     const next = step.index + 1;
                     setTimeout(() => {
                         doStep(script.steps[next]);
                     }, 0);
                 }
             }
-            else {
-                step.next = () => {
-                    console.log(`Step ${index + 1}: Finished`);  
-                    container.style.cursor = 'pointer';
-                }
-            };
         }
-        IWSY.plugins = {};
-        initBlocks();
-        preloadImages();
-        doStep(script.steps[0]);
-    };
-
-    // Wait for a click/tap or a keypress to start
-    document.addEventListener(`click`, init);
-    document.onkeydown = function (event) {
-        if (event.code === `Enter`) {
-            mode = `auto`;
-        }
-        setup();
-        return true;
-    };
-};
-
-window.onload = () => {
-    const createCORSRequest = (url) => {
-        let xhr = new XMLHttpRequest();
-        if (`withCredentials` in xhr) {
-    
-            // Check if the XMLHttpRequest object has a "withCredentials" property.
-            // "withCredentials" only exists on XMLHTTPRequest2 objects.
-            xhr.open(`GET`, url, true);
-    
-        } else if (typeof XDomainRequest != `undefined`) {
-    
-            // Otherwise, check if XDomainRequest.
-            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-            xhr = new XDomainRequest();
-            xhr.open(`GET`, url);
-    
-        } else {
-    
-            // Otherwise, CORS is not supported by the browser.
-            xhr = null;
-    
-        }
-        return xhr;
-    };
-
-    const scriptElement = document.getElementById(`iwsy-script`);
-    if (scriptElement) {
-        const request = createCORSRequest(`${scriptElement.innerText}?v=${Math.floor(Date.now())}`);
-        if (!request) {
-            throw Error(`Unable to access the JSON script`);
-        }
-
-        request.onload = () => {
-            if (200 <= request.status && request.status < 400) {
-                const script = JSON.parse(request.responseText);
-                IWSY(document.getElementById(`iwsy-container`), script);
-        } else {
-                throw Error(`Unable to access the JSON script`);
+        else {
+            step.next = () => {
+                console.log(`Step ${index + 1}: Finished`);  
+                container.style.cursor = 'pointer';
             }
         };
-
-        request.onerror = () => {
-            throw Error(`Unable to access the JSON script`);
-        };
-
-        request.send();
     }
+    IWSY.plugins = {};
+    initBlocks();
+    preloadImages();
+    doStep(script.steps[0]);
+    return gotoStep;
 };
