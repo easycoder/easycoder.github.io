@@ -30,22 +30,13 @@ const EasyCoder_IWSY = {
 					}
 					break;
 				case `init`:
+				case `stop`:
 					compiler.next();
 					compiler.addCommand({
 						domain: `iwsy`,
 						keyword: `iwsy`,
 						lino,
 						action
-					});
-					return true;
-				case `goto`:
-					const target = compiler.getNextValue();
-					compiler.addCommand({
-						domain: `iwsy`,
-						keyword: `iwsy`,
-						lino,
-						action,
-						target
 					});
 					return true;
 				case `script`:
@@ -58,6 +49,57 @@ const EasyCoder_IWSY = {
 						script
 					});
 					return true;
+				case `goto`:
+					const target = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						target
+					});
+					return true;
+				case `run`:
+					const pc = compiler.getPc();
+					compiler.next();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						then: 0
+					});
+					// Get the 'then' code, if any
+					if (compiler.tokenIs(`then`)) {
+						const goto = compiler.getPc();
+						// Add a 'goto' to skip the 'then'
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `goto`,
+							goto: 0
+						});
+						// Fixup the link to the 'then' branch
+						compiler.getCommandAt(pc).then = compiler.getPc();
+						// Process the 'then' branch
+						compiler.next();
+						compiler.compileOne(true);
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `stop`
+						});
+						// Fixup the 'goto'
+						compiler.getCommandAt(goto).goto = compiler.getPc();
+					}
+					return true;
+				case `onstep`:
+					compiler.next();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action
+					});
+					return compiler.completeHandler();
 				default:
 					break;
 			}
@@ -67,6 +109,7 @@ const EasyCoder_IWSY = {
 		run: (program) => {
 			const command = program[program.pc];
 			const action = command.action;
+			let script;
 			switch (action) {
 				case `init`:
 					program.require(`js`, `iwsy.js`,
@@ -80,16 +123,53 @@ const EasyCoder_IWSY = {
 					player.innerHTML = ``;
 					player.style.background = `none`;
 					player.style.border = `none`;
-					const script = program.getValue(command.script);
-					EasyCoder.iwsyFunctions = IWSY(player, JSON.parse(script));
-					break;
-				case `goto`:
-					EasyCoder.iwsyFunctions.gotoStep(program.getValue(command.target));
+					script = program.getValue(command.script);
+					try {
+						script = JSON.parse(script);
+						EasyCoder.iwsyFunctions = IWSY(player, script);
+					} catch (err) {
+						alert(`Badly formatted script`);
+					}
 					break;
 				case `script`:
-					EasyCoder.iwsyFunctions.setScript(JSON.parse(program.getValue(command.script)));
+					script = program.getValue(command.script);
+					try {
+						script = JSON.parse(script);
+						if (EasyCoder.iwsyFunctions) {
+							EasyCoder.iwsyFunctions.setScript(script);
+						}
+					} catch (err) {
+						alert(`Badly formatted script`);
+					}
 					break;
-				}
+				case `goto`:
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.gotoStep(program.getValue(command.target));
+					}
+					break;
+				case `run`:
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.run(function() {
+							program.run(command.then);
+						});
+						return 0;
+					}
+					break;
+				case `stop`:
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.stop();
+					}
+					break;
+				case `onstep`:
+					const cb = command.pc + 2;
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.onStep(function(step) {
+							program.iwsyStep = step;
+							program.run(cb);
+						});
+					}
+					break;
+			}
 			return command.pc + 1;
 		}
 	},
