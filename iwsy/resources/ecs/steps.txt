@@ -850,8 +850,8 @@ SaveCurrentStep:
         	set Blocks to array
             set property `blocks` of CurrentStep to Blocks
         end
-    	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
+    	index DurationInput to SelectedStep
+    	set property `duration` of CurrentStep to the text of DurationInput
     end
 	else if Action is `fade down`
     begin
@@ -861,8 +861,8 @@ SaveCurrentStep:
         	set Blocks to array
             set property `blocks` of CurrentStep to Blocks
         end
-    	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
+    	index DurationInput to SelectedStep
+    	set property `duration` of CurrentStep to the text of DurationInput
     end
 	else if Action is `crossfade`
     begin
