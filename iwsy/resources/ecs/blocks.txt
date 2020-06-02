@@ -95,8 +95,10 @@ Restart:
         create TR in Table
         create TD in TR
         set the style of TD to `width:8em;border:1px solid black;padding-left:0.5em`
+        index BlockNameSpan to B
         create BlockNameSpan in TD
         set the content of BlockNameSpan to BlockName
+        index BlockNameInput to B
         create BlockNameInput in TD
         set the style of BlockNameInput to `width:100%;display:none`
         set the content of BlockNameInput to BlockName
@@ -124,13 +126,12 @@ Restart:
     begin
     	gosub to SaveSelectedBlock
         put the index of EditButton into SelectedBlock
-        put the text of EditButton into Action
         put 0 into N
         while N is less than the json count of BlockNames
         begin
            	index EditButton to N
         	set style `background` of EditButton to ``
-            set the text of EditButton to `Edit`
+            if N is not SelectedBlock set the text of EditButton to `Edit`
             index BlockNameSpan to N
             index BlockNameInput to N
             set the content of BlockNameSpan to the text of BlockNameInput
@@ -141,6 +142,7 @@ Restart:
             add 1 to N
         end
         index EditButton to SelectedBlock
+        put the text of EditButton into Action
     	if Action is `Edit`
         begin
         	set style `background` of EditButton to `lightgray`
@@ -172,7 +174,13 @@ Restart:
                 add 1 to N
             end
         end
-        else gosub to SaveSelectedBlock
+        else
+        begin
+        	gosub to SaveSelectedBlock
+        	set the text of EditButton to `Edit`
+            clear Editor
+            set style `display` of Editor to `none`
+        end
     end
     on click DeleteBlock
     begin

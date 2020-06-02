@@ -48,6 +48,7 @@
     variable CurrentScriptName
     variable Action
     variable Source
+    variable Running
     variable N
 
   ! The browser
@@ -306,6 +307,8 @@ L2:
         end
     end
     
+    on click RunStop go to DoRunStop
+    
     gosub to CreateNewPresentation
     put Presentation into LastSavedState
     gosub to SetupSteps
@@ -313,6 +316,7 @@ L2:
     gosub to SetupContent 
     put 0 into N
     gosub to SelectSection
+    clear Running
     
     on message
     begin
@@ -322,7 +326,12 @@ L2:
         else if Action is `refresh`
         begin
         	iwsy script Presentation
-            gosub to UpdateCurrentSection
+            set style `display` of StepsPanel to `none`
+            set style `display` of BlocksPanel to `none`
+            set style `display` of ContentPanel to `none`
+            if Section is 0 set style `display` of StepsPanel to `block`
+            else if Section is 1 set style `display` of BlocksPanel to `block`
+            else if Section is 2 set style `display` of ContentPanel to `block`
         end
     end
 	stop
@@ -506,6 +515,7 @@ SelectFile:
     set the content of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     set ShowRun
+    print Presentation
     iwsy load Player Presentation
 
 CloseBrowser:
@@ -526,6 +536,45 @@ ResetStatus:
     wait 2
     set the content of Status to ``
     stop
+
+DoRunStop:
+	if Running
+    begin
+    	clear Running
+		gosub to ClearStepsButtons
+    	set attribute `src` of RunStop to `resources/icon/run.png`
+        iwsy stop
+    end
+    else
+    begin
+    	set Running
+    	put property `steps` of Presentation into Item
+    	if the json count of Item is  0 stop
+        set attribute `src` of RunStop to `resources/icon/runstop.png`
+
+        iwsy onstep
+        begin
+            set Message to object
+            set property `action` of Message to `step`
+            set property `step` of Message to the step
+            send Message to StepsModule
+        end
+    
+        iwsy run then
+        begin
+			gosub to ClearStepsButtons
+    		set attribute `src` of RunStop to `resources/icon/run.png`
+            clear Running
+            stop
+        end
+    end
+	stop
+
+ClearStepsButtons:
+    set Message to object
+    set property `action` of Message to `clear`
+    send Message to StepsModule
+    return
 
 GetPassword:
 	if ReadOnly
