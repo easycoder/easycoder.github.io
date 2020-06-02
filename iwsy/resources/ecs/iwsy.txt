@@ -558,6 +558,9 @@ DoRunStop:
     	put property `steps` of Presentation into Item
     	if the json count of Item is  0 stop
         set attribute `src` of RunStop to `resources/icon/runstop.png`
+        
+        put 0 into N
+        gosub to SelectSection
 
         iwsy onstep
         begin
