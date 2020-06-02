@@ -569,6 +569,44 @@ const IWSY = (container, text) => {
         initScript();
     };
 
+    // Set up Showdown
+    const setupShowdown = () => {
+        if (typeof showdown === `undefined`) {
+            require(`js`, `https://cdn.rawgit.com/showdownjs/showdown/1.9.1/dist/showdown.min.js`,
+                () => {
+                });
+            }
+        else {
+        }
+    };
+
+    // Load a JS or CSS library
+	const require = (type, src, cb) => {
+		let prefix = ``;
+		if (src[0] == `/`) {
+			prefix = window.location + `/`;
+		}
+		const element = document.createElement(type === `css` ? `link` : `script`);
+		switch (type) {
+		case `css`:
+			element.type = `text/css`;
+			element.href = `${prefix}${src}`;
+			element.rel = `stylesheet`;
+			break;
+		case `js`:
+			element.type = `text/javascript`;
+			element.src = `${prefix}${src}`;
+			break;
+		default:
+			return;
+		}
+		element.onload = function () {
+			console.log(`Library ${prefix}${src} loaded`);
+			cb();
+		};
+		document.head.appendChild(element);
+	},
+
     // Initialize the script
     const initScript = () => {
         document.onkeydown = null;
@@ -670,6 +708,7 @@ const IWSY = (container, text) => {
     if (script.runMode === `auto`) {
         document.addEventListener(`click`, onClick);
     }
+    setupShowdown();
     initScript();
     IWSY.plugins = {};
     preloadImages();

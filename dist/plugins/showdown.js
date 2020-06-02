@@ -21,10 +21,11 @@ const EasyCoder_Showdown = {
 		run: program => {
 			const command = program[program.pc];
 			if (typeof showdown === `undefined`) {
-				program.require(`js`, `https://unpkg.com/showdown@1.9.1/./dist/showdown.js`, function () {
-					EasyCoder_Showdown.setupExtension();
-					program.run(command.pc + 1);
-				});
+				program.require(`js`, `https://cdn.rawgit.com/showdownjs/showdown/1.9.1/dist/showdown.min.js`,
+					() => {
+						EasyCoder_Showdown.setupExtension();
+						program.run(command.pc + 1);
+					});
 			}
 			else {
 				EasyCoder_Showdown.setupExtension();
