@@ -659,7 +659,7 @@ const IWSY = (container, text) => {
                 throw Error(`Unknown action: '${step.action}'`);
             }
         }
-        if (script.onStepCB) {
+        if (script.onStepCB && script.runMode === `auto`) {
             script.onStepCB(step.index);
         }
         handler(step);

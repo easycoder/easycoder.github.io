@@ -60,6 +60,7 @@
     variable TrueFalse
     variable Response
     variable Message
+    variable Running
     variable N
     variable B
 
@@ -87,6 +88,7 @@ Start:
     end
     if property `action` of Message is `clear`
     begin
+    	clear Running
     	put 0 into N
         while N is less than the elements of StepButton
         begin
@@ -95,6 +97,11 @@ Start:
             add 1 to N
     	end
         stop
+    end
+    if property `action` of Message is `running`
+    begin
+    	set Running
+    	stop
     end
     if property `action` of Message is `step`
     begin
@@ -207,6 +214,7 @@ Restart:
     end
     on click ShowStep
     begin
+    	if Running stop
     	put 0 into N
         while N is less than the json count of Steps
         begin
@@ -247,6 +255,7 @@ Restart:
     json add `false` to ContinueTypes
     
     put property `steps` of Presentation into Steps
+    clear Running
     
     stop
 
