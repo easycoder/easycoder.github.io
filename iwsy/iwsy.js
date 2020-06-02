@@ -111,6 +111,7 @@ const IWSY = (container, text) => {
         element.style[`height`] = val;
         element.style[`background`] = block.background;
         element.style[`border`] = block.border;
+        element.style[`overflow`] = `hidden`;
         val = block.textMarginLeft;
         if (!isNaN(val)) {
             val *= w;
@@ -151,7 +152,8 @@ const IWSY = (container, text) => {
         if (!block.element) {
             createBlock(block);
         }
-        block.textPanel.innerHTML = content.split(`\n`).join(`<br>`);
+        const converter = new showdown.Converter();
+        block.textPanel.innerHTML = converter.makeHtml(content.split(`%0a`).join(`\n`));
     };
 
     // Set the content of a block
@@ -605,7 +607,24 @@ const IWSY = (container, text) => {
 			cb();
 		};
 		document.head.appendChild(element);
-	},
+    };
+    
+    // Set a HEAD style
+    const setHeadStyle = (styleName, styleValue) => {
+        for (let i = 0; i < document.head.childNodes.length; i++) {
+            let node = document.head.childNodes[i];
+            if (node.tagName === `STYLE`) {
+                let data = node.innerHTML;
+                if (data.indexOf(`${styleName} `) === 0) {
+                    document.head.removeChild(node);
+                    break;
+                }
+            }
+        }
+        var style = document.createElement('style');
+        style.innerHTML = `${styleName} ${styleValue}`;
+        document.head.appendChild(style);
+    };
 
     // Initialize the script
     const initScript = () => {
@@ -700,7 +719,12 @@ const IWSY = (container, text) => {
         if (script.onStepCB && script.runMode === `auto`) {
             script.onStepCB(step.index);
         }
-        handler(step);
+        try {
+            handler(step);
+        } catch (err) {
+            console.log(`Step ${step.index} (${step.action}): ${err}`);
+            alert(`Step ${step.index} (${step.action}): ${err}`);
+        }
     };
 
     container.innerHTML = ``;
@@ -708,6 +732,8 @@ const IWSY = (container, text) => {
     if (script.runMode === `auto`) {
         document.addEventListener(`click`, onClick);
     }
+    setHeadStyle(`p`, `{margin:0 0 0.5em 0}`)
+    setHeadStyle(`h1, h2, h3, h4, h5, h6`, `{margin:0}`)
     setupShowdown();
     initScript();
     IWSY.plugins = {};

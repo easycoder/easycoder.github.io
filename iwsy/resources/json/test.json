@@ -1,1 +1,169 @@
-{"blocks":{"center title":{"background":"","border":"","borderRadius":"","fontColor":"","fontFamily":"","fontSize":150,"fontStyle":"","fontWeight":"","height":200,"left":0,"textAlign":"center","textMarginLeft":"","textMarginTop":"","top":400,"width":"100%"}},"content":{"main title":"This is my main title"},"steps":[{"title":"My first presentation","action":"init","label":"","aspect ratio":"16:9","background":"","border":"1px solid green"},{"title":"Setup main title","action":"set content","label":"","blocks":[{"block":"center title","content":"main title"}]},{"title":"Fade up title","action":"fade up","label":"","blocks":["center title"],"duration":1}]}
+{
+  "blocks": {
+    "center title": {
+      "background": "",
+      "border": "",
+      "borderRadius": "",
+      "fontColor": "#dddd88",
+      "fontFamily": "",
+      "fontSize": 80,
+      "fontStyle": "",
+      "fontWeight": "",
+      "height": 300,
+      "left": 0,
+      "textAlign": "center",
+      "textMarginLeft": "",
+      "textMarginTop": "",
+      "top": 300,
+      "width": "100%"
+    },
+    "main content": {
+      "background": "",
+      "border": "",
+      "borderRadius": "",
+      "fontColor": "yellow",
+      "fontFamily": "",
+      "fontSize": 50,
+      "fontStyle": "",
+      "fontWeight": "",
+      "height": 800,
+      "left": 50,
+      "textAlign": "",
+      "textMarginLeft": 10,
+      "textMarginTop": "",
+      "top": 300,
+      "width": "100%"
+    },
+    "left": {
+      "background": "",
+      "border": "",
+      "borderRadius": "",
+      "fontColor": "yellow",
+      "fontFamily": "",
+      "fontSize": 50,
+      "fontStyle": "",
+      "fontWeight": "",
+      "height": 700,
+      "left": 50,
+      "textAlign": "",
+      "textMarginLeft": 10,
+      "textMarginTop": "",
+      "top": 300,
+      "width": 400
+    },
+    "right": {
+      "background": "",
+      "border": "",
+      "borderRadius": "",
+      "fontColor": "yellow",
+      "fontFamily": "",
+      "fontSize": 50,
+      "fontStyle": "",
+      "fontWeight": "",
+      "height": 700,
+      "left": 550,
+      "textAlign": "",
+      "textMarginLeft": "",
+      "textMarginTop": "",
+      "top": 300,
+      "width": 400
+    },
+    "top title": {
+      "background": "",
+      "border": "",
+      "borderRadius": "",
+      "fontColor": "#ffffff",
+      "fontFamily": "",
+      "fontSize": 50,
+      "fontStyle": "",
+      "fontWeight": "",
+      "height": 300,
+      "left": 0,
+      "textAlign": "center",
+      "textMarginLeft": "",
+      "textMarginTop": "",
+      "top": 50,
+      "width": "100%"
+    }
+  },
+  "content": {
+    "main title": "# I Wanna Show You%0a%0a### for knockout presentations",
+    "page 1 left": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is a dated product organized mainly around static text blocks and tied to the desktop.",
+    "page 1 right": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is a modern product built to handle color, movement and a mobile environment."
+  },
+  "steps": [
+    {
+      "title": "My first presentation",
+      "action": "init",
+      "label": "",
+      "aspect ratio": "16:9",
+      "background": "url(&quot;resources/img/SemoigoDawn.jpg&quot;)",
+      "border": "1px solid gray"
+    },
+    {
+      "title": "Pause before starting",
+      "action": "pause",
+      "label": "",
+      "duration": 1
+    },
+    {
+      "title": "Setup main title and initial content",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "center title",
+          "content": "main title"
+        },
+        {
+          "block": "left",
+          "content": "page 1 left"
+        },
+        {
+          "block": "right",
+          "content": "page 1 right"
+        }
+      ]
+    },
+    {
+      "title": "Fade up title",
+      "action": "fade up",
+      "label": "",
+      "blocks": [
+        "center title"
+      ],
+      "duration": 1
+    },
+    {
+      "title": "Wait 3 seconds",
+      "action": "hold",
+      "label": "",
+      "duration": 3
+    },
+    {
+      "title": "Move the title to the top",
+      "action": "transition",
+      "label": "",
+      "types": [],
+      "target": "top title",
+      "duration": 2,
+      "block": "center title"
+    },
+    {
+      "title": "Wait 1 second",
+      "action": "hold",
+      "label": "",
+      "duration": 1
+    },
+    {
+      "title": "Fade up first page",
+      "action": "fade up",
+      "label": "",
+      "blocks": [
+        "left",
+        "right"
+      ],
+      "duration": 1
+    }
+  ]
+}

@@ -15,6 +15,7 @@
     input BlockNameInput
     input PropertyValue
     button EditButton
+    button SaveButton
     img AddBlock
     img DeleteBlock
     a Link
@@ -84,6 +85,7 @@ Restart:
     set the elements of BlockNameSpan to N
     set the elements of BlockNameInput to N
     set the elements of EditButton to N
+    set the elements of SaveButton to N
     set the elements of Editor to N
     set the elements of DeleteBlock to N
     create Table in Panel
@@ -149,6 +151,7 @@ Restart:
         	set the text of EditButton to `Properties`
             index BlockNameSpan to SelectedBlock
             index BlockNameInput to SelectedBlock
+            index SaveButton to SelectedBlock
             set style `display` of BlockNameSpan to `none`
             set style `display` of BlockNameInput to `inline`
             index Editor to SelectedBlock
@@ -173,6 +176,11 @@ Restart:
                 set the content of PropertyValue to property PropertyName of Block
                 add 1 to N
             end
+            create Row in Editor
+            create SaveButton in Row
+            set the style of SaveButton to `width:100%`
+            set the text of SaveButton to `Save`
+            on click SaveButton gosub to SaveSelectedBlock
         end
         else
         begin

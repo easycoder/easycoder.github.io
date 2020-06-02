@@ -15,6 +15,7 @@
     input ItemNameInput
     textarea TextArea
     button EditButton
+    button SaveButton
     img AddItem
     img DeleteItem
     a Link
@@ -61,15 +62,19 @@ Restart:
     on click AddItem
     begin
     	put prompt `Name of new content item:` with `new content` into ItemName
-        set Item to object
+        put empty into Item
         set property ItemName of Items to Item
         set property `content` of Presentation to Items
         go to Restart
     end
 
-	put the json count of ItemNames into N
+	put the json keys of Items into ItemNames
+    put the json count of ItemNames into N
+    set the elements of ItemNameSpan to N
+    set the elements of ItemNameInput to N
     set the elements of EditButton to N
     set the elements of Editor to N
+    set the elements of SaveButton to N
     set the elements of DeleteItem to N
     set the elements of TextArea to N
     create Table in Panel
@@ -77,6 +82,10 @@ Restart:
     put 0 into B
     while B is less than the elements of EditButton
     begin
+        index EditButton to B
+        index DeleteItem to B
+        index ItemNameSpan to B
+        index ItemNameInput to B
     	put element B of ItemNames into ItemName
         create TR in Table
         create TD in TR
@@ -90,8 +99,6 @@ Restart:
         set the content of ItemNameInput to ItemName
         create TD in TR
     	set the style of TD to `border:1px solid black`
-        index EditButton to B
-        index DeleteItem to B
         index Editor to B
         create Row in TD
         set the style of Row to `display:flex`
@@ -136,17 +143,22 @@ Restart:
             index ItemNameSpan to SelectedItem
             index ItemNameInput to SelectedItem
             index TextArea to SelectedItem
+            index SaveButton to SelectedItem
             set style `display` of ItemNameSpan to `none`
             set style `display` of ItemNameInput to `inline`
             index Editor to SelectedItem
             set style `display` of Editor to `block`
             clear Editor
-            put property ItemName of Items into Item
             create TextArea in Editor
             set the style of TextArea to `width:100%;max-width:100%;height:8em`
             put element SelectedItem of ItemNames into ItemName
+            put property ItemName of Items into Item
             replace `%0a` with newline in Item
             set the content of TextArea to Item
+            create SaveButton in Editor
+            set the style of SaveButton to `width:100%`
+            set the text of SaveButton to `Save`
+            on click SaveButton gosub to SaveSelectedItem
         end
         else gosub to SaveSelectedItem
     end
@@ -161,20 +173,18 @@ Restart:
     end
 	stop
 
-!	Save the seleced content
+!	Save the selected content
 SaveSelectedItem:
 	if SelectedItem is -1 return
+    index ItemNameInput to SelectedItem
+    index TextArea to SelectedItem
     put the content of TextArea into Item
     replace newline with `%0a` in Item
     set property ItemName of Items to Item
-    index ItemNameInput to SelectedItem
-    if ItemNameInput is not ItemName
-    begin
-    	json delete property ItemName of Items
-        put ItemNameInput into ItemName
-        set element SelectedItem of ItemNames to ItemName
-    	set property ItemName of Items to Item
-    end
+    if ItemNameInput is not ItemName json delete property ItemName of Items
+    put ItemNameInput into ItemName
+    set element SelectedItem of ItemNames to ItemName
+    set property ItemName of Items to Item
     set property `content` of Presentation to Items
 
 !	Tell the parent to refresh the script
