@@ -267,7 +267,12 @@ L2:
         if Name is not CurrentScriptName put empty into LastSavedState
         if Presentation is not LastSavedState
         begin
-            if PasswordValid rest post Presentation to `_save/json/` cat Name
+            if PasswordValid
+            begin
+            	put Presentation into Content
+                json format Content
+                rest post Content to `_save/json/` cat Name
+            end
             else put Presentation into storage as Name
             put Presentation into LastSavedState
             gosub to SetStatusGreen
@@ -322,7 +327,10 @@ L2:
     begin
     	put the message into Message
         put property `action` of Message into Action
-        if Action is `goto` iwsy goto property `index` of Message
+        if Action is `goto`
+        begin
+        	if not Running iwsy goto property `index` of Message
+        end
         else if Action is `refresh`
         begin
         	iwsy script Presentation
@@ -548,6 +556,7 @@ DoRunStop:
     else
     begin
     	set Running
+		gosub to ClearStepsButtons
     	put property `steps` of Presentation into Item
     	if the json count of Item is  0 stop
         set attribute `src` of RunStop to `resources/icon/runstop.png`
@@ -557,6 +566,9 @@ DoRunStop:
             set Message to object
             set property `action` of Message to `step`
             set property `step` of Message to the step
+            send Message to StepsModule
+            set Message to object
+            set property `action` of Message to `running`
             send Message to StepsModule
         end
     
