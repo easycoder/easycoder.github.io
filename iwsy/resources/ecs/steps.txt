@@ -16,6 +16,7 @@
     button StepButton
     button Header
     button InsertBefore
+    button Save
     button InsertAfter
     table Table
     tr TR
@@ -24,7 +25,6 @@
     select BlockSelect
     select ContentSelect
     select TargetSelect
-    select TransitionSelect
     select ContinueSelect
     input InitInput
     input TitleInput
@@ -50,13 +50,12 @@
     variable Duration
     variable URL
     variable Names
+    variable Item
     variable ActionNames
     variable InitProperties
     variable InitProperty
     variable BlockNames
     variable ContentNames
-    variable TransitionTypes
-    variable TransitionType
     variable ContinueTypes
     variable TrueFalse
     variable Response
@@ -74,7 +73,10 @@
     stop
     
 Start:
-	if the message is `save`
+    if the message is empty go to Restart
+
+	put the message into Message
+    if Message is `save`
     begin
     	if SelectedStep is not -1
         begin
@@ -83,11 +85,28 @@ Start:
         end
         stop
     end
+    if property `action` of Message is `clear`
+    begin
+    	put 0 into N
+        while N is less than the elements of StepButton
+        begin
+    	    index StepButton to N
+        	set style `background` of StepButton to ``
+            add 1 to N
+    	end
+        stop
+    end
+    if property `action` of Message is `step`
+    begin
+    	put property `step` of Message into N
+        index StepButton to N
+        set style `background` of StepButton to `#cfc`
+    	stop
+    end
 
+Restart:
 	set style `display` of Panel to `flex`
 	set style `flex-direction` of Panel to `column`
-    
-Restart:
 	clear StepsPanel
     create Row in StepsPanel
     set the style of Row to `display:flex`
@@ -110,6 +129,7 @@ Restart:
     set the elements of DeleteStep to N
     set the elements of TitleInput to N
     set the elements of LabelInput to N
+    set the elements of DurationInput to N
     set the elements of Editor to N
     put 0 into N
     while N is less than the elements of StepButton
@@ -222,11 +242,6 @@ Restart:
     json add `aspect ratio` to InitProperties
     json add `background` to InitProperties
     json add `border` to InitProperties
-    set TransitionTypes to array
-    json add `block position` to TransitionTypes
-    json add `block size` to TransitionTypes
-    json add `font color` to TransitionTypes
-    json add `font size` to TransitionTypes
     set ContinueTypes to array
     json add `true` to ContinueTypes
     json add `false` to ContinueTypes
@@ -356,11 +371,15 @@ ReloadStepEditor:
     create TD in TR
     create TD in TR
     create InsertBefore in TD
-    set the style of InsertBefore to `width:50%`
+    set the style of InsertBefore to `width:calc(100% / 3)`
     set the text of InsertBefore to `Add Step Before`
     on click InsertBefore go to AddStepBefore
+    create Save in TD
+    set the style of Save to `width:calc(100% / 3)`
+    set the text of Save to `Save`
+    on click Save gosub to SaveCurrentStep
     create InsertAfter in TD
-    set the style of InsertAfter to `width:50%`
+    set the style of InsertAfter to `width:calc(100% / 3)`
     set the text of InsertAfter to `Add Step After`
     on click InsertAfter go to AddStepAfter
 	stop
@@ -388,7 +407,9 @@ EditInit:
         index InitInput to B
         create InitInput in BlockRow
         set the style of InitInput to `flex:1`
-        set the content of InitInput to property InitProperty of CurrentStep
+        put property InitProperty of CurrentStep into Item
+        replace `&quot;` with `"` in Item
+        set the content of InitInput to Item
     	add 1 to B
     end
 	return
@@ -503,69 +524,7 @@ EditCrossfade:
 	return
 
 EditTransition:
-	create TR in Table
-    create TD in TR
-    set the content of TD to `Types:`
-    create TD in TR
-	create BlockTable in TD
-    set the style of BlockTable to `width:100%;border:1px solid gray`
-    create BlockRow in BlockTable
-    create BlockRow in BlockTable
-    set the style of BlockRow to `display:flex`
-    create Header in BlockRow
-    set the style of Header to `flex:1`
-    set the content of Header to `Transition types`
-    create BlockData in BlockRow
-    set the style of BlockData to `width:2em;text-align:center`
-    create Link in BlockData
-    create PlusIcon in Link
-    set the style of PlusIcon to `width:1em;margin-top:0.1em`
-    set attribute `src` of PlusIcon to `resources/icon/plus.png`
-    on click PlusIcon
-    begin
-        json add empty to Types
-        set property `type` of CurrentStep to Types
-        clear Table
-        go to ReloadStepEditor
-    end
-    put property `type` of CurrentStep into Types
-    put the json count of Types into N
-    set the elements of TransitionSelect to N
-    set the elements of DeleteIcon to N
-    put 0 into B
-    while B is less than N
-    begin
-	   	put element B of Types into TransitionType
-        create BlockRow in BlockTable
-        set the style of BlockRow to `display:flex`
-        index TransitionSelect to B
-        create TransitionSelect in BlockRow
-        set the style of TransitionSelect to `flex:1;width:100%`
-        set TransitionSelect from TransitionTypes as TransitionType
-        create BlockData in BlockRow
-        set the style of BlockData to `width:2em;text-align:center`
-        index DeleteIcon to B
-        create Link in BlockData
-        create DeleteIcon in Link
-        set the style of DeleteIcon to `width:1em;margin-top:0.1em`
-        set attribute `src` of DeleteIcon to `resources/icon/stop.png`
-    	add 1 to B
-    end
-    on change TransitionSelect
-    begin
-    	put the index of TransitionSelect into N
-        set element N of Types to the selected item in TransitionSelect
-        set property `type` of CurrentStep to Types
-    end
-    on click DeleteIcon
-    begin
-    	put the index of DeleteIcon into N
-        json delete element N of Types
-        set property `type` of CurrentStep to Types
-        clear Table
-        go to ReloadStepEditor
-    end
-    put BlockNames into Names
+	put BlockNames into Names
     gosub to EditBlockAndTarget
 	return
 
@@ -686,6 +645,7 @@ EditDuration:
     set the style of TD to `width:6em`
     set the content of TD to `Duration:`
     create TD in TR
+    index DurationInput to SelectedStep
     create DurationInput in TD
     set the style of DurationInput to `width:100%`
     set the content of DurationInput to property `duration` of CurrentStep
@@ -837,7 +797,9 @@ SaveCurrentStep:
         begin
             put element N of InitProperties into InitProperty
             index InitInput to N
-            set property InitProperty of CurrentStep to the content of InitInput
+            put InitInput into Item
+            replace `"` with `&quot;` in Item
+            set property InitProperty of CurrentStep to Item
             add 1 to N
         end
     end
@@ -875,8 +837,8 @@ SaveCurrentStep:
     end
 	else if Action is `hold`
     begin
-    	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
+    	index DurationInput to SelectedStep
+    	set property `duration` of CurrentStep to the text of DurationInput
     end
 	else if Action is `fade up`
     begin
@@ -911,16 +873,9 @@ SaveCurrentStep:
     end
 	else if Action is `transition`
     begin
-    	put property `types` of CurrentStep into Types
-        if Types is empty
-        begin
-        	set Types to array
-            set property `types` of CurrentStep to Types
-        end
-    	put property `target` of CurrentStep into Target
-        if Target is empty set property `target` of CurrentStep to `******`
-    	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
+    	set property `block` of CurrentStep to BlockSelect
+        set property `target` of CurrentStep to TargetSelect
+    	set property `duration` of CurrentStep to the text of DurationInput
     end
 	else if Action is `goto`
     begin

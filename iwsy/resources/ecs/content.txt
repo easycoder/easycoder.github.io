@@ -81,8 +81,10 @@ Restart:
         create TR in Table
         create TD in TR
         set the style of TD to `width:8em;border:1px solid black`
+        index ItemNameSpan to B
         create ItemNameSpan in TD
         set the content of ItemNameSpan to ItemName
+        index ItemNameInput to B
         create ItemNameInput in TD
         set the style of ItemNameInput to `width:100%;display:none`
         set the content of ItemNameInput to ItemName

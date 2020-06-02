@@ -532,7 +532,7 @@ const IWSY = (container, text) => {
 
     // Set a step callback
     const onStep = onStepCB => {
-        script.onstepCB = onStepCB;
+        script.onStepCB = onStepCB;
     };
 
     // Chain to another presentation
@@ -678,6 +678,7 @@ const IWSY = (container, text) => {
         setScript,
         gotoStep,
         run,
-        stop
+        stop,
+        onStep
     };
 };

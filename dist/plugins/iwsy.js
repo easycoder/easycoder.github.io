@@ -194,11 +194,28 @@ const EasyCoder_IWSY = {
 
 	value: {
 
-		compile: () => {
+		compile: (compiler) => {
+			if (compiler.tokenIs(`the`)) {
+				if (compiler.nextTokenIs(`step`)) {
+					compiler.next();
+					return {
+						domain: `iwsy`,
+						type: `step`
+					};
+				}
+			}
 			return null;
 		},
 
-		get: () => {
+		get: (program, value) => {
+			switch (value.type) {
+			case `step`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: program.iwsyStep
+				};
+			}
 			return null;
 		}
 	},
