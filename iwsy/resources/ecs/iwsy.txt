@@ -47,7 +47,6 @@
     variable Item
     variable CurrentScriptName
     variable Action
-    variable Source
     variable Running
     variable N
 
@@ -523,7 +522,6 @@ SelectFile:
     set the content of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     set ShowRun
-    print Presentation
     iwsy load Player Presentation
 
 CloseBrowser:

@@ -46,7 +46,6 @@
     variable Block
     variable Contents
     variable Target
-    variable Types
     variable Duration
     variable URL
     variable Names
@@ -763,12 +762,6 @@ CreateNewAction:
     end
 	else if Action is `transition`
     begin
-    	put property `types` of CurrentStep into Types
-        if Types is empty
-        begin
-        	set Types to array
-            set property `types` of CurrentStep to Types
-        end
     	put property `target` of CurrentStep into Target
         if Target is empty set property `target` of CurrentStep to `******`
     	put property `duration` of CurrentStep into Duration

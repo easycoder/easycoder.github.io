@@ -109,6 +109,7 @@ const EasyCoder_IWSY = {
 		run: (program) => {
 			const command = program[program.pc];
 			const action = command.action;
+			let scriptRecord;
 			let script;
 			switch (action) {
 				case `init`:
