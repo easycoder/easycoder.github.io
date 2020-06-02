@@ -212,15 +212,16 @@ SaveSelectedBlock:
         set property PropertyName of Block to PropertyValue
     	add 1 to N
     end
-    set property BlockName of Blocks to Block
     index BlockNameInput to SelectedBlock
+    put element SelectedBlock of BlockNames into BlockName
     if BlockNameInput is not BlockName
     begin
+print `deleting`
     	json delete property BlockName of Blocks
         put BlockNameInput into BlockName
         set element SelectedBlock of BlockNames to BlockName
-    	set property BlockName of Blocks to Block
     end
+    set property BlockName of Blocks to Block
     set property `blocks` of Presentation to Blocks
 
 !	Tell the parent to refresh the script
