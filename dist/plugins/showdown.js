@@ -20,9 +20,8 @@ const EasyCoder_Showdown = {
 
 		run: program => {
 			const command = program[program.pc];
-			if (program.isUndefined(this.showdown_loaded)) {
+			if (typeof showdown === `undefined`) {
 				program.require(`js`, `https://unpkg.com/showdown@1.9.1/./dist/showdown.js`, function () {
-					this.showdown_loaded = true;
 					EasyCoder_Showdown.setupExtension();
 					program.run(command.pc + 1);
 				});
