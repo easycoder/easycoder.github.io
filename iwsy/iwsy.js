@@ -151,9 +151,13 @@ const IWSY = (container, text) => {
                     if (!block.element) {
                         createBlock(block);
                     }
-                    const content = script.content[item.content];
-                    const converter = new showdown.Converter();
-                    block.textPanel.innerHTML = converter.makeHtml(content.split(`%0a`).join(`\n`));
+                    for (const text of script.content) {
+                        if (text.name === item.content) {
+                            const converter = new showdown.Converter();
+                            block.textPanel.innerHTML =
+                                converter.makeHtml(text.content.split(`%0a`).join(`\n`));
+                        }
+                    }
                 }
             }
         }

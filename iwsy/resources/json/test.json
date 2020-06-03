@@ -56,46 +56,55 @@
     },
     {
       "name": "left",
-      "background": "",
-      "border": "",
+      "background": "rgba(80,80,80,0.5)",
+      "border": "1px solid gray",
       "borderRadius": "",
       "fontColor": "yellow",
       "fontFamily": "",
       "fontSize": 50,
       "fontStyle": "",
       "fontWeight": "",
-      "height": 700,
+      "height": 650,
       "left": 50,
       "textAlign": "",
-      "textMarginLeft": 10,
-      "textMarginTop": "",
+      "textMarginLeft": 20,
+      "textMarginTop": 20,
       "top": 300,
       "width": 400
     },
     {
       "name": "right",
-      "background": "",
-      "border": "",
+      "background": "rgba(80,80,80,0.5)",
+      "border": "1px solid gray",
       "borderRadius": "",
       "fontColor": "yellow",
       "fontFamily": "",
       "fontSize": 50,
       "fontStyle": "",
       "fontWeight": "",
-      "height": 700,
+      "height": 650,
       "left": 550,
       "textAlign": "",
-      "textMarginLeft": "",
-      "textMarginTop": "",
+      "textMarginLeft": 20,
+      "textMarginTop": 20,
       "top": 300,
       "width": 400
     }
   ],
-  "content": {
-    "main title": "# I Wanna Show You%0a%0a### for knockout presentations",
-    "page 1 left": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is organized mainly around static text blocks and tied to the desktop.",
-    "page 1 right": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is a modern product built to handle color, movement and the online world."
-  },
+  "content": [
+    {
+      "name": "iwannashowyou",
+      "content": "# I Wanna Show You%0a%0a### _for knockout presentations_"
+    },
+    {
+      "name": "page 1 left",
+      "content": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is a dated product organized mainly around static text blocks and tied to the desktop."
+    },
+    {
+      "name": "page 1 right",
+      "content": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is a modern product built to handle color, movement and a mobile environment."
+    }
+  ],
   "steps": [
     {
       "title": "My first presentation",
@@ -118,7 +127,7 @@
       "blocks": [
         {
           "block": "center title",
-          "content": "main title"
+          "content": "iwannashowyou"
         },
         {
           "block": "left",
