@@ -45,6 +45,7 @@
     variable Blocks
     variable Block
     variable Contents
+    variable Content
     variable Target
     variable Duration
     variable URL
@@ -303,7 +304,6 @@ CreateNewStep:
 !	Edit a single step
 EditStep:
 	put property `blocks` of Presentation into Blocks
-    put property `content` of Presentation into Contents
     set BlockNames to array
     put 0 into N
     while N is less than the json count of Blocks
@@ -312,7 +312,15 @@ EditStep:
         json add property `name` of Block to BlockNames
     	add 1 to N
     end
-    put the json keys of Contents into ContentNames
+    put property `content` of Presentation into Contents
+    set ContentNames to array
+    put 0 into N
+    while N is less than the json count of Contents
+    begin
+    	put element N of Contents into Content
+        json add property `name` of Content to ContentNames
+        add 1 to N
+    end
     put element SelectedStep of Steps into CurrentStep
 
     clear Editor

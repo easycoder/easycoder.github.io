@@ -5,13 +5,10 @@
     import div Panel and variable Presentation
     
     div Editor
+    div Title
+    div Table
     div Row
     div Cell
-    div Title
-    table Table
-    tr TR
-    td TD
-    span ItemNameSpan
     input ItemNameInput
     textarea TextArea
     button EditButton
@@ -24,10 +21,11 @@
     variable ItemNames
     variable ItemName
     variable SelectedItem
-    variable Action
+    variable SavedIndex
     variable Message
     variable N
-    variable B
+    variable NumItems
+    variable Content
     
     put -1 into SelectedItem
     
@@ -44,7 +42,14 @@ Start:
 
 Restart:
 	put property `content` of Presentation into Items
-    put the json keys of Items into ItemNames
+    set ItemNames to array
+    put 0 into N
+    while N is less than the json count of Items
+    begin
+    	put element N of Items into Item
+        json add property `name` of Item to ItemNames
+    	add 1 to N
+    end
 
 	clear Panel
     create Row in Panel
@@ -68,99 +73,89 @@ Restart:
         go to Restart
     end
 
-	put the json keys of Items into ItemNames
-    put the json count of ItemNames into N
-    set the elements of ItemNameSpan to N
-    set the elements of ItemNameInput to N
-    set the elements of EditButton to N
-    set the elements of Editor to N
-    set the elements of SaveButton to N
-    set the elements of DeleteItem to N
-    set the elements of TextArea to N
+    put the json count of Items into NumItems
+    set the elements of EditButton to NumItems
+    set the elements of Editor to NumItems
+    set the elements of SaveButton to NumItems
+    set the elements of DeleteItem to NumItems
+    set the elements of ItemNameInput to NumItems
+    set the elements of TextArea to NumItems
     create Table in Panel
     set the style of Table to `width:100%`
-    put 0 into B
-    while B is less than the elements of EditButton
+    put 0 into N
+    while N is less than the elements of EditButton
     begin
-        index EditButton to B
-        index DeleteItem to B
-        index ItemNameSpan to B
-        index ItemNameInput to B
-    	put element B of ItemNames into ItemName
-        create TR in Table
-        create TD in TR
-        set the style of TD to `width:8em;border:1px solid black`
-        index ItemNameSpan to B
-        create ItemNameSpan in TD
-        set the content of ItemNameSpan to ItemName
-        index ItemNameInput to B
-        create ItemNameInput in TD
-        set the style of ItemNameInput to `width:100%;display:none`
-        set the content of ItemNameInput to ItemName
-        create TD in TR
-    	set the style of TD to `border:1px solid black`
-        index Editor to B
-        create Row in TD
-        set the style of Row to `display:flex`
-        create EditButton in Row
-        set the style of EditButton to `flex:1`
-        set the text of EditButton to `Edit`
+        index EditButton to N
+        index DeleteItem to N
+        index Editor to N
+        index ItemNameInput to N
+        put element N of Items into Item
+        put property `name` of Item into ItemName
+        create Row in Table
         create Cell in Row
-        set the style of Cell to `width:1.4em;text-align:center`
+        set the style of Cell to `width:100%;display:flex`
+        create EditButton in Cell
+        set the style of EditButton to `flex:1`
+        set the text of EditButton to ItemName
         create Link in Cell
         create DeleteItem in Link
-        set the style of DeleteItem to `width:1em;margin-top:0.1em`
+        set the style of DeleteItem to `width:1em;margin:0.2em 0 0 0.2em`
         set attribute `src` of DeleteItem to `/resources/icon/stop.png`
-        create Editor in TD
-        set the style of Editor to `display:none`
-    	add 1 to B
+        create Editor in Row
+        set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none`
+    	add 1 to N
     end
     on click EditButton
     begin
-    	gosub to SaveSelectedItem
-        put the index of EditButton into SelectedItem
-        put the text of EditButton into Action
+        put the index of EditButton into SavedIndex
+        gosub to SaveSelectedItem
+        put SavedIndex into SelectedItem
         put 0 into N
-        while N is less than the json count of ItemNames
+        while N is less than NumItems
         begin
-           	index EditButton to N
-        	set style `background` of EditButton to ``
-            set the text of EditButton to `Edit`
-            index ItemNameSpan to N
-            index ItemNameInput to N
-            set the content of ItemNameSpan to the text of ItemNameInput
-            set style `display` of ItemNameSpan to `inline`
-            set style `display` of ItemNameInput to `none`
-            index Editor to N
-            set style `display` of Editor to `none`
+        	if N is not SelectedItem
+            begin
+                index EditButton to N
+                set style `background` of EditButton to ``
+                index Editor to N
+                set style `display` of Editor to `none`
+                clear Editor
+            end
             add 1 to N
         end
         index EditButton to SelectedItem
-    	if Action is `Edit`
+        index ItemNameInput to SelectedItem
+        index TextArea to SelectedItem
+        index SaveButton to SelectedItem
+        index Editor to SelectedItem
+		if style `display` of Editor is `none`
         begin
+            put element SelectedItem of Items into Item
         	set style `background` of EditButton to `lightgray`
-        	set the text of EditButton to `Close`
-            index ItemNameSpan to SelectedItem
-            index ItemNameInput to SelectedItem
-            index TextArea to SelectedItem
-            index SaveButton to SelectedItem
-            set style `display` of ItemNameSpan to `none`
-            set style `display` of ItemNameInput to `inline`
-            index Editor to SelectedItem
+            create Row in Editor
+            set the style of Row to `display:flex`
+            create Cell in Row
+            set the style of Cell to `width:5em`
+            set the content of Cell to `Name`
+            create ItemNameInput in Row
+            set the style of ItemNameInput to `flex:1`
+            set the text of ItemNameInput to property `name` of Item
             set style `display` of Editor to `block`
-            clear Editor
             create TextArea in Editor
             set the style of TextArea to `width:100%;max-width:100%;height:8em`
-            put element SelectedItem of ItemNames into ItemName
-            put property ItemName of Items into Item
-            replace `%0a` with newline in Item
-            set the content of TextArea to Item
+            put property `content` of Item into Content
+            replace `%0a` with newline in Content
+            set the content of TextArea to Content
             create SaveButton in Editor
             set the style of SaveButton to `width:100%`
             set the text of SaveButton to `Save`
             on click SaveButton gosub to SaveSelectedItem
         end
-        else gosub to SaveSelectedItem
+        else
+        begin
+            clear Editor
+            set style `display` of Editor to `none`
+        end
     end
     on click DeleteItem
     begin
@@ -177,14 +172,15 @@ Restart:
 SaveSelectedItem:
 	if SelectedItem is -1 return
     index ItemNameInput to SelectedItem
+    index EditButton to SelectedItem
+    put element SelectedItem of Items into Item
+    set property `name` of Item to the text of ItemNameInput
+    set the text of EditButton to the text of ItemNameInput
     index TextArea to SelectedItem
-    put the content of TextArea into Item
-    replace newline with `%0a` in Item
-    set property ItemName of Items to Item
-    if ItemNameInput is not ItemName json delete property ItemName of Items
-    put ItemNameInput into ItemName
-    set element SelectedItem of ItemNames to ItemName
-    set property ItemName of Items to Item
+    put the content of TextArea into Content
+    replace newline with `%0a` in Content
+    set property `content` of Item to Content
+    set element SelectedItem of Items to Item
     set property `content` of Presentation to Items
 
 !	Tell the parent to refresh the script

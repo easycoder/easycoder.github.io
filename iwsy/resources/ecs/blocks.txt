@@ -21,6 +21,7 @@
     variable PropertyNames
     variable PropertyName
     variable SelectedBlock
+    variable SavedIndex
     variable Message
     variable N
     variable NBlocks
@@ -93,7 +94,7 @@ Restart:
         set the text of EditButton to property `name` of Block
         create Link in Cell
         create DeleteBlock in Link
-        set the style of DeleteBlock to `width:1em;margin:0.1em 0 0 0.2em`
+        set the style of DeleteBlock to `width:1em;margin:0.2em 0 0 0.2em`
         set attribute `src` of DeleteBlock to `/resources/icon/stop.png`
         create Editor in Row
         set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none`
@@ -101,8 +102,9 @@ Restart:
     end
     on click EditButton
     begin
-    	gosub to SaveSelectedBlock
-        put the index of EditButton into SelectedBlock
+        put the index of EditButton into SavedIndex
+        gosub to SaveSelectedBlock
+        put SavedIndex into SelectedBlock
         put 0 into N
         while N is less than NBlocks
         begin
@@ -118,10 +120,10 @@ Restart:
         end
         index EditButton to SelectedBlock
         index Editor to SelectedBlock
+        index SaveButton to SelectedBlock
 		if style `display` of Editor is `none`
         begin
         	set style `background` of EditButton to `lightgray`
-            index SaveButton to SelectedBlock
             set style `display` of Editor to `block`
             put element SelectedBlock of Blocks into Block
             put the json count of PropertyNames into N
@@ -149,7 +151,6 @@ Restart:
         end
         else
         begin
-        	gosub to SaveSelectedBlock
             clear Editor
             set style `display` of Editor to `none`
         end
@@ -166,6 +167,7 @@ Restart:
 !	Save the seleced block
 SaveSelectedBlock:
 	if SelectedBlock is -1 return
+    index EditButton to SelectedBlock
     put element SelectedBlock of Blocks into Block
 	put 0 into N
     while N is less than the json count of PropertyNames
@@ -175,6 +177,7 @@ SaveSelectedBlock:
         set property PropertyName of Block to the text of PropertyValue
     	add 1 to N
     end
+    set the text of EditButton to property `name` of Block
     set element SelectedBlock of Blocks to Block
     set property `blocks` of Presentation to Blocks
 
