@@ -346,10 +346,10 @@ L2:
 CreateNewPresentation:
     set Presentation to object
     set Item to object
-    set property `blocks` of Presentation to Item
     set property `content` of Presentation to Item
     set Item to array
     set property `steps` of Presentation to Item
+    set property `blocks` of Presentation to Item
 	return
 
 SetupSteps:
