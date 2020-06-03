@@ -5,14 +5,10 @@
     import div Panel and variable Presentation
     
     div Editor
+    div Title
+    div Table
     div Row
     div Cell
-    div Title
-    table Table
-    tr TR
-    td TD
-    span BlockNameSpan
-    input BlockNameInput
     input PropertyValue
     button EditButton
     button SaveButton
@@ -21,21 +17,18 @@
     a Link
     variable Blocks
     variable Block
-    variable BlockNames
-    variable BlockName
+    variable PropertyDefaults
     variable PropertyNames
     variable PropertyName
-    variable Properties
     variable SelectedBlock
-    variable Action
     variable Message
     variable N
-    variable B
+    variable NBlocks
     
     put -1 into SelectedBlock
     
-    rest get Properties from `/resources/json/properties.json`
-    put the json keys of Properties into PropertyNames
+    rest get PropertyNames from `/resources/json/propertyNames.json`
+    rest get PropertyDefaults from `/resources/json/propertyDefaults.json`
     
     on message go to Start
     set ready
@@ -50,8 +43,6 @@ Start:
 
 Restart:
 	put property `blocks` of Presentation into Blocks
-    put the json keys of Blocks into BlockNames
-
 	clear Panel
     create Row in Panel
     set the style of Row to `display:flex`
@@ -67,98 +58,72 @@ Restart:
     set attribute `src` of AddBlock to `resources/icon/plus.png`
     on click AddBlock
     begin
-    	put prompt `Name of new block:` with `new block` into BlockName
         set Block to object
         put 0 into N
         while N is less than the json count of PropertyNames
         begin
         	put element N of PropertyNames into PropertyName
-            set property PropertyName of Block to property PropertyName of Properties
+            set property PropertyName of Block to property PropertyName of PropertyDefaults
         	add 1 to N
         end
-        set property BlockName of Blocks to Block
+        json add Block to Blocks
         set property `blocks` of Presentation to Blocks
         go to Restart
     end
 
-	put the json count of BlockNames into N
-    set the elements of BlockNameSpan to N
-    set the elements of BlockNameInput to N
-    set the elements of EditButton to N
-    set the elements of SaveButton to N
-    set the elements of Editor to N
-    set the elements of DeleteBlock to N
+	put the json count of Blocks into NBlocks
+    set the elements of EditButton to NBlocks
+    set the elements of SaveButton to NBlocks
+    set the elements of Editor to NBlocks
+    set the elements of DeleteBlock to NBlocks
     create Table in Panel
     set the style of Table to `width:100%`
-    put 0 into B
-    while B is less than the elements of EditButton
+    put 0 into N
+    while N is less than NBlocks
     begin
-    	put element B of BlockNames into BlockName
-        create TR in Table
-        create TD in TR
-        set the style of TD to `width:8em;border:1px solid black;padding-left:0.5em`
-        index BlockNameSpan to B
-        create BlockNameSpan in TD
-        set the content of BlockNameSpan to BlockName
-        index BlockNameInput to B
-        create BlockNameInput in TD
-        set the style of BlockNameInput to `width:100%;display:none`
-        set the content of BlockNameInput to BlockName
-        create TD in TR
-    	set the style of TD to `border:1px solid black`
-        index EditButton to B
-        index DeleteBlock to B
-        index Editor to B
-        create Row in TD
-        set the style of Row to `display:flex`
-        create EditButton in Row
-        set the style of EditButton to `flex:1`
-        set the text of EditButton to `Edit`
+        index EditButton to N
+        index DeleteBlock to N
+        index Editor to N
+        create Row in Table
         create Cell in Row
-        set the style of Cell to `width:1.4em;text-align:center`
+        set the style of Cell to `width:100%;display:flex`
+        create EditButton in Cell
+        set the style of EditButton to `flex:1`
+    	put element N of Blocks into Block
+        set the text of EditButton to property `name` of Block
         create Link in Cell
         create DeleteBlock in Link
-        set the style of DeleteBlock to `width:1em;margin-top:0.1em`
+        set the style of DeleteBlock to `width:1em;margin:0.1em 0 0 0.2em`
         set attribute `src` of DeleteBlock to `/resources/icon/stop.png`
-        create Editor in TD
-        set the style of Editor to `display:none`
-    	add 1 to B
+        create Editor in Row
+        set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none`
+    	add 1 to N
     end
     on click EditButton
     begin
     	gosub to SaveSelectedBlock
         put the index of EditButton into SelectedBlock
         put 0 into N
-        while N is less than the json count of BlockNames
+        while N is less than NBlocks
         begin
-           	index EditButton to N
-        	set style `background` of EditButton to ``
-            if N is not SelectedBlock set the text of EditButton to `Edit`
-            index BlockNameSpan to N
-            index BlockNameInput to N
-            set the content of BlockNameSpan to the text of BlockNameInput
-            set style `display` of BlockNameSpan to `inline`
-            set style `display` of BlockNameInput to `none`
-            index Editor to N
-            set style `display` of Editor to `none`
+        	if N is not SelectedBlock
+            begin
+                index EditButton to N
+                set style `background` of EditButton to ``
+                index Editor to N
+                set style `display` of Editor to `none`
+                clear Editor
+            end
             add 1 to N
         end
         index EditButton to SelectedBlock
-        put the text of EditButton into Action
-    	if Action is `Edit`
+        index Editor to SelectedBlock
+		if style `display` of Editor is `none`
         begin
         	set style `background` of EditButton to `lightgray`
-        	set the text of EditButton to `Properties`
-            index BlockNameSpan to SelectedBlock
-            index BlockNameInput to SelectedBlock
             index SaveButton to SelectedBlock
-            set style `display` of BlockNameSpan to `none`
-            set style `display` of BlockNameInput to `inline`
-            index Editor to SelectedBlock
             set style `display` of Editor to `block`
-            clear Editor
-            put element SelectedBlock of BlockNames into BlockName
-            put property BlockName of Blocks into Block
+            put element SelectedBlock of Blocks into Block
             put the json count of PropertyNames into N
             set the elements of PropertyValue to N
             put 0 into N
@@ -173,7 +138,7 @@ Restart:
                 index PropertyValue to N
                 create PropertyValue in Row
                 set the style of PropertyValue to `flex:1`
-                set the content of PropertyValue to property PropertyName of Block
+                set the text of PropertyValue to property PropertyName of Block
                 add 1 to N
             end
             create Row in Editor
@@ -185,7 +150,6 @@ Restart:
         else
         begin
         	gosub to SaveSelectedBlock
-        	set the text of EditButton to `Edit`
             clear Editor
             set style `display` of Editor to `none`
         end
@@ -193,9 +157,7 @@ Restart:
     on click DeleteBlock
     begin
     	put the index of DeleteBlock into N
-        put element N of BlockNames into BlockName
-        put property `blocks` of Presentation into Blocks
-        json delete property BlockName of Blocks
+        json delete element N of Blocks
         set property `blocks` of Presentation to Blocks
         go to Restart
     end
@@ -204,24 +166,16 @@ Restart:
 !	Save the seleced block
 SaveSelectedBlock:
 	if SelectedBlock is -1 return
+    put element SelectedBlock of Blocks into Block
 	put 0 into N
     while N is less than the json count of PropertyNames
     begin
         put element N of PropertyNames into PropertyName
     	index PropertyValue to N
-        set property PropertyName of Block to PropertyValue
+        set property PropertyName of Block to the text of PropertyValue
     	add 1 to N
     end
-    index BlockNameInput to SelectedBlock
-    put element SelectedBlock of BlockNames into BlockName
-    if BlockNameInput is not BlockName
-    begin
-print `deleting`
-    	json delete property BlockName of Blocks
-        put BlockNameInput into BlockName
-        set element SelectedBlock of BlockNames to BlockName
-    end
-    set property BlockName of Blocks to Block
+    set element SelectedBlock of Blocks to Block
     set property `blocks` of Presentation to Blocks
 
 !	Tell the parent to refresh the script

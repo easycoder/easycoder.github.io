@@ -143,28 +143,19 @@ const IWSY = (container, text) => {
     };
 
     // Set the content of a block
-    const doSetContent = (spec) => {
-        const block = script.blocks[spec.block];
-        const content = script.content[spec.content];
-        if (!block) {
-            throw Error(`Block '${block}' cannot be found`);
-        }
-        if (!block.element) {
-            createBlock(block);
-        }
-        const converter = new showdown.Converter();
-        block.textPanel.innerHTML = converter.makeHtml(content.split(`%0a`).join(`\n`));
-    };
-
-    // Set the content of a block
     const setcontent = step => {
-        if (step.blocks) {
-            for (const spec of step.blocks)
-            {
-                doSetContent(spec);
+        for (const item of step.blocks)
+        {
+            for (const block of script.blocks) {
+                if (block.name === item.block) {
+                    if (!block.element) {
+                        createBlock(block);
+                    }
+                    const content = script.content[item.content];
+                    const converter = new showdown.Converter();
+                    block.textPanel.innerHTML = converter.makeHtml(content.split(`%0a`).join(`\n`));
+                }
             }
-        } else {
-            doSetContent(step);
         }
         step.next();
     };
@@ -172,16 +163,11 @@ const IWSY = (container, text) => {
     // Show or hide a block
     const doShowHide = (step, showHide) => {
         if (script.speed !== `scan`) {
-            if (Array.isArray(step.blocks)) {
-                for (const name of step.blocks)
-                {
-                    script.blocks[name].opacity = showHide ? `1.0` : `0.0`;
-                    script.blocks[name].element.style[`opacity`] = script.blocks[name].opacity;
-                }
-            } else {
-                script.blocks[step.blocks].opacity = showHide ? `1.0` : `0.0`;
-                script.blocks[step.blocks].element.style[`opacity`] = script.blocks[step.blocks].opacity;
-            }
+        for (const name of step.blocks)
+        {
+            script.blocks[name].opacity = showHide ? `1.0` : `0.0`;
+            script.blocks[name].element.style[`opacity`] = script.blocks[name].opacity;
+        }
         }
         step.next();
     };
@@ -196,7 +182,15 @@ const IWSY = (container, text) => {
 
     // Fade up or down
     const doFade = (step, upDown) => {
-        const stepBlocks = step.blocks;
+        const stepBlocks = [];
+        for (const b of step.blocks) {
+            script.blocks.forEach((block, index) => {
+                if (block.name === b) {
+                    stepBlocks.push(index);
+                }
+            });
+        }            
+
         for (const b of stepBlocks) {
             const block = script.blocks[b];
             if (!block.element) {
@@ -419,8 +413,16 @@ const IWSY = (container, text) => {
 
     // Handle a transition
     const transition = step => {
-        const block = script.blocks[step.block];
-        const target = script.blocks[step.target];
+        let block = null;
+        let target = null;
+        script.blocks.forEach((item, index) => {
+            if (item.name === step.block) {
+                block = item;
+            }
+            if (item.name === step.target) {
+                target = item;
+            }
+        });
         if (script.speed === `scan`) {
             doTransitionStep(block, target, 1.0);
             step.next();
