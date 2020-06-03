@@ -59,6 +59,16 @@ const EasyCoder_IWSY = {
 						target
 					});
 					return true;
+				case `block`:
+					const block = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						block
+					});
+					return true;
 				case `run`:
 					const pc = compiler.getPc();
 					compiler.next();
@@ -147,6 +157,8 @@ const EasyCoder_IWSY = {
 					if (EasyCoder.iwsyFunctions) {
 						EasyCoder.iwsyFunctions.gotoStep(program.getValue(command.target));
 					}
+					break;
+				case `block`:
 					break;
 				case `run`:
 					if (EasyCoder.iwsyFunctions) {

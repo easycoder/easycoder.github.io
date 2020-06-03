@@ -9,15 +9,18 @@
     div Table
     div Row
     div Cell
+    div Empty
     input ItemNameInput
     textarea TextArea
     button EditButton
     button SaveButton
     img AddItem
+    img Up
     img DeleteItem
     a Link
     variable Items
     variable Item
+    variable Item2
     variable ItemNames
     variable ItemName
     variable SelectedItem
@@ -77,6 +80,7 @@ Restart:
     set the elements of EditButton to NumItems
     set the elements of Editor to NumItems
     set the elements of SaveButton to NumItems
+    set the elements of Up to NumItems
     set the elements of DeleteItem to NumItems
     set the elements of ItemNameInput to NumItems
     set the elements of TextArea to NumItems
@@ -86,6 +90,7 @@ Restart:
     while N is less than the elements of EditButton
     begin
         index EditButton to N
+        index Up to N
         index DeleteItem to N
         index Editor to N
         index ItemNameInput to N
@@ -97,6 +102,18 @@ Restart:
         create EditButton in Cell
         set the style of EditButton to `flex:1`
         set the text of EditButton to ItemName
+        if N is 0
+        begin
+            create Empty in Cell
+            set the style of Empty to `width:1em;margin:0.2em 0 0 0.2em`
+        end
+        else
+        begin
+            create Link in Cell
+            create Up in Link
+            set the style of Up to `width:1em;margin:0.2em 0 0 0.2em`
+            set attribute `src` of Up to `/resources/icon/up.png`
+        end
         create Link in Cell
         create DeleteItem in Link
         set the style of DeleteItem to `width:1em;margin:0.2em 0 0 0.2em`
@@ -156,6 +173,18 @@ Restart:
             clear Editor
             set style `display` of Editor to `none`
         end
+    end
+    on click Up
+    begin
+    	put the index of Up into N
+        put element N of Items into Item
+        take 1 from N
+        put element N of Items into Item2
+        set element N of Items to Item
+        add 1 to N
+        set element N of Items to Item2
+        set property `content` of Presentation to Items
+        go to Restart
     end
     on click DeleteItem
     begin
