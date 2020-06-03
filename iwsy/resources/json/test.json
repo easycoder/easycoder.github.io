@@ -1,6 +1,7 @@
 {
-  "blocks": {
-    "center title": {
+  "blocks": [
+    {
+      "name": "center title",
       "background": "",
       "border": "",
       "borderRadius": "",
@@ -17,7 +18,26 @@
       "top": 300,
       "width": "100%"
     },
-    "main content": {
+    {
+      "name": "top title",
+      "background": "",
+      "border": "",
+      "borderRadius": "",
+      "fontColor": "#ffffff",
+      "fontFamily": "",
+      "fontSize": 50,
+      "fontStyle": "",
+      "fontWeight": "",
+      "height": 300,
+      "left": 0,
+      "textAlign": "center",
+      "textMarginLeft": "",
+      "textMarginTop": "",
+      "top": 50,
+      "width": "100%"
+    },
+    {
+      "name": "main content",
       "background": "",
       "border": "",
       "borderRadius": "",
@@ -34,7 +54,8 @@
       "top": 300,
       "width": "100%"
     },
-    "left": {
+    {
+      "name": "left",
       "background": "",
       "border": "",
       "borderRadius": "",
@@ -51,7 +72,8 @@
       "top": 300,
       "width": 400
     },
-    "right": {
+    {
+      "name": "right",
       "background": "",
       "border": "",
       "borderRadius": "",
@@ -67,29 +89,12 @@
       "textMarginTop": "",
       "top": 300,
       "width": 400
-    },
-    "top title": {
-      "background": "",
-      "border": "",
-      "borderRadius": "",
-      "fontColor": "#ffffff",
-      "fontFamily": "",
-      "fontSize": 50,
-      "fontStyle": "",
-      "fontWeight": "",
-      "height": 300,
-      "left": 0,
-      "textAlign": "center",
-      "textMarginLeft": "",
-      "textMarginTop": "",
-      "top": 50,
-      "width": "100%"
     }
-  },
+  ],
   "content": {
     "main title": "# I Wanna Show You%0a%0a### for knockout presentations",
-    "page 1 left": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is a dated product organized mainly around static text blocks and tied to the desktop.",
-    "page 1 right": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is a modern product built to handle color, movement and a mobile environment."
+    "page 1 left": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is organized mainly around static text blocks and tied to the desktop.",
+    "page 1 right": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is a modern product built to handle color, movement and the online world."
   },
   "steps": [
     {
