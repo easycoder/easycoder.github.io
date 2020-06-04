@@ -24,7 +24,6 @@
     img Save
     img RunStop
     img Delete
-    img Cycle
     a Link
     module StepsModule
     module BlocksModule
@@ -138,11 +137,6 @@ L2:
     set the style of RunStop to `width:40px;margin-right:1.5em`
     set attribute `src` of RunStop to `resources/icon/run.png`
     set attribute `title` of RunStop to `Run`
-   	create Link in Buttons
-   	create Cycle in Link
-   	set the style of Cycle to `width:40px`
-   	set attribute `src` of Cycle to `resources/icon/cycle.png`
-   	set attribute `title` of Cycle to `Cycle screens`
     
     create Status in Buttons
     if Mobile set the style of Status to `height:1em`
@@ -321,6 +315,7 @@ L2:
     put 0 into N
     gosub to SelectSection
     clear Running
+    iwsy load Player Presentation
     
     on message
     begin
@@ -351,17 +346,16 @@ L2:
 
 CreateNewPresentation:
     set Presentation to object
-    set Item to object
-    set property `content` of Presentation to Item
     set Item to array
     set property `steps` of Presentation to Item
     set property `blocks` of Presentation to Item
+    set property `content` of Presentation to Item
 	return
 
 SetupSteps:
     if StepsModule is not running
     begin
-    	rest get Script from `/resources/ecs/steps.txt`
+    	rest get Script from `/resources/ecs/steps.txt?v=` cat now
         run Script with StepsPanel and Presentation as StepsModule
     end
     return
@@ -369,7 +363,7 @@ SetupSteps:
 SetupBlocks:
     if BlocksModule is not running
     begin
-    	rest get Script from `/resources/ecs/blocks.txt`
+    	rest get Script from `/resources/ecs/blocks.txt?v=` cat now
         run Script with BlocksPanel and Presentation as BlocksModule
     end
     return
@@ -377,7 +371,7 @@ SetupBlocks:
 SetupContent:
     if ContentModule is not running
     begin
-    	rest get Script from `/resources/ecs/content.txt`
+    	rest get Script from `/resources/ecs/content.txt?v=` cat now
         run Script with ContentPanel and Presentation as ContentModule
     end
     return
@@ -521,7 +515,7 @@ SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
     put File into CurrentScriptName
-	if PasswordValid rest get Presentation from `/resources/json/` cat File
+	if PasswordValid rest get Presentation from `/resources/json/` cat File cat `?v=` cat now
     else get Presentation from storage as File
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
@@ -559,10 +553,16 @@ DoRunStop:
     end
     else
     begin
+    	put property `steps` of Presentation into Item
+    	if the json count of Item is 0 stop
+        put element 0 of Item into Item
+        if property `action` of Item is not `init`
+        begin
+        	alert `The first step of a presentation must be an 'init' action.`
+            stop
+        end
     	set Running
 		gosub to ClearStepsButtons
-    	put property `steps` of Presentation into Item
-    	if the json count of Item is  0 stop
         set attribute `src` of RunStop to `resources/icon/runstop.png`
         
         put 0 into N
@@ -578,8 +578,8 @@ DoRunStop:
             set property `action` of Message to `running`
             send Message to StepsModule
         end
-    
-        iwsy run then
+
+		iwsy run then
         begin
 			gosub to ClearStepsButtons
     		set attribute `src` of RunStop to `resources/icon/run.png`

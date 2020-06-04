@@ -744,7 +744,9 @@ const IWSY = (container, text) => {
     initScript();
     IWSY.plugins = {};
     preloadImages();
-    doStep(script.steps[0]);
+    if (script.steps.length > 0) {
+        doStep(script.steps[0]);
+    }
     return {
         setScript,
         gotoStep,
