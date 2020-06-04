@@ -338,7 +338,6 @@ L2:
         else if Action is `block`
         begin
         	put property `block` of Message into N
-        alert `Show block ` cat N
             iwsy block N
         end
     end
