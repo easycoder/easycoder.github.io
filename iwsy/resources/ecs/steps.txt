@@ -61,6 +61,7 @@
     variable Response
     variable Message
     variable Running
+    variable SavedIndex
     variable N
     variable B
 
@@ -170,9 +171,10 @@ Restart:
 	end
     on click StepButton
     begin
+    	put the index of StepButton into SavedIndex
        	gosub to SaveCurrentStep
     	put SelectedStep into N
-        put the index of StepButton into SelectedStep
+        put SavedIndex into SelectedStep
         if SelectedStep is N
         begin
             index Editor to N
@@ -246,7 +248,6 @@ Restart:
     json add `goto` to ActionNames
     json add `load` to ActionNames
     set InitProperties to array
-    json add `title` to InitProperties
     json add `aspect ratio` to InitProperties
     json add `background` to InitProperties
     json add `border` to InitProperties
@@ -380,7 +381,8 @@ ReloadStepEditor:
         if Response
         begin
         	index StepButton to SelectedStep
-            set property `title` of CurrentStep to TitleInput
+            index TitleInput to SelectedStep
+            set property `title` of CurrentStep to the text of TitleInput
             put the selected item in ActionSelect into Action
             gosub to CreateNewAction
             clear Table
@@ -702,7 +704,7 @@ CreateNewAction:
         while N is less than the json count of InitProperties
         begin
         	put element N of InitProperties into InitProperty
-        	set property InitProperty of CurrentStep to empty
+            set property InitProperty of CurrentStep to empty
         	add 1 to N
         end
         set property `aspect ratio` of CurrentStep to `WW:HH`

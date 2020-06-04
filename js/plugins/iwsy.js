@@ -137,20 +137,20 @@ const EasyCoder_IWSY = {
 					script = program.getValue(command.script);
 					try {
 						script = JSON.parse(script);
-						EasyCoder.iwsyFunctions = IWSY(player, script);
 					} catch (err) {
-						alert(`Badly formatted script`);
+						alert(`iwsy load: Badly formatted script`);
 					}
+					EasyCoder.iwsyFunctions = IWSY(player, script);
 					break;
 				case `script`:
 					script = program.getValue(command.script);
 					try {
 						script = JSON.parse(script);
-						if (EasyCoder.iwsyFunctions) {
-							EasyCoder.iwsyFunctions.setScript(script);
-						}
 					} catch (err) {
-						alert(`Badly formatted script`);
+						alert(`iwsy script: Badly formatted script`);
+					}
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.setScript(script);
 					}
 					break;
 				case `goto`:
@@ -159,6 +159,9 @@ const EasyCoder_IWSY = {
 					}
 					break;
 				case `block`:
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.block(program.getValue(command.block));
+					}
 					break;
 				case `run`:
 					if (EasyCoder.iwsyFunctions) {
