@@ -4,7 +4,7 @@ IWannaShowYou is a GUI presentation package analagous to PowerPoint but for web-
 
 IWannaShowYou differs from PowerPoint in being step-based rather than slide-based. A step is any change to what is currently showing on the screen. If you wish to retain the notion of 'slides' you can regard a slide as an accumulation of a number of steps. Every slide consists of at least one step but there is no upper limit to the number.
 
-PowerPoint includes a rich set of graphical elements. IWannaShowYou relies more on _actions_, the simplest of which is a cut from one piece of content to another. Mostrami presentations tend to be dynamic, with smooth transitions from one step to the next. The program is modular and permits the addition of plugins to perform any desired effect. Its architecture separates structure and content to allow either to be changed independently of the other.
+PowerPoint includes a rich set of graphical elements. IWannaShowYou relies more on _actions_, the simplest of which is a cut from one piece of content to another. IWannaShowYou presentations tend to be dynamic, with smooth transitions from one step to the next. The program is modular and permits the addition of plugins to perform any desired effect. Its architecture separates structure and content to allow either to be changed independently of the other.
 
 IWannaShowYou creates files in plain-text JSON format.
 
