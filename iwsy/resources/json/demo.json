@@ -28,7 +28,7 @@
       "fontSize": 50,
       "fontStyle": "",
       "fontWeight": "",
-      "height": 300,
+      "height": 220,
       "left": 0,
       "textAlign": "center",
       "textMarginLeft": "",
@@ -82,13 +82,13 @@
       "fontSize": 50,
       "fontStyle": "",
       "fontWeight": "",
-      "height": 800,
+      "height": 700,
       "left": 50,
       "textAlign": "",
       "textMarginLeft": 10,
       "textMarginTop": "",
-      "top": 300,
-      "width": "100%"
+      "top": 250,
+      "width": 900
     }
   ],
   "content": [

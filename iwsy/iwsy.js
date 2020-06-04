@@ -1,6 +1,6 @@
 // IWSY
 
-const IWSY = (container, text) => {
+const IWSY = (player, text) => {
 
     let script = text;
     let clicked = false;
@@ -23,14 +23,14 @@ const IWSY = (container, text) => {
     };
 
     const release = step => {
-        container.style.cursor = 'none';
+        player.style.cursor = 'none';
         document.removeEventListener(`click`, release);
         document.onkeydown = null;
         step.next();
     };
 
     const doManual = step => {
-        container.style.cursor = 'pointer';
+        player.style.cursor = 'pointer';
         document.addEventListener(`click`, release);
         document.onkeydown = (event) => {
             switch (event.code) {
@@ -42,7 +42,7 @@ const IWSY = (container, text) => {
                 case `ArrowLeft`:
                     break;
                 case `Enter`:
-                    container.style.cursor = 'none';
+                    player.style.cursor = 'none';
                     document.addEventListener(`click`, onClick);
                     script.runMode = `auto`;
                     release(step);
@@ -79,10 +79,10 @@ const IWSY = (container, text) => {
 
     // Create a block.
     const createBlock = (block) => {
-        const w = container.getBoundingClientRect().width / 1000;
-        const h = container.getBoundingClientRect().height / 1000;
+        const w = player.getBoundingClientRect().width / 1000;
+        const h = player.getBoundingClientRect().height / 1000;
         const element = document.createElement(`div`);
-        container.appendChild(element);
+        player.appendChild(element);
         block.element = element;
         if (script.speed === `scan`) {
             element.style[`display`] = `none`;
@@ -276,7 +276,7 @@ const IWSY = (container, text) => {
             element.style[`background`] = block.element.style[`background`]
             element.style[`border`] = block.element.style[`border`]
             element.style[`border-radius`] = block.element.style[`border-radius`]
-            container.appendChild(element);
+            player.appendChild(element);
             const text = document.createElement(`div`);
             text.style[`position`] = `absolute`;
             text.style[`left`] = block.textPanel.style[`left`];
@@ -307,7 +307,7 @@ const IWSY = (container, text) => {
                     block.element.style[`background`] = `url("${content.url}")`;
                     block.element.style[`background-size`] = `cover`;
                     block.element.style[`opacity`] = 1.0 ;
-                    container.removeChild(element);
+                    player.removeChild(element);
                     if (!continueFlag) {
                         step.next();
                     }
@@ -321,7 +321,7 @@ const IWSY = (container, text) => {
 
     // Compute a block size
     const setComputedBlockSize = (block, target, ratio) => {
-        const boundingRect = container.getBoundingClientRect();
+        const boundingRect = player.getBoundingClientRect();
         const w = boundingRect.width / 1000;
         const h = boundingRect.height / 1000;
         let width = block.width;
@@ -348,7 +348,7 @@ const IWSY = (container, text) => {
 
     // Compute a block position
     const setComputedBlockPosition = (block, target, ratio) => {
-        const boundingRect = container.getBoundingClientRect();
+        const boundingRect = player.getBoundingClientRect();
         const w = boundingRect.width / 1000;
         const h = boundingRect.height / 1000;
         let left = block.left;
@@ -375,7 +375,7 @@ const IWSY = (container, text) => {
 
     // Compute a font size
     const setComputedFontSize = (block, target, ratio) => {
-        const h = Math.round(container.getBoundingClientRect().height) / 1000;
+        const h = Math.round(player.getBoundingClientRect().height) / 1000;
         let size = block.fontSize;
         if (!isNaN(size)) {
             size *= h;
@@ -457,7 +457,7 @@ const IWSY = (container, text) => {
         for (const name in script.blocks) {
             const block = script.blocks[name];
             if (block.element) {
-                container.removeChild(block.element);
+                player.removeChild(block.element);
                 block.element = null;
             }
         }
@@ -492,15 +492,15 @@ const IWSY = (container, text) => {
             if (colon > 0) {
                 const aspectW = aspect.substr(0, colon);
                 const aspectH = aspect.substr(colon + 1);
-                const height = Math.round(parseFloat(container.offsetWidth) * aspectH / aspectW);
-                container.style.height = `${Math.round(height)}px`;
+                const height = Math.round(parseFloat(player.offsetWidth) * aspectH / aspectW);
+                player.style.height = `${Math.round(height)}px`;
             }
-            container.style.position = `relative`;
-            container.style.overflow = `hidden`;
-            container.style.cursor = `none`;
-            container.style.border = step.border;
-            container.style.background = step.background.split(`&quot;`).join(`"`);
-            container.style[`background-size`] = `cover`;
+            player.style.position = `relative`;
+            player.style.overflow = `hidden`;
+            player.style.cursor = `none`;
+            player.style.border = step.border;
+            player.style.background = step.background.split(`&quot;`).join(`"`);
+            player.style[`background-size`] = `cover`;
         }
         step.next();
     };
@@ -509,6 +509,7 @@ const IWSY = (container, text) => {
     const scan = () => {
         script.speed = `scan`;
         removeBlocks();
+        player.innerHTML = ``;
         doStep(script.steps[0]);
     };
 
@@ -521,6 +522,70 @@ const IWSY = (container, text) => {
         } else {
             throw Error(`Unknown label '${step.target}`);
         }
+    };
+
+    // Go to a specified step number
+    const gotoStep = (target) => {
+        script.scanTarget = target;
+        script.singleStep = true;
+        script.runMode = `manual`;
+        scan();
+    };
+
+    // Show a block
+    const block = blockIndex => {
+        player.innerHTML = ``;
+        player.style.background = ``;
+        const w = player.getBoundingClientRect().width / 1000;
+        const h = player.getBoundingClientRect().height / 1000;
+        script.blocks.forEach((block, index) => {
+            const element = document.createElement(`div`);
+            player.appendChild(element);
+            if (script.speed === `scan`) {
+                element.style[`display`] = `none`;
+            }
+            element.style[`position`] = `absolute`;
+            element.style[`opacity`] = `0.5`;
+            let val = block.left;
+            if (!isNaN(val)) {
+                val *= w;
+            }
+            element.style[`left`] = val;
+            val = block.top;
+            if (!isNaN(val)) {
+                val *= h;
+            }
+            element.style[`top`] = val;
+            val = block.width;
+            if (!isNaN(val)) {
+                val = `${val * w - 2}px`;
+            } else {
+                val = `calc(${val} - 2px)`
+            }
+            element.style[`width`] = val;
+            val = block.height;
+            if (!isNaN(val)) {
+                val = `${val * h - 2}px`;
+            } else {
+                val = `calc(${val} - 2px)`
+            }
+            element.style[`height`] = val;
+            element.style[`font-size`] = `${h * 40}px`
+            element.innerHTML = block.name;
+            if (index == blockIndex) {
+                element.style[`background`] = `#ddffdd`;
+                element.style[`border`] = `1px solid #00ff00`;
+                element.style[`font-weight`] = `bold`
+                element.style[`z-index`] = 10;
+                element.style.color = `#006600`;
+            } else {
+                // element.style[`background`] = `#ff8888`;
+                element.style[`border`] = `1px solid #ff0000`;
+                element.style[`text-align`] = `right`;
+                element.style[`z-index`] = 0;
+                element.style.color = `#ff0000`;
+            }
+        });
     };
 
     // Run the presentation
@@ -553,17 +618,9 @@ const IWSY = (container, text) => {
         step.next();
     };
 
-    // Go to a specified step number
-    const gotoStep = (target) => {
-        script.scanTarget = target;
-        script.singleStep = true;
-        script.runMode = `manual`;
-        scan();
-    };
-
     // Restore the cursor
     const restoreCursor = () => {
-        container.style.cursor = `pointer`;
+        player.style.cursor = `pointer`;
         if (script.then) {
             script.then();
             script.then = null;
@@ -635,9 +692,10 @@ const IWSY = (container, text) => {
     // Initialize the script
     const initScript = () => {
         document.onkeydown = null;
-        container.style.position = `relative`;
-        container.style.overflow = `hidden`;
-        container.style.cursor = 'none';
+        player.innerHTML = ``;
+        player.style.position = `relative`;
+        player.style.overflow = `hidden`;
+        player.style.cursor = 'none';
         script.speed = `normal`;
         script.singleStep = true;
         script.labels = {};
@@ -646,7 +704,7 @@ const IWSY = (container, text) => {
             const block = script.blocks[name];
             const element = block.element;
             if (typeof element !== `undefined`) {
-                container.removeChild(element);
+                player.removeChild(element);
                 block.element = null;
             }
         }
@@ -733,7 +791,6 @@ const IWSY = (container, text) => {
         }
     };
 
-    container.innerHTML = ``;
     document.removeEventListener(`click`, init);
     if (script.runMode === `auto`) {
         document.addEventListener(`click`, onClick);
@@ -750,6 +807,7 @@ const IWSY = (container, text) => {
     return {
         setScript,
         gotoStep,
+        block,
         run,
         stop,
         onStep
