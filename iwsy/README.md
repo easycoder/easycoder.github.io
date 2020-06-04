@@ -8,6 +8,6 @@ PowerPoint includes a rich set of graphical elements. IWannaShowYou relies more 
 
 IWannaShowYou creates files in plain-text JSON format.
 
-IWannaShowYou runs in any browser and is usable on a PC or a mobile devices.
+IWannaShowYou runs in any browser and is usable on a PC or a mobile device.
 
 This project is under development.
