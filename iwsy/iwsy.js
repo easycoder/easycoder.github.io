@@ -5,6 +5,17 @@ const IWSY = (player, text) => {
     let script = text;
     let clicked = false;
 
+    // Set up all the blocks
+    const setupBlocks = () => {
+        for (const block of script.blocks) {
+            const current = {};
+            for (const name in block.defaults) {
+                current[name] = block.defaults[name];
+            }
+            block.current = current;
+        }
+    };
+
     // Preload all the images
     const preloadImages = () => {
         for (const item in script.content) {
@@ -77,10 +88,11 @@ const IWSY = (player, text) => {
         }
     };
 
-    // Create a block.
+    // Create a block
     const createBlock = (block) => {
         const w = player.getBoundingClientRect().width / 1000;
         const h = player.getBoundingClientRect().height / 1000;
+        const defaults = block.defaults;
         const element = document.createElement(`div`);
         player.appendChild(element);
         block.element = element;
@@ -89,57 +101,58 @@ const IWSY = (player, text) => {
         }
         element.style[`position`] = `absolute`;
         element.style[`opacity`] = `0.0`;
-        let val = block.left;
+        let val = defaults.left;
         if (!isNaN(val)) {
             val *= w;
         }
         element.style[`left`] = val;
-        val = block.top;
+        val = defaults.top;
         if (!isNaN(val)) {
             val *= h;
         }
         element.style[`top`] = val;
-        val = block.width;
+        val = defaults.width;
         if (!isNaN(val)) {
             val = `${val * w}px`;
         }
         element.style[`width`] = val;
-        val = block.height;
+        val = defaults.height;
         if (!isNaN(val)) {
             val = `${val * h}px`;
         }
         element.style[`height`] = val;
-        element.style[`background`] = block.background;
-        element.style[`border`] = block.border;
+        element.style[`background`] = defaults.background;
+        element.style[`background-size`] = `cover`;
+        element.style[`border`] = defaults.border;
         element.style[`overflow`] = `hidden`;
-        val = block.textMarginLeft;
+        val = defaults.textMarginLeft;
         if (!isNaN(val)) {
             val *= w;
         }
         const marginLeft = val;
-        val = block.textMarginTop;
+        val = defaults.textMarginTop;
         if (!isNaN(val)) {
             val *= h;
         }
         const marginTop = val;
         const text = document.createElement(`div`);
         element.appendChild(text);
+        block.textPanel = text;
         text.style[`position`] = `absolute`;
         text.style[`left`] = marginLeft;
         text.style[`top`] = marginTop;
         text.style[`width`] = `calc(100% - ${marginLeft}px - ${marginLeft}px)`;
         text.style[`height`] = `calc(100% - ${marginTop}px - ${marginTop}px)`;
-        text.style[`font-family`] = block.fontFamily;
-        val = block.fontSize;
+        text.style[`font-family`] = defaults.fontFamily;
+        val = defaults.fontSize;
         if (!isNaN(val)) {
             val *= h;
         }
         text.style[`font-size`] = `${val}px`;
-        text.style[`font-weight`] = block.fontWeight;
-        text.style[`font-style`] = block.fontStyle;
-        text.style[`color`] = block.fontColor;
-        text.style[`text-align`] = block.textAlign;
-        block.textPanel = text;
+        text.style[`font-weight`] = defaults.fontWeight;
+        text.style[`font-style`] = defaults.fontStyle;
+        text.style[`color`] = defaults.fontColor;
+        text.style[`text-align`] = defaults.textAlign;
     };
 
     // Set the content of a block
@@ -147,7 +160,7 @@ const IWSY = (player, text) => {
         for (const item of step.blocks)
         {
             for (const block of script.blocks) {
-                if (block.name === item.block) {
+                if (block.defaults.name === item.block) {
                     if (!block.element) {
                         createBlock(block);
                     }
@@ -156,8 +169,10 @@ const IWSY = (player, text) => {
                             const converter = new showdown.Converter();
                             block.textPanel.innerHTML =
                                 converter.makeHtml(text.content.split(`%0a`).join(`\n`));
+                            break;
                         }
                     }
+                    break;
                 }
             }
         }
@@ -166,12 +181,14 @@ const IWSY = (player, text) => {
 
     // Show or hide a block
     const doShowHide = (step, showHide) => {
-        if (script.speed !== `scan`) {
         for (const name of step.blocks)
         {
-            script.blocks[name].opacity = showHide ? `1.0` : `0.0`;
-            script.blocks[name].element.style[`opacity`] = script.blocks[name].opacity;
-        }
+            for (const block of script.blocks) {
+                if (block.defaults.name === name) {
+                    block.element.style.opacity = showHide ? `1.0` : `0.0`;
+                    break;
+                }
+            }
         }
         step.next();
     };
@@ -187,24 +204,22 @@ const IWSY = (player, text) => {
     // Fade up or down
     const doFade = (step, upDown) => {
         const stepBlocks = [];
-        for (const b of step.blocks) {
-            script.blocks.forEach((block, index) => {
-                if (block.name === b) {
-                    stepBlocks.push(index);
+        for (const name of step.blocks) {
+            script.blocks.every((block, index) => {
+                if (block.defaults.name === name) {
+                    stepBlocks.push(block);
+                    if (!block.element) {
+                        createBlock(block);
+                    }
+                    return false;
                 }
+                return true;
             });
-        }            
-
-        for (const b of stepBlocks) {
-            const block = script.blocks[b];
-            if (!block.element) {
-                createBlock(block);
-            }
-        }
+        } 
         if (script.speed === `scan`) {
             for (const block of stepBlocks)
             {
-                script.blocks[block].element.style.opacity = upDown ? 1.0 : 0.0;
+                block.element.style.opacity = upDown ? 1.0 : 0.0;
             }
             step.next();
         } else {
@@ -217,16 +232,11 @@ const IWSY = (player, text) => {
                     let blocks = stepBlocks.length;
                     for (const block of stepBlocks)
                     {
-                        const element = script.blocks[block].element;
-                        element.style[`opacity`] = upDown ? ratio : 1.0 - ratio;
+                        block.element.style[`opacity`] = upDown ? ratio : 1.0 - ratio;
                     }
                     animStep++;
                 } else {
                     clearInterval(interval);
-                    for (const block of stepBlocks)
-                    {
-                        script.blocks[block].opacity = upDown ? 1.0 : 0.0;
-                    }
                     if (!continueFlag) {
                         step.next();
                     }
@@ -248,73 +258,69 @@ const IWSY = (player, text) => {
 
     // Handle a crossfade
     const crossfade = step => {
-        const content = script.content[step.target];
-        const block = script.blocks[step.block];
-        if (script.speed === `scan`) {
-            switch (content.type) {
-                case `text`:
-                    newText = content.content;
-                    newText = newText.split(`\n`).join(`<br>`);
-                    block.textPanel.innerHTML = newText;
-                    break;
-                case `image`:
-                    block.element.style[`background`] = `url("${content.url}")`;
-                    break;
-            }
-            step.next();
-        } else {
-            const continueFlag = step.continue;
-            let element;
-            let newText;
-            element = document.createElement(`div`);
-            element.style[`position`] = `absolute`;
-            element.style[`opacity`] = `0.0`;
-            element.style[`left`] = block.element.style[`left`];
-            element.style[`top`] = block.element.style[`top`];
-            element.style[`width`] = block.element.style[`width`];
-            element.style[`height`] = block.element.style[`height`];
-            element.style[`background`] = block.element.style[`background`]
-            element.style[`border`] = block.element.style[`border`]
-            element.style[`border-radius`] = block.element.style[`border-radius`]
-            player.appendChild(element);
-            const text = document.createElement(`div`);
-            text.style[`position`] = `absolute`;
-            text.style[`left`] = block.textPanel.style[`left`];
-            text.style[`top`] = block.textPanel.style[`top`];
-            text.style[`width`] = block.textPanel.style[`width`];
-            text.style[`font-family`] = block.textPanel.style[`font-family`];
-            text.style[`font-size`] = block.textPanel.style[`font-size`];
-            text.style[`font-weight`] = block.textPanel.style[`font-weight`];
-            text.style[`font-style`] = block.textPanel.style[`font-style`];
-            text.style[`color`] = block.textPanel.style[`color`];
-            text.style[`text-align`] = block.textPanel.style[`text-align`];
-            element.appendChild(text);
-            newText = content.content;
-            newText = newText.split(`\n`).join(`<br>`);
-            text.innerHTML = newText;
-
-            const animSteps = Math.round(step.duration * 25);
-            let animStep = 0;
-            const interval = setInterval(() => {
-                if (animStep < animSteps) {
-                    const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-                    block.element.style[`opacity`] = 1.0 - ratio;
-                    element.style[`opacity`] = ratio;
-                    animStep++;
-                } else {
-                    clearInterval(interval);
-                    block.textPanel.innerHTML = newText;
-                    block.element.style[`background`] = `url("${content.url}")`;
-                    block.element.style[`background-size`] = `cover`;
-                    block.element.style[`opacity`] = 1.0 ;
-                    player.removeChild(element);
-                    if (!continueFlag) {
-                        step.next();
+        for (const content of script.content) {
+            if (content.name === step.target) {
+                const converter = new showdown.Converter();
+                const newText = converter.makeHtml(content.content.split(`%0a`).join(`\n`));
+                for (const block of script.blocks) {
+                    if (block.defaults.name === step.block) {
+                        if (script.speed === `scan`) {
+                            block.textPanel.innerHTML = newText;
+                            step.next();
+                        } else {
+                            const element = document.createElement(`div`);
+                            block.element.parentElement.appendChild(element);
+                            element.style[`position`] = `absolute`;
+                            element.style[`opacity`] = `0.0`;
+                            element.style[`left`] = block.element.style[`left`];
+                            element.style[`top`] = block.element.style[`top`];
+                            element.style[`width`] = block.element.style[`width`];
+                            element.style[`height`] = block.element.style[`height`];
+                            element.style[`background`] = block.element.style[`background`]
+                            element.style[`border`] = block.element.style[`border`]
+                            element.style[`border-radius`] = block.element.style[`border-radius`]
+                            const text = document.createElement(`div`);
+                            element.appendChild(text);
+                            text.style[`position`] = `absolute`;
+                            text.style[`left`] = block.textPanel.style[`left`];
+                            text.style[`top`] = block.textPanel.style[`top`];
+                            text.style[`width`] = block.textPanel.style[`width`];
+                            text.style[`font-family`] = block.textPanel.style[`font-family`];
+                            text.style[`font-size`] = block.textPanel.style[`font-size`];
+                            text.style[`font-weight`] = block.textPanel.style[`font-weight`];
+                            text.style[`font-style`] = block.textPanel.style[`font-style`];
+                            text.style[`color`] = block.textPanel.style[`color`];
+                            text.style[`text-align`] = block.textPanel.style[`text-align`];
+                            text.innerHTML = newText;
+                
+                            const animSteps = Math.round(step.duration * 25);
+                            let animStep = 0;
+                            const interval = setInterval(() => {
+                                if (animStep < animSteps) {
+                                    const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
+                                    block.element.style[`opacity`] = 1.0 - ratio;
+                                    element.style[`opacity`] = ratio;
+                                    animStep++;
+                                } else {
+                                    clearInterval(interval);
+                                    block.textPanel.innerHTML = newText;
+                                    block.element.style[`background`] = `url("${content.url}")`;
+                                    block.element.style[`background-size`] = `cover`;
+                                    block.element.style[`opacity`] = 1.0 ;
+                                    removeElement(element);
+                                    if (!step.continue) {
+                                        step.next();
+                                    }
+                                }
+                            }, 40);
+                            if (step.continue) {
+                                step.next();
+                            }
+                        }
+                        break;
                     }
                 }
-            }, 40);
-            if (continueFlag) {
-                step.next();
+                break;
             }
         }
     };
@@ -324,19 +330,19 @@ const IWSY = (player, text) => {
         const boundingRect = player.getBoundingClientRect();
         const w = boundingRect.width / 1000;
         const h = boundingRect.height / 1000;
-        let width = block.width;
+        let width = block.current.width;
         if (!isNaN(width)) {
             width *= w;
         }
-        let height = block.height;
+        let height = block.current.height;
         if (!isNaN(height)) {
             height *= h;
         }
-        let endWidth = target.width;
+        let endWidth = target.defaults.width;
         if (!isNaN(endWidth)) {
             endWidth *= w;
         }
-        let endHeight = target.height;
+        let endHeight = target.defaults.height;
         if (!isNaN(endHeight)) {
             endHeight *= h;
         }
@@ -351,19 +357,19 @@ const IWSY = (player, text) => {
         const boundingRect = player.getBoundingClientRect();
         const w = boundingRect.width / 1000;
         const h = boundingRect.height / 1000;
-        let left = block.left;
+        let left = block.current.left;
         if (!isNaN(left)) {
             left *= w;
         }
-        let top = block.top;
+        let top = block.current.top;
         if (!isNaN(top)) {
             top *= h;
         }
-        let endLeft = target.left;
+        let endLeft = target.defaults.left;
         if (!isNaN(endLeft)) {
             endLeft *= w;
         }
-        let endTop = target.top;
+        let endTop = target.defaults.top;
         if (!isNaN(endTop)) {
             endTop *= h;
         }
@@ -376,11 +382,11 @@ const IWSY = (player, text) => {
     // Compute a font size
     const setComputedFontSize = (block, target, ratio) => {
         const h = Math.round(player.getBoundingClientRect().height) / 1000;
-        let size = block.fontSize;
+        let size = block.current.fontSize;
         if (!isNaN(size)) {
             size *= h;
         }
-        let endSize = target.fontSize;
+        let endSize = target.defaults.fontSize;
         if (!isNaN(endSize)) {
             endSize *= h;
         }
@@ -390,8 +396,8 @@ const IWSY = (player, text) => {
 
     // Compute a font color
     const setComputedFontColor = (block, target, ratio) => {
-        const color = block.fontColor;
-        const endColor = target.fontColor;
+        const color = block.current.fontColor;
+        const endColor = target.defaults.fontColor;
         const rStart = parseInt(color.slice(1, 3), 16);
         const gStart = parseInt(color.slice(3, 5), 16);
         const bStart = parseInt(color.slice(5, 7), 16);
@@ -419,13 +425,14 @@ const IWSY = (player, text) => {
     const transition = step => {
         let block = null;
         let target = null;
-        script.blocks.forEach((item, index) => {
-            if (item.name === step.block) {
+        script.blocks.every(item => {
+            if (item.defaults.name === step.block) {
                 block = item;
             }
-            if (item.name === step.target) {
+            if (item.defaults.name === step.target) {
                 target = item;
             }
+            return true;
         });
         if (script.speed === `scan`) {
             doTransitionStep(block, target, 1.0);
@@ -441,6 +448,12 @@ const IWSY = (player, text) => {
                     animStep++;
                 } else {
                     clearInterval(interval);
+                    block.current.width = target.defaults.width;
+                    block.current.height = target.defaults.height;
+                    block.current.left = target.defaults.left;
+                    block.current.top = target.defaults.top;
+                    block.current.fontColor = target.defaults.fontColor;
+                    block.current.fontSize = target.defaults.fontSize;
                     if (!continueFlag) {
                         step.next();
                     }
@@ -457,7 +470,7 @@ const IWSY = (player, text) => {
         for (const name in script.blocks) {
             const block = script.blocks[name];
             if (block.element) {
-                player.removeChild(block.element);
+                removeElement(block.element);
                 block.element = null;
             }
         }
@@ -499,7 +512,9 @@ const IWSY = (player, text) => {
             player.style.overflow = `hidden`;
             player.style.cursor = `none`;
             player.style.border = step.border;
-            player.style.background = step.background.split(`&quot;`).join(`"`);
+            if (step.background) {
+                player.style.background = step.background.split(`&quot;`).join(`"`);
+            }
             player.style[`background-size`] = `cover`;
         }
         step.next();
@@ -535,10 +550,11 @@ const IWSY = (player, text) => {
     // Show a block
     const block = blockIndex => {
         player.innerHTML = ``;
-        player.style.background = ``;
+        player.style.background = null;
         const w = player.getBoundingClientRect().width / 1000;
         const h = player.getBoundingClientRect().height / 1000;
         script.blocks.forEach((block, index) => {
+            const defaults = block.defaults;
             const element = document.createElement(`div`);
             player.appendChild(element);
             if (script.speed === `scan`) {
@@ -546,24 +562,24 @@ const IWSY = (player, text) => {
             }
             element.style[`position`] = `absolute`;
             element.style[`opacity`] = `0.5`;
-            let val = block.left;
+            let val = defaults.left;
             if (!isNaN(val)) {
                 val *= w;
             }
             element.style[`left`] = val;
-            val = block.top;
+            val = defaults.top;
             if (!isNaN(val)) {
                 val *= h;
             }
             element.style[`top`] = val;
-            val = block.width;
+            val = defaults.width;
             if (!isNaN(val)) {
                 val = `${val * w - 2}px`;
             } else {
                 val = `calc(${val} - 2px)`
             }
             element.style[`width`] = val;
-            val = block.height;
+            val = defaults.height;
             if (!isNaN(val)) {
                 val = `${val * h - 2}px`;
             } else {
@@ -571,7 +587,7 @@ const IWSY = (player, text) => {
             }
             element.style[`height`] = val;
             element.style[`font-size`] = `${h * 40}px`
-            element.innerHTML = block.name;
+            element.innerHTML = defaults.name;
             if (index == blockIndex) {
                 element.style[`background`] = `#ddffdd`;
                 element.style[`border`] = `1px solid #00ff00`;
@@ -579,7 +595,6 @@ const IWSY = (player, text) => {
                 element.style[`z-index`] = 10;
                 element.style.color = `#006600`;
             } else {
-                // element.style[`background`] = `#ff8888`;
                 element.style[`border`] = `1px solid #ff0000`;
                 element.style[`text-align`] = `right`;
                 element.style[`z-index`] = 0;
@@ -689,10 +704,20 @@ const IWSY = (player, text) => {
         document.head.appendChild(style);
     };
 
+    // Remove an element
+    const removeElement = element => {
+        const parent = element.parentElement;
+        if (parent) {
+            parent.removeChild(element);
+        } else {
+            throw Error(`element has no parent`);
+        }
+        element.remove();
+    };
+
     // Initialize the script
     const initScript = () => {
         document.onkeydown = null;
-        player.innerHTML = ``;
         player.style.position = `relative`;
         player.style.overflow = `hidden`;
         player.style.cursor = 'none';
@@ -700,17 +725,15 @@ const IWSY = (player, text) => {
         script.singleStep = true;
         script.labels = {};
         script.stop = false;
-        for (const name in script.blocks) {
-            const block = script.blocks[name];
+        for (const block of script.blocks) {
             const element = block.element;
             if (typeof element !== `undefined`) {
-                player.removeChild(element);
+                removeElement(element);
                 block.element = null;
             }
         }
-        for (const [index, step] of script.steps.entries()) {
+        script.steps.forEach((step, index) => {
             step.index = index;
-            step.script = script;
             if (typeof step.label !== `undefined`) {
                 script.labels[step.label] = index;
             }
@@ -734,7 +757,7 @@ const IWSY = (player, text) => {
                     restoreCursor();
                }
             };
-        };
+        });
     }
 
     const actions = {
@@ -800,6 +823,7 @@ const IWSY = (player, text) => {
     setupShowdown();
     initScript();
     IWSY.plugins = {};
+    setupBlocks();
     preloadImages();
     if (script.steps.length > 0) {
         doStep(script.steps[0]);
