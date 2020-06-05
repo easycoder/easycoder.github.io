@@ -1,97 +1,171 @@
 {
   "blocks": [
     {
-      "name": "center title",
-      "background": "",
-      "border": "",
-      "borderRadius": "",
-      "fontColor": "#dddd88",
-      "fontFamily": "",
-      "fontSize": 80,
-      "fontStyle": "",
-      "fontWeight": "",
-      "height": 300,
-      "left": 0,
-      "textAlign": "center",
-      "textMarginLeft": "",
-      "textMarginTop": "",
-      "top": 300,
-      "width": "100%"
+      "defaults": {
+        "name": "background",
+        "left": 0,
+        "top": 0,
+        "width": "100%",
+        "height": "100%",
+        "background": "url('resources/img/SemoigoDawn.jpg')",
+        "border": "1px solid gray",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "",
+        "textAlign": "",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
     },
     {
-      "name": "top title",
-      "background": "",
-      "border": "",
-      "borderRadius": "",
-      "fontColor": "#ffffff",
-      "fontFamily": "",
-      "fontSize": 50,
-      "fontStyle": "",
-      "fontWeight": "",
-      "height": 220,
-      "left": 0,
-      "textAlign": "center",
-      "textMarginLeft": "",
-      "textMarginTop": "",
-      "top": 30,
-      "width": "100%"
+      "defaults": {
+        "name": "mask",
+        "left": 0,
+        "top": 0,
+        "width": "100%",
+        "height": "100%",
+        "background": "white",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "",
+        "textAlign": "",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
     },
     {
-      "name": "left",
-      "background": "rgba(80,80,80,0.5)",
-      "border": "1px solid gray",
-      "borderRadius": "",
-      "fontColor": "yellow",
-      "fontFamily": "",
-      "fontSize": 50,
-      "fontStyle": "",
-      "fontWeight": "",
-      "height": 700,
-      "left": 50,
-      "textAlign": "",
-      "textMarginLeft": 20,
-      "textMarginTop": 20,
-      "top": 250,
-      "width": 400
+      "defaults": {
+        "name": "title",
+        "left": 0,
+        "top": 800,
+        "width": "100%",
+        "height": 300,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 0,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "#dddd88",
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
     },
     {
-      "name": "right",
-      "background": "rgba(80,80,80,0.5)",
-      "border": "1px solid gray",
-      "borderRadius": "",
-      "fontColor": "yellow",
-      "fontFamily": "",
-      "fontSize": 50,
-      "fontStyle": "",
-      "fontWeight": "",
-      "height": 700,
-      "left": 550,
-      "textAlign": "",
-      "textMarginLeft": 20,
-      "textMarginTop": 20,
-      "top": 250,
-      "width": 400
+      "defaults": {
+        "name": "center title",
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontColor": "#dddd88",
+        "fontFamily": "",
+        "fontSize": 80,
+        "fontStyle": "",
+        "fontWeight": "",
+        "height": 300,
+        "left": 0,
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": "",
+        "top": 300,
+        "width": "100%"
+      }
     },
     {
-      "name": "main content",
-      "background": "",
-      "border": "",
-      "borderRadius": "",
-      "fontColor": "yellow",
-      "fontFamily": "",
-      "fontSize": 50,
-      "fontStyle": "",
-      "fontWeight": "",
-      "height": 700,
-      "left": 50,
-      "textAlign": "",
-      "textMarginLeft": 10,
-      "textMarginTop": "",
-      "top": 250,
-      "width": 900
+      "defaults": {
+        "name": "top title",
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontColor": "#ffffff",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontStyle": "",
+        "fontWeight": "",
+        "height": 220,
+        "left": 0,
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": "",
+        "top": 30,
+        "width": "100%"
+      }
+    },
+    {
+      "defaults": {
+        "name": "main content",
+        "left": 50,
+        "top": 250,
+        "width": 900,
+        "height": 700,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "yellow",
+        "textAlign": "",
+        "textMarginLeft": 20,
+        "textMarginTop": 20
+      }
+    },
+    {
+      "defaults": {
+        "name": "left",
+        "background": "rgba(80,80,80,0.5)",
+        "border": "1px solid white",
+        "borderRadius": "",
+        "fontColor": "yellow",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontStyle": "",
+        "fontWeight": "",
+        "height": 700,
+        "left": 50,
+        "textAlign": "",
+        "textMarginLeft": 20,
+        "textMarginTop": 20,
+        "top": 250,
+        "width": 400
+      }
+    },
+    {
+      "defaults": {
+        "name": "right",
+        "background": "rgba(80,80,80,0.5)",
+        "border": "1px solid white",
+        "borderRadius": "",
+        "fontColor": "yellow",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontStyle": "",
+        "fontWeight": "",
+        "height": 700,
+        "left": 550,
+        "textAlign": "",
+        "textMarginLeft": 20,
+        "textMarginTop": 20,
+        "top": 250,
+        "width": 400
+      }
     }
   ],
   "content": [
+    {
+      "name": "a new dawn",
+      "content": "# A new dawn is coming..."
+    },
     {
       "name": "iwannashowyou",
       "content": "# I Wanna Show You%0a%0a### _knockout web-based presentations_"
@@ -103,6 +177,10 @@
     {
       "name": "page 1 right",
       "content": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is built to handle color, movement and the online environment."
+    },
+    {
+      "name": "blank",
+      "content": ""
     }
   ],
   "steps": [
@@ -111,23 +189,25 @@
       "action": "init",
       "label": "",
       "aspect ratio": "16:9",
-      "background": "url('resources/img/SemoigoDawn.jpg')",
-      "border": "1px solid gray"
+      "background": "",
+      "border": ""
     },
     {
-      "title": "Pause before starting",
-      "action": "pause",
-      "label": "",
-      "duration": 1
-    },
-    {
-      "title": "Setup main title and initial content",
+      "title": "Setup background and initial content",
       "action": "set content",
       "label": "",
       "blocks": [
         {
-          "block": "center title",
-          "content": "iwannashowyou"
+          "block": "background",
+          "content": "blank"
+        },
+        {
+          "block": "mask",
+          "content": "blank"
+        },
+        {
+          "block": "title",
+          "content": "a new dawn"
         },
         {
           "block": "left",
@@ -140,19 +220,63 @@
       ]
     },
     {
-      "title": "Fade up title",
-      "action": "fade up",
+      "title": "Show background and mask",
+      "action": "show",
       "label": "",
       "blocks": [
-        "center title"
-      ],
+        "background",
+        "mask",
+        "title"
+      ]
+    },
+    {
+      "title": "Pause before starting",
+      "action": "pause",
+      "label": "",
       "duration": 1
     },
     {
+      "title": "Fade down mask",
+      "action": "fade down",
+      "label": "",
+      "blocks": [
+        "mask"
+      ],
+      "duration": 3
+    },
+    {
+      "title": "Wait 1 second",
+      "action": "pause",
+      "label": "",
+      "duration": 1
+    },
+    {
+      "title": "Slide up title",
+      "action": "transition",
+      "label": "",
+      "target": "center title",
+      "duration": 2,
+      "block": "title"
+    },
+    {
       "title": "Wait 3 seconds",
+      "action": "pause",
+      "label": "",
+      "duration": 1
+    },
+    {
+      "title": "Change title",
+      "action": "crossfade",
+      "label": "",
+      "block": "title",
+      "target": "iwannashowyou",
+      "duration": 1
+    },
+    {
+      "title": "Wait 1 second",
       "action": "hold",
       "label": "",
-      "duration": 3
+      "duration": 1
     },
     {
       "title": "Move the title to the top",
@@ -160,7 +284,7 @@
       "label": "",
       "target": "top title",
       "duration": 2,
-      "block": "center title"
+      "block": "title"
     },
     {
       "title": "Wait 1 second",

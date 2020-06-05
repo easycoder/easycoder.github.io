@@ -5,6 +5,9 @@
     div Body
     div Left
     div Right
+    div Masthead
+    div Title
+    div Subtitle
     div Controls
     div ContentDiv
     div Buttons
@@ -97,6 +100,17 @@ L2:
 !	The left-hand panel
     create Left in Body
 	set the style of Left to `flex:1;height:100%;border-right:1px solid black;margin-right:0.5em`
+    
+    create Masthead in Left
+    set the style of Masthead to
+    	`border:0.2em solid purple;text-align:center;color:	lemonchiffon;background:darkmagenta;position:relative`
+    create Title in Masthead
+    set the style of Title to `font-size:4em;font-weight:bold;font-style:italic`
+    set the content of Title to `I Wanna Show You`
+    create Subtitle in Masthead
+    set the style of Subtitle to
+    	`position:relative;top:-0.5em;font-size:1.5em;font-weight:bold;font-style:italic`
+    set the content of Subtitle to `powerful web-based presentations`
     
     create Controls in Left
     set the style of Controls to `padding:0 0.5em`

@@ -21,6 +21,7 @@
     variable Blocks
     variable Block
     variable Block2
+    variable Defaults
     variable PropertyDefaults
     variable PropertyNames
     variable PropertyName
@@ -63,14 +64,15 @@ Restart:
     set attribute `src` of AddBlock to `resources/icon/plus.png`
     on click AddBlock
     begin
-        set Block to object
+        set Defaults to object
         put 0 into N
         while N is less than the json count of PropertyNames
         begin
         	put element N of PropertyNames into PropertyName
-            set property PropertyName of Block to property PropertyName of PropertyDefaults
+            set property PropertyName of Defaults to property PropertyName of PropertyDefaults
         	add 1 to N
         end
+        set property `defaults` of Block to Defaults
         json add Block to Blocks
         set property `blocks` of Presentation to Blocks
         go to Restart
@@ -103,7 +105,8 @@ Restart:
         create EditButton in Cell
         set the style of EditButton to `flex:1`
     	put element N of Blocks into Block
-        set the text of EditButton to property `name` of Block
+        put property `defaults` of Block into Defaults
+        set the text of EditButton to property `name` of Defaults
         if N is 0
         begin
             create Empty in Cell
@@ -157,6 +160,7 @@ Restart:
         	set style `background` of EditButton to `lightgray`
             set style `display` of Editor to `block`
             put element SelectedBlock of Blocks into Block
+            put property `defaults` of Block into Defaults
             put the json count of PropertyNames into N
             set the elements of PropertyValue to N
             put 0 into N
@@ -171,7 +175,7 @@ Restart:
                 index PropertyValue to N
                 create PropertyValue in Row
                 set the style of PropertyValue to `flex:1`
-                set the text of PropertyValue to property PropertyName of Block
+                set the text of PropertyValue to property PropertyName of Defaults
                 add 1 to N
             end
             create Row in Editor
@@ -196,6 +200,7 @@ Restart:
         add 1 to N
         set element N of Blocks to Block2
         set property `blocks` of Presentation to Blocks
+        put -1 into SelectedBlock
         go to Restart
     end
     on click DeleteBlock
@@ -217,10 +222,11 @@ SaveSelectedBlock:
     begin
         put element N of PropertyNames into PropertyName
     	index PropertyValue to N
-        set property PropertyName of Block to the text of PropertyValue
+        set property PropertyName of Defaults to the text of PropertyValue
     	add 1 to N
     end
-    set the text of EditButton to property `name` of Block
+    set the text of EditButton to property `name` of Defaults
+    set property `defaults` of Block to Defaults
     set element SelectedBlock of Blocks to Block
     set property `blocks` of Presentation to Blocks
 

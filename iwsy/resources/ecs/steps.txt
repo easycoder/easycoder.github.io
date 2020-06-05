@@ -13,6 +13,7 @@
     div Cell
     div Editor
     div Title
+    div Empty
     button StepButton
     button Header
     button InsertBefore
@@ -33,23 +34,30 @@
     input TargetInput
     input URLInput
     img AddStep
+    img Up
+    img UpContent
     img PlusIcon
-    img DeleteIcon
+    img DeleteContent
     img DeleteStep
     img ShowStep
     a Link
     variable Steps
+    variable Step
+    variable Step2
     variable SelectedStep
     variable CurrentStep
     variable Action
     variable Blocks
     variable Block
+    variable Defaults
     variable Contents
     variable Content
     variable Target
     variable Duration
     variable URL
     variable Names
+    variable Name
+    variable Name2
     variable Item
     variable ActionNames
     variable InitProperties
@@ -62,6 +70,7 @@
     variable Message
     variable Running
     variable SavedIndex
+    variable TargetText
     variable N
     variable B
 
@@ -134,13 +143,14 @@ Restart:
     put the json count of Steps into N
     set the elements of ShowStep to N
     set the elements of StepButton to N
+    set the elements of Up to N
     set the elements of DeleteStep to N
     set the elements of TitleInput to N
     set the elements of LabelInput to N
     set the elements of DurationInput to N
     set the elements of Editor to N
     put 0 into N
-    while N is less than the elements of StepButton
+    while N is less than the json count of Steps
     begin
     	index StepButton to N
     	create Row in StepsPanel
@@ -158,6 +168,20 @@ Restart:
         set the style of StepButton to `flex:1`
         put element N of Steps into CurrentStep
         set the text of StepButton to property `title` of CurrentStep
+        create Cell in Row1
+        if N is 0
+        begin
+            create Empty in Cell
+            set the style of Empty to `width:1em;margin:0.2em 0 0 0.2em`
+        end
+        else
+        begin
+            create Link in Cell
+            index Up to N
+            create Up in Link
+            set the style of Up to `width:1em;margin:0.2em 0 0 0.2em`
+            set attribute `src` of Up to `/resources/icon/up.png`
+        end
         create Cell in Row1
         set the style of Cell to `width:1.4em;text-align:center`
         index DeleteStep to N
@@ -188,7 +212,6 @@ Restart:
         begin
             if N is not -1
             begin
-    			gosub to SaveCurrentStep
                 put 0 into N
                 while N is less than the elements of StepButton
                 begin
@@ -206,6 +229,18 @@ Restart:
             put element SelectedStep of Steps into CurrentStep
             go to EditStep
       	end
+    end
+    on click Up
+    begin
+    	put the index of Up into N
+        put element N of Steps into Step
+        take 1 from N
+        put element N of Steps into Step2
+        set element N of Steps to Step
+        add 1 to N
+        set element N of Steps to Step2
+        set property `steps` of Presentation to Steps
+        go to Restart
     end
     on click DeleteStep
     begin
@@ -310,7 +345,8 @@ EditStep:
     while N is less than the json count of Blocks
     begin
     	put element N of Blocks into Block
-        json add property `name` of Block to BlockNames
+        put property `defaults` of Block into Defaults
+        json add property `name` of Defaults to BlockNames
     	add 1 to N
     end
     put property `content` of Presentation into Contents
@@ -395,6 +431,7 @@ ReloadStepEditor:
     create TR in Table
     create TD in TR
     create TD in TR
+    set the style of TD to `padding-bottom:0.2em`
     create InsertBefore in TD
     set the style of InsertBefore to `width:calc(100% / 3)`
     set the text of InsertBefore to `Add Step Before`
@@ -445,7 +482,9 @@ EditSetContent:
     set the content of TD to `Blocks:`
     create TD in TR
 	create BlockTable in TD
-    set the style of BlockTable to `width:100%;border:1px solid gray`
+    set the style of BlockTable to `margin:0.2em 0.5em 0 0;border:1px solid gray`
+ReloadBlocks:
+	clear BlockTable
     create BlockRow in BlockTable
     set the style of BlockRow to `display:flex`
     create Header in BlockRow
@@ -455,7 +494,7 @@ EditSetContent:
     set the style of Header to `flex:1`
     set the content of Header to `Content`
     create BlockData in BlockRow
-    set the style of BlockData to `width:2em;text-align:center`
+    set the style of BlockData to `width:2.8em;text-align:center`
     create Link in BlockData
     create PlusIcon in Link
     set the style of PlusIcon to `width:1em;margin-top:0.1em`
@@ -474,7 +513,8 @@ EditSetContent:
     put the json count of Blocks into N
     set the elements of BlockSelect to N
     set the elements of ContentSelect to N
-    set the elements of DeleteIcon to N
+    set the elements of UpContent to N
+    set the elements of DeleteContent to N
 	put 0 into B
 	while B is less than N
 	begin
@@ -489,13 +529,28 @@ EditSetContent:
         create ContentSelect in BlockRow
         set the style of ContentSelect to `flex:1`
         set ContentSelect from ContentNames as property `content` of Block
+        if B is 0
+        begin
+            create BlockData in BlockRow
+            set the style of BlockData to `width:1.4em`
+        end
+        else
+        begin
+            create BlockData in BlockRow
+            set the style of BlockData to `width:1.4em;text-align:center`
+            index UpContent to B
+            create Link in BlockData
+            create UpContent in Link
+            set the style of UpContent to `width:1em;margin:0.1em 0 0 0.2em`
+            set attribute `src` of UpContent to `resources/icon/up.png`
+        end
         create BlockData in BlockRow
-        set the style of BlockData to `width:2em;text-align:center`
-        index DeleteIcon to B
+        set the style of BlockData to `width:1.4em;text-align:center`
+        index DeleteContent to B
         create Link in BlockData
-        create DeleteIcon in Link
-        set the style of DeleteIcon to `width:1em;margin-top:0.1em`
-        set attribute `src` of DeleteIcon to `resources/icon/stop.png`
+        create DeleteContent in Link
+        set the style of DeleteContent to `width:1em;margin-top:0.1em`
+        set attribute `src` of DeleteContent to `resources/icon/stop.png`
         add 1 to B
     end
     on change BlockSelect
@@ -516,9 +571,23 @@ EditSetContent:
         set property `blocks` of CurrentStep to Blocks
         set element SelectedStep of Steps to CurrentStep
     end
-    on click DeleteIcon
+    on click UpContent
     begin
-    	put the index of DeleteIcon into N
+    	put the index of UpContent into N
+        put element N of Blocks into Name
+        take 1 from N
+        put element N of Blocks into Name2
+        set element N of Blocks to Name
+        add 1 to N
+        set element N of Blocks to Name2
+    	set property `blocks` of CurrentStep to Blocks
+        set element SelectedStep of Steps to CurrentStep
+        set property `steps` of Presentation to Steps
+        go to ReloadBlocks
+    end
+    on click DeleteContent
+    begin
+    	put the index of DeleteContent into N
         json delete element N of Blocks
         set property `blocks` of CurrentStep to Blocks
         clear Table
@@ -545,11 +614,13 @@ EditFadeDown:
 
 EditCrossfade:
 	put ContentNames into Names
+    put `New text` into TargetText
     gosub to EditBlockAndTarget
 	return
 
 EditTransition:
 	put BlockNames into Names
+    put `Target` into TargetText
     gosub to EditBlockAndTarget
 	return
 
@@ -603,7 +674,7 @@ EditBlockList:
     put property `blocks` of CurrentStep into Blocks
     put the json count of Blocks into N
     set the elements of BlockSelect to N
-    set the elements of DeleteIcon to N
+    set the elements of DeleteContent to N
     put 0 into B
     while B is less than N
     begin
@@ -616,11 +687,11 @@ EditBlockList:
         set BlockSelect from BlockNames as Block
         create BlockData in BlockRow
         set the style of BlockData to `width:2em;text-align:center`
-        index DeleteIcon to B
+        index DeleteContent to B
         create Link in BlockData
-        create DeleteIcon in Link
-        set the style of DeleteIcon to `width:1em;margin-top:0.1em`
-        set attribute `src` of DeleteIcon to `resources/icon/stop.png`
+        create DeleteContent in Link
+        set the style of DeleteContent to `width:1em;margin-top:0.1em`
+        set attribute `src` of DeleteContent to `resources/icon/stop.png`
     	add 1 to B
     end
     on change BlockSelect
@@ -630,9 +701,9 @@ EditBlockList:
         set property `blocks` of CurrentStep to Blocks
         set element SelectedStep of Steps to CurrentStep
     end
-    on click DeleteIcon
+    on click DeleteContent
     begin
-    	put the index of DeleteIcon into N
+    	put the index of DeleteContent into N
         json delete element N of Blocks
         set property `blocks` of CurrentStep to Blocks
         clear Table
@@ -653,7 +724,7 @@ EditBlockAndTarget:
     set BlockSelect from BlockNames as Block
 	create TR in Table
     create TD in TR
-    set the content of TD to `Target:`
+    set the content of TD to TargetText
     create TD in TR
     put property `target` of CurrentStep into Target
     create BlockRow in TD
@@ -770,17 +841,11 @@ CreateNewAction:
     end
 	else if Action is `crossfade`
     begin
-    	put property `block` of CurrentStep into Block
-        if Block is empty set property `block` of CurrentStep to `******`
-    	put property `target` of CurrentStep into Target
-        if Target is empty set property `target` of CurrentStep to `******`
     	put property `duration` of CurrentStep into Duration
         if Duration is empty set property `duration` of CurrentStep to 1
     end
 	else if Action is `transition`
     begin
-    	put property `target` of CurrentStep into Target
-        if Target is empty set property `target` of CurrentStep to `******`
     	put property `duration` of CurrentStep into Duration
         if Duration is empty set property `duration` of CurrentStep to 1
     end
@@ -883,12 +948,10 @@ SaveCurrentStep:
     end
 	else if Action is `crossfade`
     begin
-    	put property `block` of CurrentStep into Block
-        if Block is empty set property `block` of CurrentStep to `******`
-    	put property `target` of CurrentStep into Target
-        if Target is empty set property `target` of CurrentStep to `******`
-    	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
+        set property `block` of CurrentStep to BlockSelect
+        set property `target` of CurrentStep to TargetSelect
+    	index DurationInput to SelectedStep
+    	set property `duration` of CurrentStep to the text of DurationInput
     end
 	else if Action is `transition`
     begin

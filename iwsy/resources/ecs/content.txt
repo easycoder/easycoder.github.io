@@ -69,9 +69,11 @@ Restart:
     set attribute `src` of AddItem to `resources/icon/plus.png`
     on click AddItem
     begin
-    	put prompt `Name of new content item:` with `new content` into ItemName
-        put empty into Item
-        set property ItemName of Items to Item
+!    	put prompt `Name of new content item:` with `new content` into ItemName
+        set Item to object
+        set property `name` of Item to `New content`
+        set property `content` of Item to empty
+        json add Item to Items
         set property `content` of Presentation to Items
         go to Restart
     end
@@ -184,6 +186,7 @@ Restart:
         add 1 to N
         set element N of Items to Item2
         set property `content` of Presentation to Items
+        put -1 into SelectedItem
         go to Restart
     end
     on click DeleteItem
