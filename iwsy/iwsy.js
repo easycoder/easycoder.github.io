@@ -752,6 +752,7 @@ const IWSY = (player, text) => {
                 block.element = null;
             }
         }
+        player.innerHTML = null;
         script.steps.forEach((step, index) => {
             step.index = index;
             if (typeof step.label !== `undefined`) {

@@ -86,7 +86,7 @@
         "background": "",
         "border": "",
         "borderRadius": "",
-        "fontColor": "#ffffff",
+        "fontColor": "#ccffff",
         "fontFamily": "",
         "fontSize": 40,
         "fontStyle": "",
@@ -188,7 +188,7 @@
       "title": "My demo presentation",
       "action": "init",
       "label": "",
-      "aspect ratio": "16:9",
+      "aspect ratio": "160:89",
       "background": "",
       "border": ""
     },

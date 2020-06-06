@@ -17,7 +17,8 @@
         "fontColor": "",
         "textAlign": "",
         "textMarginLeft": "",
-        "textMarginTop": ""
+        "textMarginTop": "",
+        "parent": ""
       }
     },
     {
@@ -37,7 +38,8 @@
         "fontColor": "",
         "textAlign": "",
         "textMarginLeft": "",
-        "textMarginTop": ""
+        "textMarginTop": "",
+        "parent": ""
       }
     },
     {
@@ -57,7 +59,8 @@
         "fontColor": "#dddd88",
         "textAlign": "center",
         "textMarginLeft": "",
-        "textMarginTop": ""
+        "textMarginTop": "",
+        "parent": ""
       }
     },
     {
@@ -68,7 +71,7 @@
         "borderRadius": "",
         "fontColor": "#dddd88",
         "fontFamily": "",
-        "fontSize": 80,
+        "fontSize": 70,
         "fontStyle": "",
         "fontWeight": "",
         "height": 300,
@@ -77,7 +80,8 @@
         "textMarginLeft": "",
         "textMarginTop": "",
         "top": 300,
-        "width": "100%"
+        "width": "100%",
+        "parent": ""
       }
     },
     {
@@ -86,9 +90,9 @@
         "background": "",
         "border": "",
         "borderRadius": "",
-        "fontColor": "#ffffff",
+        "fontColor": "#ccffff",
         "fontFamily": "",
-        "fontSize": 50,
+        "fontSize": 40,
         "fontStyle": "",
         "fontWeight": "",
         "height": 220,
@@ -96,33 +100,14 @@
         "textAlign": "center",
         "textMarginLeft": "",
         "textMarginTop": "",
-        "top": 30,
-        "width": "100%"
+        "top": 20,
+        "width": "100%",
+        "parent": ""
       }
     },
     {
       "defaults": {
         "name": "main content",
-        "left": 50,
-        "top": 250,
-        "width": 900,
-        "height": 700,
-        "background": "",
-        "border": "",
-        "borderRadius": "",
-        "fontFamily": "",
-        "fontSize": 50,
-        "fontWeight": "",
-        "fontStyle": "",
-        "fontColor": "yellow",
-        "textAlign": "",
-        "textMarginLeft": 20,
-        "textMarginTop": 20
-      }
-    },
-    {
-      "defaults": {
-        "name": "left",
         "background": "rgba(80,80,80,0.5)",
         "border": "1px solid white",
         "borderRadius": "",
@@ -133,16 +118,38 @@
         "fontWeight": "",
         "height": 700,
         "left": 50,
-        "textAlign": "",
+        "textAlign": "left",
         "textMarginLeft": 20,
         "textMarginTop": 20,
         "top": 250,
-        "width": 400
+        "width": 900,
+        "parent": ""
       }
     },
     {
       "defaults": {
-        "name": "right",
+        "name": "main content left",
+        "background": "rgba(80,80,80,0.5)",
+        "border": "1px solid white",
+        "borderRadius": "",
+        "fontColor": "yellow",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontStyle": "",
+        "fontWeight": "",
+        "height": 700,
+        "left": 50,
+        "textAlign": "left",
+        "textMarginLeft": 20,
+        "textMarginTop": 20,
+        "top": 250,
+        "width": 400,
+        "parent": "main content"
+      }
+    },
+    {
+      "defaults": {
+        "name": "main content right",
         "background": "rgba(80,80,80,0.5)",
         "border": "1px solid white",
         "borderRadius": "",
@@ -153,15 +160,20 @@
         "fontWeight": "",
         "height": 700,
         "left": 550,
-        "textAlign": "",
+        "textAlign": "left",
         "textMarginLeft": 20,
         "textMarginTop": 20,
         "top": 250,
-        "width": 400
+        "width": 400,
+        "parent": "main content"
       }
     }
   ],
   "content": [
+    {
+      "name": "blank",
+      "content": ""
+    },
     {
       "name": "a new dawn",
       "content": "# A new dawn is coming..."
@@ -172,15 +184,11 @@
     },
     {
       "name": "page 1 left",
-      "content": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is organized mainly around static text blocks and tied to the desktop."
+      "content": "### PowerPoint%0a%0a - is slide-based%0a - is a PC application%0a - is hard to embed%0a%0aPowerPoint is organized mainly around static text blocks and is tied to the desktop."
     },
     {
       "name": "page 1 right",
       "content": "### I Wanna Show You%0a - is step based%0a - runs in your browser%0a - is fully embeddable%0a%0aIWannaShowYou is built to handle color, movement and the online environment."
-    },
-    {
-      "name": "blank",
-      "content": ""
     }
   ],
   "steps": [
@@ -188,7 +196,7 @@
       "title": "My demo presentation",
       "action": "init",
       "label": "",
-      "aspect ratio": "16:9",
+      "aspect ratio": "160:89",
       "background": "",
       "border": ""
     },
@@ -210,11 +218,11 @@
           "content": "a new dawn"
         },
         {
-          "block": "left",
+          "block": "main content left",
           "content": "page 1 left"
         },
         {
-          "block": "right",
+          "block": "main content right",
           "content": "page 1 right"
         }
       ]
@@ -262,7 +270,7 @@
       "title": "Wait 3 seconds",
       "action": "pause",
       "label": "",
-      "duration": 1
+      "duration": 3
     },
     {
       "title": "Change title",
@@ -274,7 +282,7 @@
     },
     {
       "title": "Wait 1 second",
-      "action": "hold",
+      "action": "pause",
       "label": "",
       "duration": 1
     },
@@ -297,8 +305,8 @@
       "action": "fade up",
       "label": "",
       "blocks": [
-        "left",
-        "right"
+        "main content left",
+        "main content right"
       ],
       "duration": 1
     }

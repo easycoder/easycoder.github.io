@@ -10,7 +10,8 @@
     div Row
     div Cell
     div Empty
-    input PropertyValue
+    input PropertyInput
+    select BlockSelect
     button EditButton
     button SaveButton
     img ShowBlock
@@ -21,14 +22,18 @@
     variable Blocks
     variable Block
     variable Block2
+    variable BlockNames
+    variable ParentBlock
     variable Defaults
     variable PropertyDefaults
     variable PropertyNames
     variable PropertyName
     variable SelectedBlock
     variable SavedIndex
+    variable Parent
     variable Message
     variable N
+    variable M
     variable NBlocks
     
     put -1 into SelectedBlock
@@ -162,7 +167,7 @@ Restart:
             put element SelectedBlock of Blocks into Block
             put property `defaults` of Block into Defaults
             put the json count of PropertyNames into N
-            set the elements of PropertyValue to N
+            set the elements of PropertyInput to N
             put 0 into N
             while N is less than the json count of PropertyNames
             begin
@@ -172,10 +177,33 @@ Restart:
                 create Cell in Row
                 set the style of Cell to `width:8em;padding-left:0.5em`
                 set the content of Cell to PropertyName
-                index PropertyValue to N
-                create PropertyValue in Row
-                set the style of PropertyValue to `flex:1`
-                set the text of PropertyValue to property PropertyName of Defaults
+                if PropertyName is `parent`
+                begin
+                	put property PropertyName of Defaults into Parent
+                	set BlockNames to array
+                    json add `` to BlockNames
+                    put 0 into M
+                    while M is less than the json count of Blocks
+                    begin
+                    	if M is not SelectedBlock
+                        begin
+                        	put element M of Blocks into ParentBlock
+                            put property `defaults` of ParentBlock into Defaults
+                        	json add property `name` of Defaults to BlockNames
+                        end
+                    	add 1 to M
+                    end
+                    create BlockSelect in Row
+                    set the style of BlockSelect to `flex:1;height:1.5em`
+                    set BlockSelect from BlockNames as Parent
+                end
+                else
+                begin
+                    index PropertyInput to N
+                    create PropertyInput in Row
+                    set the style of PropertyInput to `flex:1;height:1.5em`
+                    set the text of PropertyInput to property PropertyName of Defaults
+                end
                 add 1 to N
             end
             create Row in Editor
@@ -221,9 +249,13 @@ SaveSelectedBlock:
     while N is less than the json count of PropertyNames
     begin
         put element N of PropertyNames into PropertyName
-    	index PropertyValue to N
-        set property PropertyName of Defaults to the text of PropertyValue
-    	add 1 to N
+        if PropertyName is `parent` set property PropertyName of Defaults to BlockSelect
+        else
+        begin
+	    	index PropertyInput to N
+	        set property PropertyName of Defaults to the text of PropertyInput
+    	end
+        add 1 to N
     end
     set the text of EditButton to property `name` of Defaults
     set property `defaults` of Block to Defaults
