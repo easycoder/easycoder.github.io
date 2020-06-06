@@ -33,7 +33,23 @@ window.onload = () => {
         request.onload = () => {
             if (200 <= request.status && request.status < 400) {
                 const script = JSON.parse(request.responseText);
-                IWSY(document.getElementById(`iwsy-container`), script);
+                const iwsy = IWSY(document.getElementById(`iwsy-container`), script);
+                iwsy.onStep(index => {
+                });
+                const run = () => {
+                    iwsy.run(() => {
+                        console.log(`All done`);
+                    });
+                };
+                // Wait for a click/tap or a keypress to start
+                document.addEventListener(`click`, run);
+                document.onkeydown = function (event) {
+                    if (event.code === `Enter`) {
+                        mode = `auto`;
+                    }
+                    run();
+                    return true;
+                };
         } else {
                 throw Error(`Unable to access the JSON script`);
             }
@@ -45,14 +61,4 @@ window.onload = () => {
 
         request.send();
     }
-};
-
-// Wait for a click/tap or a keypress to start
-document.addEventListener(`click`, init);
-document.onkeydown = function (event) {
-    if (event.code === `Enter`) {
-        mode = `auto`;
-    }
-    setup();
-    return true;
 };

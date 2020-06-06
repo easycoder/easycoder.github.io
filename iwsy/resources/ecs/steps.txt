@@ -917,7 +917,7 @@ SaveCurrentStep:
 	else if Action is `pause`
     begin
     	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
+    	set property `duration` of CurrentStep to the text of DurationInput
     end
 	else if Action is `hold`
     begin
