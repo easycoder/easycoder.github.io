@@ -83,10 +83,46 @@ const IWSY = (player, text) => {
         }, step.duration * 1000);
     };
 
+    // Get the bounding rectangle of a block
+    const getBlockRect = (block, r) => {
+        const left = block.defaults.left;
+        const top = block.defaults.top;
+        const width = block.defaults.width;
+        const height = block.defaults.height;
+        if (isNaN(left) || isNaN(top) || isNaN(width) || isNaN(height)) {
+            return rect;
+        }
+        const w = r.width / 1000;
+        const h = r.height / 1000;
+        const rect = {};
+        rect.width = width * w;
+        rect.height = height * h;
+        rect.left = left * w;
+        rect.top = top * h;
+        return rect;
+    };
+
     // Create a block
-    const createBlock = (block) => {
-        const w = player.getBoundingClientRect().width / 1000;
-        const h = player.getBoundingClientRect().height / 1000;
+    const createBlock = block => {
+        const r = player.getBoundingClientRect();
+        let rect = {
+            width: r.width,
+            height: r.height,
+            left: 0,
+            top: 0
+        }
+        if (block.defaults.parent) {
+            for (b of script.blocks) {
+                if (b.defaults.name === block.defaults.parent) {
+                    rect = getBlockRect(b, rect);
+                    break;
+                }
+            }
+        };
+        const w = rect.width / 1000;
+        const h = rect.height / 1000;
+        const l = rect.left;
+        const t = rect.top;
         const defaults = block.defaults;
         const element = document.createElement(`div`);
         player.appendChild(element);
@@ -97,15 +133,19 @@ const IWSY = (player, text) => {
         element.style.position = `absolute`;
         element.style.opacity = `0.0`;
         let val = defaults.left;
-        if (!isNaN(val)) {
+        if (isNaN(val)) {
+            element.style.left = val;
+        } else {
             val *= w;
+            element.style.left = `calc(${l}px + ${val}px)`;
         }
-        element.style.left = val;
         val = defaults.top;
-        if (!isNaN(val)) {
+        if (isNaN(val)) {
+            element.style.left = val;
+        } else {
             val *= h;
+            element.style.top = `calc(${t}px + ${val}px)`;
         }
-        element.style.top = val;
         val = defaults.width;
         if (!isNaN(val)) {
             val = `${val * w}px`;

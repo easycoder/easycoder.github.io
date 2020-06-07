@@ -1,0 +1,378 @@
+! 	Users
+
+    script User
+
+    import div Container
+
+    div LoginDiv
+    div ItemDiv
+    div ButtonDiv
+    div EmailDiv
+    div ResetDiv
+    div PasswordDiv
+    div Password2Div
+    div NameDiv
+    div ConfirmationDiv
+    label Label
+    label Reset
+    label Back
+    input EmailInput
+    input ResetInput
+    input PasswordInput
+    input Password2Input
+    input NameInput
+    input ConfirmationInput
+    button LoginButton
+    button RegisterButton
+    button ResetPasswordButton
+    a Link
+    variable LabelWidth
+    variable FieldWidth
+    variable FieldHeight
+    variable Record
+    variable PasswordHash
+    variable ConfirmationCode
+    variable UserName
+    variable Email
+    variable Password
+    variable Validated
+    variable Message
+
+    put 25 into LabelWidth
+    put 78 into FieldWidth
+    put `height:2em` into FieldHeight
+
+    set the style of Container to `padding-top:0.5em`
+    
+    create LoginDiv in Container
+    set the style of LoginDiv to `padding:0.5em;border:1px solid black;display:none`
+
+    create EmailDiv in LoginDiv
+    set the style of EmailDiv to `display:flex`
+    create Label in EmailDiv
+    set the style of Label to `padding-top:0.8em;flex:` cat LabelWidth
+    set the content of Label to `Email:`
+    create EmailInput in EmailDiv
+    set the style of EmailInput to FieldHeight cat `;padding:4px;flex:` cat FieldWidth
+    set the size of EmailInput to 40
+
+    create PasswordDiv in LoginDiv
+    set the style of PasswordDiv to `display:flex`
+    create Label in PasswordDiv
+    set the style of Label to `padding-top:0.8em;flex:` cat LabelWidth
+    set the content of Label to `Password:`
+    create PasswordInput in PasswordDiv
+    set the style of PasswordInput to FieldHeight cat `;flex:` cat FieldWidth
+    set the size of PasswordInput to 40
+    set attribute `type` of PasswordInput to `password`
+
+    create Password2Div in LoginDiv
+    set the style of Password2Div to `display:none`
+    create Label in Password2Div
+    set the style of Label to `padding-top:0.8em;flex:` cat LabelWidth
+    set the content of Label to `Password&nbsp;(again):`
+    create Password2Input in Password2Div
+    set the style of Password2Input to FieldHeight cat `;flex:` cat FieldWidth
+    set the size of Password2Input to 40
+    set attribute `type` of Password2Input to `password`
+
+    create ResetDiv in LoginDiv
+    set the style of ResetDiv to `display:none`
+    create Label in ResetDiv
+    set the style of Label to `padding-top:0.8em;flex:` cat LabelWidth
+    set the content of Label to `Reset Code:`
+    create ResetInput in ResetDiv
+    set the style of ResetInput to FieldHeight cat `;padding:4px;flex:` cat FieldWidth
+    set the size of ResetInput to 6
+
+    create NameDiv in LoginDiv
+    set the style of NameDiv to `display:none`
+    create Label in NameDiv
+    set the style of Label to `padding-top:0.8em;flex:` cat LabelWidth
+    set the content of Label to `Name&nbsp;or&nbsp;Nickname:`
+    create NameInput in NameDiv
+    set the style of NameInput to FieldHeight cat `;padding:4px;flex:` cat FieldWidth
+    set the size of NameInput to 40
+
+    create ConfirmationDiv in LoginDiv
+    set the style of ConfirmationDiv to `display:none`
+    create Label in ConfirmationDiv
+    set the style of Label to `padding-top:0.8em;flex:` cat LabelWidth
+    set the content of Label to `Confirmation Code:`
+    create ConfirmationInput in ConfirmationDiv
+    set the style of ConfirmationInput to FieldHeight cat `;padding:4px;flex:` cat FieldWidth
+    set the size of ConfirmationInput to 6
+
+    create ItemDiv in LoginDiv
+    set the style of ItemDiv to `display:flex;margin-top:0.5em`
+    create Label in ItemDiv
+    set the style of Label to `flex:` cat LabelWidth
+
+    create ButtonDiv in ItemDiv
+    set the style of ButtonDiv to `flex:` cat FieldWidth
+    create LoginButton in ButtonDiv
+    set the style of LoginButton to `margin-right:1em`
+    set the text of LoginButton to `Login`
+    on click LoginButton go to ProcessLogin
+    create RegisterButton in ButtonDiv
+    set the style of RegisterButton to `margin-right:1em`
+    set the text of RegisterButton to `Register`
+    on click RegisterButton go to Register
+    create ResetPasswordButton in ButtonDiv
+    set style `display` of ResetPasswordButton to `none`
+    set the text of ResetPasswordButton to `Reset Password`
+    on click ResetPasswordButton go to ResetPassword2
+    create Link in ButtonDiv
+    set the style of Link to `margin-left:3em`
+    create Reset in Link
+    set the text of Reset to `I lost my password`
+    on click Reset go to ResetPassword
+    create Link in ButtonDiv
+    set the style of Link to `margin-left:3em`
+    create Back in Link
+    set style `display` of Back to `none`
+    set the text of Back to `Back`
+    on click Back go to GoBack
+
+    on message
+    begin
+    	put the message into Message
+        if Message is `login` go to ShowLoginForm
+   		else go to Start
+    end
+    set ready
+    stop
+
+!	Start the user manager
+Start:
+    get Email from storage as `email`
+    get Password from storage as `password`
+    if Email is empty stop
+    if Password is empty stop
+    go to SetupLogin
+
+!	Show the login form
+ShowLoginForm:
+    set the content of EmailInput to ``
+    set the content of PasswordInput to ``
+    set style `display` of LoginDiv to `block`
+    stop
+
+!	Preload email and password fields
+SetupLogin:
+    set the content of EmailInput to Email
+    set the content of PasswordInput to Password
+
+!	Process a login request
+ProcessLogin:
+    if EmailInput is empty go to FillAllFields
+    if PasswordInput is empty go to FillAllFields
+    rest get Record from `email/` cat EmailInput
+    if Record is empty go to NoRecord
+    if property `email` of Record is not EmailInput go to NoRecord
+    put property `password` of Record into Password
+    replace `/` with `~` in Password
+    rest get Validated from `validate/` cat Password cat `/` cat PasswordInput
+    if Validated is `yes`
+    begin
+      	gosub to SetStorage
+      	set style `display` of LoginDiv to `none`
+      	gosub to DoLoggedIn
+      	stop
+    end
+
+!	Deal with no record error
+NoRecord:
+    gosub to ClearStorage
+    alert `No record exists or incorrect password for ` cat EmailInput cat `.`
+    stop
+
+!	Logged in, so tell the parent and hide the interface
+DoLoggedIn:
+	gosub to SetStorage
+    set Message to object
+    set property `action` of Message to `user`
+    set property `user` of Message to Record
+    send Message to parent
+    set style `display` of LoginDiv to `none`
+    return
+
+ClearStorage:
+    put empty into storage as `email`
+    put empty into storage as `password`
+	return
+
+SetStorage:
+	put EmailInput into storage as `email`
+	put PasswordInput into storage as `password`
+	return
+
+!	Register as new user
+Register:
+    set style `display` of PasswordDiv to `flex`
+    set style `display` of Password2Div to `flex`
+    set style `display` of ResetDiv to `none`
+    set style `display` of NameDiv to `flex`
+    set style `display` of LoginButton to `none`
+    set style `display` of RegisterButton to `inline-block`
+    set style `display` of ResetPasswordButton to `none`
+    set style `display` of Reset to `none`
+    set style `display` of Back to `inline`
+    on click RegisterButton go to ProcessRegistration
+    stop
+
+!	Process the registration
+ProcessRegistration:
+    if EmailInput is empty go to FillAllFields
+    if PasswordInput is empty go to FillAllFields
+    if Password2Input is empty go to FillAllFields
+    if NameInput is empty go to FillAllFields
+    if PasswordInput is not Password2Input
+    begin
+      	alert `Passwords do not match`
+      	stop
+    end
+
+    rest get Record from `email/` cat EmailInput
+    if Record is not empty go to EmailExists
+    rest get Record from `name/` cat NameInput
+    if Record is not empty go to NameExists
+
+    put random 900000 into ConfirmationCode
+    add 100000 to ConfirmationCode
+    set Record to object
+    set property `from` of Record to `admin@iwannashowyou.com`
+    set property `to` of Record to EmailInput
+    set property `subject` of Record to `Confirmation code`
+    set property `message` of Record to `<html><body>`
+      	cat `Hi ` cat NameInput cat `<br /><br />`
+      	cat `Please use this code to confirm your registration at I Wanna Show You:<br />`
+      	cat `<h1>` cat ConfirmationCode cat `</h1>`
+      	cat `If you did not request this email, please ignore it and no action will be taken.`
+      	cat `</body></html>`
+    rest post Record to `email`
+    set style `display` of ConfirmationDiv to `flex`
+    set the text of RegisterButton to `Confirm registration`
+    wait 10 ticks
+    alert `We have sent a confirmation code to ` cat Email cat `.` cat newline
+      	cat `When it arrives, type or paste it in the "Confirmation Code" box `
+      	cat `and click "Confirm Registration".`
+    on click RegisterButton
+    begin
+      	if ConfirmationInput is not ConfirmationCode
+      	begin
+        	alert `Invalid confirmation code - no action taken.`
+        	stop
+      	end
+      	gosub to SetStorage
+      	set Record to object
+      	set property `email` of Record to EmailInput
+      	rest get PasswordHash from `hash/` cat PasswordInput
+      	set property `password` of Record to PasswordHash
+      	set property `name` of Record to NameInput
+      	rest post Record to `user`
+      	set style `display` of ConfirmationDiv to `none`
+      	set the text of RegisterButton to `Register`
+      	gosub to DoLoggedIn
+    end
+    stop
+
+!	Email is already in use
+EmailExists:
+    alert `A record already exists for ` cat EmailInput cat `.`
+    stop
+
+!	Name is already in use
+NameExists:
+    alert `A record already exists for ` cat NameInput cat `.`
+    stop
+
+!	One or more fileds are empty
+FillAllFields:
+    alert `Please fill in all the fields.`
+    stop
+
+!	Reset the password
+ResetPassword:
+    set style `display` of ResetDiv to `none`
+    set style `display` of PasswordDiv to `none`
+    set style `display` of Password2Div to `none`
+    set style `display` of LoginButton to `none`
+    set style `display` of RegisterButton to `none`
+    set style `display` of ResetPasswordButton to `inline-block`
+    set style `display` of Reset to `none`
+    set style `display` of Back to `inline-block`
+    wait 10 ticks
+    alert `Please type the email you used for your registration then click Reset Password.`
+    on click ResetPasswordButton go to ResetPassword2
+    stop
+
+!	Process the password reset
+ResetPassword2:
+    if EmailInput is empty go to FillAllFields
+    rest get Record from `email/` cat EmailInput
+    if Record is empty
+    begin
+      	alert ` No record exists for ` cat EmailInput cat `.`
+      	go to Register
+    end
+    put property `name` of Record into UserName
+    put random 900000 into ConfirmationCode
+    add 100000 to ConfirmationCode
+    set Record to object
+    set property `from` of Record to `admin@iwannashowyou.com`
+    set property `to` of Record to EmailInput
+    set property `subject` of Record to `Password reset key`
+    set property `message` of Record to `<html><body>`
+      	cat `Hi ` cat NameInput cat `<br /><br />`
+      	cat `Please use this code to confirm your password reset request at I Wanna Show You:<br />`
+      	cat `<h1>` cat ConfirmationCode cat `</h1>`
+      	cat `If you did not request this email, please ignore it and no action will be taken.`
+      	cat `</body></html>`
+    rest post Record to `email`
+    set style `display` of ResetDiv to `flex`
+    set style `display` of PasswordDiv to `flex`
+    set the content of PasswordInput to ``
+    set style `display` of Password2Div to `flex`
+    set the content of Password2Input to ``
+    set the text of ConfirmationInput to ``
+    on click ResetPasswordButton go to ResetPassword3
+    wait 10 ticks
+    alert `We have sent a password reset code to ` cat Email cat `.` cat newline
+      	cat `When it arrives, use it on this screen to confirm your new password.`
+    stop
+
+!	Confirm new password
+ResetPassword3:
+    if PasswordInput is empty go to FillAllFields
+    if Password2Input is empty go to FillAllFields
+    if PasswordInput is not Password2Input
+    begin
+      	alert `Passwords do not match`
+      	stop
+    end
+    if ResetInput is not ConfirmationCode
+    begin
+      	alert `Invalid password reset code - no action taken.`
+      	stop
+    end
+    set Record to object
+    set property `email` of Record to EmailInput
+    rest get PasswordHash from `hash/` cat PasswordInput
+    set property `password` of Record to PasswordHash
+    set property `name` of Record to UserName
+    rest post Record to `user`
+    gosub to SetStorage
+    go to DoLoggedIn
+
+!	Go back to the initial state
+GoBack:
+    set style `display` of ResetDiv to `none`
+    set style `display` of PasswordDiv to `flex`
+    set style `display` of Password2Div to `none`
+    set style `display` of NameDiv to `none`
+    set style `display` of LoginButton to `inline-block`
+    set style `display` of Reset to `inline`
+    set style `display` of Back to `none`
+    on click RegisterButton go to Register
+    stop

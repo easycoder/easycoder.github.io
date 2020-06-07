@@ -18,6 +18,7 @@
     div BlocksPanel
     div ContentPanel
     div Player
+    div UserPanel
     span Status
     span Span
     input NameEditor
@@ -27,10 +28,12 @@
     img Save
     img RunStop
     img Delete
+    img User
     a Link
     module StepsModule
     module BlocksModule
     module ContentModule
+    module UserModule
     variable Mobile
     variable LastSavedState
     variable Content
@@ -38,7 +41,6 @@
     variable Presentation
     variable Name
     variable CurrentName
-    variable PasswordValid
     variable ShowRun
     variable ReadOnly
     variable PasswordRequested
@@ -50,6 +52,8 @@
     variable CurrentScriptName
     variable Action
     variable Running
+    variable UserRecord
+    variable UserHome
     variable N
 
   ! The browser
@@ -71,7 +75,7 @@
     
 !	Test if site is on a static host
     clear ReadOnly
-    rest get List from `_list/scripts`
+    rest get List from `list/scripts`
     or begin
     	print `Static site`
         set ReadOnly
@@ -105,7 +109,7 @@ L2:
     set the style of Masthead to
     	`border:0.2em solid purple;text-align:center;color:	lemonchiffon;background:darkmagenta;position:relative`
     create Title in Masthead
-    set the style of Title to `font-size:4em;font-weight:bold;font-style:italic`
+    set the style of Title to `font-size:4em;font-weight:bold`
     set the content of Title to `I Wanna Show You`
     create Subtitle in Masthead
     set the style of Subtitle to
@@ -116,7 +120,7 @@ L2:
     set the style of Controls to `padding:0 0.5em`
 
     create Buttons in Controls
-    set the style of Buttons to `width:100%;padding:0.5em 0`
+    set the style of Buttons to `width:100%;padding:0.5em 0;position:relative`
 
     create ScriptName in Controls
     set the style of ScriptName to `display:flex`
@@ -151,10 +155,15 @@ L2:
     set the style of RunStop to `width:40px;margin-right:1.5em`
     set attribute `src` of RunStop to `resources/icon/run.png`
     set attribute `title` of RunStop to `Run`
+    create Link in Buttons
+    create User in Link
+    set the style of User to `width:40px;position:absolute;top:0.5em;right:0.5em`
+    set attribute `src` of User to `resources/icon/user.png`
+    set attribute `title` of User to `Login`
     
     create Status in Buttons
     if Mobile set the style of Status to `height:1em`
-    else set the style of Status to `float:right;margin:0.5em 0 0 0;color:green`
+    else set the style of Status to `float:right;margin:0.5em 70px 0 0;color:green`
     
     create Player in Left
     set the style of Player to `margin:0.5em`
@@ -228,6 +237,7 @@ L2:
     set the text of CloseButton to `Close`
 
     put empty into LastSavedState
+    put empty into UserRecord
     
     on click New
     begin
@@ -243,7 +253,7 @@ L2:
         			set the content of Status to `No script name has been given`
         			go to ResetStatus
       			end
-    	  		if PasswordValid rest post Presentation to `_save/json/` cat Name
+    	  		if UserRecord rest post Presentation to `save/` cat UserHome cat `/` cat Name
       			else put Presentation into storage as CurrentName
             end
     	end
@@ -260,7 +270,6 @@ L2:
     on click Save
     begin
     	gosub to SaveChanges
-    	gosub to GetPassword
         put the content of NameEditor into Name
         if Name is empty
         begin
@@ -274,11 +283,11 @@ L2:
         if Name is not CurrentScriptName put empty into LastSavedState
         if Presentation is not LastSavedState
         begin
-            if PasswordValid
+            if UserRecord
             begin
             	put Presentation into Content
                 json format Content
-                rest post Content to `_save/json/` cat Name
+                rest post Content to `save/` cat UserHome cat `/` cat Name
             end
             else put Presentation into storage as Name
             put Presentation into LastSavedState
@@ -297,7 +306,6 @@ L2:
     
     on click Delete
     begin
-    	gosub to GetPassword
         put the content of NameEditor into Name
         if Name is empty
         begin
@@ -307,7 +315,7 @@ L2:
         end
         if confirm `Are you sure you want to delete "` cat Name cat `"?`
         begin
-            if PasswordValid rest post to `_delete/json/` cat Name
+            if UserRecord rest post to `delete/` cat UserHome cat `/` cat Name
             else remove Name from storage
             gosub to SetStatusGreen
             set the content of Status to `Script "` cat Name cat `" deleted`
@@ -320,6 +328,21 @@ L2:
     end
     
     on click RunStop go to DoRunStop
+    on click User
+    begin
+    	if UserRecord
+        begin
+        	put empty into UserRecord
+            set attribute `src` of User to `resources/icon/user.png`
+            set attribute `title` of User to `Login`
+            gosub to SetStatusRed
+            set the content of Status to `Not logged in`
+            put empty into storage as `email`
+            put empty into storage as `password`
+            go to ResetStatus
+        end
+        else send `login` to UserModule
+    end
     
     gosub to CreateNewPresentation
     put Presentation into LastSavedState
@@ -330,6 +353,11 @@ L2:
     gosub to SelectSection
     clear Running
     iwsy load Player Presentation
+
+   	create UserPanel in Controls
+   	rest get Script from `/resources/ecs/user.txt?v=` cat now
+    run Script with UserPanel as UserModule
+    send to UserModule
     
     on message
     begin
@@ -353,6 +381,16 @@ L2:
         begin
         	put property `block` of Message into N
             iwsy block N
+        end
+        else if Action is `user`
+        begin
+        	put property `user` of Message into UserRecord
+            put property `home` of UserRecord into UserHome
+            set attribute `src` of User to `resources/icon/user-loggedin.png`
+            set attribute `title` of User to `Logged in as ` cat property `name` of UserRecord
+            gosub to SetStatusGreen
+            set the content of Status to `Logged in as  '` cat Name cat property `name` of UserRecord cat `'`
+            fork to ResetStatus
         end
     end
 	stop
@@ -427,15 +465,13 @@ SaveChanges:
 	return
 
 DoOpen:
-!	gosub to StopTestModule
-    gosub to GetPassword
 
     clear FileIsOpen
     if Presentation is not LastSavedState
     begin
       if confirm `Content has changed. Do you want to save it?`
       begin
-      	if PasswordValid rest post Content to `_save/json/` cat Name
+      	if UserRecord rest post Content to `save/` cat UserHome cat `/` cat Name
       	else put Content into storage as Name
       end
     end
@@ -456,9 +492,9 @@ DoOpen:
     set style `display` of FileListing to `inline-block`
 
   ! Fill the browser with content from the server
-    if PasswordValid
+    if UserRecord
     begin
-        rest get Files from `_list/json`
+        rest get Files from `list/` cat UserHome
         put the json count of Files into FileCount
         put empty into Content
         put 0 into N
@@ -478,7 +514,10 @@ DoOpen:
 	  	while N is less than FileCount
 	  	begin
 	  		put element N of Files into Item
-	    	if left 1 of Item is not `.` json add Item to Content
+	    	if left 1 of Item is not `.`
+            begin
+            	if the position of `.json` in Item is not -1 json add Item to Content
+            end
 	    	add 1 to N
 	  	end
     end
@@ -528,10 +567,11 @@ SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
     put File into CurrentScriptName
-	if PasswordValid rest get Presentation from `/resources/json/` cat File cat `?v=` cat now
+	if UserRecord rest get Presentation from `/resources/` cat UserHome cat `/` cat File cat `?v=` cat now
     else get Presentation from storage as File
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
+    gosub to SetStatusGreen
     set the content of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     set ShowRun
@@ -607,42 +647,3 @@ ClearStepsButtons:
     set property `action` of Message to `clear`
     send Message to StepsModule
     return
-
-GetPassword:
-	if ReadOnly
-    begin
-    	clear PasswordValid
-        return
-    end
-	if the hostname is `localhost` go to SetPasswordValid
-	if the hostname is `127.0.0.1` go to SetPasswordValid
-    
-	if not PasswordRequested
-    begin
-	    set PasswordRequested
-        if hostname is `localhost` goto SetPasswordValid
-        if hostname is `127.0.0.1` goto SetPasswordValid
-        get Password from storage as `.password`
-	    if Password is empty
-        begin
-        put `Please provide the admin password` cat newline
-            cat `or click OK to use private browser storage.` into Message
-        	put prompt Message with `` into Password
-        end
-        rest get PasswordValid from `_verify/` cat Password
-            or begin
-                clear PasswordValid
-                return
-            end
-        if PasswordValid is `yes` 
-        begin
-            put Password into storage as `.password`
-        	set PasswordValid
-	    end
-      else clear PasswordValid
-	end
-  return
-
-SetPasswordValid:
-  set PasswordValid
-  return

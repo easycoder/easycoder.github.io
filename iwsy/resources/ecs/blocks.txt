@@ -26,6 +26,7 @@
     variable ParentBlock
     variable Defaults
     variable PropertyDefaults
+    variable ParentDefaults
     variable PropertyNames
     variable PropertyName
     variable SelectedBlock
@@ -188,8 +189,8 @@ Restart:
                     	if M is not SelectedBlock
                         begin
                         	put element M of Blocks into ParentBlock
-                            put property `defaults` of ParentBlock into Defaults
-                        	json add property `name` of Defaults to BlockNames
+                            put property `defaults` of ParentBlock into ParentDefaults
+                        	json add property `name` of ParentDefaults to BlockNames
                         end
                     	add 1 to M
                     end
