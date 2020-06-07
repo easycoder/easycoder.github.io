@@ -1,13 +1,12 @@
 <?php
     // REST server
 
-    // This small REST server gives you the ability to manage tables
-    // in your site database.
+    // This small REST server gives you the ability to manage your site database.
 
     date_default_timezone_set('Europe/London');
     logger(substr($_SERVER['PATH_INFO'], 1));
     $request = explode("/", substr($_SERVER['PATH_INFO'], 1));
-    $table = array_shift($request);
+    $action = array_shift($request);
     $method = $_SERVER['REQUEST_METHOD'];
 
     $props = array();
@@ -30,8 +29,8 @@
     // First, the commands that don't require a database connection.
     switch ($method) {
         case 'GET':
-            switch ($table) {
-                case '_list':
+            switch ($action) {
+                case 'list':
                     // List the contents of a directory, starting at 'resources'
                     // Endpoint: {site root}/rest.php/_list/[{path}]
                     $path = getcwd() . '/';
@@ -82,31 +81,42 @@
                     }
                     print ']';
                     exit;
-                case '_hash':
+                    
+                case 'hash':
                     // Get a hash of a value
-                    // Endpoint: {site root}/easycoder/rest.php/_hash/{value-to-hash}
+                    // Endpoint: {site root}/rest.php/_hash/{value-to-hash}
                     print password_hash(join('/', $request), PASSWORD_DEFAULT);
                     exit;
-                case '_verify':
+                    
+                case 'verify':
                     // Verify a hash
-                    // Endpoint: {site root}/easycoder/rest.php/_verify/{value-to-verify}
+                    // Endpoint: {site root}/rest.php/_verify/{value-to-verify}
                     print password_verify(join('/', $request), $props['password']) ? 'yes' : 'no';
                     exit;
-                case '_exists':
+                    
+                case 'validate':
+                    // Validate a hash
+                    // Endpoint: {site root}/rest.php/validate/{encrypted-value}/{value-to-validate}
+                    print password_verify($request[1],str_replace('~', '/', $request[0])) ? 'yes' : 'no';
+                    exit;
+
+                case 'exists':
                     // Test if a file exists
-                    // Endpoint: {site root}/easycoder/rest.php/_exists/{{path}
+                    // Endpoint: {site root}/rest.php/_exists/{{path}
                     $path = getcwd() . '/' . join('/', $request);
                     print file_exists($path) ? 'Y' : '';
                     exit;
-                case '_load':
+                    
+                case 'load':
                     // Load a file from the resources folder
-                    // Endpoint: {site root}/easycoder/rest.php/_load/{path}
+                    // Endpoint: {site root}/rest.php/_load/{path}
                     $path = getcwd() . '/' . join('/', $request);
                     print file_get_contents($path);
                     exit;
-                case '_loadall':
+                    
+                case 'loadall':
                     // Load all the files in the named folder
-                    // Endpoint: {site root}/easycoder/rest.php/_loadall/{path}
+                    // Endpoint: {site root}/rest.php/_loadall/{path}
                     $path = getcwd() . '/';
                     if (count($request)) {
                          $path .= join('/', $request);
@@ -128,26 +138,28 @@
                     }
                     print ']';
                     exit;
-                case '_test':
+                    
+                case 'test':
                     // Test endpoint
-                    // Endpoint: {site root}/easycoder/rest.php/_test/
+                    // Endpoint: {site root}/rest.php/_test/
                     print $_SERVER['HTTP_HOST'];
                     exit;
             }
             break;
         case 'POST':
-            switch ($table) {
-                case '_mkdir':
+            switch ($action) {
+                case 'mkdir':
                     // Create a directory
-                    // Endpoint: {site root}/easycoder/rest.php/_mkdir/{path}
+                    // Endpoint: {site root}/rest.php/_mkdir/{path}
                     $path = getcwd() . '/' . join('/', $request);
                     logger("Create directory $path");
                     print("Create directory $path");
                     mkdir($path);
                     exit;
-                case '_upload':
+                    
+                case 'upload':
                     // Upload a file (an image) to the current directory
-                    // Endpoint: {site root}/easycoder/rest.php/_upload/{path}
+                    // Endpoint: {site root}/rest.php/_upload/{path}
                     $path = $_POST['path'];
                     $path = explode("/", $path);
                     array_shift($path);
@@ -173,9 +185,10 @@
                         }
                     }
                     exit;
-                case '_save':
+                    
+                case 'save':
                     // Save data to a file in the resources folder
-                    // Endpoint: {site root}/easycoder/rest.php/_save/{path}
+                    // Endpoint: {site root}/rest.php/save/{path}
                     $path = getcwd() . '/resources/' . join('/', $request);
                     $p = strrpos($path, '/');
                     $dir = substr($path, 0, $p);
@@ -187,9 +200,10 @@
                     $ext = substr($path, $p);
                     file_put_contents($path, $content);
                     exit;
-                case '_delete':
+                    
+                case 'delete':
                     // Delete a file in the resources folder
-                    // Endpoint: {site root}/easycoder/rest.php/_delete/{path}
+                    // Endpoint: {site root}/rest.php/_delete/{path}
                     $path = getcwd() . '/resources/' . join('/', $request);
                     if (is_dir($path)) {
                         rmdir($path);
@@ -197,9 +211,10 @@
                         unlink($path);
                     }
                     exit;
-                case '_email':
+                    
+                case 'email':
                     // Send an email
-                    // Endpoint: {site root}/easycoder/rest.php/_email
+                    // Endpoint: {site root}/rest.php/email
                     header("Content-Type: application/text");
                     $value = stripslashes(file_get_contents("php://input"));
                     $json = json_decode($value);
@@ -217,7 +232,7 @@
             break;
     }
 
-    // Most of the remaining commands require use of the database.
+    // The remaining commands require use of the database.
     $conn = mysqli_connect($props['sqlhost'], $props['sqluser'],
     $props['sqlpassword'], $props['sqldatabase']);
     if (!$conn)
@@ -227,291 +242,104 @@
     }
     mysqli_set_charset($conn,'utf8');
 
-    if (!count($request)) {
-        http_response_code(400);
-        print "{\"message\":\"Incomplete REST query: ".substr($_SERVER['PATH_INFO'], 1).".\"}";
-        exit;
-    }
-
-    // You can have a custom extension that deals with special requests.
-    // These all have '_' as the table name.
     switch ($method) {
-
-    case 'GET':
-        if ($table == '_') {
-            // Endpoint: {site root}/rest.php/_/{request-and-arguments}
-            include_once 'rest-local.php';
-            get_local($conn, $request);
-            return;
-            } else {
-                // Use the handler below
-                get($conn, $table, $request);
-            }
+        case 'GET':
+            get($conn, $action, $request);
             break;
 
         case 'POST':
-            if ($table == '_') {
-                // Endpoint: {site root}/rest.php/_/{request-and-arguments}
-                include_once 'rest-local.php';
-                post_local($conn, $request);
-                return;
-            } else {
-                // Use the handler below
-                post($conn, $table, $request);
-            }
+            post($conn, $action, $request);
             break;
-
+            
         default:
             http_response_code(400);
             break;
     }
+    
     mysqli_close();
     exit;
 
-    /////////////////////////////////////////////////////////////////////////
-    // All the other commands deal with tables having a specific format, with the following fields:
-    //
-    // id int(11)
-    // name varchar(40)
-    // value text
-    // ts int(11)
-    //
-    // GET
-    function get($conn, $table, $request) {
-        $action = $request[0];
+    // Database GET
+    function get($conn, $action, $request) {
         switch ($action) {
-            case 'count':
-                // Return the number of items in a table
-                // Endpoint: {site root}/easycoder/rest.php/table/count
-                $result = $conn->query("SELECT id from $table");
-                //print "{\"count\":".mysqli_num_rows($result)."}";
-                print mysqli_num_rows($result);
-                mysqli_free_result($result);
-                break;
-
-            case 'list':
-                // List items by ID, with optional offset & count, defaulting to 0 & 10
-                // Endpoint: {site root}/easycoder/rest.php/{table}/list/{offset}/{count}
-                switch (count($request)) {
-                    case 2:
-                        $offset = 0;
-                        $count = $request[1];
-                        break;
-                    case 3:
-                        $offset = $request[1];
-                        $count = $request[2];
-                        break;
-                    default:
-                        $offset = 0;
-                        $count = 10;
-                        break;
-                }
-                $result = $conn->query("SELECT id FROM $table LIMIT $offset, $count");
-                $response = '[';
-                while ($row = mysqli_fetch_object($result)) {
-                    if ($response != '[') {
-                        $response .= ',';
+            case 'email':
+                // Endpoint: {site root}/rest.php/email/{email}
+                $email= $request[0];
+                if ($email) {
+                    logger("SELECT * from users WHERE email='$email'");
+                    $result = query($conn, "SELECT * from users WHERE email='$email'");
+                    if ($row = mysqli_fetch_object($result)) {
+                        $response->id = $row->id;
+                        $response->email = $row->email;
+                        $response->password = $row->password;
+                        $response->name = $row->name;
+                        $response->home = $row->year . '/' . str_pad($row->day, 3, '0', STR_PAD_LEFT);
+                        print json_encode($response);
                     }
-                    $response .= $row->id;
-                }
-                mysqli_free_result($result);
-                $response .= ']';
-                print $response;
-                break;
-
-            case 'names':
-                // List items by name in ascending alphabetical order,
-                // with optional offset & count, defaulting to 0 & 10
-                // Endpoint: {site root}/easycoder/rest.php/{table}/names/{offset}/{count}
-                switch (count($request)) {
-                    case 2:
-                        $offset = 0;
-                        $count = $request[1];
-                        break;
-                    case 3:
-                        $offset = $request[1];
-                        $count = $request[2];
-                        break;
-                    default:
-                        $offset = 0;
-                        $count = 10;
-                        break;
-                }
-                $result = $conn->query("SELECT name FROM $table ORDER BY name LIMIT $offset, $count");
-                $response = '[';
-                while ($row = mysqli_fetch_object($result)) {
-                    if ($response != '[') {
-                        $response .= ',';
-                    }
-                    $response .= "\"$row->name\"";
-                }
-                mysqli_free_result($result);
-                $response .= ']';
-                print $response;
-                break;
-
-            case 'id':
-                // Get a record given its id
-                // Endpoint: {site root}/easycoder/rest.php/{table}/id/{id}
-                if (count($request) < 2) {
-                    http_response_code(400);
-                    print "Incomplete REST query.";
-                    exit;
-                }
-                $id = $request[1];
-                $result = $conn->query("SELECT value FROM $table WHERE id='$id'");
-                if ($row = mysqli_fetch_object($result)) {
-                    print $row->value;
                 } else {
                     http_response_code(404);
-                    print "Cannot get item id '$id' as it does not exist.";
+                    print "{\"message\":\"REST: Email is empty.\"}";
                 }
-                mysqli_free_result($result);
                 break;
-
+            
             case 'name':
-            case 'query':
-                // Get a record given its name
-                // Endpoint: {site root}/easycoder/rest.php/{table}/name/{name}
-                if (count($request) < 2) {
-                    http_response_code(400);
-                    print "Incomplete REST query.";
-                    exit;
-                }
-                $name = $request[1];
-                $result = $conn->query("SELECT value FROM $table WHERE name='$name'");
-                if ($row = mysqli_fetch_object($result)) {
-                    print $row->value;
-                } else if ($action == 'name') {
+                // Endpoint: {site root}/rest.php/name/{name}
+                if ($request[0]) {
+                    logger("SELECT * from users WHERE name='" . $request[0] . "'");
+                    $result = query($conn, "SELECT * from users WHERE name='" . $request[0] . "'");
+                    if ($row = mysqli_fetch_object($result)) {
+                        $response->id = $row->id;
+                        $response->email = $row->email;
+                        $response->password = $row->password;
+                        $response->name = $row->name;
+                        $response->home = $row->year . '/' . str_pad($row->day, 3, '0', STR_PAD_LEFT);
+                        print json_encode($response);
+                    }
+                } else {
                     http_response_code(404);
-                    print "Cannot get item named '$name' as it does not exist.";
+                    print "{\"message\":\"REST: Name is empty.\"}";
                 }
                 break;
-
+            
             default:
                 http_response_code(404);
-                print "I don't understand this request.";
+                print "{\"message\":\"REST: Unknown action '$action'.\"}";
                 break;
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////
     // POST
-    function post($conn, $table, $request) {
+    function post($conn, $action, $request) {
         $ts = time();
-        $action = $request[0];
         switch ($action) {
-            case 'set':
-                // Set the value of a record
-                if (count($request) > 2) {
-                    switch ($request[1]) {
-                        case 'id':
-                            // Set by id. The record must already exist
-                            // Endpoint: {site root}/easycoder/rest.php/{table}/id/{id}
-                            header("Content-Type: application/text");
-                            $value = stripslashes(file_get_contents("php://input"));
-                            $id = $request[2];
-                            // See if there's an item with this id
-                            $result = $conn->query("SELECT id FROM $table WHERE id=$id");
-                            if (mysqli_fetch_object($result)) {
-                                // It exists, so update it
-                                $value = urldecode($value);
-                                logger("UPDATE $table SET value='$value',ts=$ts WHERE id=$id");
-                                query($conn, "UPDATE $table SET value='$value',ts=$ts WHERE id=$id");
-                            } else {
-                                // Not found
-                                http_response_code(404);
-                                logger("{\"code\":\"404\",\"message\":\"Cannot set record $id of $table.\"}");
-                                print "{\"message\":\"Cannot set record $id of $table.\"}";
-                            }
-                            mysqli_free_result($result);
-                            break;
-
-                        case 'name':
-                            // Set by name. If the record does not exist, add it
-                            // Endpoint: {site root}/easycoder/rest.php/{table}/name/{name}
-                            header("Content-Type: application/text");
-                            $value = stripslashes(file_get_contents("php://input"));
-                            $name = $request[2];
-                            // See if there's an item with this name
-                            $result = $conn->query("SELECT id FROM $table WHERE name='$name'");
-                            if (mysqli_fetch_object($result)) {
-                                // It exists, so update it
-                                query($conn, "UPDATE $table SET value='$value',ts=$ts WHERE name='$name'");
-                            } else {
-                                // Add a new item
-                                query($conn, "INSERT INTO $table (name,value,ts) VALUES ('$name','$value','$ts')");
-                                http_response_code(201);
-                            }
-                            mysqli_free_result($result);
-                            break;
-
-                        default:
-                            http_response_code(400);
-                            print "{\"message\":\"Value '".$request[1]."' should be 'id' or 'name'.\"}";
-                            break;
-                        }
+            case 'user':
+                // Endpoint: {site root}/rest.php/user
+                header("Content-Type: application/json");
+                $value = stripslashes(file_get_contents("php://input"));
+                $json = json_decode($value);
+                $email = $json->email;
+                $password = $json->password;
+                $name = $json->name;
+                // Check if this user is already present
+                $result = query($conn, "SELECT id FROM users WHERE email='$email'");
+                if ($row = mysqli_fetch_object($result)) {
+                    // Yes, so update the record
+                    logger("UPDATE users SET password='$password',name='$name',ts=$ts WHERE email='$email'");
+                    query($conn, "UPDATE users SET password='$password',name='$name',ts=$ts WHERE email='$email'");
                 } else {
-                    http_response_code(400);
-                    print "{\"message\":\"Incomplete REST query.\"}";
+                    // No, so add a new record
+                    $year = date('Y');
+                    $day = str_pad(date('z'), 3, '0', STR_PAD_LEFT);
+                    logger("INSERT INTO users (email,password,name,year,day,ts) VALUES ('$email','$password','$name','$year','$day','$ts')");
+                    query($conn, "INSERT INTO users (email,password,name,year,day,ts) VALUES ('$email','$password','$name','$year','$day','$ts')");
+                    mkdir("resources/$year/$day", 0777, true);
                 }
-                break;
-
-            case 'delete':
-                // Delete a record, by id or by name
-                // Endpoint: {site root}/easycoder/rest.php/{table}/delete/{id}
-                // Or: ...{site root}/easycoder/rest.php/table/delete/{name}
-                if (count($request) > 1) {
-                    $item = $request[1];
-                    if (is_int($item)) {
-                        // Delete the requested id
-                        query($conn, "DELETE FROM $table WHERE id=$id");
-                    } else {
-                        // Delete the named item
-                        query($conn, "DELETE FROM $table WHERE name='$item'");
-                    }
-                }
-                break;
-
-            case 'rename':
-                // Rename a record
-                // Endpoint: {site root}/easycoder/rest.php/{table}/rename
-                $value = $_POST['value'];
-                $id = $_POST['id'];
-                if (!$id && count($request) > 1) {
-                    $id = $request[1];
-                }
-                if ($id) {
-                    query($conn, "UPDATE $table SET name='$name',value='$value' WHERE id=$id");
-                } else {
-                    $name = $_POST['name'];
-                    $newname = $_POST['newname'];
-                    // See if there's a data item with the new name
-                    $result = $conn->query("SELECT id FROM $table WHERE name='$newname'");
-                    if ($row = mysqli_fetch_object($result)) {
-                        // Conflict
-                        http_response_code(409);
-                        print "{\"message\":\"Cannot rename item '$name' to '$newname' as it already exists.\"}";
-                    } else {
-                        // See if there's a data item with this name
-                        $result = $conn->query("SELECT id FROM $table WHERE name='$name'");
-                        if ($row = mysqli_fetch_object($result)) {
-                            // There's a data item to rename
-                            $id = $row->id;
-                            query($conn, "UPDATE $table SET name='$newname',value='$value' WHERE id=$id");
-                        } else {
-                            // Not found
-                            http_response_code(404);
-                            print "{\"message\":\"Cannot rename item '$name' as it does not exist.\"}";
-                        }
-                    }
                 mysqli_free_result($result);
-                }
                 break;
-
+                
             default:
-                http_response_code(404);
-                print "{\"message\":\"Unrecognised action '$action' requested.\"}";
+                http_response_code(400);
+                print "{\"message\":\"REST: Unknown action '$action' for 'users'.\"}";
                 break;
         }
     }

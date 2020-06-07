@@ -1,1 +1,16 @@
+# The properties file for I Wanna Show You
+
+# The URL of the MySQL server
+sqlhost=mysql.iwannashowyou.com
+
+# The name of the database user
+sqluser=graham
+
+# The database password
+sqlpassword=eyore1948
+
+# The database to use
+sqldatabase=iwannashowyou
+
+# Admin password
 password=$2y$10$Kazqoaw6fGfV22bp3otJeO6Xra4bCsBJXq6JVAV07qOkHNDIFevWG

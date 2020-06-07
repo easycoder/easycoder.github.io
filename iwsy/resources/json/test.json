@@ -90,7 +90,7 @@
         "background": "",
         "border": "",
         "borderRadius": "",
-        "fontColor": "#ccffff",
+        "fontColor": "#aaffff",
         "fontFamily": "",
         "fontSize": 40,
         "fontStyle": "",
@@ -134,16 +134,16 @@
         "borderRadius": "",
         "fontColor": "yellow",
         "fontFamily": "",
-        "fontSize": 50,
+        "fontSize": 72,
         "fontStyle": "",
         "fontWeight": "",
-        "height": 700,
-        "left": 50,
+        "height": 1000,
+        "left": 0,
         "textAlign": "left",
         "textMarginLeft": 20,
         "textMarginTop": 20,
-        "top": 250,
-        "width": 400,
+        "top": 0,
+        "width": 450,
         "parent": "main content"
       }
     },
@@ -155,16 +155,16 @@
         "borderRadius": "",
         "fontColor": "yellow",
         "fontFamily": "",
-        "fontSize": 50,
+        "fontSize": 72,
         "fontStyle": "",
         "fontWeight": "",
-        "height": 700,
+        "height": 1000,
         "left": 550,
         "textAlign": "left",
         "textMarginLeft": 20,
         "textMarginTop": 20,
-        "top": 250,
-        "width": 400,
+        "top": "00",
+        "width": 450,
         "parent": "main content"
       }
     }
@@ -176,11 +176,11 @@
     },
     {
       "name": "a new dawn",
-      "content": "# A new dawn is coming..."
+      "content": "# A new dawn is here..."
     },
     {
       "name": "iwannashowyou",
-      "content": "# I Wanna Show You%0a%0a### _knockout web-based presentations_"
+      "content": "# I Wanna Show You%0a%0a### _powerful web-based presentations_"
     },
     {
       "name": "page 1 left",
@@ -193,7 +193,7 @@
   ],
   "steps": [
     {
-      "title": "My demo presentation",
+      "title": "My demo ",
       "action": "init",
       "label": "",
       "aspect ratio": "160:89",
