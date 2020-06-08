@@ -13,12 +13,14 @@
     div Buttons
     div Tabs
     div Tab
-    div ScriptName
     div StepsPanel
     div BlocksPanel
     div ContentPanel
     div Player
     div UserPanel
+    div FileManPanel
+    div Panel
+    div Div
     span Status
     span Span
     input NameEditor
@@ -29,11 +31,13 @@
     img RunStop
     img Delete
     img User
+    img FileMan
     a Link
     module StepsModule
     module BlocksModule
     module ContentModule
     module UserModule
+    module FileManModule
     variable Mobile
     variable LastSavedState
     variable Content
@@ -43,8 +47,6 @@
     variable CurrentName
     variable ShowRun
     variable ReadOnly
-    variable PasswordRequested
-    variable Password
     variable CallStack
     variable Message
     variable Section
@@ -82,7 +84,6 @@
         go to L2
     end
 L2:
-    clear PasswordRequested
     put empty into CallStack
     history set
     on restore
@@ -94,6 +95,8 @@ L2:
     	if mobile set Mobile else clear Mobile
     end
     
+    put empty into storage as `.user`
+    
     set the title to `IWSY`
     create Body
     if Mobile
@@ -103,7 +106,8 @@ L2:
 
 !	The left-hand panel
     create Left in Body
-	set the style of Left to `flex:1;height:100%;border-right:1px solid black;margin-right:0.5em`
+	set the style of Left to
+    	`flex:1;height:100%;border-right:1px solid black;margin-right:0.5em;display:flex;flex-direction:column`
     
     create Masthead in Left
     set the style of Masthead to
@@ -122,14 +126,22 @@ L2:
     create Buttons in Controls
     set the style of Buttons to `width:100%;padding:0.5em 0;position:relative`
 
-    create ScriptName in Controls
-    set the style of ScriptName to `display:flex`
-    if Mobile set style `display` of ScriptName to `none`
-    create Span in ScriptName
+    create Panel in Controls
+    set the style of Panel to `display:flex`
+    create Div in Panel
+    set the style of Div to `flex:1;display:flex`
+    create Span in Div
     set the style of Span to `flex:15`
     set the content of Span to `Script&nbsp;name:&nbsp;`
-    create NameEditor in ScriptName
+    create NameEditor in Div
     set the style of NameEditor to `flex:85;display:inline-block`
+    
+    create Div in Panel
+    set the style of Div to `width:1em`
+    
+    create Status in Panel
+    set the style of Status to
+    	`flex:1;text-align:right;margin-right:0.5em;border:1px solid black;padding-right:0.5em;color:green`
 
     create Link in Buttons
     create New in Link
@@ -151,6 +163,11 @@ L2:
     set attribute `src` of Delete to `resources/icon/trash.png`
     set attribute `title` of Delete to `Delete`
     create Link in Buttons
+    create FileMan in Link
+    set the style of FileMan to `width:40px;margin-right:1.5em`
+    set attribute `src` of FileMan to `resources/icon/fileman.png`
+    set attribute `title` of FileMan to `File Manager`
+    create Link in Buttons
     create RunStop in Link
     set the style of RunStop to `width:40px;margin-right:1.5em`
     set attribute `src` of RunStop to `resources/icon/run.png`
@@ -161,13 +178,12 @@ L2:
     set attribute `src` of User to `resources/icon/user.png`
     set attribute `title` of User to `Login`
     
-    create Status in Buttons
-    if Mobile set the style of Status to `height:1em`
-    else set the style of Status to `float:right;margin:0.5em 70px 0 0;color:green`
-    
     create Player in Left
     set the style of Player to `margin:0.5em`
     iwsy init
+    
+    create FileManPanel in Left
+    set the style of FileManPanel to `flex:1;display:none`
 
 !	The right-hand panel
     create Right in Body
@@ -253,7 +269,7 @@ L2:
         			set the content of Status to `No script name has been given`
         			go to ResetStatus
       			end
-    	  		if UserRecord rest post Presentation to `save/` cat UserHome cat `/` cat Name
+    	  		if UserRecord rest post Presentation to `save/` cat `users/` cat UserHome cat `/` cat Name
       			else put Presentation into storage as CurrentName
             end
     	end
@@ -287,7 +303,7 @@ L2:
             begin
             	put Presentation into Content
                 json format Content
-                rest post Content to `save/` cat UserHome cat `/` cat Name
+                rest post Content to `save/` cat `users/` cat `users/` cat UserHome cat `/` cat Name
             end
             else put Presentation into storage as Name
             put Presentation into LastSavedState
@@ -315,7 +331,7 @@ L2:
         end
         if confirm `Are you sure you want to delete "` cat Name cat `"?`
         begin
-            if UserRecord rest post to `delete/` cat UserHome cat `/` cat Name
+            if UserRecord rest post to `delete/` cat `users/` cat UserHome cat `/` cat Name
             else remove Name from storage
             gosub to SetStatusGreen
             set the content of Status to `Script "` cat Name cat `" deleted`
@@ -327,12 +343,28 @@ L2:
         end
     end
     
+    on click FileMan
+    begin
+    	if Running stop
+        if UserRecord is empty stop
+    	if FileManModule is not running
+        begin
+            rest get Script from `/resources/ecs/fileman.txt?v=` cat now
+            run Script with FileManPanel as FileManModule
+        end
+        set style `display` of Player to `none`
+        set style `display` of FileManPanel to `block`
+        send to FileManModule
+    end
+    
     on click RunStop go to DoRunStop
+    
     on click User
     begin
     	if UserRecord
         begin
         	put empty into UserRecord
+            put empty into storage as `.user`
             set attribute `src` of User to `resources/icon/user.png`
             set attribute `title` of User to `Login`
             gosub to SetStatusRed
@@ -385,6 +417,8 @@ L2:
         else if Action is `user`
         begin
         	put property `user` of Message into UserRecord
+print UserRecord
+            put UserRecord into storage as `.user`
             put property `home` of UserRecord into UserHome
             set attribute `src` of User to `resources/icon/user-loggedin.png`
             set attribute `title` of User to `Logged in as ` cat property `name` of UserRecord
@@ -465,13 +499,12 @@ SaveChanges:
 	return
 
 DoOpen:
-
     clear FileIsOpen
     if Presentation is not LastSavedState
     begin
       if confirm `Content has changed. Do you want to save it?`
       begin
-      	if UserRecord rest post Content to `save/` cat UserHome cat `/` cat Name
+      	if UserRecord rest post Content to `save/` cat `users/` cat UserHome cat `/` cat Name
       	else put Content into storage as Name
       end
     end
@@ -494,7 +527,7 @@ DoOpen:
   ! Fill the browser with content from the server
     if UserRecord
     begin
-        rest get Files from `list/` cat UserHome
+        rest get Files from `list/` cat `users/` cat UserHome cat `/scripts`
         put the json count of Files into FileCount
         put empty into Content
         put 0 into N
@@ -567,7 +600,8 @@ SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
     put File into CurrentScriptName
-	if UserRecord rest get Presentation from `/resources/` cat UserHome cat `/` cat File cat `?v=` cat now
+	if UserRecord rest get Presentation from
+    	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
     else get Presentation from storage as File
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
@@ -606,6 +640,7 @@ DoRunStop:
     end
     else
     begin
+    	set style `display` of Player to `block`
     	put property `steps` of Presentation into Item
     	if the json count of Item is 0 stop
         put element 0 of Item into Item

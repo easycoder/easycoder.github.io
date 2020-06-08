@@ -5659,12 +5659,23 @@ const EasyCoder_Browser = {
 						}
 					}
 				};
+				ajax.onerror = function (data) {
+					if (command.onError) {
+						program.errorMessage = this.responseText;
+						program.run(command.onError);
+					} else {
+						const error = this.responseText;
+						program.runtimeError(command.lino, error);
+					}
+				};
 				program.ajaxCommand = command;
 				const rest = document.getElementById(`easycoder-rest`);
 				if (!rest) {
 					program.runtimeError(command.lino, `No REST server defined`);
 				}
-				const postpath = path.startsWith(`http`) ? path : `${window.location.origin}${rest}/${path}`;
+				const postpath = path.startsWith(`http`)
+					? path
+					: `${window.location.origin}/${rest.innerText}/${path}`;
 				ajax.open(`POST`, postpath);
 				ajax.send(formData);
 			}
