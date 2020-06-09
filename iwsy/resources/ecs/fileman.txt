@@ -32,6 +32,8 @@
     variable Content
     variable Home
     variable UserRecord
+    variable Email
+    variable Password
     variable CurrentPath
     variable FilePath
     variable Path
@@ -120,7 +122,7 @@ Show:
 
 !	Build the list
 Browser:
-    rest get Content from `list/` cat CurrentPath
+    rest get Content from `ulist/` cat Email can `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
     or begin
         alert `Failed to list files.`
         stop
@@ -222,7 +224,7 @@ SelectFile:
         set style `display` of Scroller to `none`
         set style `display` of Image to `block`
         put CurrentPath cat `/` cat property `name` of File into FilePath
-        set attribute `src` of Image to `/resources/` cat FilePath
+        set attribute `src` of Image to `/resources/` cat FilePath cat `?v=` cat now
         on click CloseButton go to CloseMedia
         set the text of URL to `/resources/` cat FilePath
 !    highlight URL

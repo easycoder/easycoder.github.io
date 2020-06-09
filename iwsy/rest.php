@@ -30,9 +30,15 @@
     switch ($method) {
         case 'GET':
             switch ($action) {
+        
+                case 'test':
+                    exit;
+            
                 case 'list':
                     // List the contents of a directory, starting at 'resources'
-                    // Endpoint: {site root}/rest.php/_list/[{path}]
+                    // Endpoint: {site root}/rest.php/list/password/[{path}]
+                    $password = array_shift($request);
+                    checkAdminPassword($password, $props['password']);
                     $path = getcwd() . '/';
                     if (count($request)) {
                          $path .= 'resources/' . join('/', $request);
@@ -97,99 +103,30 @@
                 case 'validate':
                     // Validate a hash
                     // Endpoint: {site root}/rest.php/validate/{encrypted-value}/{value-to-validate}
-                    print password_verify($request[1],str_replace('~', '/', $request[0])) ? 'yes' : 'no';
-                    exit;
-
-                case 'exists':
-                    // Test if a file exists
-                    // Endpoint: {site root}/rest.php/_exists/{{path}
-                    $path = getcwd() . '/' . join('/', $request);
-                    print file_exists($path) ? 'Y' : '';
-                    exit;
-                    
-                case 'load':
-                    // Load a file from the resources folder
-                    // Endpoint: {site root}/rest.php/_load/{path}
-                    $path = getcwd() . '/' . join('/', $request);
-                    print file_get_contents($path);
-                    exit;
-                    
-                case 'loadall':
-                    // Load all the files in the named folder
-                    // Endpoint: {site root}/rest.php/_loadall/{path}
-                    $path = getcwd() . '/';
-                    if (count($request)) {
-                         $path .= join('/', $request);
-                    }
-                    $files = scandir($path);
-                    print '[';
-                    $flag = false;
-                    foreach ($files as $file) {
-                        if (strpos($file, '.') !== 0) {
-                            if (!is_dir("$path/$file")) {
-                                if ($flag) {
-                                    print ',';
-                                } else {
-                                    $flag = true;
-                                }
-                                print file_get_contents("$path/$file");
-                            }
-                        }
-                    }
-                    print ']';
-                    exit;
-                    
-                case 'test':
-                    // Test endpoint
-                    // Endpoint: {site root}/rest.php/_test/
-                    print $_SERVER['HTTP_HOST'];
+                    print password_verify($request[1], $request[0]) ? 'yes' : 'no';
                     exit;
             }
             break;
+
         case 'POST':
             switch ($action) {
                 case 'mkdir':
                     // Create a directory
-                    // Endpoint: {site root}/rest.php/_mkdir/{path}
+                    // Endpoint: {site root}/rest.php/mkdir/{path}
                     $path = getcwd() . '/' . join('/', $request);
+                    $path = preg_replace('/[^0-9\-.\/A-Za-z]/', '', $path);
                     logger("Create directory $path");
                     print("Create directory $path");
                     mkdir($path);
                     exit;
                     
-                case 'upload':
-                    // Upload a file (an image) to the current directory
-                    // Endpoint: {site root}/rest.php/_upload/{path}
-                    $path = $_POST['path'];
-                    $path = explode("/", $path);
-                    array_shift($path);
-                    $path = join('/', $path);
-                    mkdir($path, 0777, true);
-                    logger("path: $path");
-                    $fileName = $_FILES['source']['name'];
-                    $tempName = $_FILES['source']['tmp_name'];
-                    $fileType = $_FILES['source']['type'];
-                    $fileSize = $_FILES['source']['size'];
-                    $fileError = $_FILES['source']['error'];
-                    if (!move_uploaded_file($tempName, "$path/$fileName")) {
-                        unlink($tempName);
-                        http_response_code(400);
-                        logger("Failed to upload $tempName to $fileName.\ntempName: $tempName\nfileType: $fileType\nfileSize:$fileSize\nfileError: $fileError");
-                    } else {
-                        logger("File $fileName uploaded successfully to $path/$fileName");
-                        $size = getimagesize("$path/$fileName");
-                        logger("$path/$fileName: width:".$size[0].", height:".$size[1]);
-                        if ($size[0] > 1024) {
-                            logger("mogrify -resize 1024x1024 $path/$fileName");
-                            system("mogrify -resize 1024x1024 $path/$fileName");
-                        }
-                    }
-                    exit;
-                    
                 case 'save':
                     // Save data to a file in the resources folder
-                    // Endpoint: {site root}/rest.php/save/{path}
+                    // Endpoint: {site root}/rest.php/save/password/{path}
+                    $password = array_shift($request);
+                    checkAdminPassword($password, $props['password']);
                     $path = getcwd() . '/resources/' . join('/', $request);
+                    $path = preg_replace('/[^0-9\-.\/A-Za-z]/', '', $path);
                     $p = strrpos($path, '/');
                     $dir = substr($path, 0, $p);
                     mkdir($dir, 0777, true);
@@ -203,8 +140,11 @@
                     
                 case 'delete':
                     // Delete a file in the resources folder
-                    // Endpoint: {site root}/rest.php/_delete/{path}
+                    // Endpoint: {site root}/rest.php/delete/password/{path}
+                    $password = array_shift($request);
+                    checkAdminPassword($password, $props['password']);
                     $path = getcwd() . '/resources/' . join('/', $request);
+                    $path = preg_replace('/[^0-9\-.\/A-Za-z]/', '', $path);
                     if (is_dir($path)) {
                         rmdir($path);
                     } else {
@@ -244,11 +184,11 @@
 
     switch ($method) {
         case 'GET':
-            get($conn, $action, $request);
+            get($conn, $props, $action, $request);
             break;
 
         case 'POST':
-            post($conn, $action, $request);
+            post($conn, $props, $action, $request);
             break;
             
         default:
@@ -260,11 +200,12 @@
     exit;
 
     // Database GET
-    function get($conn, $action, $request) {
+    function get($conn, $props, $action, $request) {
         switch ($action) {
             case 'email':
                 // Endpoint: {site root}/rest.php/email/{email}
                 $email= $request[0];
+                $email = preg_replace('/[^A-Za-z0-9@\-.\/]/', '', $email);
                 if ($email) {
                     logger("SELECT * from users WHERE email='$email'");
                     $result = query($conn, "SELECT * from users WHERE email='$email'");
@@ -284,9 +225,11 @@
             
             case 'name':
                 // Endpoint: {site root}/rest.php/name/{name}
-                if ($request[0]) {
+                $name = $request[0];
+                if ($name) {
+                    $name = preg_replace("/[^A-Za-z0-9\-\'.\/]/", '', $name);
                     logger("SELECT * from users WHERE name='" . $request[0] . "'");
-                    $result = query($conn, "SELECT * from users WHERE name='" . $request[0] . "'");
+                    $result = query($conn, "SELECT * from users WHERE name='$name'");
                     if ($row = mysqli_fetch_object($result)) {
                         $response->id = $row->id;
                         $response->email = $row->email;
@@ -300,6 +243,61 @@
                     print "{\"message\":\"REST: Name is empty.\"}";
                 }
                 break;
+
+            case 'ulist':
+                // List the contents of a directory, starting at 'resources'
+                // Endpoint: {site root}/rest.php/ulist/email/password/[{path}]
+                $email = array_shift($request);
+                $password = array_shift($request);
+                checkUserPassword($conn, $email, $password);
+                $path = getcwd() . '/';
+                if (count($request)) {
+                        $path .= 'resources/' . join('/', $request);
+                 }
+                $files = scandir($path);
+                print '[';
+                // First list all the directories
+                $flag = false;
+                foreach ($files as $file) {
+                    if (strpos($file, '.') !== 0) {
+                        if (is_dir("$path/$file")) {
+                            if ($flag) {
+                                print ',';
+                            } else {
+                                $flag = true;
+                            }
+                            print "{\"name\":\"$file\",\"type\":\"dir\"}";
+                        }
+                    }
+                }
+                // Now do the ordinary files
+                foreach ($files as $file) {
+                    if (strpos($file, '.') !== 0) {
+                        if (!is_dir("$path/$file")) {
+                            if ($flag) {
+                                print ',';
+                            } else {
+                                $flag = true;
+                            }
+                            $type = 'file';
+                            $p = strrpos($file, '.');
+                            if ($p > 0) {
+                                $ext = substr($file, $p + 1);
+                                $type = $ext;
+                                switch (strtolower($ext)) {
+                                    case 'jpg':
+                                    case 'png':
+                                    case 'gif':
+                                        $type = 'img';
+                                        break;
+                                }
+                            }
+                            print "{\"name\":\"$file\",\"type\":\"$type\"}";
+                        }
+                    }
+                }
+                print ']';
+                exit;
             
             default:
                 http_response_code(404);
@@ -309,9 +307,10 @@
     }
 
     // POST
-    function post($conn, $action, $request) {
+    function post($conn, $props, $action, $request) {
         $ts = time();
         switch ($action) {
+                    
             case 'user':
                 // Endpoint: {site root}/rest.php/user
                 header("Content-Type: application/json");
@@ -321,6 +320,9 @@
                 $password = $json->password;
                 $name = $json->name;
                 // Check if this user is already present
+                $email = preg_replace('/[^A-Za-z0-9@\-.\/]/', '', $email);
+                $password = preg_replace('/[^A-Za-z0-9$\/.]/', '', $password);
+                $name = preg_replace("/[^A-Za-z0-9\-.\'\/]/", '', $name);
                 $result = query($conn, "SELECT id FROM users WHERE email='$email'");
                 if ($row = mysqli_fetch_object($result)) {
                     // Yes, so update the record
@@ -332,16 +334,108 @@
                     $day = str_pad(date('z'), 3, '0', STR_PAD_LEFT);
                     logger("INSERT INTO users (email,password,name,year,day,ts) VALUES ('$email','$password','$name','$year','$day','$ts')");
                     query($conn, "INSERT INTO users (email,password,name,year,day,ts) VALUES ('$email','$password','$name','$year','$day','$ts')");
-                    mkdir("resources/$year/$day", 0777, true);
+                    $id = $conn->insert_id;
+                    mkdir("resources/users/$year/$day/$id", 0777, true);
                 }
                 mysqli_free_result($result);
                 break;
+                    
+            case 'usave':
+                // Save a json script
+                // Endpoint: {site root}/rest.php/usave/email/password/{path}
+                $email = array_shift($request);
+                $password = array_shift($request);
+                checkUserPassword($conn, $email, $password);
+                $path = getcwd() . '/resources/' . join('/', $request);
+                $p = strrpos($path, '/');
+                $dir = substr($path, 0, $p);
+                mkdir($dir, 0777, true);
+                header("Content-Type: application/text");
+                $content = stripslashes(file_get_contents("php://input"));
+                $p = strrpos($path, '.');
+                $root = substr($path, 0, $p);
+                $ext = substr($path, $p);
+                file_put_contents($path, $content);
+                exit;
+                    
+            case 'udelete':
+                // Delete a file in the resources folder
+                // Endpoint: {site root}/rest.php/udelete/email/password/{path}
+                $email = array_shift($request);
+                $password = array_shift($request);
+                checkUserPassword($conn, $email, $password);
+                $path = getcwd() . '/resources/' . join('/', $request);
+                if (is_dir($path)) {
+                    rmdir($path);
+                } else {
+                    unlink($path);
+                }
+                exit;
+                    
+            case 'upload':
+                // Upload a file (an image) to the current directory
+                // Endpoint: {site root}/rest.php/upload/email/password/{path}
+                $email = array_shift($request);
+                $password = array_shift($request);
+                checkUserPassword($conn, $email, $password);
+                $path = $_POST['path'];
+                $path = explode("/", $path);
+                array_shift($path);
+                $path = 'resources/' . join('/', $path);
+                mkdir($path, 0777, true);
+                logger("path: $path");
+                $fileName = $_FILES['source']['name'];
+                $tempName = $_FILES['source']['tmp_name'];
+                $fileType = $_FILES['source']['type'];
+                $fileSize = $_FILES['source']['size'];
+                $fileError = $_FILES['source']['error'];
+                if (!move_uploaded_file($tempName, "$path/$fileName")) {
+                    unlink($tempName);
+                    http_response_code(400);
+                    logger("Failed to upload $tempName to $path/$fileName.\ntempName: $tempName\nfileType: $fileType\nfileSize:$fileSize\nfileError: $fileError");
+                } else {
+                    logger("File $fileName uploaded successfully to $path/$fileName");
+                    $size = getimagesize("$path/$fileName");
+                    logger("$path/$fileName: width:".$size[0].", height:".$size[1]);
+                    if ($size[0] > 1024) {
+                        logger("mogrify -resize 1024x1024 $path/$fileName");
+                        system("mogrify -resize 1024x1024 $path/$fileName");
+                    }
+                }
                 
             default:
                 http_response_code(400);
                 print "{\"message\":\"REST: Unknown action '$action' for 'users'.\"}";
                 break;
         }
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    // Check the admin password
+    function checkAdminPassword($password, $encrypted)
+    {
+        if (password_verify($password, $encrypted)) {
+            return;
+        }
+        http_response_code(403);
+        print "{\"message\":\"REST: Bad password.\"}";
+        exit;
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    // Check a user password
+    function checkUserPassword($conn, $email, $password)
+    {
+        $result = query($conn, "SELECT password FROM users WHERE email='$email'");
+        if ($row = mysqli_fetch_object($result)) {
+            $encrypted = $row->password;
+            if (password_verify($password, $encrypted)) {
+                return;
+            }
+        }
+        http_response_code(403);
+        print "{\"message\":\"REST: Bad password.\"}";
+        exit;
     }
 
     /////////////////////////////////////////////////////////////////////////
