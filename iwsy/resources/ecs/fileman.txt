@@ -116,13 +116,16 @@ Show:
     set style `display` of Container to `block`
 
 	get UserRecord from storage as `.user`
+    put property `email` of UserRecord into Email
+    get Password from storage as `password`
     put property `home` of UserRecord into Home
+    put Home cat `/` cat property `id` of UserRecord into Home
     put `users/` cat Home cat `/images` into Home
     put Home into CurrentPath
 
 !	Build the list
 Browser:
-    rest get Content from `ulist/` cat Email can `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
+    rest get Content from `ulist/` cat Email cat `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
     or begin
         alert `Failed to list files.`
         stop
@@ -186,15 +189,13 @@ Browser:
         if FileCount is 0
         begin
             put Path into CurrentPath
-            rest post to `delete/` cat CurrentPath or
+            rest post to `udelete/` cat Email cat `/` cat Password cat `/` cat CurrentPath or
             begin
                 alert `Failed to delete a file.`
                 stop
             end
-            put the position of the last `~` in CurrentPath into N
-            if N is less than 0 put the position of the last `/` in CurrentPath into N
+            put the position of the last `/` in CurrentPath into N
             put left N of CurrentPath into CurrentPath
-            alert `Returning to ` cat CurrentPath
             go to Browser
         end
         else
@@ -210,7 +211,7 @@ SelectFile:
     put property `type` of File into Type
     if Type is `dir`
     begin
-        put CurrentPath cat `~` cat the content of FileName into CurrentPath
+        put CurrentPath cat `/` cat the content of FileName into CurrentPath
       	goto Browser
     end
     if Type is `img`
@@ -226,12 +227,11 @@ SelectFile:
         put CurrentPath cat `/` cat property `name` of File into FilePath
         set attribute `src` of Image to `/resources/` cat FilePath cat `?v=` cat now
         on click CloseButton go to CloseMedia
-        set the text of URL to `/resources/` cat FilePath
+        set the text of URL to `resources/` cat FilePath
 !    highlight URL
         on click DeleteButton
         begin
-          put `upload` cat FilePath into FilePath
-          rest post to `delete/` cat FilePath or
+          rest post to `udelete/` cat Email cat `/` cat Password cat `/` cat FilePath or
           begin
               alert `Failed to delete the image.`
               stop
@@ -258,7 +258,7 @@ Upload:
     else
     begin
         put CurrentPath into Path
-        put `upload/` cat Path into Path
+        put `upload/` cat Email cat `/` cat Password cat `/` cat Path into Path
         upload UploadFile to Path with UploadProgress and UploadStatus
         goto Browser
     end

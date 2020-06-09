@@ -5629,7 +5629,9 @@ const EasyCoder_Browser = {
 					const response = event.target.responseText;
 					setProgress(0);
 					setStatus(``);
-					console.log(response);
+					if (response) {
+						console.log(response);
+					}
 				}, false);
 				ajax.addEventListener(`error`, function () {
 					setStatus(`Upload failed`);

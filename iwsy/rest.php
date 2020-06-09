@@ -378,12 +378,8 @@
                 $email = array_shift($request);
                 $password = array_shift($request);
                 checkUserPassword($conn, $email, $password);
-                $path = $_POST['path'];
-                $path = explode("/", $path);
-                array_shift($path);
-                $path = 'resources/' . join('/', $path);
+                $path = 'resources/' . join('/', $request);
                 mkdir($path, 0777, true);
-                logger("path: $path");
                 $fileName = $_FILES['source']['name'];
                 $tempName = $_FILES['source']['tmp_name'];
                 $fileType = $_FILES['source']['type'];
@@ -398,10 +394,11 @@
                     $size = getimagesize("$path/$fileName");
                     logger("$path/$fileName: width:".$size[0].", height:".$size[1]);
                     if ($size[0] > 1024) {
-                        logger("mogrify -resize 1024x1024 $path/$fileName");
-                        system("mogrify -resize 1024x1024 $path/$fileName");
+                        logger("mogrify -resize 1280x1280 $path/$fileName");
+                        system("mogrify -resize 1280x1280 $path/$fileName");
                     }
                 }
+                exit;
                 
             default:
                 http_response_code(400);
@@ -433,6 +430,7 @@
                 return;
             }
         }
+        logger("User password check failed");
         http_response_code(403);
         print "{\"message\":\"REST: Bad password.\"}";
         exit;
