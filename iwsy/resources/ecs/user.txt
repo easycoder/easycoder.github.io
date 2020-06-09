@@ -171,7 +171,6 @@ ProcessLogin:
     if Record is empty go to NoRecord
     if property `email` of Record is not EmailInput go to NoRecord
     put property `password` of Record into Password
-    replace `/` with `~` in Password
     rest get Validated from `validate/` cat Password cat `/` cat PasswordInput
     if Validated is `yes`
     begin

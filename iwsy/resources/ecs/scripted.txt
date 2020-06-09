@@ -129,7 +129,7 @@
     put the content of ContentEditor into Content
     if Content is not Current
     begin
-      rest post Content to `save/ecs/` cat Name
+      rest post Content to `save/` cat Password cat `/ecs/` cat Name
       put Content into Current
       set the content of Status to `Script '` cat Name cat `' saved`
       fork to ResetStatus
@@ -155,7 +155,7 @@
     if confirm `Are you sure you want to delete '` cat Name cat `'?`
     begin
       codemirror close ContentEditor
-      rest post to `delete/ecs/` cat Name
+      rest post to `delete/` cat Password cat `/ecs/` cat Name
       set the content of Status to `Script '` cat Name cat `' deleted`
       set the content of NameEditor to empty
       put empty into Content
@@ -173,7 +173,7 @@ DoOpen:
   begin
     if confirm `Content has changed. Do you want to save it?`
     begin
-      rest post Content to `save/ecs/' cat CurrentName
+      rest post Content to `save/` cat Password cat `/ecs/' cat CurrentName
 	  codemirror attach to ContentEditor
 	  codemirror set content of ContentEditor to Content
     end
@@ -201,7 +201,7 @@ DoOpen:
   set style `display` of FileListing to `inline-block`
 
 ! Fill the browser with content from the server
-  rest get Files from `list/ecs?v=` cat now
+  rest get Files from `list/` cat Password cat `/ecs?v=` cat now
   put the json count of Files into FileCount
   put empty into Content
   put 0 into N
