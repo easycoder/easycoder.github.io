@@ -3397,6 +3397,37 @@ const EasyCoder_Browser = {
 		}
 	},
 
+	Copy: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const symbolRecord = compiler.getSymbolRecord();
+				if (symbolRecord.keyword === `input`) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `browser`,
+						keyword: `copy`,
+						lino,
+						name: symbolRecord.name
+					});
+					return true;
+				}
+			}
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const targetRecord = program.getSymbolRecord(command.name);
+			const element = targetRecord.element[targetRecord.index];
+			element.select();
+			element.setSelectionRange(0, 99999); // For mobile devices
+			document.execCommand("copy");
+		  	return command.pc + 1;
+		}
+	},
+
 	Create: {
 
 		compile: (compiler) => {
@@ -5707,6 +5738,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Click;
 		case `convert`:
 			return EasyCoder_Browser.Convert;
+		case `copy`:
+			return EasyCoder_Browser.Copy;
 		case `create`:
 			return EasyCoder_Browser.Create;
 		case `disable`:

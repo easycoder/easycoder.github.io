@@ -12,10 +12,12 @@
     div Uploader
     div Buttons
     div Location
+    div URLPanel
     span UploadStatus
     progress UploadProgress
     input UploadFile
     input URL
+    button CopyURLButton
     button CloseButton
     button NewFolderButton
     button UploadButton
@@ -47,7 +49,7 @@
 
     create Panel in Container
     if Mobile set the style of Panel to `background:#ffe`
-    else set the style of Panel to `width:100%;height:100%;background:#ffe`
+    else set the style of Panel to `width:100%;height:100%`
 
     create Tracer in Panel
     set attribute `id` of Tracer to `easycoder-tracer`
@@ -86,13 +88,22 @@
     set the style of FileListing to `width:100%;height:80%;text-align:center`
     create Location in FileListing
     set the style of Location to `width:100%;text-align:left;color:black;padding:0 0.5em`
-    create URL in FileListing
-    set the style of URL to `display:none;width:100%;text-align:left;font-family:sans;color:black;padding:0 0.5em`
+    
+    create URLPanel in FileListing
+    set the style of URLPanel to `display:none`
+    create URL in URLPanel
+    set the style of URL to `flex:1;text-align:left;font-family:sans;color:black;padding:0 0.5em`
+    create CopyURLButton in URLPanel
+    set the style of CopyURLButton to `width:8em;margin:0.2em 0.5em 0.2em 1em`
+    set the text of CopyURLButton to `Copy URL`
+    set attribute `title` of CopyURLButton to `Copy the URL of this image`
 
     create Scroller in FileListing
     set the style of Scroller to `width:100%;height:100%;text-align:left;overflow-y:scroll;font-family:mono`
     create Image in FileListing
     set the style of Image to `margin:0 auto;max-width:100%;max-height:100%`
+    
+    on click CopyURLButton copy URL
 
     on click NewFolderButton
     begin
@@ -220,7 +231,7 @@ SelectFile:
         set style `display` of UploadButton to `none`
         set style `display` of NewFolderButton to `none`
         set style `display` of Location to `none`
-        set style `display` of URL to `block`
+        set style `display` of URLPanel to `flex`
 
         set style `display` of Scroller to `none`
         set style `display` of Image to `block`
@@ -249,7 +260,7 @@ CloseMedia:
     set style `display` of NewFolderButton to `inline-block`
     set the content of Location to `Current path: ` cat CurrentPath
     set style `display` of Location to `block`
-    set style `display` of URL to `none`
+    set style `display` of URLPanel to `none`
     on click CloseButton go to Exit
     go to Browser
 
