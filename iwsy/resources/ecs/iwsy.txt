@@ -183,7 +183,7 @@ L2:
     iwsy init
     
     create FileManPanel in Left
-    set the style of FileManPanel to `flex:1;display:none`
+    set the style of FileManPanel to `flex:1;display:none;margin-top:0.5em;border-top:1px solid black`
 
 !	The right-hand panel
     create Right in Body
@@ -273,6 +273,7 @@ L2:
             end
     	end
     	clear FileIsOpen
+        clear Player
         set the content of NameEditor to empty
         put empty into CurrentScriptName
         gosub to CreateNewPresentation
@@ -442,10 +443,20 @@ DeletePresentation:
 
 CreateNewPresentation:
     set Presentation to object
+    set Content to object
+    set property `title` of Content to `Init`
+    set property `action` of Content to `init`
+    set property `label` of Content to ``
+    set property `aspect ratio` of Content to `16:9`
+    set property `background` of Content to ``
+    set property `border` of Content to `1px solid black`
     set Item to array
+    json add Content to Item
     set property `steps` of Presentation to Item
+    set Item to array
     set property `blocks` of Presentation to Item
     set property `content` of Presentation to Item
+    iwsy load Player Presentation
 	return
 
 SetupSteps:

@@ -78,6 +78,7 @@ Restart:
             set property PropertyName of Defaults to property PropertyName of PropertyDefaults
         	add 1 to N
         end
+        set Block to object
         set property `defaults` of Block to Defaults
         json add Block to Blocks
         set property `blocks` of Presentation to Blocks
@@ -85,12 +86,15 @@ Restart:
     end
 
 	put the json count of Blocks into NBlocks
-    set the elements of ShowBlock to NBlocks
-    set the elements of EditButton to NBlocks
-    set the elements of SaveButton to NBlocks
-    set the elements of Editor to NBlocks
-    set the elements of Up to NBlocks
-    set the elements of DeleteBlock to NBlocks
+    if NBlocks is greater than 0
+    begin
+        set the elements of ShowBlock to NBlocks
+        set the elements of EditButton to NBlocks
+        set the elements of SaveButton to NBlocks
+        set the elements of Editor to NBlocks
+        set the elements of Up to NBlocks
+        set the elements of DeleteBlock to NBlocks
+    end
     create Table in Panel
     set the style of Table to `width:100%`
     put 0 into N
