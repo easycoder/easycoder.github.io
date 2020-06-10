@@ -203,7 +203,9 @@ const IWSY = (player, text) => {
                     }
                     for (const text of script.content) {
                         if (text.name === item.content) {
-                            const converter = new showdown.Converter();
+                            const converter = new showdown.Converter({
+                                extensions: [`Extension`]
+                            });
                             block.textPanel.innerHTML =
                                 converter.makeHtml(text.content.split(`%0a`).join(`\n`));
                             break;
@@ -304,7 +306,9 @@ const IWSY = (player, text) => {
     const crossfade = step => {
         for (const content of script.content) {
             if (content.name === step.target) {
-                const converter = new showdown.Converter();
+                const converter = new showdown.Converter({
+                    extensions: [`Extension`]
+                });
                 const newText = converter.makeHtml(content.content.split(`%0a`).join(`\n`));
                 for (const block of script.blocks) {
                     if (block.defaults.name === step.block) {
@@ -725,10 +729,64 @@ const IWSY = (player, text) => {
         if (typeof showdown === `undefined`) {
             require(`js`, `https://cdn.rawgit.com/showdownjs/showdown/1.9.1/dist/showdown.min.js`,
                 () => {
+                    showdown.extension(`Extension`, {
+                        type: `lang`,
+                        filter: function (text, converter) {
+                            return text.replace(/~([^~]+)~/g, function (match, group) {
+                                return decodeShowdown(group);
+                            });
+                        }
+                    });
                 });
             }
         else {
         }
+    };
+
+    // Decode special Showdown tags
+    const decodeShowdown = group => {
+        if (group.slice(0, 5) === `code:`) {
+            return `<span style="font-family:mono;color:darkred">${group.slice(5)}</span>`;
+        }
+        if (group.slice(0, 5) === `html:`) {
+            return group.slice(5);
+        }
+        if (group.slice(0, 4) === `img:`) {
+            const data = group.slice(4);
+            const colon = data.indexOf(`:`);
+            if (colon > 0) {
+                const src = data.slice(0, colon);
+                const classes = data.slice(colon + 1).split(` `);
+                const styles = [];
+                for (const item of classes) {
+                    if (item.endsWith(`%`)) {
+                        styles.push(`width:${item}`);
+                    } else if (item.startsWith(`{`) && item.endsWith(`}`)) {
+                        styles.push(item.slice(1, -1));
+                    } else {
+                        switch (item) {
+                            case `left`:
+                                styles.push(`float:left`);
+                                break;
+                            case `center`:
+                                styles.push(`margin:0 auto`);
+                                break;
+                            case `right`:
+                                styles.push(`float:right`);
+                                break;
+                            case `clear`:
+                                styles.push(`clear:both`);
+                                break;
+                            case `border`:
+                                styles.push(`padding:2px;border:1px solid black`);
+                                break;
+                        }
+                    }
+                }
+                return `<img src="${src}" style="${styles.join(`;`)}" />`;
+            }
+        }
+        return group;
     };
 
     // Load a JS or CSS library
