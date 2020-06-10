@@ -568,6 +568,9 @@ const IWSY = (player, text) => {
         if (step.title) {
             document.title = step.title;
         }
+        if (step.css) {
+            setHeadStyle(step.css.split(`%0a`).join(`\n`));
+        }
         const aspect = step[`aspect ratio`];
         if (aspect) {
             const colon = aspect.indexOf(`:`);
@@ -829,6 +832,7 @@ const IWSY = (player, text) => {
             }
         }
         var style = document.createElement('style');
+        style.className = `iwsy-css`;
         style.innerHTML = `${styleName} ${styleValue}`;
         document.head.appendChild(style);
     };
@@ -843,6 +847,10 @@ const IWSY = (player, text) => {
         script.singleStep = true;
         script.labels = {};
         script.stop = false;
+        const styles = document.getElementsByClassName("iwsy-css");
+        for (const style of styles) {
+            style.parentNode.removeChild(style);
+        }
         for (const block of script.blocks) {
             const element = block.element;
             if (typeof element !== `undefined`) {
@@ -935,8 +943,6 @@ const IWSY = (player, text) => {
     if (script.runMode === `auto`) {
         document.addEventListener(`click`, onClick);
     }
-    setHeadStyle(`p`, `{margin:0 0 0.5em 0}`)
-    setHeadStyle(`h1, h2, h3, h4, h5, h6`, `{margin:0}`)
     setupShowdown();
     initScript();
     IWSY.plugins = {};
