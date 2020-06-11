@@ -5,11 +5,13 @@
     import div Container
 
     callback DecoratorCallback
+    a Link
     variable Mobile
     variable Page
     variable Content
     variable Payload
     variable ImageCount
+    variable LinkCount
     variable Function
     variable Data
     variable Source
@@ -34,22 +36,36 @@
     stop
 
 Show:
-	put 0 into ImageCount
     set style `display` of Container to `block`
     get Page from storage as `.help`
 GetPage:
     if Page is empty
     begin
-    	put `start` into Page
+    	put `iwsy` into Page
         put Page into storage as `.help`
     end
+	put 0 into ImageCount
+	put 0 into LinkCount
     iwsy remove styles
-    rest get Content from `/resources/help/` cat Page cat `.md`
+    rest get Content from `/resources/help/` cat Page cat `.md?v=` cat now
     or begin
     	put empty into Page
         go to GetPage
     end
     set the content of Container to showdown decode Content with DecoratorCallback
+    set the elements of Link to LinkCount
+    put 0 into N
+    while N is less than LinkCount
+    begin
+    	index Link to N
+        attach Link to `ec-link-` cat N
+    	add 1 to N
+    end
+    on click Link
+    begin
+    	put attribute `data-page` of Link into Page
+    	go to GetPage
+    end
     stop
 
 !------------------------------------------------------------------------------
@@ -69,6 +85,7 @@ Decorate:
         add 1 to N
         put from N of Payload into Data
         if Function is `img` gosub to ProcessImage
+        else if Function is `page` gosub to ProcessPage
     end
     set the payload of DecoratorCallback to Payload
     stop
@@ -108,6 +125,18 @@ ProcessImage:
     put `<img id="ec-image-` cat ImageCount cat `" src="` cat Source
     	cat `" style="` cat Style cat `" />` into Payload
     add 1 to ImageCount
+    return
+
+!	Process a request for a new page.
+ProcessPage:
+	put the position of `:` in Data into N
+    if N is -1 return
+    put left N of Data into Page
+    add 1 to N
+    put from N of Data into Data
+	put `<a id="ec-link-` cat LinkCount cat `" href="#" data-page="` cat Page
+    	cat `">` cat Data cat `</a>` into Payload
+    add 1 to LinkCount
     return
 
 Exit:
