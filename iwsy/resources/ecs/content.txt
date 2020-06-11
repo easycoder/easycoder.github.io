@@ -164,7 +164,7 @@ Restart:
             set the text of ItemNameInput to property `name` of Item
             set style `display` of Editor to `block`
             create TextArea in Editor
-            set the style of TextArea to `width:100%;max-width:100%;height:8em`
+            set the style of TextArea to `width:100%;max-width:100%;height:20em`
             put property `content` of Item into Content
             replace `%0a` with newline in Content
             set the content of TextArea to Content

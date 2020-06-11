@@ -1,0 +1,115 @@
+!   Help Manager
+
+    script HelpManager
+
+    import div Container
+
+    callback DecoratorCallback
+    variable Mobile
+    variable Page
+    variable Content
+    variable Payload
+    variable ImageCount
+    variable Function
+    variable Data
+    variable Source
+    variable Style
+    variable Item
+    variable Len
+    variable N
+
+    if portrait
+    begin
+      	if mobile set Mobile else clear Mobile
+    end
+    
+    set style `padding` of Container to `0 1em`
+    set style `overflow-y` of Container to `scroll`
+    
+    load showdown
+  	on DecoratorCallback go to Decorate
+
+    on message go to Show
+    set ready
+    stop
+
+Show:
+	put 0 into ImageCount
+    set style `display` of Container to `block`
+    get Page from storage as `.help`
+GetPage:
+    if Page is empty
+    begin
+    	put `start` into Page
+        put Page into storage as `.help`
+    end
+    iwsy remove styles
+    rest get Content from `/resources/help/` cat Page cat `.md`
+    or begin
+    	put empty into Page
+        go to GetPage
+    end
+    set the content of Container to showdown decode Content with DecoratorCallback
+    stop
+
+!------------------------------------------------------------------------------
+!	This is the Showndown extension.
+
+!	Decorate is called for every occurrence of ~...~ in the topic data
+Decorate:
+    put the payload of DecoratorCallback into Payload
+    put the position of `:` in Payload into N
+    if N is -1
+    begin
+    	if Payload is `clear` put `<div style="height:1px;clear:both"></div>` into Payload
+    end
+    else
+    begin
+        put left N of Payload into Function
+        add 1 to N
+        put from N of Payload into Data
+        if Function is `img` gosub to ProcessImage
+    end
+    set the payload of DecoratorCallback to Payload
+    stop
+
+!	Process an image, including positioning and class information
+ProcessImage:
+	put the position of `:` in Data into N
+    if N is -1 return
+    put left N of Data into Source
+    add 1 to N
+    put from N of Data into Data
+    json split Data on `,` into Data
+    put empty into Style
+    put 0 into N
+    while N is less than the json count of Data
+    begin
+    	put element N of Data into Item
+        if Item is `left` put Style cat `float:left;` into Style
+        else if Item is `right` put Style cat `float:right;` into Style
+        else if Item is `center` put Style cat `margin:0 auto;` into Style
+        else if Item is `border` put Style cat `padding:2px;border:1px solid black;` into Style
+        else if Item is `clear` put Style cat `clear:both;` into Style
+        else if right 1 of Item is `%` put Style cat `width:` cat Item cat `;` into Style
+        else
+        begin
+        	if left 1 of Item is not `{` go to NextItem
+            if right 1 of Item is not `}` go to NextItem
+            put from 1 of Item into Item
+        	put the length of Item into Len
+            take 1 from Len
+            put left Len of Item into Item
+            put Style cat Item cat `;` into Style
+        end
+    NextItem:
+    	add 1 to N
+    end
+    put `<img id="ec-image-` cat ImageCount cat `" src="` cat Source
+    	cat `" style="` cat Style cat `" />` into Payload
+    add 1 to ImageCount
+    return
+
+Exit:
+    set style `display` of Container to `none`
+    stop

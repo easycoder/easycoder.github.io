@@ -34,6 +34,7 @@
     input DurationInput
     input TargetInput
     input URLInput
+    textarea InitCSS
     img AddStep
     img Up
     img UpContent
@@ -298,6 +299,7 @@ Restart:
     json add `aspect ratio` to InitProperties
     json add `background` to InitProperties
     json add `border` to InitProperties
+    json add `css` to InitProperties
     set ContinueTypes to array
     json add `true` to ContinueTypes
     json add `false` to ContinueTypes
@@ -455,8 +457,12 @@ ReloadStepEditor:
     set the style of TD to `padding-bottom:0.2em`
     create InsertBefore in TD
     set the style of InsertBefore to `width:calc(100% / 3)`
-    set the text of InsertBefore to `Add Step Before`
-    on click InsertBefore go to AddStepBefore
+    if SelectedStep is 0 set the text of InsertBefore to `---`
+    else
+    begin
+        set the text of InsertBefore to `Add Step Before`
+        on click InsertBefore go to AddStepBefore
+    end
     create Save in TD
     set the style of Save to `width:calc(100% / 3)`
     set the text of Save to `Save`
@@ -487,12 +493,24 @@ EditInit:
         create Cell in BlockRow
         set the style of Cell to `width:6em;padding-left:0.2em`
         set the content of Cell to InitProperty
-        index InitInput to B
-        create InitInput in BlockRow
-        set the style of InitInput to `flex:1`
-        put property InitProperty of CurrentStep into Item
-        replace `&quot;` with `"` in Item
-        set the content of InitInput to Item
+        if InitProperty is `css`
+        begin
+        	create InitCSS in BlockRow
+            set the style of InitCSS to `flex:1;height:20em`
+            put property InitProperty of CurrentStep into Item
+            replace `%0a` with newline in Item
+            replace `&quot;` with `"` in Item
+            set the content of InitCSS to Item
+        end
+        else
+        begin
+            index InitInput to B
+            create InitInput in BlockRow
+            set the style of InitInput to `flex:1`
+            put property InitProperty of CurrentStep into Item
+            replace `&quot;` with `"` in Item
+            set the content of InitInput to Item
+        end
     	add 1 to B
     end
 	return
@@ -893,7 +911,7 @@ SaveCurrentStep:
     index StepButton to SelectedStep
     set the text of StepButton to the content of TitleInput
 	index LabelInput to SelectedStep
-    set property `label` of CurrentStep to the content of LabelInput
+    if SelectedStep is not 0 set property `label` of CurrentStep to the content of LabelInput
 	put property `action` of CurrentStep into Action
     if Action is `init`
     begin
@@ -902,7 +920,12 @@ SaveCurrentStep:
         begin
             put element N of InitProperties into InitProperty
             index InitInput to N
-            put InitInput into Item
+            if InitProperty is `css`
+            begin
+            	put the content of InitCSS into Item
+                replace newline with `%0a` in Item
+            end
+            else put InitInput into Item
             replace `"` with `&quot;` in Item
             set property InitProperty of CurrentStep to Item
             add 1 to N

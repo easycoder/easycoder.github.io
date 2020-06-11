@@ -204,7 +204,7 @@ const IWSY = (player, text) => {
                     for (const text of script.content) {
                         if (text.name === item.content) {
                             const converter = new showdown.Converter({
-                                extensions: [`Extension`]
+                                extensions: [`IWSY`]
                             });
                             block.textPanel.innerHTML =
                                 converter.makeHtml(text.content.split(`%0a`).join(`\n`));
@@ -307,7 +307,7 @@ const IWSY = (player, text) => {
         for (const content of script.content) {
             if (content.name === step.target) {
                 const converter = new showdown.Converter({
-                    extensions: [`Extension`]
+                    extensions: [`IWSY`]
                 });
                 const newText = converter.makeHtml(content.content.split(`%0a`).join(`\n`));
                 for (const block of script.blocks) {
@@ -568,6 +568,9 @@ const IWSY = (player, text) => {
         if (step.title) {
             document.title = step.title;
         }
+        if (step.css) {
+            setHeadStyle(step.css.split(`%0a`).join(`\n`));
+        }
         const aspect = step[`aspect ratio`];
         if (aspect) {
             const colon = aspect.indexOf(`:`);
@@ -729,7 +732,7 @@ const IWSY = (player, text) => {
         if (typeof showdown === `undefined`) {
             require(`js`, `https://cdn.rawgit.com/showdownjs/showdown/1.9.1/dist/showdown.min.js`,
                 () => {
-                    showdown.extension(`Extension`, {
+                    showdown.extension(`IWSY`, {
                         type: `lang`,
                         filter: function (text, converter) {
                             return text.replace(/~([^~]+)~/g, function (match, group) {
@@ -829,8 +832,17 @@ const IWSY = (player, text) => {
             }
         }
         var style = document.createElement('style');
+        style.className = `iwsy-css`;
         style.innerHTML = `${styleName} ${styleValue}`;
         document.head.appendChild(style);
+    };
+
+    // Remove all the CSS styles
+    const removeStyles = () => {
+        const styles = document.getElementsByClassName("iwsy-css");
+        for (const style of styles) {
+            style.parentNode.removeChild(style);
+        }
     };
 
     // Initialize the script
@@ -843,6 +855,7 @@ const IWSY = (player, text) => {
         script.singleStep = true;
         script.labels = {};
         script.stop = false;
+        removeStyles();
         for (const block of script.blocks) {
             const element = block.element;
             if (typeof element !== `undefined`) {
@@ -935,8 +948,6 @@ const IWSY = (player, text) => {
     if (script.runMode === `auto`) {
         document.addEventListener(`click`, onClick);
     }
-    setHeadStyle(`p`, `{margin:0 0 0.5em 0}`)
-    setHeadStyle(`h1, h2, h3, h4, h5, h6`, `{margin:0}`)
     setupShowdown();
     initScript();
     IWSY.plugins = {};
@@ -949,6 +960,7 @@ const IWSY = (player, text) => {
         block,
         run,
         stop,
-        onStep
+        onStep,
+        removeStyles
     };
 };

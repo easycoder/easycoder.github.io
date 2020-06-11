@@ -39,6 +39,18 @@ const EasyCoder_IWSY = {
 						action
 					});
 					return true;
+				case `remove`:
+					if (compiler.nextTokenIs(`styles`)) {
+						compiler.next();
+						compiler.addCommand({
+							domain: `iwsy`,
+							keyword: `iwsy`,
+							lino,
+							action: `removeStyles`
+						});
+						return true;
+					}
+					return false;					
 				case `script`:
 					const script = compiler.getNextValue();
 					compiler.addCommand({
@@ -174,6 +186,11 @@ const EasyCoder_IWSY = {
 				case `stop`:
 					if (EasyCoder.iwsyFunctions) {
 						EasyCoder.iwsyFunctions.stop();
+					}
+					break;
+				case `removeStyles`:
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.removeStyles();
 					}
 					break;
 				case `onstep`:
