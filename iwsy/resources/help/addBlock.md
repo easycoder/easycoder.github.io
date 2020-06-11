@@ -1,4 +1,3 @@
 ~page:contents:Contents~
 
-# Starting a project
-
+# Adding a new block

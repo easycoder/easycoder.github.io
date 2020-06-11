@@ -52,6 +52,7 @@ GetPage:
     	put empty into Page
         go to GetPage
     end
+    put Page into storage as `.help`
     set the content of Container to showdown decode Content with DecoratorCallback
     set the elements of Link to LinkCount
     put 0 into N
@@ -93,7 +94,12 @@ Decorate:
 !	Process an image, including positioning and class information
 ProcessImage:
 	put the position of `:` in Data into N
-    if N is -1 return
+    if N is -1
+    begin
+        put `<img id="ec-image-` cat ImageCount cat `" src="` cat Data cat `" />` into Payload
+        add 1 to ImageCount
+        return
+    end
     put left N of Data into Source
     add 1 to N
     put from N of Data into Data
