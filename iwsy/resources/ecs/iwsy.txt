@@ -19,6 +19,7 @@
     div Player
     div UserPanel
     div FileManPanel
+    div HelpPanel
     div Panel
     div Div
     span Status
@@ -32,12 +33,14 @@
     img Delete
     img User
     img FileMan
+    img Help
     a Link
     module StepsModule
     module BlocksModule
     module ContentModule
     module UserModule
     module FileManModule
+    module HelpModule
     variable Mobile
     variable LastSavedState
     variable Content
@@ -111,7 +114,7 @@ L2:
     
     create Masthead in Left
     set the style of Masthead to
-    	`border:0.2em solid purple;text-align:center;color:	lemonchiffon;background:darkmagenta;position:relative`
+    	`border:0.2em solid purple;text-align:center;color:lemonchiffon;background:darkmagenta;position:relative`
     create Title in Masthead
     set the style of Title to `font-size:4em;font-weight:bold`
     set the content of Title to `I Wanna Show You`
@@ -173,6 +176,11 @@ L2:
     set attribute `src` of RunStop to `resources/icon/run.png`
     set attribute `title` of RunStop to `Run`
     create Link in Buttons
+    create Help in Link
+    set the style of Help to `width:40px;margin-right:1.5em`
+    set attribute `src` of Help to `resources/icon/help.png`
+    set attribute `title` of Help to `Help`
+    create Link in Buttons
     create User in Link
     set the style of User to `width:40px;position:absolute;top:0.5em;right:0.5em`
     set attribute `src` of User to `resources/icon/user.png`
@@ -184,6 +192,9 @@ L2:
     
     create FileManPanel in Left
     set the style of FileManPanel to `flex:1;display:none;margin-top:0.5em;border-top:1px solid black`
+    
+    create HelpPanel in Left
+    set the style of HelpPanel to `flex:1;display:none;margin-top:0.5em;border-top:1px solid black`
 
 !	The right-hand panel
     create Right in Body
@@ -353,8 +364,25 @@ L2:
             run Script with FileManPanel as FileManModule
         end
         set style `display` of Player to `none`
+        set style `display` of HelpPanel to `none`
         set style `display` of FileManPanel to `block`
         send to FileManModule
+    end
+    
+    on click Help
+    begin
+    	if Running stop
+    	if HelpModule is not running
+        begin
+      		require js
+            	`https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/showdown.js?v=` cat now
+            rest get Script from `/resources/ecs/help.txt?v=` cat now
+            run Script with HelpPanel as HelpModule
+        end
+        set style `display` of Player to `none`
+        set style `display` of FileManPanel to `none`
+    	set style `display` of HelpPanel to `block`
+        send to HelpModule
     end
     
     on click RunStop go to DoRunStop
@@ -690,6 +718,7 @@ DoRunStop:
             send Message to StepsModule
         end
 
+		set style `display` of HelpPanel to `none`
 		iwsy run then
         begin
 			gosub to ClearStepsButtons
