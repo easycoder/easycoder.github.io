@@ -395,7 +395,7 @@ ReloadStepEditor:
 	create TR in Table
     create TD in TR
     set the style of TD to `width:6em`
-    set the content of TD to `Title:`
+    set the content of TD to `Name:`
     create TD in TR
     index TitleInput to SelectedStep
     create TitleInput in TD
