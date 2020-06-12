@@ -2317,7 +2317,7 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
-			if ([`now`, `today`, `newline`, `break`, `empty`, `uuid`].includes(token)) {
+			if ([`now`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
 					domain: `core`,
@@ -2749,6 +2749,12 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: false,
 					content: `\n`
+				};
+			case `backtick`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: `\``
 				};
 			case `break`:
 				return {

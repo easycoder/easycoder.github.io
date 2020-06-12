@@ -21,10 +21,10 @@ This lists the blocks used in your presentation. A block is a rectangular area o
 
 It's common to use the same layout for multiple slides in a presentation, and one of the problems with PowerPoint is how difficult it is to change a layout once set. Sometimes the only way is to edit the numerical coordinates of the text and other blocks on each slide; a time-consuming and error-prone task.
 
-IWSY takes a different approach. You define all the different type of block that will be used, giving each one a name, then use them on as many slides as you like. To make changes you then just need to edit the block definition; all the slides that use it will take on the new size and position. See ~page:addBlock:Adding a block~.
+~iwsy~ takes a different approach. You define all the different type of block that will be used, giving each one a name, then use them on as many slides as you like. To make changes you then just need to edit the block definition; all the slides that use it will take on the new size and position. See ~page:addBlock:Adding a block~.
 
 ## 3 - Content
 
 This lists all the content text items used in your presentation. Each one is named. In the step editor you assign content to blocks by clicking names from a drop-down list. This makes it much easier to see what is where than by having the full text visible at each point.
 
-All content text is written using **_MarkDown_**; a format that is mostly plain text, plus simple markup tags to define headers and other text features. IWSY provides a set of custom MarkDown extensions that define image and other attributes. These help pages are written using the same system. See ~page:addContent:Adding content~.
+All content text is written using **_MarkDown_**; a format that is mostly plain text, plus simple markup tags to define headers and other text features. ~iwsy~ provides a set of custom MarkDown extensions that define image and other attributes. These help pages are written using the same system. See ~page:addContent:Adding content~.

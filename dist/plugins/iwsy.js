@@ -141,6 +141,9 @@ const EasyCoder_IWSY = {
 					});
 					return 0;
 				case `load`:
+					if (typeof EasyCoder.iwsyFunctions !== `undefined`) {
+						throw Error(`IWSY has already been set up`);
+					}
 					const playerRecord = program.getSymbolRecord(command.player);
 					const player = playerRecord.element[playerRecord.index];
 					player.innerHTML = ``;

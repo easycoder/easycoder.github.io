@@ -89,6 +89,7 @@ Start:
     if the message is empty go to Restart
 
 	put the message into Message
+    gosub to SetupArrays
     if Message is `save`
     begin
     	if SelectedStep is not -1
@@ -118,12 +119,14 @@ Start:
     if property `action` of Message is `step`
     begin
     	put property `step` of Message into N
+        if N is not less than the json count of Steps stop
         index StepButton to N
         set style `background` of StepButton to `#cfc`
     	stop
     end
 
 Restart:
+    gosub to SetupArrays
 	set style `display` of Panel to `flex`
 	set style `flex-direction` of Panel to `column`
 	clear StepsPanel
@@ -141,16 +144,7 @@ Restart:
     set attribute `src` of AddStep to `resources/icon/plus.png`
     on click AddStep go to AddNewStep
 
-	put property `steps` of Presentation into Steps
-    put the json count of Steps into N
-    set the elements of ShowStep to N
-    set the elements of StepButton to N
-    set the elements of Up to N
-    set the elements of DeleteStep to N
-    set the elements of TitleInput to N
-    set the elements of LabelInput to N
-    set the elements of DurationInput to N
-    set the elements of Editor to N
+	gosub to SetupArrays
     put 0 into N
     while N is less than the json count of Steps
     begin
@@ -261,6 +255,7 @@ Restart:
     	put the index of DeleteStep into N
         json delete element N of Steps
     	set property `steps` of Presentation to Steps
+        put -1 into SelectedStep
         go to Restart
     end
     on click ShowStep
@@ -309,6 +304,23 @@ Restart:
     clear Running
     
     stop
+
+!	Set up all the arrays
+SetupArrays:
+	put property `steps` of Presentation into Steps
+    put the json count of Steps into N
+    set the elements of ShowStep to N
+    set the elements of StepButton to N
+    set the elements of Up to N
+    set the elements of DeleteStep to N
+    set the elements of TitleInput to N
+    set the elements of LabelInput to N
+    set the elements of DurationInput to N
+    set the elements of ContinueSelect to N
+    set the elements of Editor to N
+    put property `blocks` of Presentation into Blocks
+    put property `content` of Presentation into Contents
+    return
 
 !	Add a new step to the list
 AddNewStep:
@@ -364,7 +376,7 @@ EditStep:
         json add property `name` of Defaults to BlockNames
     	add 1 to N
     end
-    put property `content` of Presentation into Contents
+!    put property `content` of Presentation into Contents
     set ContentNames to array
     put 0 into N
     while N is less than the json count of Contents
@@ -792,6 +804,7 @@ EditContinue:
     set the style of TD to `width:6em`
     set the content of TD to `Continue:`
     create TD in TR
+    index ContinueSelect to SelectedStep
     create ContinueSelect in TD
     set the style of ContinueSelect to `width:100%`
     put property `continue` of CurrentStep into TrueFalse
@@ -933,12 +946,19 @@ SaveCurrentStep:
     end
     else if Action is `set content`
     begin
-    	put property `blocks` of CurrentStep into Blocks
-        if Blocks is empty
+		set Blocks to array
+        put 0 into N
+        while N is less than the elements of BlockSelect
         begin
-        	set Blocks to array
-            set property `blocks` of CurrentStep to Blocks
+        	index BlockSelect to N
+            index ContentSelect to N
+            set Item to object
+            set property `block` of Item to BlockSelect
+            set property `content` of Item to ContentSelect
+            json add Item to Blocks
+            add 1 to N
         end
+        set property `blocks` of CurrentStep to Blocks
     end
     else if Action is `show`
     begin
@@ -978,6 +998,8 @@ SaveCurrentStep:
         end
     	index DurationInput to SelectedStep
     	set property `duration` of CurrentStep to the text of DurationInput
+        index ContinueSelect to SelectedStep
+        set property `continue` of CurrentStep to ContinueSelect
     end
 	else if Action is `fade down`
     begin
@@ -989,6 +1011,8 @@ SaveCurrentStep:
         end
     	index DurationInput to SelectedStep
     	set property `duration` of CurrentStep to the text of DurationInput
+        index ContinueSelect to SelectedStep
+        set property `continue` of CurrentStep to ContinueSelect
     end
 	else if Action is `crossfade`
     begin
@@ -996,12 +1020,17 @@ SaveCurrentStep:
         set property `target` of CurrentStep to TargetSelect
     	index DurationInput to SelectedStep
     	set property `duration` of CurrentStep to the text of DurationInput
+        index ContinueSelect to SelectedStep
+        set property `continue` of CurrentStep to ContinueSelect
     end
 	else if Action is `transition`
     begin
     	set property `block` of CurrentStep to BlockSelect
         set property `target` of CurrentStep to TargetSelect
+    	index DurationInput to SelectedStep
     	set property `duration` of CurrentStep to the text of DurationInput
+        index ContinueSelect to SelectedStep
+        set property `continue` of CurrentStep to ContinueSelect
     end
 	else if Action is `goto`
     begin

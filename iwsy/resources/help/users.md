@@ -2,7 +2,7 @@
 
 # User registration and login
 
-IWSY can be used without registering, in which case you are an anonymous user of the system. This is OK if all you want to do is evaluate IWSY, though not all its features will be available to you. Any presentations you create will be saved to your local browser storage area and will be unavailable anywhere else. If you later decide to log in you can transfer these presentations to your own private area on the IWSY website.
+~iwsy~ can be used without registering, in which case you are an anonymous user of the system. This is OK if all you want to do is evaluate ~iwsy~, though not all its features will be available to you. Any presentations you create will be saved to your local browser storage area and will be unavailable anywhere else. If you later decide to log in you can transfer these presentations to your own private area on the ~iwsy~ website.
 
 ## Registration
 

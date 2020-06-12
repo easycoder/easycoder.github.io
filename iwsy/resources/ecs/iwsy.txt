@@ -288,6 +288,7 @@ L2:
         set the content of NameEditor to empty
         put empty into CurrentScriptName
         gosub to CreateNewPresentation
+        iwsy script Presentation
         put Presentation into LastSavedState
     	gosub to UpdateCurrentSection
 	end
@@ -439,6 +440,9 @@ L2:
         end
         else if Action is `block`
         begin
+        	set style `display` of FileManPanel to `none`
+        	set style `display` of HelpPanel to `none`
+        	set style `display` of Player to `block`
         	put property `block` of Message into N
             iwsy block N
         end
@@ -484,7 +488,6 @@ CreateNewPresentation:
     set Item to array
     set property `blocks` of Presentation to Item
     set property `content` of Presentation to Item
-    iwsy load Player Presentation
 	return
 
 SetupSteps:
@@ -653,14 +656,20 @@ SelectFile:
     put File into CurrentScriptName
 	if UserRecord rest get Presentation from
     	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
-    else get Presentation from storage as File
+!    else get Presentation from storage as File
+    send to StepsModule
+    send to BlocksModule
+    send to ContentModule
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
     gosub to SetStatusGreen
     set the content of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     set ShowRun
-    iwsy load Player Presentation
+    set style `display` of FileManPanel to `none`
+    set style `display` of HelpPanel to `none`
+    set style `display` of Player to `block`
+    iwsy script Presentation
 
 CloseBrowser:
     set style `background-color` of Overlay to `rgba(0,0,0,0.0)`
@@ -694,13 +703,8 @@ DoRunStop:
     	set style `display` of Player to `block`
     	put property `steps` of Presentation into Item
     	if the json count of Item is 0 stop
-        put element 0 of Item into Item
-        if property `action` of Item is not `init`
-        begin
-        	alert `The first step of a presentation must be an 'init' action.`
-            stop
-        end
     	set Running
+        set style `display` of FileManPanel to `none`
 		gosub to ClearStepsButtons
         set attribute `src` of RunStop to `resources/icon/runstop.png`
         

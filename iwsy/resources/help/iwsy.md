@@ -1,16 +1,16 @@
 ~page:contents:Contents~
 
-# I Wanna Show You 
+# ~iwsy~ - I Wanna Show You 
 
-I Wanna Show You (IWSY, pronounced "You-zee" as an approximation to the initials) is an online presentation package. It's built to deliver slideshows that either run under manual control or unattended, but instead of being a PC application that's tied to the desktop, IWSY is entirely browser-based. IWSY presentations can run here in this web app, they can be embedded in other web pages or they can run as independent web pages.
+I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initials) is an online presentation package built to deliver slideshows that either run under manual control or unattended. Instead of being a PC application that's tied to the desktop, ~iwsy~ is entirely browser-based. ~iwsy~ presentations can run here in this web app, they can be embedded in other web pages or they can run as independent web pages.
 
-## Quick-start
+## ~page:quickstart:Quick-start~
 
-These help pages contain everything there is to know about IWSY, but there's a lot to read. Most people just want to get started quickly, so we have a built-in ~page:quickstart:quick-start tutorial~ where you can create a simple presentation - a few slides with text and pictures - in just a few minutes. Once you've completed this first step you'll have a pretty good idea of what IWSY is all about, and the rest of the help pages won't be nearly as intimidating.
+These help pages contain everything there is to know about ~iwsy~, but there's a lot to read. Most people just want to get started quickly, so we have a built-in ~page:quickstart:quick-start tutorial~ where you can create a simple presentation - a few slides with text and pictures - in just a few minutes. Once you've completed this first step you'll have a pretty good idea of what ~iwsy~ is all about, and the rest of the help pages won't be nearly as intimidating.
 
 ## Feature summary
 
-The basic features of IWSY are:
+The basic features of ~iwsy~ are:
 
  - A step editor, where you create a set of steps that together form your presentation
  - A block editor, where you define templates to control where things appear on the screen

@@ -1,6 +1,6 @@
 ~page:iwsy:Home~
 
-# Contents
+# ~iwsy~ Help - Contents
 
 ~page:quickstart:Quick-start tutorial~ **Beginners start here!**
 

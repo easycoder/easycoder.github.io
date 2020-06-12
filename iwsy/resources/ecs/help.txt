@@ -25,6 +25,7 @@
       	if mobile set Mobile else clear Mobile
     end
     
+    set style `position` of Container to `relative`
     set style `padding` of Container to `0 1em`
     set style `overflow-y` of Container to `scroll`
     
@@ -70,23 +71,27 @@ GetPage:
     stop
 
 !------------------------------------------------------------------------------
-!	This is the Showndown extension.
+!	This is the Showdown extension.
 
 !	Decorate is called for every occurrence of ~...~ in the topic data
 Decorate:
     put the payload of DecoratorCallback into Payload
-    put the position of `:` in Payload into N
-    if N is -1
-    begin
-    	if Payload is `clear` put `<div style="height:1px;clear:both"></div>` into Payload
-    end
+    if Payload is `iwsy` put `<img src="resources/icon/iwsy.png" `
+    	cat `style="height:0.8em;position:relative;top:0.1em" />` into Payload
+    else if Payload is `clear` put `<div style="height:1px;clear:both"></div>` into Payload
     else
     begin
-        put left N of Payload into Function
-        add 1 to N
-        put from N of Payload into Data
-        if Function is `img` gosub to ProcessImage
-        else if Function is `page` gosub to ProcessPage
+        put the position of `:` in Payload into N
+        if N is greater than 0
+        begin
+            put left N of Payload into Function
+            add 1 to N
+            put from N of Payload into Data
+            if Function is `m`
+            	put `<span style="font-family:monospace;color:darkred">` cat Data cat `</span>` into Payload
+            else if Function is `img` gosub to ProcessImage
+            else if Function is `page` gosub to ProcessPage
+        end
     end
     set the payload of DecoratorCallback to Payload
     stop
