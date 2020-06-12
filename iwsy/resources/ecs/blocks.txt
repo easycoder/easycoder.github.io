@@ -105,6 +105,7 @@ Restart:
         index DeleteBlock to N
         index Editor to N
         create Row in Table
+        set the style of Row to `margin-bottom:0.2em`
         create Cell in Row
         set the style of Cell to `width:100%;display:flex`
         create Link in Cell
@@ -241,6 +242,7 @@ Restart:
     	put the index of DeleteBlock into N
         json delete element N of Blocks
         set property `blocks` of Presentation to Blocks
+        put -1 into SelectedBlock
         go to Restart
     end
 	stop

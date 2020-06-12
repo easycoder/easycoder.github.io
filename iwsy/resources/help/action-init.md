@@ -2,7 +2,7 @@
 
 # The `init` action
 
-Every presentation starts with an `init` action, which defines the environment in which the presentation will run. The editor looks like this:
+Every ~iwsy~ presentation starts with an `init` action, which defines the environment in which the presentation will run. The editor looks like this:
 
 ~img:resources/users/2020/160/1/images/help/editor-init.png~
 

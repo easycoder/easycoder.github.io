@@ -4,7 +4,6 @@
 
     import div Container
 
-    div Tracer
     div Panel
     div FileListing
     div FileRow
@@ -51,9 +50,6 @@
     if Mobile set the style of Panel to `background:#ffe`
     else set the style of Panel to `width:100%;height:100%`
 
-    create Tracer in Panel
-    set attribute `id` of Tracer to `easycoder-tracer`
-
     create Uploader in Panel
     set the style of Uploader to `width:100%;padding:0.5em 0;font-size:80%;text-align:center`
     create UploadFile in Uploader
@@ -68,7 +64,7 @@
     set attribute `max` of UploadProgress to 100
 
     create Buttons in Panel
-    set the style of Buttons to `display:flex`
+    set the style of Buttons to `display:flex;margin-bottom:0.5em`
     create UploadButton in Buttons
     set the style of UploadButton to `flex:1;width:150px;height:40px;font-family:sans;color:black`
     set the text of UploadButton to `Upload`
@@ -132,10 +128,12 @@ Show:
     put property `home` of UserRecord into Home
     put Home cat `/` cat property `id` of UserRecord into Home
     put `users/` cat Home cat `/images` into Home
-    put Home into CurrentPath
+    get CurrentPath from storage as `.filepath`
+    if CurrentPath is empty put Home into CurrentPath
 
 !	Build the list
 Browser:
+    put CurrentPath into storage as `.filepath`
     rest get Content from `ulist/` cat Email cat `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
     or begin
         alert `Failed to list files.`
@@ -148,7 +146,7 @@ Browser:
     set the elements of FileName to FileCount
 
   ! Add a row for each file
-    set the content of Scroller to ``
+    clear Scroller
     set Even
 
     if CurrentPath is not Home
@@ -239,7 +237,6 @@ SelectFile:
         set attribute `src` of Image to `/resources/` cat FilePath cat `?v=` cat now
         on click CloseButton go to CloseMedia
         set the text of URL to `resources/` cat FilePath
-!    highlight URL
         on click DeleteButton
         begin
           rest post to `udelete/` cat Email cat `/` cat Password cat `/` cat FilePath or

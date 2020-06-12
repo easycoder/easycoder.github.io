@@ -75,6 +75,7 @@ Restart:
         set property `content` of Item to empty
         json add Item to Items
         set property `content` of Presentation to Items
+        put -1 into SelectedItem
         go to Restart
     end
 
@@ -102,6 +103,7 @@ Restart:
         put element N of Items into Item
         put property `name` of Item into ItemName
         create Row in Table
+        set the style of Row to `margin-bottom:0.2em`
         create Cell in Row
         set the style of Cell to `width:100%;display:flex`
         create EditButton in Cell
@@ -199,6 +201,7 @@ Restart:
         put property `content` of Presentation into Items
         json delete property ItemName of Items
         set property `content` of Presentation to Items
+        put -1 into SelectedItem
         go to Restart
     end
 	stop

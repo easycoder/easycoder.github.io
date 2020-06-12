@@ -162,6 +162,8 @@ const IWSY = (player, text) => {
         element.style[`background-size`] = `cover`;
         element.style.border = defaults.border;
         element.style[`overflow`] = `hidden`;
+        element.style[`display`] = `none`;
+        element.style[`opacity`] = `0`;
         val = defaults.textMarginLeft;
         if (!isNaN(val)) {
             val *= w;
@@ -228,6 +230,7 @@ const IWSY = (player, text) => {
             for (const block of script.blocks) {
                 if (block.defaults.name === name) {
                     block.element.style.opacity = showHide ? `1.0` : `0.0`;
+                    block.element.style.display = showHide ? `block` : `none`;
                     break;
                 }
             }
@@ -265,27 +268,41 @@ const IWSY = (player, text) => {
             for (const block of stepBlocks)
             {
                 block.element.style.opacity = upDown ? 1.0 : 0.0;
+                block.element.style.display = upDown ? `block` : `none`;
             }
             step.next();
         } else {
             const animSteps = Math.round(step.duration * 25);
             const continueFlag = step.continue;
+            for (const block of stepBlocks)
+            {
+                block.element.style.display = `block`;
+            }
             let animStep = 0;
             const interval = setInterval(() => {
-                if (animStep < animSteps) {
-                    const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-                    let blocks = stepBlocks.length;
-                    for (const block of stepBlocks)
-                    {
-                        block.element.style.opacity = upDown ? ratio : 1.0 - ratio;
+                try {
+                    if (animStep < animSteps) {
+                        const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
+                        for (const block of stepBlocks)
+                        {
+                            block.element.style.opacity = upDown ? ratio : 1.0 - ratio;
+                        }
+                        animStep++;
+                    } else {
+                        for (const block of stepBlocks)
+                        {
+                            block.element.style.opacity = upDown ? 1 : 0;
+                            block.element.style.display = upDown ? `block` :`none`;
+                        }
+                        script.stepping = false;
+                        clearInterval(interval);
+                        if (!continueFlag) {
+                            step.next();
+                        }
                     }
-                    animStep++;
-                } else {
-                    script.stepping = false;
+                } catch(err) {
                     clearInterval(interval);
-                    if (!continueFlag) {
-                        step.next();
-                    }
+                    throw Error(err);
                 }
             }, 40);
             if (continueFlag) {
@@ -496,6 +513,11 @@ const IWSY = (player, text) => {
             }
             return true;
         });
+        if (typeof block.element === `undefined`) {
+            throw Error(`Block '${block.defaults.name}' has not been set up`);
+        }
+        block.element.style.opacity = 1;
+        block.element.style.display = `block`;
         if (script.speed === `scan`) {
             doTransitionStep(block, target, 1.0);
             setFinalState(block,target);
@@ -674,7 +696,6 @@ const IWSY = (player, text) => {
     // Show a block
     const block = blockIndex => {
         player.innerHTML = ``;
-        // player.style.background = null;
         const w = player.getBoundingClientRect().width / 1000;
         const h = player.getBoundingClientRect().height / 1000;
         script.blocks.forEach((block, index) => {
@@ -769,13 +790,13 @@ const IWSY = (player, text) => {
                     } else {
                         switch (item) {
                             case `left`:
-                                styles.push(`float:left`);
+                                styles.push(`float:left;margin-right:1em`);
                                 break;
                             case `center`:
                                 styles.push(`margin:0 auto`);
                                 break;
                             case `right`:
-                                styles.push(`float:right`);
+                                styles.push(`float:right;margin-left:1em`);
                                 break;
                             case `clear`:
                                 styles.push(`clear:both`);
