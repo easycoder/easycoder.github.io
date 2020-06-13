@@ -83,12 +83,20 @@ const EasyCoder_IWSY = {
 					return true;
 				case `run`:
 					const pc = compiler.getPc();
-					compiler.next();
+					let mode = {
+						type: `constant`,
+						numeric: false,
+						content: `normal`
+					};
+					if (compiler.nextToken() !== `then`) {
+						mode = compiler.getValue();
+					}
 					compiler.addCommand({
 						domain: `iwsy`,
 						keyword: `iwsy`,
 						lino,
 						action,
+						mode,
 						then: 0
 					});
 					// Get the 'then' code, if any
@@ -180,7 +188,7 @@ const EasyCoder_IWSY = {
 					break;
 				case `run`:
 					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.run(function() {
+						EasyCoder.iwsyFunctions.run(program.getValue(command.mode), () => {
 							program.run(command.then);
 						});
 						return 0;

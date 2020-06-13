@@ -6,9 +6,9 @@ In ~page:quickstart:Part 1~ we created a presentation that just fades up a backg
 
 After the background has appeared, let's hold it on the screen for a couple of seconds. There are 2 actions to do with pausing; one is a simple pause and the other also marks a point at which the viewer of the presentation can intervene. We'll add the first of these actions here; the simple pause.
 
-As before, add a new step at the end of your presentation, then go into its editor and name it ~m:pause 2 seconds~. Click the empty selector next to the **Action** label and select the **pause** option. Apart from the properties common to all fields, this one just has a **Duration**, so type ~m:2~ here then save the step (or click ~img:/resources/icon/save.png:{width:1em}~ as before).
+As before, add a new step at the end of your presentation, then go into its editor and name it ~m:pause 2 seconds~. Click the empty selector next to the **Action** label and select the **pause** option. Apart from the properties common to all fields, this one just has a **Duration**, so type ~m:2~ here then save the step (or click ~img:/resources/icon/save.png:icon~ as before).
 
-We're going to bring up some text in the center of the screen, zooming it from a point below the center line. This presentation is to be some slides about Italian villages, so let's create our first content item. Click the **Content** button and then the ~img:/resources/icon/plus.png:{width:1em}~ icon. Open the editor for the new item; it should look like this:
+We're going to bring up some text in the center of the screen, zooming it from a point below the center line. This presentation is to be some slides about Italian villages, so let's create our first content item. Click the **Content** button and then the ~img:/resources/icon/plus.png:icon~ icon. Open the editor for the new item; it should look like this:
 
 ~img:resources/users/2020/160/1/images/quickstart/new-content.png:100%~
 
@@ -30,13 +30,13 @@ The differences are in the ~m:top~, ~m:height~ and ~m:fontSize~ values. The tran
 
 All of the numbers you see are _mils_ - that's thousandths of the width or height of the block's container, normally the window. (Though you can use the **parent** field to make a block a child of another block.) If you are proficient with CSS and would like to use its values you can do so, but the results can vary from one screen to another. The sharp-eyed may also be wondering why the **top** value of the second block is only set at 150; this is because the text renderer displays items as HTML ~m:&gt;p&lt;~ tags with margins and padding set by your browser. There are ways to get round this; see the detailed manual pages.
 
-You may like to note that in the **Blocks** panel each block has a ~img:resources/icon/binoculars.png:{width:1em}~ icon next to it. If you click one of these you will see where your block is on the screen.
+You may like to note that in the **Blocks** panel each block has a ~img:resources/icon/binoculars.png:icon~ icon next to it. If you click one of these you will see where your block is on the screen.
 
 Now go to the **Steps** panel. The first thing to do is to initialize the **main title** block by adding it to the set of blocks that are initialized in the **set up background** step, so click this step to open its editor:
 
 ~img:resources/users/2020/160/1/images/quickstart/setup-background.png:100%~
 
-Click the ~img:resources/icon/plus.png:{width:1em}~ in the **Blocks** row to add a new block. Select the **main title** block and then select **Italian villages** from the **Content** drop-down list. Change the name of the step to **set up blocks** and the result should be:
+Click the ~img:resources/icon/plus.png:icon~ in the **Blocks** row to add a new block. Select the **main title** block and then select **Italian villages** from the **Content** drop-down list. Change the name of the step to **set up blocks** and the result should be:
 
 ~img:resources/users/2020/160/1/images/quickstart/setup-blocks.png:100%~
 
@@ -46,6 +46,6 @@ The animated text effect is done with a **transition** action. Add a new step to
 
 ~img:resources/users/2020/160/1/images/quickstart/zoom-title.png:100%~
 
-Now you can run your presentation again. The background will fade upfirst, then after a couple of seconds the text will zoom up.
+Now you can run your presentation again. The background will fade up first, then after a couple of seconds the text will zoom up.
 
-In the ~page:quickstart3:final part of this tutorial~ we'll add the first of what might be a large number of similar slides, each one describing a different Italian village.
+In the ~page:quickstart3:final part of this tutorial~ we'll add the first of what might in a real presentation be a large number of similar slides, each one describing a different Italian village.

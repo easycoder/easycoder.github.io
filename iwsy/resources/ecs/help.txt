@@ -55,6 +55,7 @@ GetPage:
     end
     put Page into storage as `.help`
     set the content of Container to showdown decode Content with DecoratorCallback
+    scroll Container to 0
     set the elements of Link to LinkCount
     put 0 into N
     while N is less than LinkCount
@@ -119,6 +120,7 @@ ProcessImage:
         else if Item is `center` put Style cat `margin:0 auto;` into Style
         else if Item is `border` put Style cat `padding:2px;border:1px solid black;` into Style
         else if Item is `clear` put Style cat `clear:both;` into Style
+        else if Item is `icon` put Style cat `height:0.9em;position:relative;top:0.05em` into Style
         else if right 1 of Item is `%` put Style cat `width:` cat Item cat `;` into Style
         else
         begin

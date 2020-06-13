@@ -1,7 +1,8 @@
 // IWSY
 
-const IWSY = (player, text) => {
+const IWSY = (playerElement, text) => {
 
+    let player = playerElement;
     let script = text;
     let clicked = false;
 
@@ -104,10 +105,9 @@ const IWSY = (player, text) => {
 
     // Create a block
     const createBlock = block => {
-        const r = player.getBoundingClientRect();
         let rect = {
-            width: r.width,
-            height: r.height,
+            width: player.clientWidth,
+            height: player.clientHeight,
             left: 0,
             top: 0
         }
@@ -634,39 +634,6 @@ const IWSY = (player, text) => {
         }
     };
 
-    // Go to a specified step number
-    const gotoStep = (target) => {
-        if (!script.stepping) {
-            script.stepping = true;
-            script.scanTarget = target;
-            script.singleStep = true;
-            script.runMode = `manual`;
-            scan();
-        }
-    };
-
-    // Run the presentation
-    const run = then => {
-        if (!script.stepping) {
-            initScript();
-            script.runMode = `auto`;
-            script.speed = `normal`;
-            script.singleStep = false;
-            script.then = then;
-            doStep(script.steps[0]);
-        }
-    };
-
-    // Stop the run
-    const stop = () => {
-        script.stop = true;
-    };
-
-    // Set a step callback
-    const onStep = onStepCB => {
-        script.onStepCB = onStepCB;
-    };
-
     // Chain to another presentation
     const chain = step => {
         step.next();
@@ -684,68 +651,6 @@ const IWSY = (player, text) => {
             script.then();
             script.then = null;
         }
-    };
-
-    // Replace the script
-    const setScript = newScript => {
-        removeBlocks();
-        script = newScript;
-        initScript();
-    };
-
-    // Show a block
-    const block = blockIndex => {
-        player.innerHTML = ``;
-        const w = player.getBoundingClientRect().width / 1000;
-        const h = player.getBoundingClientRect().height / 1000;
-        script.blocks.forEach((block, index) => {
-            const defaults = block.defaults;
-            const element = document.createElement(`div`);
-            player.appendChild(element);
-            if (script.speed === `scan`) {
-                element.style.display = `none`;
-            }
-            element.style.position = `absolute`;
-            element.style.opacity = `0.5`;
-            let val = defaults.left;
-            if (!isNaN(val)) {
-                val *= w;
-            }
-            element.style.left = val;
-            val = defaults.top;
-            if (!isNaN(val)) {
-                val *= h;
-            }
-            element.style.top = val;
-            val = defaults.width;
-            if (!isNaN(val)) {
-                val = `${val * w - 2}px`;
-            } else {
-                val = `calc(${val} - 2px)`
-            }
-            element.style.width = val;
-            val = defaults.height;
-            if (!isNaN(val)) {
-                val = `${val * h - 2}px`;
-            } else {
-                val = `calc(${val} - 2px)`
-            }
-            element.style.height = val;
-            element.style[`font-size`] = `${h * 40}px`
-            element.innerHTML = defaults.name;
-            if (index == blockIndex) {
-                element.style.background = `#ddffdd`;
-                element.style.border = `1px solid #00ff00`;
-                element.style[`font-weight`] = `bold`
-                element.style[`z-index`] = 10;
-                element.style.color = `#006600`;
-            } else {
-                element.style.border = `1px solid #ff0000`;
-                element.style[`text-align`] = `right`;
-                element.style[`z-index`] = 0;
-                element.style.color = `#ff0000`;
-            }
-        });
     };
 
     // Set up Showdown
@@ -858,14 +763,6 @@ const IWSY = (player, text) => {
         document.head.appendChild(style);
     };
 
-    // Remove all the CSS styles
-    const removeStyles = () => {
-        const styles = document.getElementsByClassName("iwsy-css");
-        for (const style of styles) {
-            style.parentNode.removeChild(style);
-        }
-    };
-
     // Initialize the script
     const initScript = () => {
         document.onkeydown = null;
@@ -965,16 +862,140 @@ const IWSY = (player, text) => {
         }
     };
 
+    ///////////////////////////////////////////////////////////////////////////////
+    // These are all the exported functions
+    
+    // Set the script
+    const setScript = newScript => {
+        removeBlocks();
+        script = newScript;
+        initScript();
+    };
+    
+    // Go to a specified step number
+    const gotoStep = (target) => {
+        if (!script.stepping) {
+            script.stepping = true;
+            script.scanTarget = target;
+            script.singleStep = true;
+            script.runMode = `manual`;
+            scan();
+        }
+    };
+    
+    // Show a block
+    const block = blockIndex => {
+        player.innerHTML = ``;
+        const w = player.getBoundingClientRect().width / 1000;
+        const h = player.getBoundingClientRect().height / 1000;
+        script.blocks.forEach((block, index) => {
+            const defaults = block.defaults;
+            const element = document.createElement(`div`);
+            player.appendChild(element);
+            if (script.speed === `scan`) {
+                element.style.display = `none`;
+            }
+            element.style.position = `absolute`;
+            element.style.opacity = `0.5`;
+            let val = defaults.left;
+            if (!isNaN(val)) {
+                val *= w;
+            }
+            element.style.left = val;
+            val = defaults.top;
+            if (!isNaN(val)) {
+                val *= h;
+            }
+            element.style.top = val;
+            val = defaults.width;
+            if (!isNaN(val)) {
+                val = `${val * w - 2}px`;
+            } else {
+                val = `calc(${val} - 2px)`
+            }
+            element.style.width = val;
+            val = defaults.height;
+            if (!isNaN(val)) {
+                val = `${val * h - 2}px`;
+            } else {
+                val = `calc(${val} - 2px)`
+            }
+            element.style.height = val;
+            element.style[`font-size`] = `${h * 40}px`
+            element.innerHTML = defaults.name;
+            if (index == blockIndex) {
+                element.style.background = `#ddffdd`;
+                element.style.border = `1px solid #00ff00`;
+                element.style[`font-weight`] = `bold`
+                element.style[`z-index`] = 10;
+                element.style.color = `#006600`;
+            } else {
+                element.style.border = `1px solid #ff0000`;
+                element.style[`text-align`] = `right`;
+                element.style[`z-index`] = 0;
+                element.style.color = `#ff0000`;
+            }
+        });
+    };
+    
+    // Run the presentation
+    const run = (mode, then) => {
+        if (mode === `fullscreen`) {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                player.requestFullscreen();
+                document.onfullscreenchange = () => {
+                    if (document.fullscreenElement) {
+                        player = document.fullscreenElement;
+                        runPresentation(then);
+                    } else {
+                        player = playerElement;
+                    }
+                };
+            }
+        } else {
+            runPresentation(then);
+        }
+    }
+
+    const runPresentation = then => {
+        if (!script.stepping) {
+            initScript();
+            script.runMode = `auto`;
+            script.speed = `normal`;
+            script.singleStep = false;
+            script.then = then;
+            doStep(script.steps[0]);
+        }
+    };
+    
+    // Stop the run
+    const stop = () => {
+        script.stop = true;
+    };
+    
+    // Set a step callback
+    const onStep = onStepCB => {
+        script.onStepCB = onStepCB;
+    };
+    
+    // Remove all the CSS styles
+    const removeStyles = () => {
+        const styles = document.getElementsByClassName("iwsy-css");
+        for (const style of styles) {
+            style.parentNode.removeChild(style);
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+
     document.removeEventListener(`click`, init);
     if (script.runMode === `auto`) {
         document.addEventListener(`click`, onClick);
     }
     setupShowdown();
     initScript();
-    IWSY.plugins = {};
-    if (script.steps.length > 0) {
-        doStep(script.steps[0]);
-    }
     return {
         setScript,
         gotoStep,

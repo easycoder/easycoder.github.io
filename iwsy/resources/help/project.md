@@ -2,7 +2,7 @@
 
 # The Project panel
 
-The right-hand side of the screen holds the Project panel. When you start up - or after you click the ~img:resources/users/2020/160/1/images/help/new.png:{width:1em}~(New) button - it looks like this:
+The right-hand side of the screen holds the Project panel. When you start up - or after you click the ~img:resources/users/2020/160/1/images/help/new.png:icon~(New) button - it looks like this:
 ~img:resources/users/2020/160/1/images/help/project.png:100%~
 
 There are 3 main sections.
@@ -11,9 +11,9 @@ There are 3 main sections.
 
 This lists the steps of your presentation. These are in some way analogous to the 'slides' of a PowerPoint presentation. A step is any action that affects the presenttion, whether it causes any visual change or not. Every presentation starts with an `init` step where you define the size and proportions of your screen. This step is already provided, with its name on a clickable button. When you click the button it opens the ~page:action-init:`init` step editor~. All the action types are documented in their own pages - see the ~page:contents:Contents~.
 
-To the left of the button is a tiny ~img:/resources/icon/binoculars.png:{width:1em}~ binoculars symbol. When you click one of these the panel on the left - called the _player_ - shows you what the presentation looks like at this step.
+To the left of the button is a tiny ~img:/resources/icon/binoculars.png:icon~ binoculars symbol. When you click one of these the panel on the left - called the _player_ - shows you what the presentation looks like at this step.
 
-To the right of the button is a ~img:/resources/icon/plus.png:{width:1em}~ plus symbol, that when clicked adds a new step to the end of the presentation. See ~page:addStep:Adding a step~.
+To the right of the button is a ~img:/resources/icon/plus.png:icon~ plus symbol, that when clicked adds a new step to the end of the presentation. See ~page:addStep:Adding a step~.
 
 ## 2 - Blocks
 
