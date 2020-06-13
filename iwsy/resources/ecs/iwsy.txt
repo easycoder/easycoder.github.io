@@ -30,6 +30,7 @@
     img Open
     img Save
     img RunStop
+    img FullScreen
     img Delete
     img User
     img FileMan
@@ -176,6 +177,11 @@ L2:
     set attribute `src` of RunStop to `resources/icon/run.png`
     set attribute `title` of RunStop to `Run`
     create Link in Buttons
+    create FullScreen in Link
+    set the style of FullScreen to `width:40px;margin-right:1.5em`
+    set attribute `src` of FullScreen to `resources/icon/fullscreen.png`
+    set attribute `title` of FullScreen to `Run full-screen`
+    create Link in Buttons
     create Help in Link
     set the style of Help to `width:40px;margin-right:1.5em`
     set attribute `src` of Help to `resources/icon/help.png`
@@ -211,7 +217,7 @@ L2:
     set the style of Tab to `display:inline-block;width:` cat N cat `%`
     index SectionButton to 0
     create SectionButton in Tab
-    set the style of SectionButton to `width:100%`
+    set the style of SectionButton to `width:100%;background-color:lightgray`
     set the content of SectionButton to `Steps`
     create StepsPanel in ContentDiv
     set the style of StepsPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
@@ -219,7 +225,7 @@ L2:
     set the style of Tab to `display:inline-block;width:` cat N cat `%`
     index SectionButton to 1
     create SectionButton in Tab
-    set the style of SectionButton to `width:100%`
+    set the style of SectionButton to `width:100%;background-color:#eee`
     set the content of SectionButton to `Blocks`
     create BlocksPanel in ContentDiv
     set the style of BlocksPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
@@ -227,7 +233,7 @@ L2:
     set the style of Tab to `display:inline-block;width:` cat N cat `%`
     index SectionButton to 2
     create SectionButton in Tab
-    set the style of SectionButton to `width:100%`
+    set the style of SectionButton to `width:100%;background-color:#eee`
     set the content of SectionButton to `Content`
     create ContentPanel in ContentDiv
     set the style of ContentPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
@@ -387,6 +393,7 @@ L2:
     end
     
     on click RunStop go to DoRunStop
+    on click FullScreen go to RunFullScreen
     
     on click User
     begin
@@ -518,10 +525,10 @@ SetupContent:
 SelectSection:
 	gosub to SaveChanges
     index SectionButton to Section
-    set style `background` of SectionButton to ``
+    set style `background-color` of SectionButton to `#eee`
     put N into Section
     index SectionButton to Section
-    set style `background` of SectionButton to `lightgray`
+    set style `background-color` of SectionButton to `lightgray`
 
 !	Update the current section
 UpdateCurrentSection:
@@ -731,6 +738,12 @@ DoRunStop:
             stop
         end
     end
+	stop
+
+RunFullScreen:
+	if Running iwsy stop
+	else iwsy run `fullscreen`
+    toggle Running
 	stop
 
 ClearStepsButtons:

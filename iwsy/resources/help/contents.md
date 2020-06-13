@@ -18,4 +18,14 @@
 
 ## Actions
 
-~page:action-init:The `init` action~
+~page:action-init:The **init** action~
+
+~page:action-set-content:The **set content** action~
+
+~page:action-show-hide:The **show** and **hide** actions~
+
+~page:action-fade:The **fade up** and **fade down** actions~
+
+~page:action-crossfade:The **crossfade** action~
+
+~page:action-transition:The **transition** action~

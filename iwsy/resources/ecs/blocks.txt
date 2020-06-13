@@ -156,7 +156,7 @@ Restart:
         	if N is not SelectedBlock
             begin
                 index EditButton to N
-                set style `background` of EditButton to ``
+                set style `background-color` of EditButton to `#eee`
                 index Editor to N
                 set style `display` of Editor to `none`
                 clear Editor
@@ -168,7 +168,7 @@ Restart:
         index SaveButton to SelectedBlock
 		if style `display` of Editor is `none`
         begin
-        	set style `background` of EditButton to `lightgray`
+        	set style `background-color` of EditButton to `lightgray`
             set style `display` of Editor to `block`
             put element SelectedBlock of Blocks into Block
             put property `defaults` of Block into Defaults

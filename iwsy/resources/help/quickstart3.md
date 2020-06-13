@@ -2,9 +2,9 @@
 
 # ~iwsy~ Quickstart, part 3
 
-In ~page:quickstart:Part 1~ we created a presentation that just fades up a background panel and a title. In this part we'll add some text to it and look at some of the actions available.
+In ~page:quickstart:Part 1~ and ~page:quickstart2:Part 2~ we created an introduction that fades up a background panel and zooms up a title. In this part we'll add a typical presentation page, one of what would often be many having a similar format. Our theme is Italian villages and here we'll add the first one; Manarola, one of the famous Cinque Terre villages in Liguria.
 
-Click the **Content** button opposite, then click ~img:resources/icon/plus.png:{width:1em}~ to add a new content item. Set the name to ~m:Manarola~ then paste the following text into the empty box:
+Click the **Content** button opposite, then click ~img:resources/icon/plus.png:icon~ to add a new content item. Set the name to ~m:Manarola~ then paste the following text into the empty box:
 
 > ~m:CINQUE TERRE – MANAROLA~
 > ~m:Romantic Manarola – a hamlet of Riomaggiore – spills down a ravine to the wild and rugged Cinque Terre coastline. Besides its natural beauty, the village is also famous for its sweet Sciacchetrà wine, celebrated by Gabriele D'Annunzio in one of his amazing poems. Manarola has brightly painted houses, priceless medieval relics and a tiny harbour that features a boat ramp and a swimming hole; to the north, on the way to Corniglia, there's a stunning viewpoint (Punta Bonfiglio) where visitors can enjoy a drink in a bar between the village’s cemetery and the sea. Everywhere is the scent of the lemon trees, thyme, rosemary and Mediterranean maquis; the grapevines – grown on terraces – embrace the village in a tight hug.~
@@ -37,7 +37,7 @@ This is OK but obviously needs a little tweaking here and there. Start with the 
 
 ~img:resources/users/2020/160/1/images/quickstart/manarola-text-2.png:100%~
 
-Next, go to the **Content**, select the **Manarola** item and put `"## "` - that's 2 # characters and a space - in front of the first word (CINQUE). This will turn the first line into a level 2 header.
+Next, go to the **Content**, select the **Manarola** item and put `"## "` - that's 2 # characters and a space - in front of the first word (CINQUE). Then put a line break after MANAROLA. This will turn the first line into a level 2 header.
 
 Finally, add the following just in front of the word Romantic, at the start of the text:
 

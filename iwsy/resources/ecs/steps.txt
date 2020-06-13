@@ -106,7 +106,7 @@ Start:
         while N is less than the elements of StepButton
         begin
     	    index StepButton to N
-        	set style `background` of StepButton to ``
+        	set style `background-color` of StepButton to `#eee`
             add 1 to N
     	end
         stop
@@ -121,7 +121,7 @@ Start:
     	put property `step` of Message into N
         if N is not less than the json count of Steps stop
         index StepButton to N
-        set style `background` of StepButton to `#cfc`
+        set style `background-color` of StepButton to `#cfc`
     	stop
     end
 
@@ -212,7 +212,7 @@ Restart:
             index Editor to N
             set style `display` of Editor to `none`
             index StepButton to N
-            set style `background` of StepButton to ``
+            set style `background-color` of StepButton to `#eee`
         	gosub to SaveCurrentStep
             put -1 into SelectedStep
         end
@@ -226,12 +226,12 @@ Restart:
                     index Editor to N
                     set style `display` of Editor to `none`
                     index StepButton to N
-                    set style `background` of StepButton to ``
+                    set style `background-color` of StepButton to `#eee`
                     add 1 to N
                 end
             end
             index StepButton to SelectedStep
-            set style `background` of StepButton to `lightgray`
+            set style `background-color` of StepButton to `lightgray`
             index Editor to SelectedStep
             set style `display` of Editor to `block`
             put element SelectedStep of Steps into CurrentStep
@@ -265,12 +265,12 @@ Restart:
         while N is less than the json count of Steps
         begin
         	index StepButton to N
-        	set style `background` of StepButton to ``
+        	set style `background-color` of StepButton to `#eee`
         	add 1 to N
         end
     	put the index of ShowStep into N
         index StepButton to N
-        set style `background` of StepButton to `#ccf`
+        set style `background-color` of StepButton to `#ccf`
         set Message to object
         set property `action` of Message to `goto`
         set property `index` of Message to N

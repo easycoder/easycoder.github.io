@@ -4,7 +4,7 @@
 
 I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initials) is an online presentation package built to deliver slideshows that either run under manual control or unattended. Instead of being a PC application that's tied to the desktop, ~iwsy~ is entirely browser-based. ~iwsy~ presentations can run here in this web app, they can be embedded in other web pages or they can run as independent web pages.
 
-## ~page:quickstart:Quick-start~
+## Quickstart tutorial
 
 These help pages contain everything there is to know about ~iwsy~, but there's a lot to read. Most people just want to get started quickly, so we have a built-in ~page:quickstart:quick-start tutorial~ where you can create a simple presentation - a few slides with text and pictures - in just a few minutes. Once you've completed this first step you'll have a pretty good idea of what ~iwsy~ is all about, and the rest of the help pages won't be nearly as intimidating.
 
