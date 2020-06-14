@@ -160,7 +160,8 @@ const EasyCoder_Value = {
 	},
 
 	getValue: (program, value) => {
-		return EasyCoder_Value.evaluate(program, value).content;
+		const v = EasyCoder_Value.evaluate(program, value);
+		return v ? v.content : null;
 	},
 
 	// tools

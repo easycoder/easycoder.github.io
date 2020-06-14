@@ -5382,7 +5382,8 @@ const EasyCoder_Browser = {
 				if (!target) {
 					const symbolElement = symbol.value[symbol.index];
 					if (!symbolElement.type) {
-						program.runtimeError(command.lino, `Variable '${symbol.name}' is not attached to a DOM element.`);
+						program.runtimeError(command.lino,
+							`Variable '${symbol.name}' is not attached to a DOM element.`);
 						return 0;
 					}
 					targetId = program.getValue(symbolElement);
@@ -6209,6 +6210,11 @@ const EasyCoder_Browser = {
 			case `contentOf`:
 				symbolRecord = program.getSymbolRecord(value.symbol);
 				target = symbolRecord.element[symbolRecord.index];
+				if (target === null || typeof target === `undefined`) {
+					program.runtimeError(program[program.pc].lino,
+						`Variable '${symbolRecord.name}' is not attached to a DOM element.`);
+					return null;
+				}
 				switch (symbolRecord.keyword) {
 				case `input`:
 				case `textarea`:
@@ -7484,7 +7490,8 @@ const EasyCoder_Value = {
 	},
 
 	getValue: (program, value) => {
-		return EasyCoder_Value.evaluate(program, value).content;
+		const v = EasyCoder_Value.evaluate(program, value);
+		return v ? v.content : null;
 	},
 
 	// tools
