@@ -4,7 +4,6 @@ const IWSY = (playerElement, text) => {
 
     let player = playerElement;
     let script = text;
-    let clicked = false;
 
     // Set up all the blocks
     const setupBlocks = () => {
@@ -17,71 +16,14 @@ const IWSY = (playerElement, text) => {
         }
     };
 
-    const release = step => {
-        player.style.cursor = 'none';
-        document.removeEventListener(`click`, release);
-        document.onkeydown = null;
-        step.next();
-    };
-
-    const doManual = step => {
-        player.style.cursor = 'pointer';
-        document.addEventListener(`click`, release);
-        document.onkeydown = (event) => {
-            switch (event.code) {
-                case `Space`:
-                case `ArrowRight`:
-                    document.onkeydown = null;
-                    release(step);
-                    break;
-                case `ArrowLeft`:
-                    break;
-                case `Enter`:
-                    player.style.cursor = 'none';
-                    document.addEventListener(`click`, onClick);
-                    script.runMode = `auto`;
-                    release(step);
-                    break;
-            }
-            return true;
-        };
-    };
-
-    const onClick = () => {
-        clicked = true;
-    };
-
-    const hold = step => {
-        if (script.speed === `scan`) {
-            step.next();
-            return;
-        }
-        script.stepping = false;
-        if (script.runMode === `manual`) {
-            doManual(step);
-        } else {
-            if (clicked) {
-                document.removeEventListener(`click`, onClick);
-                clicked = false;
-                script.runMode = `manual`;
-                doManual(step);
-            } else {
-                setTimeout(() => {
-                    step.next();
-                }, step.duration * 1000);
-            }
-        }
-    };
-
     const pause = step => {
         if (script.speed === `scan`) {
             step.next();
             return;
         }
-        script.stepping = false;
         setTimeout(() => {
             step.next();
-        }, step.duration * 1000);
+        }, script.runMode === `manual` ? 0 : step.duration * 1000);
     };
 
     // Get the bounding rectangle of a block
@@ -217,9 +159,6 @@ const IWSY = (playerElement, text) => {
                 }
             }
         }
-        if (script.speed === `scan` && step.index === script.scanTarget) {
-            script.stepping = false;
-        }
         step.next();
     };
 
@@ -235,10 +174,11 @@ const IWSY = (playerElement, text) => {
                 }
             }
         }
-        if (script.speed === `scan` && step.index === script.scanTarget) {
-            script.stepping = false;
+        if (script.runMode === `manual`) {
+            enterManualMode(step);
+        } else {
+            step.next();
         }
-        step.next();
     };
 
     const show = step => {
@@ -294,10 +234,13 @@ const IWSY = (playerElement, text) => {
                             block.element.style.opacity = upDown ? 1 : 0;
                             block.element.style.display = upDown ? `block` :`none`;
                         }
-                        script.stepping = false;
                         clearInterval(interval);
                         if (!continueFlag) {
-                            step.next();
+                            if (script.runMode === `manual`) {
+                                enterManualMode(step);
+                            } else {
+                                step.next();
+                            }
                         }
                     }
                 } catch(err) {
@@ -361,6 +304,7 @@ const IWSY = (playerElement, text) => {
                             text.innerHTML = newText;
                 
                             const animSteps = Math.round(step.duration * 25);
+                            const continueFlag = step.continue;
                             let animStep = 0;
                             const interval = setInterval(() => {
                                 if (animStep < animSteps) {
@@ -369,7 +313,6 @@ const IWSY = (playerElement, text) => {
                                     element.style.opacity = ratio;
                                     animStep++;
                                 } else {
-                                    script.stepping = false;
                                     clearInterval(interval);
                                     block.textPanel.innerHTML = newText;
                                     if (content.url) {
@@ -378,12 +321,16 @@ const IWSY = (playerElement, text) => {
                                     block.element.style[`background-size`] = `cover`;
                                     block.element.style.opacity = 1.0 ;
                                     removeElement(element);
-                                    if (!step.continue) {
-                                        step.next();
+                                    if (!continueFlag) {
+                                        if (script.runMode === `manual`) {
+                                            enterManualMode(step);
+                                        } else {
+                                            step.next();
+                                        }
                                     }
                                 }
                             }, 40);
-                            if (step.continue) {
+                            if (continueFlag) {
                                 step.next();
                             }
                         }
@@ -532,11 +479,14 @@ const IWSY = (playerElement, text) => {
                     doTransitionStep(block, target, ratio);
                     animStep++;
                 } else {
-                    script.stepping = false;
                     clearInterval(interval);
                     setFinalState(block,target);
                     if (!continueFlag) {
-                        step.next();
+                        if (script.runMode === `manual`) {
+                            enterManualMode(step);
+                        } else {
+                            step.next();
+                        }
                     }
                 }
                 }, 40);
@@ -591,6 +541,7 @@ const IWSY = (playerElement, text) => {
             document.title = step.title;
         }
         if (step.css) {
+            console.log(`Set styles at ${step.index}`);
             setHeadStyle(step.css.split(`%0a`).join(`\n`));
         }
         const aspect = step[`aspect ratio`];
@@ -763,6 +714,42 @@ const IWSY = (playerElement, text) => {
         document.head.appendChild(style);
     };
 
+    // Release the presentation to continue
+    const release = () => {
+        player.style.cursor = 'none';
+        document.removeEventListener(`click`, release);
+        document.onkeydown = null;
+        doStep(script.nextStep);
+    };
+
+    // Manual mode. Set up listeners and wait for the user
+    const enterManualMode = step => {
+        script.nextStep = step ? script.steps[step.index + 1] : script.steps[0];
+        player.style.cursor = 'pointer';
+        document.addEventListener(`click`, release);
+        document.onkeydown = (event) => {
+            switch (event.code) {
+                case `Space`:
+                case `ArrowRight`:
+                    document.onkeydown = null;
+                    script.runMode = `manual`;
+                    release();
+                    break;
+                case `ArrowLeft`:
+                    break;
+                case `Enter`:
+                    document.addEventListener(`click`, () => {
+                        script.runMode = `manual`;
+                    });
+                    player.style.cursor = 'none';
+                    script.runMode = `auto`;
+                    release();
+                    break;
+            }
+            return true;
+        };
+    };
+
     // Initialize the script
     const initScript = () => {
         document.onkeydown = null;
@@ -770,7 +757,6 @@ const IWSY = (playerElement, text) => {
         player.style.overflow = `hidden`;
         player.style.cursor = 'none';
         script.speed = `normal`;
-        script.singleStep = true;
         script.labels = {};
         script.stop = false;
         removeStyles();
@@ -788,16 +774,19 @@ const IWSY = (playerElement, text) => {
                 script.labels[step.label] = index;
             }
             if (index < script.steps.length - 1) {
+                const nextStep = script.steps[step.index + 1];
                 step.next = () => {
-                    if (script.runMode == `auto` || (script.singleStep && script.speed === `scan`)) {
+                    if (script.runMode == `auto` || script.speed === `scan`) {
                         setTimeout(() => {
                             if (script.stop) {
                                 script.stop = false;
                                 restoreCursor();
                             } else {
-                                doStep(script.steps[step.index + 1]);
+                                doStep(nextStep);
                             }
                         }, 0);
+                    } else {
+                        doStep(nextStep);
                     }
                 }
             }
@@ -817,7 +806,6 @@ const IWSY = (playerElement, text) => {
         show,
         hide,
         pause,
-        hold,
         fadeup,
         fadedown,
         crossfade,
@@ -874,14 +862,10 @@ const IWSY = (playerElement, text) => {
     
     // Go to a specified step number
     const gotoStep = (target) => {
-        if (!script.stepping) {
-            script.stepping = true;
-            script.scanTarget = target;
-            script.singleStep = true;
-            script.runMode = `manual`;
-            scan();
-        }
-    };
+        script.scanTarget = target;
+        script.runMode = `manual`;
+        scan();
+};
     
     // Show a block
     const block = blockIndex => {
@@ -940,6 +924,8 @@ const IWSY = (playerElement, text) => {
     
     // Run the presentation
     const run = (mode, then) => {
+        script.then = then;
+        initScript();
         if (mode === `fullscreen`) {
             if (document.fullscreenElement) {
                 document.exitFullscreen();
@@ -948,27 +934,18 @@ const IWSY = (playerElement, text) => {
                 document.onfullscreenchange = () => {
                     if (document.fullscreenElement) {
                         player = document.fullscreenElement;
-                        runPresentation(then);
+                        script.runMode = `manual`;
+                        enterManualMode(null);
                     } else {
                         player = playerElement;
                     }
                 };
             }
         } else {
-            runPresentation(then);
-        }
-    }
-
-    const runPresentation = then => {
-        if (!script.stepping) {
-            initScript();
             script.runMode = `auto`;
-            script.speed = `normal`;
-            script.singleStep = false;
-            script.then = then;
             doStep(script.steps[0]);
         }
-    };
+    }
     
     // Stop the run
     const stop = () => {
@@ -990,10 +967,6 @@ const IWSY = (playerElement, text) => {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    document.removeEventListener(`click`, init);
-    if (script.runMode === `auto`) {
-        document.addEventListener(`click`, onClick);
-    }
     setupShowdown();
     initScript();
     return {

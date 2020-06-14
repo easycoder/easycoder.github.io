@@ -283,7 +283,6 @@ Restart:
     json add `show` to ActionNames
     json add `hide` to ActionNames
     json add `pause` to ActionNames
-    json add `hold` to ActionNames
     json add `fade up` to ActionNames
     json add `fade down` to ActionNames
     json add `crossfade` to ActionNames
@@ -431,7 +430,6 @@ ReloadStepEditor:
     else if Action is `show` gosub to EditShow
     else if Action is `hide` gosub to EditHide
     else if Action is `pause` gosub to EditPause
-    else if Action is `hold` gosub to EditHold
     else if Action is `fade up` gosub to EditFadeUp
     else if Action is `fade down` gosub to EditFadeDown
     else if Action is `crossfade` gosub to EditCrossfade
@@ -652,7 +650,6 @@ EditHide:
 	return
 
 EditPause:
-EditHold:
     gosub to EditDuration
 	return
 
@@ -864,11 +861,6 @@ CreateNewAction:
     	put property `duration` of CurrentStep into Duration
         if Duration is empty set property `duration` of CurrentStep to 1
     end
-	else if Action is `hold`
-    begin
-    	put property `duration` of CurrentStep into Duration
-        if Duration is empty set property `duration` of CurrentStep to 1
-    end
 	else if Action is `fade up`
     begin
     	put property `blocks` of CurrentStep into Blocks
@@ -979,11 +971,6 @@ SaveCurrentStep:
         end
     end
 	else if Action is `pause`
-    begin
-    	put property `duration` of CurrentStep into Duration
-    	set property `duration` of CurrentStep to the text of DurationInput
-    end
-	else if Action is `hold`
     begin
     	index DurationInput to SelectedStep
     	set property `duration` of CurrentStep to the text of DurationInput
