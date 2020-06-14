@@ -8429,7 +8429,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.7.1`;
+EasyCoder.version = `2.7.2`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
