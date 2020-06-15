@@ -28,3 +28,5 @@ All of these effects apply to text blocks; the first two also apply to blocks th
 When the color of text is to be changed, the size values in both **Block** and **Target** must be expressed in the form **#RRGGBB**, where **RRGGBB** carries the hex values of the red, green and blue components of the color.
 
 Fades and other animated effects run at 25 frames/sec, as a compromise between visual smoothness and processing requirements.
+
+Next: ~page:action-pause:Pause~

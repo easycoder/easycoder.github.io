@@ -376,22 +376,7 @@ L2:
         send to FileManModule
     end
     
-    on click Help
-    begin
-    	if Running stop
-    	if HelpModule is not running
-        begin
-      		require js
-            	`https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/showdown.js?v=` cat now
-            rest get Script from `/resources/ecs/help.txt?v=` cat now
-            run Script with HelpPanel as HelpModule
-        end
-        set style `display` of Player to `none`
-        set style `display` of FileManPanel to `none`
-    	set style `display` of HelpPanel to `block`
-        send to HelpModule
-    end
-    
+    on click Help go to ShowHelp    
     on click RunStop go to DoRunStop
     on click FullScreen go to RunFullScreen
     
@@ -468,7 +453,25 @@ L2:
             fork to ResetStatus
         end
     end
+    
+    get Item from storage as `alreadyrun`
+    if Item is empty go to ShowHelp
 	stop
+
+ShowHelp:
+    if Running stop
+    if HelpModule is not running
+    begin
+        require js
+        	`https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/showdown.js?v=` cat now
+        rest get Script from `/resources/ecs/help.txt?v=` cat now
+        run Script with HelpPanel as HelpModule
+    end
+    set style `display` of Player to `none`
+    set style `display` of FileManPanel to `none`
+    set style `display` of HelpPanel to `block`
+    send to HelpModule
+    stop
 
 SavePresentation:
 	rest post Content to `usave/` cat UserEmail cat `/` cat UserPassword cat `/`
