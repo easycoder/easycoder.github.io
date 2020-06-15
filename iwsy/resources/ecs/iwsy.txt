@@ -390,8 +390,8 @@ L2:
             set attribute `title` of User to `Login`
             gosub to SetStatusRed
             set the content of Status to `Not logged in`
-            put empty into storage as `email`
-            put empty into storage as `password`
+            put empty into storage as `user.email`
+            put empty into storage as `user.password`
             go to ResetStatus
         end
         else send `login` to UserModule
@@ -445,7 +445,7 @@ L2:
             put property `home` of UserRecord into UserHome
             put UserHome cat `/` cat property `id` of UserRecord into UserHome
             put property `email` of UserRecord into UserEmail
-            get UserPassword from storage as `password`
+            get UserPassword from storage as `user.password`
             set attribute `src` of User to `resources/icon/user-loggedin.png`
             set attribute `title` of User to `Logged in as ` cat property `name` of UserRecord
             gosub to SetStatusGreen
