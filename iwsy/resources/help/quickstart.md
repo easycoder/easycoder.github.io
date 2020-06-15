@@ -14,7 +14,7 @@ Click the **Blocks** button over in the right-hand panel, then click the ~img:/r
 
 ~img:resources/users/2020/160/1/images/quickstart/newblock.png:100%~
 
-Most of these default values are fine as they are; they describe a block that occupies the whole window area. Let's just change the ~m:name~ property to ~m:background~ and the ~m:background~ property to ~m:url('resources/users/2020/160/1/images/SemoigoDawn.jpg')~. The effect will be to display a full-size image. This is what the panel should look like now:
+Most of these default values are fine as they are; they describe a block that occupies the whole window area. Let's just change the ~m:name~ property to ~m:background~ and the ~m:background~ property to ~m:url('resources/users/2020/160/1/images/SemoigoDawn.jpg')~. When the presentation runs, the effect will be to display a full-size image. This is what the panel should look like now:
 
 ~img:resources/users/2020/160/1/images/quickstart/first-block.png:100%~
 

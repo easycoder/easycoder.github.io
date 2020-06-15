@@ -126,7 +126,7 @@ Show:
     put property `email` of UserRecord into Email
     get Password from storage as `password`
     put property `home` of UserRecord into Home
-    put Home cat `/` cat property `id` of UserRecord into Home
+    put Home cat `/` cat property `id` of UserRecord cat `images` into Home
     put `users/` cat Home cat `/images` into Home
     get CurrentPath from storage as `.filepath`
     if CurrentPath is empty put Home into CurrentPath

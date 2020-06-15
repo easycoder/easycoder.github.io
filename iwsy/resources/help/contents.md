@@ -1,4 +1,4 @@
-~page:iwsy:Home~
+~page:iwsy:Home and Introduction~
 
 # ~iwsy~ Help - Contents
 
@@ -6,15 +6,11 @@
 
 ~page:users:User registration and login~
 
+~page:buttons:The Buttons panel~
+
 ~page:project:The Project panel~
 
-~page:start:Starting a project~
-
-~page:addStep:Adding a step~
-
-~page:addBlock:Adding a block~
-
-~page:addContent:Adding content~
+~page:about:About us, contacts etc.~
 
 ## Actions
 
@@ -29,3 +25,5 @@
 ~page:action-crossfade:The **crossfade** action~
 
 ~page:action-transition:The **transition** action~
+
+~page:action-pause:The **pause** action~
