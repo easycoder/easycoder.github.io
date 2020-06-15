@@ -124,10 +124,10 @@ Show:
 
 	get UserRecord from storage as `.user`
     put property `email` of UserRecord into Email
-    get Password from storage as `password`
+    get Password from storage as `user.password`
     put property `home` of UserRecord into Home
-    put Home cat `/` cat property `id` of UserRecord cat `images` into Home
-    put `users/` cat Home cat `/images` into Home
+    put Home cat `/` cat property `id` of UserRecord cat `/images` into Home
+    put `users/` cat Home into Home
     get CurrentPath from storage as `.filepath`
     if CurrentPath is empty put Home into CurrentPath
 
@@ -137,7 +137,8 @@ Browser:
     rest get Content from `ulist/` cat Email cat `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
     or begin
         alert `Failed to list files.`
-        stop
+        put empty into storage as `.filepath`
+        go to Show
     end
     put CurrentPath into Path
     set the content of Location to `Current path: ` cat Path

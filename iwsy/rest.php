@@ -103,7 +103,7 @@
                 case 'validate':
                     // Validate a hash
                     // Endpoint: {site root}/rest.php/validate/{encrypted-value}/{value-to-validate}
-                    print password_verify($request[1], $request[0]) ? 'yes' : 'no';
+                    print password_verify($request[1], str_replace('~', '/', $request[0])) ? 'yes' : 'no';
                     exit;
             }
             break;
