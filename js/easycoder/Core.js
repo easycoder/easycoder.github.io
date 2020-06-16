@@ -3064,7 +3064,7 @@ const EasyCoder_Core = {
 				}
 				return !condition.sense;
 			case `includes`:
-				const value1 = JSON.parse(program.getValue(condition.value1));
+				const value1 = program.getValue(condition.value1);
 				const value2 = program.getValue(condition.value2);
 				return value1.includes(value2);
 			}
