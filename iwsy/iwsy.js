@@ -722,7 +722,12 @@ const IWSY = (playerElement, text) => {
     const release = () => {
         player.style.cursor = 'none';
         document.removeEventListener(`click`, release);
-        document.onkeydown = null;
+        document.addEventListener(`click`, () => {
+            script.runMode = `manual`;
+        });
+        document.onkeydown = () => {
+            script.runMode = `manual`;
+        };
         doStep(script.nextStep);
     };
 
@@ -731,7 +736,7 @@ const IWSY = (playerElement, text) => {
         script.nextStep = step ? script.steps[step.index + 1] : script.steps[0];
         player.style.cursor = 'pointer';
         document.addEventListener(`click`, release);
-        document.onkeydown = (event) => {
+        document.onkeydown = event => {
             switch (event.code) {
                 case `Space`:
                 case `ArrowRight`:
