@@ -4535,7 +4535,7 @@ const EasyCoder_Browser = {
 					document.onKeyListeners.push(program);
 				}
 				program.onKeyPc = command.pc + 2;
-				document.onkeypress = function (event) {
+				document.onkeydown = function (event) {
 					for (const program of document.onKeyListeners) {
 						program.key = event.key;
 						try {
