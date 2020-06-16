@@ -225,14 +225,18 @@ const IWSY = (playerElement, text) => {
                         const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
                         for (const block of stepBlocks)
                         {
-                            block.element.style.opacity = upDown ? ratio : 1.0 - ratio;
+                            if (block.element) {
+                                block.element.style.opacity = upDown ? ratio : 1.0 - ratio;
+                            }
                         }
                         animStep++;
                     } else {
                         for (const block of stepBlocks)
                         {
-                            block.element.style.opacity = upDown ? 1 : 0;
-                            block.element.style.display = upDown ? `block` :`none`;
+                            if (block.element) {
+                                block.element.style.opacity = upDown ? 1 : 0;
+                                block.element.style.display = upDown ? `block` :`none`;
+                            }
                         }
                         clearInterval(interval);
                         if (!continueFlag) {
@@ -762,7 +766,7 @@ const IWSY = (playerElement, text) => {
         removeStyles();
         for (const block of script.blocks) {
             const element = block.element;
-            if (typeof element !== `undefined`) {
+            if (element != null && typeof element !== `undefined`) {
                 removeElement(element);
                 block.element = null;
             }
@@ -818,6 +822,9 @@ const IWSY = (playerElement, text) => {
 
     // Process a single step
     const doStep = step => {
+        if (!step) {
+            return;
+        }
         if (step.title) {
             console.log(`Step ${step.index}: ${step.title}`);
         } else {
@@ -923,7 +930,7 @@ const IWSY = (playerElement, text) => {
     };
     
     // Run the presentation
-    const run = (mode, then) => {
+    const run = (mode, startMode, then) => {
         script.then = then;
         initScript();
         if (mode === `fullscreen`) {
@@ -934,10 +941,24 @@ const IWSY = (playerElement, text) => {
                 document.onfullscreenchange = () => {
                     if (document.fullscreenElement) {
                         player = document.fullscreenElement;
-                        script.runMode = `manual`;
-                        enterManualMode(null);
+                        script.nextStep = script.steps[0];  
+                        switch (startMode) {
+                            case `auto`:
+                                script.runMode = `auto`;
+                                release();
+                                break;
+                            case `manual`:
+                                script.runMode = `manual`;
+                                release();
+                                break;
+                            case `wait`:
+                                script.runMode = `manual`;
+                                enterManualMode(null);
+                                break;
+                        }
                     } else {
                         player = playerElement;
+                        script.stop = true;
                     }
                 };
             }
