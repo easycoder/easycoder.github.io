@@ -550,6 +550,7 @@ ReloadBlocks:
     set attribute `src` of PlusIcon to `resources/icon/plus.png`
     on click PlusIcon
     begin
+    	gosub to SaveCurrentStep
     	set Block to object
         set property `block` of Block to empty
         set property `content` of Block to empty
@@ -714,6 +715,7 @@ EditBlockList:
     set attribute `src` of PlusIcon to `resources/icon/plus.png`
     on click PlusIcon
     begin
+    	gosub to SaveCurrentStep
         json add empty to Blocks
         set property `blocks` of CurrentStep to Blocks
         clear Table

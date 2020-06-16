@@ -22,8 +22,12 @@
     div HelpPanel
     div Panel
     div Div
-    span Status
+    div Mask
+    table Table
+    tr TR
+    td TD
     span Span
+    input Status
     input NameEditor
     button SectionButton
     img New
@@ -35,6 +39,8 @@
     img User
     img FileMan
     img Help
+    img Gear
+    img FSPrompt
     a Link
     module StepsModule
     module BlocksModule
@@ -61,6 +67,10 @@
     variable UserHome
     variable UserEmail
     variable UserPassword
+    variable Args
+    variable Protocol
+    variable Domain
+    variable Arg
     variable N
 
   ! The browser
@@ -85,9 +95,14 @@
     or begin
     	print `Static site`
         set ReadOnly
-        go to L2
+        go to Start
     end
-L2:
+
+Start:
+    json parse url the location as Args
+    put property `protocol` of Args into Protocol
+    put property `domain` of Args into Domain
+    
     put empty into CallStack
     history set
     on restore
@@ -103,10 +118,8 @@ L2:
     
     set the title to `IWSY`
     create Body
-    if Mobile
-	    set the style of Body to `width:100%;height:100%`
-    else
-	    set the style of Body to `width:100%;height:100%;display:flex`
+    set the style of Body to `width:100%;height:100%;position:relative`
+    if not Mobile set style `display` of Body to `flex`
 
 !	The left-hand panel
     create Left in Body
@@ -129,29 +142,39 @@ L2:
 
     create Buttons in Controls
     set the style of Buttons to `width:100%;padding:0.5em 0;position:relative`
-
-    create Panel in Controls
-    set the style of Panel to `display:flex`
-    create Div in Panel
-    set the style of Div to `flex:1;display:flex`
-    create Span in Div
-    set the style of Span to `flex:15`
-    set the content of Span to `Script&nbsp;name:&nbsp;`
-    create NameEditor in Div
-    set the style of NameEditor to `flex:85;display:inline-block`
     
-    create Div in Panel
-    set the style of Div to `width:1em`
-    
-    create Status in Panel
-    set the style of Status to
-    	`flex:1;text-align:right;margin-right:0.5em;border:1px solid black;padding-right:0.5em;color:green`
+    create Table in Controls
+    set the style of Table to `width:100%`
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `Script name`
 
+    create TD in TR
+    set the style of TD to `width:8em`
+    create NameEditor in TD
+    set the style of NameEditor to `width:100%`
+    
+    create TD in TR
+    set the style of TD to `width:2em;text-align:center`
+    create Link in TD
+    create Gear in Link
+    set the style of Gear to `height:1em`
+    set attribute `src` of Gear to `resources/icon/gear.png`
+    set attribute `title` of Gear to `Settings & Information`
+    
+    create TD in TR
+    set the style of TD to `color:green`
+    create Status in TD
+    set the style of Status to `width:100%;text-align:right;padding-right:0.5em`
+    set attribute `readonly` of Status to `readonly`
+    
     create Link in Buttons
     create New in Link
     set the style of New to `width:40px;margin-right:0.5em`
     set attribute `src` of New to `resources/icon/new.png`
     set attribute `title` of New to `New`
+    create Link in Buttons
     create Open in Link
     set the style of Open to `width:40px;margin-right:0.5em`
     set attribute `src` of Open to `resources/icon/open.png`
@@ -282,7 +305,7 @@ L2:
       			if Name is empty
       			begin
                 	gosub to SetStatusRed
-        			set the content of Status to `No script name has been given`
+        			set the text of Status to `No script name has been given`
         			go to ResetStatus
       			end
     	  		if UserRecord gosub to SavePresentation
@@ -308,7 +331,7 @@ L2:
         if Name is empty
         begin
             gosub to SetStatusRed
-            set the content of Status to `No script name has been given`
+            set the text of Status to `No script name has been given`
             go to ResetStatus
         end
         if the position of `.json` in Name is -1 put Name cat `.json` into Name
@@ -326,14 +349,14 @@ L2:
             else put Presentation into storage as Name
             put Presentation into LastSavedState
             gosub to SetStatusGreen
-            set the content of Status to `Presentation '` cat Name cat `' saved`
+            set the text of Status to `Presentation '` cat Name cat `' saved`
             put Name into CurrentScriptName
             fork to ResetStatus
         end
         else
         begin
             gosub to SetStatusGreen
-            set the content of Status to `Nothing has changed`
+            set the text of Status to `Nothing has changed`
             fork to ResetStatus
         end
     end
@@ -344,7 +367,7 @@ L2:
         if Name is empty
         begin
             gosub to SetStatusGreen
-            set the content of Status to `Nothing to delete`
+            set the text of Status to `Nothing to delete`
             go to ResetStatus
         end
         if confirm `Are you sure you want to delete "` cat Name cat `"?`
@@ -352,12 +375,29 @@ L2:
             if UserRecord gosub to DeletePresentation
             else remove Name from storage
             gosub to SetStatusGreen
-            set the content of Status to `Script "` cat Name cat `" deleted`
+            set the text of Status to `Script "` cat Name cat `" deleted`
             set the content of NameEditor to empty
             put empty into CurrentScriptName
             put empty into Presentation
             put Presentation into LastSavedState
             go to ResetStatus
+        end
+    end
+    
+    on click Gear
+    begin
+    	if CurrentScriptName
+        begin
+	        gosub to SetStatusGreen
+	        set the text of Status to Protocol cat Domain cat `?` cat UserHome cat `/scripts/` cat CurrentScriptName
+            set attribute `title` of Status to `Click text to copy to clipboard`
+            on click Status
+            begin
+            	copy Status
+            	on click Status stop
+            	set the text of Status to `Address copied`
+            	go to ResetStatus
+            end
         end
     end
     
@@ -389,7 +429,7 @@ L2:
             set attribute `src` of User to `resources/icon/user.png`
             set attribute `title` of User to `Login`
             gosub to SetStatusRed
-            set the content of Status to `Not logged in`
+            set the text of Status to `Not logged in`
             put empty into storage as `user.email`
             put empty into storage as `user.password`
             go to ResetStatus
@@ -449,14 +489,64 @@ L2:
             set attribute `src` of User to `resources/icon/user-loggedin.png`
             set attribute `title` of User to `Logged in as ` cat property `name` of UserRecord
             gosub to SetStatusGreen
-            set the content of Status to `Logged in as  '` cat Name cat property `name` of UserRecord cat `'`
+            set the text of Status to `Logged in as  '` cat Name cat property `name` of UserRecord cat `'`
             fork to ResetStatus
         end
     end
     
     get Item from storage as `alreadyrun`
-    if Item is empty go to ShowHelp
+    if Item is empty fork to ShowHelp
+    
+    wait 10 ticks
+
+    put property `arg` of Args into Arg
+    if Arg includes `.json`
+    begin
+        rest get Presentation from `/resources/users/` cat Arg cat `?v=` cat now
+        send to StepsModule
+        send to BlocksModule
+        send to ContentModule
+    	iwsy script Presentation
+        set style `display` of Player to `block`
+		create Mask in Body
+        set the style of Mask to `position:absolute;top:0;left:0;width:100%;height:100%;background:black`
+        create FSPrompt in Mask
+        set the style of FSPrompt to
+        	`width:50%;height:50%;position:absolute;left:50%;top:50%;transform:translate(-50%, -50%)`
+        set attribute `src` of FSPrompt to `resources/img/fullscreen.png`
+        on click FSPrompt go to FullScreenManual
+        on key
+        begin
+            if the key is `Enter` go to FullScreenAuto
+            else if the key is `ArrowRight` go to FullScreenManual
+            else if the key is ` ` go to FullScreenManual
+        end
+    end
+    else put empty into Arg
+    
 	stop
+
+FullScreenAuto:
+	remove element Mask
+	iwsy run fullscreen auto then
+    begin
+    	clear Running
+        on click FSPrompt stop
+        on key stop
+    end
+    set Running
+    stop
+
+FullScreenManual:
+	remove element Mask
+	iwsy run fullscreen manual then
+    begin
+    	clear Running
+        on click FSPrompt stop
+        on key stop
+    end
+    set Running
+    stop
 
 ShowHelp:
     if Running stop
@@ -666,14 +756,14 @@ SelectFile:
     put File into CurrentScriptName
 	if UserRecord rest get Presentation from
     	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
-!    else get Presentation from storage as File
+    else get Presentation from storage as File
     send to StepsModule
     send to BlocksModule
     send to ContentModule
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
     gosub to SetStatusGreen
-    set the content of Status to `Presentation '` cat File cat `' loaded`
+    set the text of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     set ShowRun
     set style `display` of FileManPanel to `none`
@@ -697,7 +787,8 @@ SetStatusGreen:
 
 ResetStatus:
     wait 2
-    set the content of Status to ``
+    set the text of Status to ``
+    set attribute `title` of Status to ``
     stop
 
 DoRunStop:
@@ -710,10 +801,10 @@ DoRunStop:
     end
     else
     begin
-    	set style `display` of Player to `block`
     	put property `steps` of Presentation into Item
-    	if the json count of Item is 0 stop
+    	if the json count of Item is 1 stop
     	set Running
+    	set style `display` of Player to `block`
         set style `display` of FileManPanel to `none`
 		gosub to ClearStepsButtons
         set attribute `src` of RunStop to `resources/icon/runstop.png`
@@ -744,8 +835,10 @@ DoRunStop:
 	stop
 
 RunFullScreen:
+    put property `steps` of Presentation into Item
+    if the json count of Item is 1 stop
 	if Running iwsy stop
-	else iwsy run `fullscreen`
+	else iwsy run fullscreen
     toggle Running
 	stop
 

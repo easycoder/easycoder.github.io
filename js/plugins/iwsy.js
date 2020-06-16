@@ -83,13 +83,14 @@ const EasyCoder_IWSY = {
 					return true;
 				case `run`:
 					const pc = compiler.getPc();
-					let mode = {
-						type: `constant`,
-						numeric: false,
-						content: `normal`
-					};
-					if (compiler.nextToken() !== `then`) {
-						mode = compiler.getValue();
+					let mode = `normal`;
+					let startMode = `wait`;
+					if (compiler.nextToken() === `fullscreen`) {
+						mode = compiler.getToken();
+						if ([`auto`, `manual`].includes(compiler.nextToken())) {
+							startMode = compiler.getToken();
+							compiler.next();
+						}
 					}
 					compiler.addCommand({
 						domain: `iwsy`,
@@ -97,6 +98,7 @@ const EasyCoder_IWSY = {
 						lino,
 						action,
 						mode,
+						startMode,
 						then: 0
 					});
 					// Get the 'then' code, if any
@@ -188,7 +190,7 @@ const EasyCoder_IWSY = {
 					break;
 				case `run`:
 					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.run(program.getValue(command.mode), () => {
+						EasyCoder.iwsyFunctions.run(command.mode, command.startMode, () => {
 							program.run(command.then);
 						});
 						return 0;
