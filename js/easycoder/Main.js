@@ -43,8 +43,11 @@ const EasyCoder = {
 			tokens,
 			scriptLines
 		} = source ? source : program.source;
-		const lino = this.compiling ? tokens[EasyCoder_Compiler.getIndex()].lino : program[program.pc].lino;
-		var errString = (this.compiling  ? `Compile` : `Runtime`) + ` error in '${program.script}'`;
+		const compiler = EasyCoder_Compiler;
+		const lino = this.compiling ? tokens[compiler.getIndex()].lino : program[program.pc].lino;
+		var errString = this.compiling
+			? `Compile error in '${compiler.script}'`
+			: `Runtime error in '${program.script}'`;
 		errString += `:\n`;
 		var start = lino - 5;
 		start = start < 0 ? 0 : start;
@@ -53,7 +56,7 @@ const EasyCoder = {
 			errString += nn + ` ` + scriptLines[n].line.split(`\\s`).join(` `) + `\n`;
 		}
 		errString += `${err.message}\n`;
-		const warnings = EasyCoder_Compiler.getWarnings();
+		const warnings = compiler.getWarnings();
 		if (warnings.length) {
 			errString += `Warnings:\n`;
 			for (const warning of warnings) {
