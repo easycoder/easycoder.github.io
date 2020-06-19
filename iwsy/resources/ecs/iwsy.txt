@@ -20,13 +20,10 @@
     div UserPanel
     div FileManPanel
     div HelpPanel
-    div Panel
-    div Div
     div Mask
     table Table
     tr TR
     td TD
-    span Span
     input Status
     input NameEditor
     button SectionButton
@@ -53,6 +50,7 @@
     variable Content
     variable Script
     variable Presentation
+    variable OriginalPresentation
     variable Name
     variable ShowRun
     variable ReadOnly
@@ -294,6 +292,7 @@ Start:
 
     put empty into LastSavedState
     put empty into UserRecord
+    put empty into storage as `user.home`
     
     on click New
     begin
@@ -401,7 +400,7 @@ Start:
         end
     end
     
-    on click FileMan
+    on click RunStop
     begin
     	if Running stop
         if UserRecord is empty stop
@@ -436,7 +435,7 @@ Start:
         end
         else send `login` to UserModule
     end
-    
+
     gosub to CreateNewPresentation
     put Presentation into LastSavedState
     gosub to SetupSteps
@@ -484,6 +483,8 @@ Start:
             put UserRecord into storage as `.user`
             put property `home` of UserRecord into UserHome
             put UserHome cat `/` cat property `id` of UserRecord into UserHome
+            put UserHome into storage as `user.home`
+            iwsy path `resources/users/` cat UserHome cat `/scripts/`
             put property `email` of UserRecord into UserEmail
             get UserPassword from storage as `user.password`
             set attribute `src` of User to `resources/icon/user-loggedin.png`
@@ -493,9 +494,6 @@ Start:
             fork to ResetStatus
         end
     end
-    
-    get Item from storage as `alreadyrun`
-    if Item is empty fork to ShowHelp
     
     wait 10 ticks
 
@@ -522,7 +520,12 @@ Start:
             else if the key is ` ` go to FullScreenManual
         end
     end
-    else put empty into Arg
+    else
+    begin
+    	put empty into Arg
+	    get Item from storage as `alreadyrun`
+	    if Item is empty fork to ShowHelp
+    end
     
 	stop
 
@@ -814,24 +817,46 @@ DoRunStop:
 
         iwsy onstep
         begin
-            set Message to object
-            set property `action` of Message to `step`
-            set property `step` of Message to the step
-            send Message to StepsModule
-            set Message to object
-            set property `action` of Message to `running`
-            send Message to StepsModule
+        	put the iwsy step into N
+            if N is -1
+            begin
+!            	set the content of NameEditor to empty
+            	put the iwsy script into Presentation
+            	go to PrepareScript
+            end
+            else
+            begin
+                set Message to object
+                set property `action` of Message to `step`
+                set property `step` of Message to N
+                send Message to StepsModule
+            end
         end
 
+		put Presentation into OriginalPresentation
+!        put NameEditor into OriginalName
 		set style `display` of HelpPanel to `none`
+        set Message to object
+        set property `action` of Message to `running`
+        send Message to StepsModule
 		iwsy run then
         begin
 			gosub to ClearStepsButtons
     		set attribute `src` of RunStop to `resources/icon/run.png`
             clear Running
-            stop
+!			set the text of NameEditor to OriginalName
+            put OriginalPresentation into Presentation
+            go to PrepareScript
         end
     end
+	stop
+
+PrepareScript:
+    send to StepsModule
+    send to BlocksModule
+    send to ContentModule
+    put Presentation into LastSavedState
+    gosub to UpdateCurrentSection
 	stop
 
 RunFullScreen:

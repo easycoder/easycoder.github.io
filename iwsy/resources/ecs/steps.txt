@@ -28,6 +28,7 @@
     select ContentSelect
     select TargetSelect
     select ContinueSelect
+    select ChainSelect
     input InitInput
     input TitleInput
     input LabelInput
@@ -67,12 +68,18 @@
     variable BlockNames
     variable ContentNames
     variable ContinueTypes
+    variable ChainNames
     variable TrueFalse
     variable Response
     variable Message
     variable Running
     variable SavedIndex
     variable TargetText
+    variable Email
+    variable Password
+    variable UserHome
+    variable Files
+    variable FileCount
     variable N
     variable B
 
@@ -288,7 +295,8 @@ Restart:
     json add `crossfade` to ActionNames
     json add `transition` to ActionNames
     json add `goto` to ActionNames
-    json add `load` to ActionNames
+!    json add `load` to ActionNames
+    json add `chain` to ActionNames
     set InitProperties to array
     json add `aspect ratio` to InitProperties
     json add `background` to InitProperties
@@ -315,6 +323,8 @@ SetupArrays:
     set the elements of TitleInput to N
     set the elements of LabelInput to N
     set the elements of DurationInput to N
+    set the elements of URLInput to N
+    set the elements of ChainSelect to N
     set the elements of ContinueSelect to N
     set the elements of Editor to N
     put property `blocks` of Presentation into Blocks
@@ -436,6 +446,7 @@ ReloadStepEditor:
     else if Action is `transition` gosub to EditTransition
     else if Action is `goto` gosub to EditGoto
     else if Action is `load` gosub to EditLoad
+    else if Action is `chain` gosub to EditChain
     else
     begin
     end
@@ -690,9 +701,56 @@ EditLoad:
     set the style of TD to `width:6em`
     set the content of TD to `URL:`
     create TD in TR
+    index URLInput to SelectedStep
     create URLInput in TD
     set the style of URLInput to `width:100%`
     set the content of URLInput to property `url` of CurrentStep
+	return
+
+EditChain:
+    get Email from storage as `user.email`
+    get Password from storage as `user.password`
+    get UserHome from storage as `user.home`
+	set ChainNames to array
+    if UserHome
+    begin
+        rest get Files from `ulist/` cat Email cat `/` cat Password cat `/`
+        	cat `users/` cat UserHome cat `/scripts`
+        put the json count of Files into FileCount
+        put 0 into N
+        while N is less than FileCount
+        begin
+            put element N of Files into Item
+            if property `type` of Item is `json` json add property `name` of Item to ChainNames
+            add 1 to N
+        end
+    end
+    else
+    begin
+    	get Files from storage
+	  	put the json count of Files into FileCount
+	  	put 0 into N
+	  	while N is less than FileCount
+	  	begin
+	  		put element N of Files into Item
+	    	if left 1 of Item is not `.`
+            begin
+            	if the position of `.json` in Item is not -1 json add Item to ChainNames
+            end
+	    	add 1 to N
+	  	end
+    end
+    json sort ChainNames
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:6em`
+    set the content of TD to `Script:`
+    create TD in TR
+    index ChainSelect to SelectedStep
+    create ChainSelect in TD
+    set the style of ChainSelect to `width:100%`
+    put property `script` of CurrentStep into Name
+    set ChainSelect from ChainNames as Name
 	return
 
 EditBlockList:
@@ -1030,6 +1088,11 @@ SaveCurrentStep:
     begin
     	put property `url` of CurrentStep into URL
         if URL is empty set property `url` of CurrentStep to `******`
+    end
+	else if Action is `chain`
+    begin
+    	index ChainSelect to SelectedStep
+    	set property `script` of CurrentStep to ChainSelect
     end
     set element SelectedStep of Steps to CurrentStep
     set property `steps` of Presentation to Steps
