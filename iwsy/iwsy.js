@@ -1,9 +1,12 @@
 // IWSY
 
-const IWSY = (playerElement, text) => {
+const IWSY = (playerElement, scriptObject) => {
 
     let player = playerElement;
-    let script = text;
+    let script = scriptObject;
+    let homeScript;
+    let afterRun;
+    let path;
 
     // Set up all the blocks
     const setupBlocks = () => {
@@ -281,7 +284,7 @@ const IWSY = (playerElement, text) => {
                             step.next();
                         } else {
                             const element = document.createElement(`div`);
-                            block.element.parentElement.appendChild(element);
+                            player.appendChild(element);
                             element.style.position = `absolute`;
                             element.style.opacity = `0.0`;
                             element.style.left = block.element.style.left;
@@ -480,7 +483,12 @@ const IWSY = (playerElement, text) => {
             const interval = setInterval(() => {
                 if (animStep < animSteps) {
                     const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-                    doTransitionStep(block, target, ratio);
+                    try {
+                        doTransitionStep(block, target, ratio);
+                    } catch (err) {
+                        clearInterval(interval);
+                        throw Error(err);
+                    }
                     animStep++;
                 } else {
                     clearInterval(interval);
@@ -502,10 +510,12 @@ const IWSY = (playerElement, text) => {
 
     // Remove all the blocks from the player
     const removeBlocks = () => {
-        for (const block of script.blocks) {
-            if (block.element) {
-                removeElement(block.element);
-                delete(block.element);
+        if (Array.isArray(script.blocks)) {
+            for (const block of script.blocks) {
+                if (block.element) {
+                    removeElement(block.element);
+                    delete(block.element);
+                }
             }
         }
     };
@@ -515,8 +525,6 @@ const IWSY = (playerElement, text) => {
         const parent = element.parentElement;
         if (parent) {
             parent.removeChild(element);
-        } else {
-            throw Error(`element has no parent`);
         }
         element.remove();
     };
@@ -545,7 +553,6 @@ const IWSY = (playerElement, text) => {
             document.title = step.title;
         }
         if (step.css) {
-            console.log(`Set styles at ${step.index}`);
             setHeadStyle(step.css.split(`%0a`).join(`\n`));
         }
         const aspect = step[`aspect ratio`];
@@ -589,12 +596,7 @@ const IWSY = (playerElement, text) => {
         }
     };
 
-    // Chain to another presentation
-    const chain = step => {
-        step.next();
-    };
-
-    // Embed another presentation
+    // Embed another script
     const embed = step => {
         step.next();
     };
@@ -602,9 +604,9 @@ const IWSY = (playerElement, text) => {
     // Restore the cursor
     const restoreCursor = () => {
         player.style.cursor = `pointer`;
-        if (script.then) {
-            script.then();
-            script.then = null;
+        script = homeScript;
+        if (afterRun) {
+            afterRun();
         }
     };
 
@@ -821,7 +823,6 @@ const IWSY = (playerElement, text) => {
         transition,
         goto,
         load,
-        chain,
         embed
     };
 
@@ -843,27 +844,68 @@ const IWSY = (playerElement, text) => {
                 }
             }
         }
+
+        const onStepCB = script.onStepCB;
+        if (step.action === `chain`) {
+            const runMode = script.runMode;
+            fetch(`${path}${step.script}`)
+            .then(response => {
+                if (response.status >= 400) {
+                    throw Error(`Unable to load ${step.script}: ${response.status}`)
+                }
+                response.json().then(data => {
+                    script = data;
+                    if (onStepCB) {
+                        onStepCB(-1);
+                    }
+                    initScript();
+                    script.runMode = runMode;
+                    doStep(script.steps[1]);
+                });
+            })
+            .catch(err => {
+              throw Error(`Fetch Error :${err}`);
+            });
+            return;
+        }
+        
         const actionName = step.action.split(` `).join(``);
         let handler = actions[actionName];
-        if (typeof handler === `undefined`) {
-            handler = IWSY.plugins[actionName];
+        if (script.runMode === `auto`) {
             if (typeof handler === `undefined`) {
-                throw Error(`Unknown action: '${step.action}'`);
+                handler = IWSY.plugins[actionName];
+                if (typeof handler === `undefined`) {
+                    throw Error(`Unknown action: '${step.action}'`);
+                }
+            }
+            if (onStepCB) {
+                onStepCB(step.index);
+            }
+            try {
+                handler(step);
+            } catch (err) {
+                console.log(`Step ${step.index} (${step.action}): ${err}`);
+                alert(`Step ${step.index} (${step.action}): ${err}`);
+            }
+        } else {
+            try {
+                handler(step);
+            } catch (err) {
+                console.log(JSON.stringify(step,0,2) + `\n` + JSON.stringify(handler,0,2));
+                console.log(`Step ${step.index} (${step.action}): ${err}`);
+                alert(`Step ${step.index} (${step.action}): ${err}`);
             }
         }
-        if (script.onStepCB && script.runMode === `auto`) {
-            script.onStepCB(step.index);
-        }
-        try {
-            handler(step);
-        } catch (err) {
-            console.log(`Step ${step.index} (${step.action}): ${err}`);
-            alert(`Step ${step.index} (${step.action}): ${err}`);
-        }
+
     };
 
     ///////////////////////////////////////////////////////////////////////////////
     // These are all the exported functions
+
+    // Get the script
+    const getScript = () => {
+        return script;
+    };
     
     // Set the script
     const setScript = newScript => {
@@ -872,12 +914,17 @@ const IWSY = (playerElement, text) => {
         initScript();
     };
     
+    // Set the path
+    const setPath = p => {
+        path = p;
+    };
+    
     // Go to a specified step number
-    const gotoStep = (target) => {
+    const gotoStep = target => {
         script.scanTarget = target;
         script.runMode = `manual`;
         scan();
-};
+    };
     
     // Show a block
     const block = blockIndex => {
@@ -936,7 +983,8 @@ const IWSY = (playerElement, text) => {
     
     // Run the presentation
     const run = (mode, startMode, then) => {
-        script.then = then;
+        homeScript = JSON.parse(JSON.stringify(script));
+        afterRun = then;
         initScript();
         if (mode === `fullscreen`) {
             if (document.fullscreenElement) {
@@ -996,7 +1044,9 @@ const IWSY = (playerElement, text) => {
     setupShowdown();
     initScript();
     return {
+        getScript,
         setScript,
+        setPath,
         gotoStep,
         block,
         run,

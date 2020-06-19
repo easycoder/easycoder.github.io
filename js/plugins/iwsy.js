@@ -50,7 +50,17 @@ const EasyCoder_IWSY = {
 						});
 						return true;
 					}
-					return false;					
+					return false;	
+				case `path`:	
+					const path = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						path
+					});
+					return true;			
 				case `script`:
 					const script = compiler.getNextValue();
 					compiler.addCommand({
@@ -141,7 +151,6 @@ const EasyCoder_IWSY = {
 		run: (program) => {
 			const command = program[program.pc];
 			const action = command.action;
-			let scriptRecord;
 			let script;
 			switch (action) {
 				case `init`:
@@ -166,6 +175,11 @@ const EasyCoder_IWSY = {
 						alert(`iwsy load: Badly formatted script`);
 					}
 					EasyCoder.iwsyFunctions = IWSY(player, script);
+					break;
+				case `path`:
+					if (EasyCoder.iwsyFunctions) {
+						EasyCoder.iwsyFunctions.setPath(program.getValue(command.path));
+					}
 					break;
 				case `script`:
 					script = program.getValue(command.script);
@@ -242,12 +256,15 @@ const EasyCoder_IWSY = {
 
 		compile: (compiler) => {
 			if (compiler.tokenIs(`the`)) {
-				if (compiler.nextTokenIs(`step`)) {
-					compiler.next();
-					return {
-						domain: `iwsy`,
-						type: `step`
-					};
+				if (compiler.nextTokenIs(`iwsy`)) {
+					const type = compiler.nextToken();
+					if ([`script`, `step`].includes(type)) {
+						compiler.next();
+						return {
+							domain: `iwsy`,
+							type
+						};
+					}
 				}
 			}
 			return null;
@@ -255,6 +272,17 @@ const EasyCoder_IWSY = {
 
 		get: (program, value) => {
 			switch (value.type) {
+			case `script`:
+				let script = null;
+				if (EasyCoder.iwsyFunctions) {
+					script = EasyCoder.iwsyFunctions.getScript();
+					return {
+						type: `constant`,
+						numeric: false,
+						content: JSON.stringify(script)
+					}
+				}
+				break;
 			case `step`:
 				return {
 					type: `constant`,

@@ -197,9 +197,8 @@ Restart:
     on click DeleteItem
     begin
     	put the index of DeleteItem into N
-        put element N of ItemNames into ItemName
         put property `content` of Presentation into Items
-        json delete property ItemName of Items
+        json delete element N of Items
         set property `content` of Presentation to Items
         put -1 into SelectedItem
         go to Restart
