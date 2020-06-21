@@ -23,42 +23,53 @@ window.onload = () => {
         return xhr;
     };
 
-    const scriptElement = document.getElementById(`iwsy-script`);
-    if (scriptElement) {
-        const request = createCORSRequest(`${scriptElement.innerText}?v=${Math.floor(Date.now())}`);
-        if (!request) {
-            throw Error(`Unable to access the JSON script`);
-        }
-
-        request.onload = () => {
-            if (200 <= request.status && request.status < 400) {
-                const script = JSON.parse(request.responseText);
-                const iwsy = IWSY(document.getElementById(`iwsy-container`), script);
-                iwsy.onStep(index => {
-                });
-                const run = () => {
-                    iwsy.run(() => {
-                        console.log(`All done`);
-                    });
-                };
-                // Wait for a click/tap or a keypress to start
-                document.addEventListener(`click`, run);
-                document.onkeydown = function (event) {
-                    if (event.code === `Enter`) {
-                        mode = `auto`;
-                    }
-                    run();
-                    return true;
-                };
-        } else {
+    const start = mode => {
+        const container = document.getElementById(`iwsy-container`);
+        const scriptElement = document.getElementById(`iwsy-script`);
+        const path = scriptElement.innerText;
+        if (scriptElement) {
+            const request = createCORSRequest(`${path}?v=${Math.floor(Date.now())}`);
+            if (!request) {
                 throw Error(`Unable to access the JSON script`);
             }
-        };
 
-        request.onerror = () => {
-            throw Error(`Unable to access the JSON script`);
-        };
+            request.onload = () => {
+                if (200 <= request.status && request.status < 400) {
+                    const script = JSON.parse(request.responseText);
+                    const iwsy = IWSY(container, script);
+                    const slash = path.lastIndexOf(`/`);
+                    iwsy.setPath(path.slice(0, slash + 1));
+                    iwsy.onStep(index => {
+                    });
+                    iwsy.run(`normal`, mode, () => {
+                        console.log(`All done`);
+                    });
+                    } else {
+                    throw Error(`Unable to access the JSON script`);
+                }
+            };
 
-        request.send();
-    }
+            request.onerror = () => {
+                throw Error(`Unable to access the JSON script`);
+            };
+
+            request.send();
+        }
+    };
+
+    // Wait for a click/tap or a keypress to start
+    document.addEventListener(`click`, () => {
+        document.removeEventListener(`click`);
+        start(`auto`);
+    });
+    document.onkeydown = event => {
+        document.onkeydown = null;
+        if (event.code === `Enter`) {
+           start(`auto`);
+        }
+        else {
+           start(`manual`);
+        }
+        return true;
+    };
 };
