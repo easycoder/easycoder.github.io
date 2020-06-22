@@ -160,7 +160,7 @@ const EasyCoder_IWSY = {
 					});
 					return 0;
 				case `load`:
-					if (typeof EasyCoder.iwsyFunctions !== `undefined`) {
+					if (program.iwsyFunctions) {
 						throw Error(`IWSY has already been set up`);
 					}
 					const playerRecord = program.getSymbolRecord(command.player);
@@ -174,11 +174,11 @@ const EasyCoder_IWSY = {
 					} catch (err) {
 						alert(`iwsy load: Badly formatted script`);
 					}
-					EasyCoder.iwsyFunctions = IWSY(player, script);
+					program.iwsyFunctions = IWSY(player, script);
 					break;
 				case `path`:
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.setPath(program.getValue(command.path));
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.setPath(program.getValue(command.path));
 					}
 					break;
 				case `script`:
@@ -188,42 +188,43 @@ const EasyCoder_IWSY = {
 					} catch (err) {
 						alert(`iwsy script: Badly formatted script`);
 					}
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.setScript(script);
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.setScript(script);
 					}
 					break;
 				case `goto`:
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.gotoStep(program.getValue(command.target));
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.gotoStep(program.getValue(command.target));
 					}
 					break;
 				case `block`:
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.block(program.getValue(command.block));
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.block(program.getValue(command.block));
 					}
 					break;
 				case `run`:
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.run(command.mode, command.startMode, () => {
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.run(command.mode, command.startMode, () => {
 							program.run(command.then);
 						});
 						return 0;
 					}
 					break;
 				case `stop`:
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.stop();
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.stop();
+						delete program.iwsyFunctions;
 					}
 					break;
 				case `removeStyles`:
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.removeStyles();
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.removeStyles();
 					}
 					break;
 				case `onstep`:
 					const cb = command.pc + 2;
-					if (EasyCoder.iwsyFunctions) {
-						EasyCoder.iwsyFunctions.onStep(function(step) {
+					if (program.iwsyFunctions) {
+						program.iwsyFunctions.onStep(function(step) {
 							program.iwsyStep = step;
 							program.run(cb);
 						});
@@ -274,8 +275,8 @@ const EasyCoder_IWSY = {
 			switch (value.type) {
 			case `script`:
 				let script = null;
-				if (EasyCoder.iwsyFunctions) {
-					script = EasyCoder.iwsyFunctions.getScript();
+				if (program.iwsyFunctions) {
+					script = program.iwsyFunctions.getScript();
 					return {
 						type: `constant`,
 						numeric: false,
