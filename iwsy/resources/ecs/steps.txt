@@ -776,10 +776,12 @@ EditBlockList:
     	gosub to SaveCurrentStep
         json add empty to Blocks
         set property `blocks` of CurrentStep to Blocks
+        set element SelectedStep of Steps to CurrentStep
         clear Table
         go to ReloadStepEditor
     end
     put property `blocks` of CurrentStep into Blocks
+    if Blocks is empty set Blocks to array
     put the json count of Blocks into N
     set the elements of BlockSelect to N
     set the elements of DeleteContent to N
@@ -814,6 +816,7 @@ EditBlockList:
     	put the index of DeleteContent into N
         json delete element N of Blocks
         set property `blocks` of CurrentStep to Blocks
+        set element SelectedStep of Steps to CurrentStep
         clear Table
         go to ReloadStepEditor
     end
@@ -912,7 +915,7 @@ CreateNewAction:
     	put property `blocks` of CurrentStep into Blocks
         if Blocks is empty
         begin
-        	set Blocks to object
+        	set Blocks to array
             set property `blocks` of CurrentStep to Blocks
         end
     end
@@ -1026,7 +1029,7 @@ SaveCurrentStep:
     	put property `blocks` of CurrentStep into Blocks
         if Blocks is empty
         begin
-        	set Blocks to object
+        	set Blocks to array
             set property `blocks` of CurrentStep to Blocks
         end
     end
