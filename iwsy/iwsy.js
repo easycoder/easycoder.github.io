@@ -487,7 +487,6 @@ const IWSY = (playerElement, scriptObject) => {
                         doTransitionStep(block, target, ratio);
                     } catch (err) {
                         clearInterval(interval);
-                        throw Error(err);
                     }
                     animStep++;
                 } else {
@@ -828,75 +827,80 @@ const IWSY = (playerElement, scriptObject) => {
 
     // Process a single step
     const doStep = step => {
-        if (!step) {
-            return;
-        }
-        if (step.title) {
-            console.log(`Step ${step.index}: ${step.title}`);
-        } else {
-            console.log(`Step ${step.index}: ${step.action}`);
-        }
-        if (script.speed === `scan` && step.index === script.scanTarget) {
-            script.speed = `normal`;
-            for (const block of script.blocks) {
-                if (block.element) {
-                    block.element.style.display = `block`;
-                }
+        try {
+            if (!step) {
+                return;
             }
-        }
-
-        const onStepCB = script.onStepCB;
-        if (step.action === `chain`) {
-            const runMode = script.runMode;
-            fetch(`${path}${step.script}`)
-            .then(response => {
-                if (response.status >= 400) {
-                    throw Error(`Unable to load ${step.script}: ${response.status}`)
-                }
-                response.json().then(data => {
-                    script = data;
-                    if (onStepCB) {
-                        onStepCB(-1);
+            if (step.title) {
+                console.log(`Step ${step.index}: ${step.title}`);
+            } else {
+                console.log(`Step ${step.index}: ${step.action}`);
+            }
+            if (script.speed === `scan` && step.index === script.scanTarget) {
+                script.speed = `normal`;
+                for (const block of script.blocks) {
+                    if (block.element) {
+                        block.element.style.display = `block`;
                     }
-                    initScript();
-                    script.runMode = runMode;
-                    doStep(script.steps[1]);
-                });
-            })
-            .catch(err => {
-              throw Error(`Fetch Error :${err}`);
-            });
-            return;
-        }
-        
-        const actionName = step.action.split(` `).join(``);
-        let handler = actions[actionName];
-        if (script.runMode === `auto`) {
-            if (typeof handler === `undefined`) {
-                handler = IWSY.plugins[actionName];
-                if (typeof handler === `undefined`) {
-                    throw Error(`Unknown action: '${step.action}'`);
                 }
             }
-            if (onStepCB) {
-                onStepCB(step.index);
+
+            const onStepCB = script.onStepCB;
+            if (step.action === `chain`) {
+                const runMode = script.runMode;
+                fetch(`${path}${step.script}?v=${Date.now()}`)
+                .then(response => {
+                    if (response.status >= 400) {
+                        throw Error(`Unable to load ${step.script}: ${response.status}`)
+                    }
+                    response.json().then(data => {
+                        script = data;
+                        if (onStepCB) {
+                            onStepCB(-1);
+                        }
+                        initScript();
+                        script.runMode = runMode;
+                        doStep(script.steps[1]);
+                    });
+                })
+                .catch(err => {
+                throw Error(`Fetch Error :${err}`);
+                });
+                return;
             }
-            try {
-                handler(step);
-            } catch (err) {
-                console.log(`Step ${step.index} (${step.action}): ${err}`);
-                alert(`Step ${step.index} (${step.action}): ${err}`);
-            }
-        } else {
-            try {
-                handler(step);
-            } catch (err) {
-                console.log(JSON.stringify(step,0,2) + `\n` + JSON.stringify(handler,0,2));
-                console.log(`Step ${step.index} (${step.action}): ${err}`);
-                alert(`Step ${step.index} (${step.action}): ${err}`);
+            
+            const actionName = step.action.split(` `).join(``);
+            let handler = actions[actionName];
+            if (script.runMode === `auto`) {
+                if (typeof handler === `undefined`) {
+                    handler = IWSY.plugins[actionName];
+                    if (typeof handler === `undefined`) {
+                        throw Error(`Unknown action: '${step.action}'`);
+                    }
+                }
+                if (onStepCB) {
+                    onStepCB(step.index);
+                }
+                try {
+                    handler(step);
+                } catch (err) {
+                    console.log(`Step ${step.index} (${step.action}): ${err}`);
+                    alert(`Step ${step.index} (${step.action}): ${err}`);
+                }
+            } else {
+                try {
+                    handler(step);
+                } catch (err) {
+                    console.log(JSON.stringify(step,0,2) + `\n` + JSON.stringify(handler,0,2));
+                    console.log(`Step ${step.index} (${step.action}): ${err}`);
+                    alert(`Step ${step.index} (${step.action}): ${err}`);
+                }
             }
         }
-
+        catch (err) {
+            console.log(`Step error: ${err}`);
+            throw Error(err);
+        }
     };
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -983,41 +987,46 @@ const IWSY = (playerElement, scriptObject) => {
     
     // Run the presentation
     const run = (mode, startMode, then) => {
-        homeScript = JSON.parse(JSON.stringify(script));
-        afterRun = then;
-        initScript();
-        if (mode === `fullscreen`) {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                player.requestFullscreen();
-                document.onfullscreenchange = () => {
-                    if (document.fullscreenElement) {
-                        player = document.fullscreenElement;
-                        script.nextStep = script.steps[0];  
-                        switch (startMode) {
-                            case `auto`:
-                                script.runMode = `auto`;
-                                release();
-                                break;
-                            case `manual`:
-                                script.runMode = `manual`;
-                                release();
-                                break;
-                            case `wait`:
-                                script.runMode = `manual`;
-                                enterManualMode(null);
-                                break;
+        try {
+            homeScript = JSON.parse(JSON.stringify(script));
+            afterRun = then;
+            initScript();
+            if (mode === `fullscreen`) {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    player.requestFullscreen();
+                    document.onfullscreenchange = () => {
+                        if (document.fullscreenElement) {
+                            player = document.fullscreenElement;
+                            script.nextStep = script.steps[0];  
+                            switch (startMode) {
+                                case `auto`:
+                                    script.runMode = `auto`;
+                                    release();
+                                    break;
+                                case `manual`:
+                                    script.runMode = `manual`;
+                                    release();
+                                    break;
+                                case `wait`:
+                                    script.runMode = `manual`;
+                                    enterManualMode(null);
+                                    break;
+                            }
+                        } else {
+                            player = playerElement;
+                            script.stop = true;
                         }
-                    } else {
-                        player = playerElement;
-                        script.stop = true;
-                    }
-                };
+                    };
+                }
+            } else {
+                script.runMode = `auto`;
+                doStep(script.steps[0]);
             }
-        } else {
-            script.runMode = `auto`;
-            doStep(script.steps[0]);
+        } catch (err) {
+            console.log(`Run error: ${err}`);
+            throw Error(err);
         }
     }
     
