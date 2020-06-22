@@ -52,7 +52,6 @@
     variable Presentation
     variable OriginalPresentation
     variable Name
-    variable ShowRun
     variable ReadOnly
     variable CallStack
     variable Message
@@ -121,8 +120,8 @@ Start:
 
 !	The left-hand panel
     create Left in Body
-	set the style of Left to
-    	`flex:1;height:100%;border-right:1px solid black;margin-right:0.5em;display:flex;flex-direction:column`
+	set the style of Left to `flex:1;height:100%;border-right:1px solid black;margin-right:0.5em;`
+    cat `display:flex;flex-direction:column;max-width:50%`
     
     create Masthead in Left
     set the style of Masthead to
@@ -194,7 +193,7 @@ Start:
     set attribute `title` of FileMan to `File Manager`
     create Link in Buttons
     create RunStop in Link
-    set the style of RunStop to `width:40px;margin-right:1.5em`
+    set the style of RunStop to `width:40px;margin-right:0.5em`
     set attribute `src` of RunStop to `resources/icon/run.png`
     set attribute `title` of RunStop to `Run`
     create Link in Buttons
@@ -221,7 +220,7 @@ Start:
     set the style of FileManPanel to `flex:1;display:none;margin-top:0.5em;border-top:1px solid black`
     
     create HelpPanel in Left
-    set the style of HelpPanel to `flex:1;display:none;margin-top:0.5em;border-top:1px solid black`
+    set the style of HelpPanel to `flex:1;display:none;margin-top:0.5em;border-top:1px solid black;overflow:scroll`
 
 !	The right-hand panel
     create Right in Body
@@ -313,6 +312,9 @@ Start:
     	end
     	clear FileIsOpen
         clear Player
+        clear Running
+        iwsy stop
+        set attribute `src` of RunStop to `resources/icon/run.png`
         set the content of NameEditor to empty
         put empty into CurrentScriptName
         gosub to CreateNewPresentation
@@ -400,7 +402,7 @@ Start:
         end
     end
     
-    on click RunStop
+    on click FileMan
     begin
     	if Running stop
         if UserRecord is empty stop
@@ -411,6 +413,7 @@ Start:
         end
         set style `display` of Player to `none`
         set style `display` of HelpPanel to `none`
+        if HelpModule is running send `stop` to HelpModule
         set style `display` of FileManPanel to `block`
         send to FileManModule
     end
@@ -473,6 +476,7 @@ Start:
         begin
         	set style `display` of FileManPanel to `none`
         	set style `display` of HelpPanel to `none`
+        	if HelpModule is running send `stop` to HelpModule
         	set style `display` of Player to `block`
         	put property `block` of Message into N
             iwsy block N
@@ -553,7 +557,8 @@ FullScreenManual:
 
 ShowHelp:
     if Running stop
-    if HelpModule is not running
+    if HelpModule is running send `stop` to HelpModule
+    else
     begin
         require js
         	`https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/showdown.js?v=` cat now
@@ -768,9 +773,11 @@ SelectFile:
     gosub to SetStatusGreen
     set the text of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
-    set ShowRun
+    clear Running
+    set attribute `src` of RunStop to `resources/icon/run.png`
     set style `display` of FileManPanel to `none`
     set style `display` of HelpPanel to `none`
+    if HelpModule is running send `stop` to HelpModule
     set style `display` of Player to `block`
     iwsy script Presentation
 
@@ -806,11 +813,13 @@ DoRunStop:
     begin
     	put property `steps` of Presentation into Item
     	if the json count of Item is 1 stop
-    	set Running
+    	if HelpModule is running send `stop` to HelpModule
     	set style `display` of Player to `block`
         set style `display` of FileManPanel to `none`
+        set style `display` of HelpPanel to `none`
 		gosub to ClearStepsButtons
         set attribute `src` of RunStop to `resources/icon/runstop.png`
+    	set Running
         
         put 0 into N
         gosub to SelectSection
@@ -820,7 +829,6 @@ DoRunStop:
         	put the iwsy step into N
             if N is -1
             begin
-!            	set the content of NameEditor to empty
             	put the iwsy script into Presentation
             	go to PrepareScript
             end
@@ -834,8 +842,8 @@ DoRunStop:
         end
 
 		put Presentation into OriginalPresentation
-!        put NameEditor into OriginalName
 		set style `display` of HelpPanel to `none`
+        if HelpModule is running send `stop` to HelpModule
         set Message to object
         set property `action` of Message to `running`
         send Message to StepsModule
@@ -844,7 +852,6 @@ DoRunStop:
 			gosub to ClearStepsButtons
     		set attribute `src` of RunStop to `resources/icon/run.png`
             clear Running
-!			set the text of NameEditor to OriginalName
             put OriginalPresentation into Presentation
             go to PrepareScript
         end
@@ -862,6 +869,12 @@ PrepareScript:
 RunFullScreen:
     put property `steps` of Presentation into Item
     if the json count of Item is 1 stop
+    if HelpModule is running send `stop` to HelpModule
+    set style `display` of Player to `block`
+    set style `display` of FileManPanel to `none`
+    set style `display` of HelpPanel to `none`
+    iwsy init
+    iwsy script Presentation
 	if Running iwsy stop
 	else iwsy run fullscreen
     toggle Running

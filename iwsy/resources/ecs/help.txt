@@ -4,6 +4,7 @@
 
     import div Container
 
+    div Player
     callback DecoratorCallback
     a Link
     variable Mobile
@@ -12,6 +13,8 @@
     variable Payload
     variable ImageCount
     variable LinkCount
+    variable HasEmbed
+    variable Embed
     variable Function
     variable Data
     variable Source
@@ -32,7 +35,14 @@
     load showdown
   	on DecoratorCallback go to Decorate
 
-    on message go to Show
+    on message
+    begin
+    	if the message is `stop`
+        begin
+        	if HasEmbed iwsy stop
+        end
+    	else go to Show
+    end
     set ready
     stop
 
@@ -40,6 +50,7 @@ Show:
     set style `display` of Container to `block`
     get Page from storage as `.help`
 GetPage:
+	clear HasEmbed
     if Page is empty
     begin
     	put `iwsy` into Page
@@ -66,8 +77,21 @@ GetPage:
     end
     on click Link
     begin
+    	if HasEmbed iwsy stop
     	put attribute `data-page` of Link into Page
     	go to GetPage
+    end
+    if HasEmbed
+    begin
+    	attach Player to `iwsy-embed`
+        put attribute `data-url` of Player into Data
+        rest get Embed from Data
+        put the position of the last `/` in Data into N
+        add 1 to N
+        put left N of Data into Data
+    	iwsy load Player Embed
+        iwsy path Data
+        iwsy run
     end
     stop
 
@@ -92,6 +116,7 @@ Decorate:
             	put `<span style="font-family:monospace;color:darkred">` cat Data cat `</span>` into Payload
             else if Function is `img` gosub to ProcessImage
             else if Function is `page` gosub to ProcessPage
+            else if Function is `embed` gosub to ProcessEmbed
         end
     end
     set the payload of DecoratorCallback to Payload
@@ -140,7 +165,7 @@ ProcessImage:
     add 1 to ImageCount
     return
 
-!	Process a request for a new page.
+!	Process a request for a new page
 ProcessPage:
 	put the position of `:` in Data into N
     if N is -1 return
@@ -151,6 +176,12 @@ ProcessPage:
     	cat `">` cat Data cat `</a>` into Payload
     add 1 to LinkCount
     return
+
+!	Process a request for an embedded presentation
+ProcessEmbed:
+	put `<div id="iwsy-embed" data-url="` cat Data cat `" style "width:100%"></div>` into Payload
+    set HasEmbed
+	return
 
 Exit:
     set style `display` of Container to `none`

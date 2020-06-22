@@ -170,7 +170,7 @@
         "top": 0,
         "width": 1000,
         "height": 1000,
-        "background": "url('resources/img/SemoigoDawn.jpg')",
+        "background": "url('resources/img/quickstart/SemoigoDawn.jpg')",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
