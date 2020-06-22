@@ -6904,7 +6904,7 @@ const EasyCoder_Json = {
 				targetRecord = program.getSymbolRecord(command.target);
 				const existing = targetRecord.value[targetRecord.index].content;
 				record = existing ? JSON.parse(existing) : [];
-				record.push([`[`, `{`].includes(content[0]) ? JSON.parse(content) :content);
+				record.push(program.isJsonString(content) ? JSON.parse(content) :content);
 				targetRecord.value[targetRecord.index] = {
 					type: `constant`,
 					numeric: false,
