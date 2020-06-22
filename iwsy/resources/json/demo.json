@@ -1,0 +1,327 @@
+{
+  "steps": [
+    {
+      "title": "Init",
+      "action": "init",
+      "label": "",
+      "aspect ratio": "160:89",
+      "background": "white",
+      "border": "1px solid black",
+      "css": ""
+    },
+    {
+      "title": "pause before starting",
+      "action": "pause",
+      "label": "",
+      "duration": 2
+    },
+    {
+      "title": "set up background",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "background",
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "fade up background",
+      "action": "fade up",
+      "label": "",
+      "blocks": [
+        "background"
+      ],
+      "duration": 2,
+      "continue": false
+    },
+    {
+      "title": "pause 2 seconds",
+      "action": "pause",
+      "label": "",
+      "duration": 2
+    },
+    {
+      "title": "set up title and subtitle",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "main title",
+          "content": "main title"
+        },
+        {
+          "block": "subtitle",
+          "content": "subtitle"
+        }
+      ]
+    },
+    {
+      "title": "zoom up title",
+      "action": "transition",
+      "label": "",
+      "blocks": [],
+      "duration": 2,
+      "block": "main title",
+      "target": "center title",
+      "continue": false
+    },
+    {
+      "title": "pause",
+      "action": "pause",
+      "label": "",
+      "duration": 1
+    },
+    {
+      "title": "fade up subtitle",
+      "action": "fade up",
+      "label": "",
+      "blocks": [
+        "subtitle"
+      ],
+      "duration": 1,
+      "continue": false
+    },
+    {
+      "title": "pause",
+      "action": "pause",
+      "label": "",
+      "duration": 3
+    },
+    {
+      "title": "slide title left",
+      "action": "transition",
+      "label": "",
+      "duration": 3,
+      "block": "main title",
+      "target": "off left",
+      "continue": true
+    },
+    {
+      "title": "slide subtitle right",
+      "action": "transition",
+      "label": "",
+      "duration": 3,
+      "block": "subtitle",
+      "target": "off right",
+      "continue": false
+    },
+    {
+      "title": "fade down background",
+      "action": "fade down",
+      "label": "",
+      "blocks": [
+        "background"
+      ],
+      "duration": 3,
+      "continue": false
+    },
+    {
+      "title": "set up 'For example'",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "message",
+          "content": "for example"
+        }
+      ]
+    },
+    {
+      "title": "show 'For example'",
+      "action": "fade up",
+      "label": "",
+      "blocks": [
+        "message"
+      ],
+      "duration": 0.5,
+      "continue": ""
+    },
+    {
+      "title": "pause",
+      "action": "pause",
+      "label": "",
+      "duration": 4
+    },
+    {
+      "title": "hide text",
+      "action": "fade down",
+      "label": "",
+      "blocks": [
+        "message"
+      ],
+      "duration": 0.5,
+      "continue": ""
+    },
+    {
+      "title": "chain to liguria",
+      "action": "chain",
+      "label": "",
+      "script": "liguria.json"
+    }
+  ],
+  "blocks": [
+    {
+      "defaults": {
+        "name": "background",
+        "parent": "",
+        "left": 0,
+        "top": 0,
+        "width": 1000,
+        "height": 1000,
+        "background": "url('resources/users/2020/160/1/images/SemoigoDawn.jpg')",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 50,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "",
+        "textAlign": "",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    },
+    {
+      "defaults": {
+        "name": "main title",
+        "parent": "",
+        "left": 0,
+        "top": 800,
+        "width": 1000,
+        "height": 200,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 0,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "yellow",
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    },
+    {
+      "defaults": {
+        "name": "center title",
+        "parent": "",
+        "left": 0,
+        "top": 250,
+        "width": 1000,
+        "height": 700,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 80,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "yellow",
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    },
+    {
+      "defaults": {
+        "name": "subtitle",
+        "parent": "",
+        "left": 0,
+        "top": 450,
+        "width": 1000,
+        "height": 200,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 80,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "gold",
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    },
+    {
+      "defaults": {
+        "name": "off left",
+        "parent": "",
+        "left": -1000,
+        "top": 250,
+        "width": 1000,
+        "height": 700,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 80,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "yellow",
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    },
+    {
+      "defaults": {
+        "name": "off right",
+        "parent": "",
+        "left": 1000,
+        "top": 450,
+        "width": 1000,
+        "height": 200,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 80,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "",
+        "textAlign": "",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    },
+    {
+      "defaults": {
+        "name": "message",
+        "parent": "",
+        "left": 0,
+        "top": 200,
+        "width": 1000,
+        "height": 800,
+        "background": "",
+        "border": "",
+        "borderRadius": "",
+        "fontFamily": "",
+        "fontSize": 70,
+        "fontWeight": "",
+        "fontStyle": "",
+        "fontColor": "",
+        "textAlign": "center",
+        "textMarginLeft": "",
+        "textMarginTop": ""
+      }
+    }
+  ],
+  "content": [
+    {
+      "name": "main title",
+      "content": "# I Wanna Show You"
+    },
+    {
+      "name": "subtitle",
+      "content": "Embedded presentations and slide shows"
+    },
+    {
+      "name": "for example",
+      "content": "## For example%0aHere are 3 slides from a presentation    %0aabout villages in Liguria, Italy"
+    }
+  ]
+}
