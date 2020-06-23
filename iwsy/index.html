@@ -2,8 +2,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!--script src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=2.7.1'></script-->
-	<script src='dist/easycoder.js?v=2.7.1'></script>
+	<script src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=2.7.1'></script>
   </head>
 
   <body>
@@ -15,10 +14,9 @@
         script Launcher
 
         variable Script
-        require js `dist/plugins/iwsy.js?v=` cat now
-        rest get Script from `/resources/ecs/iwsy.txt?v=` cat now
+        require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/iwsy.js?v=` cat now
+        rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/iwsy/resources/ecs/iwsy.txt?v=` cat now
         run Script
     </pre>
-    
   </body>
 </html>
