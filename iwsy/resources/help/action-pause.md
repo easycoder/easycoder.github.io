@@ -9,3 +9,5 @@ This action pauses the presentation for a given nmber of seconds.
 The **Action**, **Name** and **Label** properties are present for all actions.
 
 The **Duration** property is the time in seconds the pause should take.
+
+Next: ~page:action-chain:Chain~

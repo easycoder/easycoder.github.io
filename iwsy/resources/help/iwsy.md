@@ -1,14 +1,26 @@
 ~page:contents:Contents~
 
+**Beginners** - See our ~page:quickstart:quickstart tutorial~
+
 # ~iwsy~ - I Wanna Show You 
 
-I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initials) is an online presentation package built to deliver slideshows that either run under manual control or unattended. Instead of being a PC application that's tied to the desktop, ~iwsy~ is entirely browser-based. ~iwsy~ presentations can run here in this web app, they can be embedded in other web pages or they can run as independent web pages.
+I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initials) is a web app you can use to create slideshows that run under either manual control or unattended. Instead of being a PC application that's tied to the desktop, ~iwsy~ is entirely browser-based. ~iwsy~ presentations can run here in this web app, they can be embedded in other web pages or they can run as independent web pages.
+
+## An example
+
+Here is a simple show that forms the basis of our ~page:quickstart:quickstart tutorial~:
+
+~embed:/resources/users/2020/160/1/scripts/demo.json~
 
 ## Quickstart tutorial
 
-These help pages contain everything there is to know about ~iwsy~, but there's a lot to read. Most people just want to get started quickly, so we have a built-in ~page:quickstart:quick-start tutorial~ where you can create a simple presentation - a few slides with text and pictures - in just a few minutes. Once you've completed this first step you'll have a pretty good idea of what ~iwsy~ is all about, and the rest of the help pages won't be nearly as intimidating.
+These help pages contain everything there is to know about ~iwsy~, but there's a lot to read. Most people just want to get started quickly so we built a ~page:quickstart:quickstart tutorial~ where you can create a simple presentation - some slides with text and pictures - in an hour or so. Once you've completed this first step you'll have a pretty good idea of what ~iwsy~ is all about, and the rest of the help pages won't be nearly as intimidating.
 
 ## Feature summary
+
+There are many slideshow/presentation packages, most being quite similar to PowerPoint. The aim here is not to create another identical one but to tackle one or two of the things the others don't do so well. Top of the list is the ability to embed a show into another web page in a seamless manner. The development of ~iwsy~ is driven by the desire to meet this need rather than to excel at formal presentations.
+
+We are also working on a range of features for making the pages themselves dynamic. This covers a number of areas such as transitions, "Ken Burns" effects and the use of audio.
 
 The basic features of ~iwsy~ are:
 
@@ -24,16 +36,6 @@ The basic features of ~iwsy~ are:
 
 ## Background
 
-~iwsy~ started with a need to embed a slide show in a web page, but rather than just a sequence of pictures I wanted something between that and a video. Videos are time-consuming to make and almost impossible to alter when changes happen to the things being described. Presentation packages such as PowerPoint, on the other hand, lack extensive animation features and are hard to embed in a web page. It seemed to me there was room between the two for a new type of product, and once the idea took hold it was hard to put down. It coincided with the Coronoavirus pandemic, which enforced solitude at home and provided the time for development to take place.
-
-Much of my previous work in recent years has been in building websites, often of a specialized nature with unusual interactive needs. Not having an exceptional intellect I have difficulty with complexity and this has become something of an obsession over the years. Rather than face the issue directly I devised a programming language suited to those who, like myself, regard excessive complexity as something to be avoided at all costs. The language, called EasyCoder, is itself written in JavaScript and has been applied to a number of web projects. I have yet to find a user interface that it cannot handle.
-
-EasyCoder takes plain text scripts and compiles them in the browser. This is very quick, typically taking less than 50ms for a 1000-line script. EasyCoder scripts tend to be much shorter than their JavaScript equivalents, though by how much depends on the work being done. More importantly, they are readable by any intelligent person who understands the target domain. The basics of the language can be picked up in a day, which compares with the 3 or 4 months needed to learn React or Angular on top of JavaScript itself. So the long term maintenance prospects of an EasyCoder website such as ~iwsy~ are good as there will always be someone around who can learn it quickly.
-
-The other main advantage of EasyCoder is that it doesn't have a build process. Scripts are loaded directly into the browser and compiled there. The only build tool needed is a text editor.
-
-So that's the environment for ~iwsy~. All of the website UI is coded in EasyCoder. The presentation engine itself is just under 1000 lines of vanilla JavaScript and can be used independently of the ~iwsy~ website. This ensures performance is as good as it can get without moving to WebAssembly, though the latter is always an option.
-
-The project is hosted on GitHub as part of EasyCoder and enquiries are welcome from other programmers who are interested in contributing. The range of transition effects is currently limited so there is considerable scope for extension. An outline plug-in mechanism is also present so it should be possible to enhance the system without major disruption each time.
+~iwsy~ started at the beginning of May 2020 with a need to embed a slide show in a web page, but rather than just a sequence of pictures I wanted something between that and a video. Videos are time-consuming to make and almost impossible to alter when changes happen to the things being described. Presentation packages such as PowerPoint, on the other hand, are very flexible when it comes to making changes but lack extensive animation features and are hard to embed in a web page. It seemed to me there was room between the two for a new type of product, and once the idea took hold it was hard to put down. It coincided with the Coronoavirus pandemic, which enforced solitude at home and provided the time for development to take place.
 
 ~page:contents:Contents~

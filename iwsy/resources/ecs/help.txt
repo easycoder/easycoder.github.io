@@ -85,7 +85,7 @@ GetPage:
     begin
     	attach Player to `iwsy-embed`
         put attribute `data-url` of Player into Data
-        rest get Embed from Data
+        rest get Embed from Data cat `?v=` cat now
         put the position of the last `/` in Data into N
         add 1 to N
         put left N of Data into Data
@@ -101,7 +101,7 @@ GetPage:
 !	Decorate is called for every occurrence of ~...~ in the topic data
 Decorate:
     put the payload of DecoratorCallback into Payload
-    if Payload is `iwsy` put `<img src="resources/icon/iwsy.png" `
+    if Payload is `iwsy` put `<img src="resources/icon/iwsy.png?v=` cat now cat `" `
     	cat `style="height:0.8em;position:relative;top:0.1em" />` into Payload
     else if Payload is `clear` put `<div style="height:1px;clear:both"></div>` into Payload
     else
@@ -127,7 +127,7 @@ ProcessImage:
 	put the position of `:` in Data into N
     if N is -1
     begin
-        put `<img id="ec-image-` cat ImageCount cat `" src="` cat Data cat `" />` into Payload
+        put `<img id="ec-image-` cat ImageCount cat `" src="` cat Data cat `?v=` cat now cat `" />` into Payload
         add 1 to ImageCount
         return
     end
@@ -161,7 +161,7 @@ ProcessImage:
     	add 1 to N
     end
     put `<img id="ec-image-` cat ImageCount cat `" src="` cat Source
-    	cat `" style="` cat Style cat `" />` into Payload
+    	cat `?v=` cat now cat `" style="` cat Style cat `" />` into Payload
     add 1 to ImageCount
     return
 

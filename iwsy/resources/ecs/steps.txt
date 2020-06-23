@@ -360,9 +360,8 @@ ASA2:
         take 1 from N
     end
     gosub to CreateNewStep
-    set element N of Steps to CurrentStep
+    set element SelectedStep of Steps to CurrentStep
 ASA3:
-    put -1 into SelectedStep
     set property `steps` of Presentation to Steps
     go to Restart
 
