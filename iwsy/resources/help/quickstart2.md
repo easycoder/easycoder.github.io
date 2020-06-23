@@ -4,17 +4,15 @@
 
 In ~page:quickstart:Part 1~ we created a presentation that just fades up a background panel. In this part we'll add some text to it and look at some of the actions available.
 
-After the background has appeared, let's hold it on the screen for a couple of seconds. There are 2 actions to do with pausing; one is a simple pause and the other also marks a point at which the viewer of the presentation can intervene. We'll add the first of these actions here; the simple pause.
+After the background has appeared, let's hold it on the screen for a couple of seconds. As before, add a new step at the end of your presentation, then go into its editor and name it ~m:pause 2 seconds~. Click the empty selector next to the **Action** label and select the **pause** option. Set the **Duration** to ~m:2~ then save the step (or click ~img:/resources/icon/save.png:icon~ as before).
 
-As before, add a new step at the end of your presentation, then go into its editor and name it ~m:pause 2 seconds~. Click the empty selector next to the **Action** label and select the **pause** option. Apart from the properties common to all fields, this one just has a **Duration**, so type ~m:2~ here then save the step (or click ~img:/resources/icon/save.png:icon~ as before).
-
-We're going to bring up some text in the center of the screen, zooming it from a point below the center line. This presentation is to be some slides about Italian villages, so let's create our first content item. Click the **Content** button and then the ~img:/resources/icon/plus.png:icon~ icon. Open the editor for the new item; it should look like this:
+We're going to bring up some text in the center of the screen, zooming it from a point below the center line. This presentation is to be some slides about villages in Liguria, the region of Italy that borders the northern Mediterranean, so let's create our first content item. Click the **Content** button and then the ~img:/resources/icon/plus.png:icon~ icon. Open the editor for the new item; it should look like this:
 
 ~img:resources/users/2020/160/1/images/quickstart/new-content.png:100%~
 
-Set the name to ~m:Italian villages~ then put the same text into the empty box. As usual, save your work.
+Set the name to ~m:Ligurian villages~ then put the same text into the empty box. As usual, save your work.
 
-What you've done is create a content item whose name is the same as its content (but it often won't be). When you refer to the name in the **Steps** editor you get the content, so if you use the same content in several places this saves repeating it each time and ensures all the affected slides get changed at once.
+What you've done is create a content item whose name is the same as its content (but it usually won't be). When you refer to the name in the **Steps** editor you get the content, so if you use the same content in several places this saves repeating it each time and ensures all the affected slides get changed at once.
 
 The title will end up in the middle of the screen, but to make it more challenging let's get it to zoom up from a point in the bottom third of the screen. For this we need 2 blocks. One holds the text and defines the starting point of the zoom effect. The other holds the final position of the block after the zoom has finished.
 
@@ -36,16 +34,22 @@ Now go to the **Steps** panel. The first thing to do is to initialize the **main
 
 ~img:resources/users/2020/160/1/images/quickstart/setup-background.png:100%~
 
-Click the ~img:resources/icon/plus.png:icon~ in the **Blocks** row to add a new block. Select the **main title** block and then select **Italian villages** from the **Content** drop-down list. Change the name of the step to **set up blocks** and the result should be:
+Click the ~img:resources/icon/plus.png:icon~ in the **Blocks** row to add a new block. Select the **main title** block and then select **Ligurian villages** from the **Content** drop-down list. Change the name of the step to **set up blocks** and the result should be:
 
-~img:resources/users/2020/160/1/images/quickstart/setup-blocks.png:100%~
+~img:resources/users/2020/160/1/images/quickstart/setup-blocks-2.png:100%~
 
-If you prefer, you can add a separate step to initialize each block, but it's usually better to do them all at the same time, in one place.
+If you prefer, you can add a separate step to initialize each block, but in this case we'll do them all at the same time, in one place.
 
-The animated text effect is done with a **transition** action. Add a new step to your presentation, call it **zoom up title** and choose the action type **transition**. Set **block** to **main title** and **target** to **center title**:
+The animated text effect is done with a **transition** action. Add a new step to your presentation, choose the action type **transition** and call it **zoom up title**. Set **block** to **main title** and **target** to **center title**:
 
 ~img:resources/users/2020/160/1/images/quickstart/zoom-title.png:100%~
 
 Now you can run your presentation again. The background will fade up first, then after a couple of seconds the text will zoom up.
 
-In the ~page:quickstart3:final part of this tutorial~ we'll add the first of what might in a real presentation be a large number of similar slides, each one describing a different Italian village.
+Add another pause, say 3 seconds, then another action, selecting **fade down**. Call it **fade down title and background**. Add 2 blocks, picking **main title** and **background**. Set the duration to 2 seconds. You should have this:
+
+~img:resources/users/2020/160/1/images/quickstart/fade-down.png:100%~
+
+Finally, add another pause of a second.
+
+In the ~page:quickstart3:final part of this tutorial~ we'll add the first of what might in a real presentation be a large number of similar slides, each one describing a different Ligurian village.

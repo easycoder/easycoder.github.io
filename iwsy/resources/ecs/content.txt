@@ -69,7 +69,6 @@ Restart:
     set attribute `src` of AddItem to `resources/icon/plus.png`
     on click AddItem
     begin
-!    	put prompt `Name of new content item:` with `new content` into ItemName
         set Item to object
         set property `name` of Item to `New content`
         set property `content` of Item to empty

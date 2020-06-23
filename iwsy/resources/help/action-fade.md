@@ -18,4 +18,4 @@ When this action runs the blocks referenced are all faded at the same time. You 
 
 Fades and other animated effects run at 25 frames/sec, as a compromise between visual smoothness and processing requirements.
 
-Next: ~page:action-crossfade:Crossfade block content~
+Next: ~page:action-crossfade:Crossfade~

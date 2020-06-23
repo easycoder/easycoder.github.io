@@ -595,11 +595,6 @@ const IWSY = (playerElement, scriptObject) => {
         }
     };
 
-    // Embed another script
-    const embed = step => {
-        step.next();
-    };
-
     // Restore the cursor
     const restoreCursor = () => {
         player.style.cursor = `pointer`;
@@ -821,8 +816,7 @@ const IWSY = (playerElement, scriptObject) => {
         crossfade,
         transition,
         goto,
-        load,
-        embed
+        load
     };
 
     // Process a single step
