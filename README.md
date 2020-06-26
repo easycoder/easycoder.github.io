@@ -26,7 +26,7 @@ There's a lot more information on [our website](https://easycoder.github.io), wh
 
 [About EasyCoder](AboutEasyCoder.md)
 
-[Developer Manual](developer/Developer.md)
+[Developer Manual](developer/README.md)
 
 ## The Codex ##
 
