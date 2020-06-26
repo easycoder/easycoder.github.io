@@ -3153,7 +3153,7 @@ const EasyCoder_Browser = {
 				case `ul`:
 					compiler.next();
 					if (compiler.tokenIs(`to`)) {
-						let cssID = null;
+						let cssId = null;
 						if (compiler.nextTokenIs(`body`)) {
 							if (type=== `div`) {
 								cssId = `body`;
@@ -3301,7 +3301,7 @@ const EasyCoder_Browser = {
 			const command = program[program.pc];
 			const targetRecord = program.getSymbolRecord(command.target);
 			const element = targetRecord.element[targetRecord.index];
-			element.dispatchEvent(new Event('click'));
+			element.dispatchEvent(new Event(`click`));
 			return command.pc + 1;
 		}
 	},
@@ -3429,8 +3429,8 @@ const EasyCoder_Browser = {
 			const element = targetRecord.element[targetRecord.index];
 			element.select();
 			element.setSelectionRange(0, 99999); // For mobile devices
-			document.execCommand("copy");
-		  	return command.pc + 1;
+			document.execCommand(`copy`);
+			return command.pc + 1;
 		}
 	},
 
@@ -3768,9 +3768,6 @@ const EasyCoder_Browser = {
 							form: symbolRecord.name
 						});
 						return true;
-					}
-					else {
-						let targetRecord = compiler.getSymbolRecord(target);
 					}
 				}
 			}
@@ -4551,7 +4548,7 @@ const EasyCoder_Browser = {
 				break;
 			case `windowResize`:
 				program.onWindowResize = command.pc + 2;
-				window.addEventListener('resize', function() {
+				window.addEventListener(`resize`, function() {
 					program.run(program.onWindowResize);
 				});
 				break;
@@ -5353,28 +5350,28 @@ const EasyCoder_Browser = {
 				}
 				break;
 			case `setAttributes`:
-					symbol = program.getSymbolRecord(command.symbolName);
-					target = symbol.element[symbol.index];
-					if (!target) {
-						targetId = program.getValue(symbol.value[symbol.index]);
-						target = document.getElementById(targetId);
+				symbol = program.getSymbolRecord(command.symbolName);
+				target = symbol.element[symbol.index];
+				if (!target) {
+					targetId = program.getValue(symbol.value[symbol.index]);
+					target = document.getElementById(targetId);
+				}
+				for (let n = target.attributes.length - 1; n >= 0; n--) {
+					target.removeAttribute(target.attributes[n].name);
+				}
+				let attributes = program.getValue(command.attributes);
+				let list = attributes.split(` `);
+				for (let n = 0; n < list.length; n++) {
+					let attribute = list[n];
+					let p = attribute.indexOf(`=`);
+					if (p > 0) {
+						target.setAttribute(attribute.substr(0, p), attribute.substr(p + 1));
 					}
-					for (let n = target.attributes.length - 1; n >= 0; n--) {
-						target.removeAttribute(target.attributes[n].name);
+					else {
+						target.setAttribute(attribute, attribute);
 					}
-					let attributes = program.getValue(command.attributes);
-					let list = attributes.split(" ");
-					for (let n = 0; n < list.length; n++) {
-						let attribute = list[n];
-						let p = attribute.indexOf(`=`);
-						if (p > 0) {
-							target.setAttribute(attribute.substr(0, p), attribute.substr(p + 1));
-						}
-						else {
-							target.setAttribute(attribute, attribute);
-						}
-					}
-					break;
+				}
+				break;
 			case `setStyle`:
 			case `setStyles`:
 				symbol = program.getSymbolRecord(command.symbolName);
@@ -5406,7 +5403,7 @@ const EasyCoder_Browser = {
 			case `setHeadStyle`:
 				const headStyleName = program.getValue(command.styleName);
 				const headStyleValue = program.getValue(command.styleValue);
-				var style = document.createElement('style');
+				var style = document.createElement(`style`);
 				style.innerHTML = `${headStyleName} ${headStyleValue}`;
 				for (let i = 0; i < document.head.childNodes.length; i++) {
 					let node = document.head.childNodes[i];
@@ -5423,13 +5420,13 @@ const EasyCoder_Browser = {
 			case `setBodyStyle`:
 				const bodyStyleValue = program.getValue(command.styleValue);
 				switch (command.styleName.content) {
-					case `background`:
-						document.body.style.background = bodyStyleValue;
-						break;
-					default:
-						program.runtimeError(command.lino,
-							 `Unsupported body attribute '${command.styleName.content}'`);
-						return 0;
+				case `background`:
+					document.body.style.background = bodyStyleValue;
+					break;
+				default:
+					program.runtimeError(command.lino,
+						`Unsupported body attribute '${command.styleName.content}'`);
+					return 0;
 				}
 				break;
 			case `setTitle`:
@@ -5699,7 +5696,7 @@ const EasyCoder_Browser = {
 						}
 					}
 				};
-				ajax.onerror = function (data) {
+				ajax.onerror = function () {
 					if (command.onError) {
 						program.errorMessage = this.responseText;
 						program.run(command.onError);
@@ -5926,26 +5923,26 @@ const EasyCoder_Browser = {
 					}
 					throw new Error(`'${compiler.getToken()}' is not a symbol`);
 				}
-				return null;
+				break;
 			case `selected`:
-					let arg = compiler.nextToken();
-					if ([`index`, `item`].includes(arg)) {
-						if ([`in`, `of`].includes(compiler.nextToken())) {
-							if (compiler.nextIsSymbol()) {
-								const symbol = compiler.getSymbolRecord();
-								if ([`ul`, `ol`, `select`].includes(symbol.keyword)) {
-									compiler.next();
-									return {
-										domain: `browser`,
-										type: `selected`,
-										symbol: symbol.name,
-										arg
-									};
-								}
+				let arg = compiler.nextToken();
+				if ([`index`, `item`].includes(arg)) {
+					if ([`in`, `of`].includes(compiler.nextToken())) {
+						if (compiler.nextIsSymbol()) {
+							const symbol = compiler.getSymbolRecord();
+							if ([`ul`, `ol`, `select`].includes(symbol.keyword)) {
+								compiler.next();
+								return {
+									domain: `browser`,
+									type: `selected`,
+									symbol: symbol.name,
+									arg
+								};
 							}
 						}
 					}
-					return null;
+				}
+				break;
 			case `color`:
 				compiler.next();
 				const value = compiler.getValue();
@@ -5971,7 +5968,7 @@ const EasyCoder_Browser = {
 						}
 					}
 				}
-				return null;
+				break;
 			case `style`:
 				const style = compiler.getNextValue();
 				if (compiler.tokenIs(`of`)) {
@@ -5988,7 +5985,7 @@ const EasyCoder_Browser = {
 						}
 					}
 				}
-				return null;
+				break;
 			case `confirm`:
 				text = compiler.getNextValue();
 				return {
@@ -6034,7 +6031,7 @@ const EasyCoder_Browser = {
 						type: `scrollPosition`
 					};
 				}
-				return null;
+				break;
 			case `document`:
 				if (compiler.nextTokenIs(`path`)) {
 					compiler.next();
@@ -6043,7 +6040,7 @@ const EasyCoder_Browser = {
 						type: `docPath`
 					};
 				}
-				return null;
+				break;
 			case `storage`:
 				if (compiler.nextTokenIs(`keys`)) {
 					compiler.next();
@@ -6052,7 +6049,7 @@ const EasyCoder_Browser = {
 						type: `storageKeys`
 					};
 				}
-				return null;
+				break;
 			case `parent`:
 				switch (compiler.nextToken()) {
 				case `name`:
@@ -6068,7 +6065,7 @@ const EasyCoder_Browser = {
 						type: `varIndex`
 					};
 				}
-				return null;
+				break;
 			case `history`:
 				if (compiler.nextTokenIs(`state`)) {
 					compiler.next();
@@ -6077,7 +6074,7 @@ const EasyCoder_Browser = {
 						type: `historyState`
 					};
 				}
-				return null;
+				break;
 			case `pick`:
 			case `drag`:
 				if (compiler.nextTokenIs(`position`)) {
@@ -6087,6 +6084,7 @@ const EasyCoder_Browser = {
 						type: `${type}Position`
 					};
 				}
+				break;
 			case `click`:
 				const which = compiler.nextToken();
 				if ([`left`, `top`].includes(which)) {
@@ -6097,6 +6095,7 @@ const EasyCoder_Browser = {
 						which
 					};
 				}
+				break;
 			}
 			return null;
 		},
@@ -6145,6 +6144,11 @@ const EasyCoder_Browser = {
 			case `textarea`:
 				symbolRecord = program.getSymbolRecord(value.value);
 				target = symbolRecord.element[symbolRecord.index];
+				if (!target) {
+					program.runtimeError(program[program.pc].lino,
+						`Variable '${symbolRecord.name}' is not attached to a DOM element.`);
+					return null;
+				}
 				return {
 					type: `constant`,
 					numeric: false,
