@@ -9,7 +9,7 @@ There are 3 main sections.
 
 ## 1 - Steps
 
-This lists the steps of your presentation. These are in some way analogous to the 'slides' of a PowerPoint presentation. A step is any action that affects the presenttion, whether it causes any visual change or not. Every presentation starts with an `init` step where you define the size and proportions of your screen. This step is already provided, with its name on a clickable button. When you click the button it opens the ~page:action-init:`init` step editor~. All the action types are documented in their own pages - see the ~page:contents:Contents~.
+This lists the steps of your presentation. These are in some way analogous to the 'slides' of a PowerPoint presentation. A step is any action that affects the presentation, whether it causes a visual change or not. Every presentation starts with an `init` step where you define the size and proportions of your screen. This step is already provided, with its name on a clickable button. When you click the button it opens the ~page:action-init:`init` step editor~. All the action types are documented in their own pages - see the ~page:contents:Contents~.
 
 To the left of the button is a tiny ~img:/resources/icon/binoculars.png:icon~ binoculars symbol. When you click one of these the panel on the left - called the _player_ - shows you what the presentation looks like at this step.
 

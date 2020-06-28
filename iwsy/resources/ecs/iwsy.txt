@@ -12,10 +12,11 @@
     div ContentDiv
     div Buttons
     div Tabs
-    div Tab
     div StepsPanel
     div BlocksPanel
     div ContentPanel
+    div VFXPanel
+    div JSONPanel
     div Player
     div UserPanel
     div FileManPanel
@@ -25,7 +26,7 @@
     tr TR
     td TD
     input Status
-    input NameEditor
+    input ScriptName
     button SectionButton
     img New
     img Open
@@ -42,6 +43,8 @@
     module StepsModule
     module BlocksModule
     module ContentModule
+    module VFXModule
+    module JSONModule
     module UserModule
     module FileManModule
     module HelpModule
@@ -149,8 +152,8 @@ Start:
 
     create TD in TR
     set the style of TD to `width:8em`
-    create NameEditor in TD
-    set the style of NameEditor to `width:100%`
+    create ScriptName in TD
+    set the style of ScriptName to `width:100%`
     
     create TD in TR
     set the style of TD to `width:2em;text-align:center`
@@ -230,33 +233,48 @@ Start:
     set the style of ContentDiv to `width:100%;height:100%;position:relative`
     
     create Tabs in ContentDiv
-    set the style of Tabs to `width:100%;padding:0.5em 0;text-align:center`
-    set the elements of SectionButton to 3
-    divide 100 by the elements of SectionButton giving N
-    create Tab in Tabs
-    set the style of Tab to `display:inline-block;width:` cat N cat `%`
+    set the style of Tabs to `width:100%;padding:0.5em 0;text-align:center;display:flex`
+    set the elements of SectionButton to 5
+    
     index SectionButton to 0
-    create SectionButton in Tab
-    set the style of SectionButton to `width:100%;background-color:lightgray`
+    create SectionButton in Tabs
+    set the style of SectionButton to `flex:1;background-color:lightgray;margin-right:0.2em`
     set the content of SectionButton to `Steps`
+    set attribute `title` of SectionButton to `Show the Steps manager`
     create StepsPanel in ContentDiv
     set the style of StepsPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
-    create Tab in Tabs
-    set the style of Tab to `display:inline-block;width:` cat N cat `%`
+    
     index SectionButton to 1
-    create SectionButton in Tab
-    set the style of SectionButton to `width:100%;background-color:#eee`
+    create SectionButton in Tabs
+    set the style of SectionButton to `flex:1;background-color:#eee;margin-right:0.2em`
     set the content of SectionButton to `Blocks`
+    set attribute `title` of SectionButton to `Show the Blocks manager`
     create BlocksPanel in ContentDiv
     set the style of BlocksPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
-    create Tab in Tabs
-    set the style of Tab to `display:inline-block;width:` cat N cat `%`
+    
     index SectionButton to 2
-    create SectionButton in Tab
-    set the style of SectionButton to `width:100%;background-color:#eee`
+    create SectionButton in Tabs
+    set the style of SectionButton to `flex:1;background-color:#eee;margin-right:0.2em`
     set the content of SectionButton to `Content`
+    set attribute `title` of SectionButton to `Show the Content manager`
     create ContentPanel in ContentDiv
     set the style of ContentPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
+    
+    index SectionButton to 3
+    create SectionButton in Tabs
+    set the style of SectionButton to `flex:1;background-color:#eee;margin-right:0.2em`
+    set the content of SectionButton to `VFX`
+    set attribute `title` of SectionButton to `Show the VFX manager`
+    create VFXPanel in ContentDiv
+    set the style of VFXPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
+    
+    index SectionButton to 4
+    create SectionButton in Tabs
+    set the style of SectionButton to `flex:1;background-color:#eee`
+    set the content of SectionButton to `JSON`
+    set attribute `title` of SectionButton to `Import and Export`
+    create JSONPanel in ContentDiv
+    set the style of JSONPanel to `position:absolute;left:0;top:2.5em;width:100%;height:calc(100% - 2.5em)`
     
     put 0 into Section
     index SectionButton to 0
@@ -299,7 +317,7 @@ Start:
     	begin
 			if confirm `Content has changed. Do you want to save it?`
 			begin
-      			put the content of NameEditor into Name
+      			put the content of ScriptName into Name
       			if Name is empty
       			begin
                 	gosub to SetStatusRed
@@ -315,7 +333,7 @@ Start:
         clear Running
         iwsy stop
         set attribute `src` of RunStop to `resources/icon/run.png`
-        set the content of NameEditor to empty
+        set the content of ScriptName to empty
         put empty into CurrentScriptName
         gosub to CreateNewPresentation
         iwsy script Presentation
@@ -328,7 +346,7 @@ Start:
     on click Save
     begin
     	gosub to SaveChanges
-        put the content of NameEditor into Name
+        put the content of ScriptName into Name
         if Name is empty
         begin
             gosub to SetStatusRed
@@ -337,7 +355,7 @@ Start:
         end
         if the position of `.json` in Name is -1 put Name cat `.json` into Name
         replace ` ` with `_` in Name
-        set the content of NameEditor to Name
+        set the content of ScriptName to Name
         if Name is not CurrentScriptName put empty into LastSavedState
         if Presentation is not LastSavedState
         begin
@@ -364,7 +382,7 @@ Start:
     
     on click Delete
     begin
-        put the content of NameEditor into Name
+        put the content of ScriptName into Name
         if Name is empty
         begin
             gosub to SetStatusGreen
@@ -377,7 +395,7 @@ Start:
             else remove Name from storage
             gosub to SetStatusGreen
             set the text of Status to `Script "` cat Name cat `" deleted`
-            set the content of NameEditor to empty
+            set the content of ScriptName to empty
             put empty into CurrentScriptName
             put empty into Presentation
             put Presentation into LastSavedState
@@ -443,7 +461,9 @@ Start:
     put Presentation into LastSavedState
     gosub to SetupSteps
     gosub to SetupBlocks
-    gosub to SetupContent 
+    gosub to SetupContent
+    gosub to SetupVFX
+    gosub to SetupJSON
     put 0 into N
     gosub to SelectSection
     clear Running
@@ -497,6 +517,13 @@ Start:
             set the text of Status to `Logged in as  '` cat Name cat property `name` of UserRecord cat `'`
             fork to ResetStatus
         end
+        else if Action is `panzoom`
+        begin
+            set style `display` of Player to `block`
+            set style `display` of FileManPanel to `none`
+            set style `display` of HelpPanel to `none`
+        	iwsy panzoom property `item` of Message
+        end
     end
     
     wait 10 ticks
@@ -505,9 +532,7 @@ Start:
     if Arg includes `.json`
     begin
         rest get Presentation from `/resources/users/` cat Arg cat `?v=` cat now
-        send to StepsModule
-        send to BlocksModule
-        send to ContentModule
+		gosub to NotifyModules
     	iwsy script Presentation
         set style `display` of Player to `block`
 		create Mask in Body
@@ -596,6 +621,8 @@ CreateNewPresentation:
     set Item to array
     set property `blocks` of Presentation to Item
     set property `content` of Presentation to Item
+    set property `vfx` of Presentation to Item
+    json format Presentation
 	return
 
 SetupSteps:
@@ -622,8 +649,25 @@ SetupContent:
     end
     return
 
-!	Select one of the 3 sections
+SetupVFX:
+    if VFXModule is not running
+    begin
+    	rest get Script from `/resources/ecs/vfx.txt?v=` cat now
+        run Script with VFXPanel and Presentation as VFXModule
+    end
+    return
+
+SetupJSON:
+    if JSONModule is not running
+    begin
+    	rest get Script from `/resources/ecs/json.txt?v=` cat now
+        run Script with JSONPanel and Presentation as JSONModule
+    end
+    return
+
+!	Select one of the sections
 SelectSection:
+	if Running return
 	gosub to SaveChanges
     index SectionButton to Section
     set style `background-color` of SectionButton to `#eee`
@@ -636,6 +680,8 @@ UpdateCurrentSection:
     set style `display` of StepsPanel to `none`
     set style `display` of BlocksPanel to `none`
     set style `display` of ContentPanel to `none`
+    set style `display` of VFXPanel to `none`
+    set style `display` of JSONPanel to `none`
     if Section is 0
     begin
     	set style `display` of StepsPanel to `block`
@@ -651,12 +697,25 @@ UpdateCurrentSection:
     	set style `display` of ContentPanel to `block`
     	send to ContentModule
     end
+    else if Section is 3
+    begin
+    	set style `display` of VFXPanel to `block`
+    	send to VFXModule
+    end
+    else if Section is 4
+    begin
+    	set style `display` of JSONPanel to `block`
+    	send to JSONModule
+    end
 	return
 
 SaveChanges:
+	if Running gosub to StopRun
     send `save` to StepsModule
 	send `save` to BlocksModule
     send `save` to ContentModule
+    send `save` to VFXModule
+    send `save` to JSONModule
 	return
 
 DoOpen:
@@ -689,7 +748,7 @@ DoOpen:
     if UserRecord
     begin
         rest get Files from `ulist/` cat UserEmail cat `/` cat UserPassword cat `/`
-        	cat `users/` cat UserHome cat `/scripts`
+        	cat `users/` cat UserHome cat `/scripts?v=` cat now
         put the json count of Files into FileCount
         put empty into Content
         put 0 into N
@@ -725,15 +784,15 @@ DoOpen:
     put 0 into N
     while N is less than FileCount
     begin
-      index File to N
-      index FileName to N
-      put `<div id="ec-file-row-INDEX" style="clear:both;padding:0.25em 0;">`
-        cat `<a id="ec-file-name-INDEX" href="#"></a></div>` into File
-      replace `INDEX` with N in File
-      if N is even replace `ODDEVEN` with `ec-even` in File
-      else replace `ODDEVEN` with `ec-odd` in File
-      put FileList cat File into FileList
-      add 1 to N
+        index File to N
+        index FileName to N
+        put `<div id="ec-file-row-INDEX" style="clear:both;padding:0.25em 0;">`
+          cat `<a id="ec-file-name-INDEX" href="#"></a></div>` into File
+        replace `INDEX` with N in File
+        if N is even replace `ODDEVEN` with `ec-even` in File
+        else replace `ODDEVEN` with `ec-odd` in File
+        put FileList cat File into FileList
+        add 1 to N
     end
 
     set the content of Scroller to FileList
@@ -741,33 +800,32 @@ DoOpen:
     put 0 into N
     while N is less than FileCount
     begin
-      index File to N
-      index FileName to N
-      put element N of Content into File
-      attach FileRow to `ec-file-row-` cat N
-      attach FileName to `ec-file-name-` cat N
-      set the content of FileName to File
-      if N is even set style `background` of FileRow to `lightgray`
-      on click FileName go to SelectFile
-      add 1 to N
+        index File to N
+        index FileName to N
+        put element N of Content into File
+        attach FileRow to `ec-file-row-` cat N
+        attach FileName to `ec-file-name-` cat N
+        set the content of FileName to File
+        if N is even set style `background` of FileRow to `lightgray`
+        on click FileName go to SelectFile
+        add 1 to N
     end
     on click CloseButton
     begin
-      put LastSavedState into Content
-      go to CloseBrowser
+        put LastSavedState into Content
+        go to CloseBrowser
     end
     stop
     
 SelectFile:
     index File to the index of FileName
-    set the content of NameEditor to File
+    set the content of ScriptName to File
     put File into CurrentScriptName
 	if UserRecord rest get Presentation from
     	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
     else get Presentation from storage as File
-    send to StepsModule
-    send to BlocksModule
-    send to ContentModule
+	gosub to NotifyModules
+    json format Presentation
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
     gosub to SetStatusGreen
@@ -801,14 +859,15 @@ ResetStatus:
     set attribute `title` of Status to ``
     stop
 
+StopRun:
+    iwsy stop
+    clear Running
+    gosub to ClearStepsButtons
+    set attribute `src` of RunStop to `resources/icon/run.png`
+	return
+
 DoRunStop:
-	if Running
-    begin
-    	clear Running
-		gosub to ClearStepsButtons
-    	set attribute `src` of RunStop to `resources/icon/run.png`
-        iwsy stop
-    end
+	if Running gosub to StopRun
     else
     begin
     	put property `steps` of Presentation into Item
@@ -819,10 +878,10 @@ DoRunStop:
         set style `display` of HelpPanel to `none`
 		gosub to ClearStepsButtons
         set attribute `src` of RunStop to `resources/icon/runstop.png`
-    	set Running
         
         put 0 into N
         gosub to SelectSection
+    	set Running
 
         iwsy onstep
         begin
@@ -859,12 +918,18 @@ DoRunStop:
 	stop
 
 PrepareScript:
-    send to StepsModule
-    send to BlocksModule
-    send to ContentModule
+	gosub to NotifyModules
     put Presentation into LastSavedState
     gosub to UpdateCurrentSection
 	stop
+
+NotifyModules:
+    send to StepsModule
+    send to BlocksModule
+    send to ContentModule
+    send to VFXModule
+    send to JSONModule
+	return
 
 RunFullScreen:
     put property `steps` of Presentation into Item

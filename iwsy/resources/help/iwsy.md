@@ -4,6 +4,8 @@
 
 # ~iwsy~ - I Wanna Show You 
 
+## Embedded slideshows and presentations
+
 I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initials) is a web app you can use to create slideshows that run under either manual control or unattended. Instead of being a PC application that's tied to the desktop, ~iwsy~ is entirely browser-based. ~iwsy~ presentations can run here in this web app, they can be embedded in other web pages or they can run as independent web pages.
 
 ## An example
