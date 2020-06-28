@@ -69,7 +69,7 @@
     variable ContentNames
     variable ContinueTypes
     variable ChainNames
-    variable TrueFalse
+    variable YesNo
     variable Response
     variable Message
     variable Running
@@ -292,6 +292,7 @@ Restart:
     json add `pause` to ActionNames
     json add `fade up` to ActionNames
     json add `fade down` to ActionNames
+    json add `animate` to ActionNames
     json add `crossfade` to ActionNames
     json add `transition` to ActionNames
     json add `goto` to ActionNames
@@ -303,8 +304,8 @@ Restart:
     json add `border` to InitProperties
     json add `css` to InitProperties
     set ContinueTypes to array
-    json add `true` to ContinueTypes
-    json add `false` to ContinueTypes
+    json add `yes` to ContinueTypes
+    json add `no` to ContinueTypes
     
     put property `steps` of Presentation into Steps
     put -1 into SelectedStep
@@ -441,6 +442,7 @@ ReloadStepEditor:
     else if Action is `pause` gosub to EditPause
     else if Action is `fade up` gosub to EditFadeUp
     else if Action is `fade down` gosub to EditFadeDown
+    else if Action is `animate` gosub to EditAnimate
     else if Action is `crossfade` gosub to EditCrossfade
     else if Action is `transition` gosub to EditTransition
     else if Action is `goto` gosub to EditGoto
@@ -671,6 +673,11 @@ EditFadeDown:
     gosub to EditContinue
 	return
 
+EditAnimate:
+	gosub to EditBlockList
+    gosub to EditContinue
+	return
+
 EditCrossfade:
 	put ContentNames into Names
     put `New text` into TargetText
@@ -866,9 +873,9 @@ EditContinue:
     index ContinueSelect to SelectedStep
     create ContinueSelect in TD
     set the style of ContinueSelect to `width:100%`
-    put property `continue` of CurrentStep into TrueFalse
-    if TrueFalse put `true` into TrueFalse else put `false` into TrueFalse
-    set ContinueSelect from ContinueTypes as TrueFalse
+    put property `continue` of CurrentStep into YesNo
+    if not YesNo put `no` into YesNo
+    set ContinueSelect from ContinueTypes as YesNo
 	return
 
 !	Create a new action with a full set of empty properties
@@ -1032,11 +1039,6 @@ SaveCurrentStep:
             set property `blocks` of CurrentStep to Blocks
         end
     end
-	else if Action is `pause`
-    begin
-    	index DurationInput to SelectedStep
-    	set property `duration` of CurrentStep to the text of DurationInput
-    end
 	else if Action is `fade up`
     begin
     	put property `blocks` of CurrentStep into Blocks
@@ -1063,6 +1065,17 @@ SaveCurrentStep:
         index ContinueSelect to SelectedStep
         set property `continue` of CurrentStep to ContinueSelect
     end
+    else if Action is `animate`
+    begin
+    	put property `blocks` of CurrentStep into Blocks
+        if Blocks is empty
+        begin
+        	set Blocks to array
+            set property `blocks` of CurrentStep to Blocks
+        end
+        index ContinueSelect to SelectedStep
+        set property `continue` of CurrentStep to ContinueSelect
+    end
 	else if Action is `crossfade`
     begin
         set property `block` of CurrentStep to BlockSelect
@@ -1081,6 +1094,11 @@ SaveCurrentStep:
         index ContinueSelect to SelectedStep
         set property `continue` of CurrentStep to ContinueSelect
     end
+	else if Action is `pause`
+    begin
+    	index DurationInput to SelectedStep
+    	set property `duration` of CurrentStep to the text of DurationInput
+    end
 	else if Action is `goto`
     begin
     	put property `target` of CurrentStep into Target
@@ -1096,6 +1114,7 @@ SaveCurrentStep:
     	index ChainSelect to SelectedStep
     	set property `script` of CurrentStep to ChainSelect
     end
+    index URLInput to SelectedStep
     set element SelectedStep of Steps to CurrentStep
     set property `steps` of Presentation to Steps
 

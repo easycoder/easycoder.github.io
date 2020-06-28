@@ -147,6 +147,7 @@ Restart:
     end
     on click EditButton
     begin
+    	if the elements of EditButton is not greater than the index of EditButton stop
         put the index of EditButton into SavedIndex
         gosub to SaveSelectedBlock
         put SavedIndex into SelectedBlock
