@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.3 29-jun 2020 =
+* Mostly to do with adding the iwsy module
+
 = 2.7.2 06-jun 2020 =
 * Various bug fixes; improved error handling
 
