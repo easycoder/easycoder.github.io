@@ -19,24 +19,24 @@
           "content": "Manarola"
         },
         {
+          "block": "manarola photo",
+          "content": "manarola photo"
+        },
+        {
           "block": "apricale text",
           "content": "Apricale"
+        },
+        {
+          "block": "apricale photo",
+          "content": "apricale photo"
         },
         {
           "block": "noli text",
           "content": "Noli"
         },
         {
-          "block": "manarola photo",
-          "content": ""
-        },
-        {
-          "block": "apricale photo",
-          "content": ""
-        },
-        {
           "block": "noli photo",
-          "content": ""
+          "content": "noli photo"
         }
       ]
     },
@@ -44,7 +44,7 @@
       "title": "pause 1 second",
       "action": "pause",
       "label": "",
-      "duration": 1
+      "duration": 1.1
     },
     {
       "title": "fade up Manarola",
@@ -55,13 +55,22 @@
         "manarola photo"
       ],
       "duration": 3,
-      "continue": ""
+      "continue": "yes"
     },
     {
-      "title": "pause 10 seconds",
+      "title": "animate Manarola",
+      "action": "animate",
+      "label": "",
+      "blocks": [
+        "manarola photo"
+      ],
+      "continue": "yes"
+    },
+    {
+      "title": "pause 9 seconds",
       "action": "pause",
       "label": "",
-      "duration": 10
+      "duration": 9
     },
     {
       "title": "fade down Manarola",
@@ -72,7 +81,7 @@
         "manarola photo",
         "manarola text"
       ],
-      "continue": true
+      "continue": "yes"
     },
     {
       "title": "fade up Apricale",
@@ -83,13 +92,22 @@
         "apricale text"
       ],
       "duration": 1,
-      "continue": false
+      "continue": "yes"
     },
     {
-      "title": "pause 10 seconds",
+      "title": "animate Apricale",
+      "action": "animate",
+      "label": "",
+      "blocks": [
+        "apricale photo"
+      ],
+      "continue": "yes"
+    },
+    {
+      "title": "pause 9 seconds",
       "action": "pause",
       "label": "",
-      "duration": 10
+      "duration": 9
     },
     {
       "title": "fade down Apricale",
@@ -100,7 +118,7 @@
         "apricale text"
       ],
       "duration": 1,
-      "continue": true
+      "continue": "yes"
     },
     {
       "title": "fade up Noli",
@@ -111,13 +129,22 @@
         "noli text"
       ],
       "duration": 1,
-      "continue": false
+      "continue": "yes"
     },
     {
-      "title": "pause 10 seconds",
+      "title": "animate Noli",
+      "action": "animate",
+      "label": "",
+      "blocks": [
+        "noli photo"
+      ],
+      "continue": "yes"
+    },
+    {
+      "title": "pause 9 seconds",
       "action": "pause",
       "label": "",
-      "duration": 10
+      "duration": 9
     },
     {
       "title": "fade down Noli",
@@ -127,8 +154,8 @@
         "noli photo",
         "noli text"
       ],
-      "duration": 1,
-      "continue": ""
+      "duration": 2,
+      "continue": "no"
     },
     {
       "title": "pause",
@@ -171,7 +198,7 @@
         "message"
       ],
       "duration": 0.5,
-      "continue": ""
+      "continue": "no"
     },
     {
       "title": "chain to demo",
@@ -189,7 +216,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "white",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -210,7 +237,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "url('resources/img/quickstart/manarola.jpg')",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -252,7 +279,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "url('resources/img/quickstart/apricale.jpg')",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -294,7 +321,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "url('resources/img/quickstart/noli.jpg')",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -345,6 +372,59 @@
     {
       "name": "and so on",
       "content": "%0a... and so on.%0a%0aNow we'll chain back to the intro screen"
+    },
+    {
+      "name": "manarola photo",
+      "content": "~vfx:100% manarola~"
+    },
+    {
+      "name": "apricale photo",
+      "content": "~vfx:100% apricale~"
+    },
+    {
+      "name": "noli photo",
+      "content": "~vfx:100% noli~"
+    }
+  ],
+  "vfx": [
+    {
+      "name": "manarola",
+      "type": "panzoom",
+      "aspect": "8:9",
+      "url": "resources/users/2020/160/1/images/quickstart/manarola.jpg",
+      "duration": 10,
+      "startsize": 100,
+      "startxoff": -50,
+      "startyoff": 0,
+      "endsize": 100,
+      "endxoff": 0,
+      "endyoff": 0
+    },
+    {
+      "name": "apricale",
+      "type": "panzoom",
+      "aspect": "8:9",
+      "url": "resources/users/2020/160/1/images/quickstart/apricale.jpg",
+      "duration": 10,
+      "startsize": 100,
+      "startxoff": 0,
+      "startyoff": 0,
+      "endsize": 100,
+      "endxoff": -50,
+      "endyoff": 0
+    },
+    {
+      "name": "noli",
+      "type": "panzoom",
+      "aspect": "8:9",
+      "url": "resources/users/2020/160/1/images/quickstart/noli.jpg",
+      "duration": 10,
+      "startsize": 100,
+      "startxoff": 0,
+      "startyoff": 0,
+      "endsize": 100,
+      "endxoff": -50,
+      "endyoff": 0
     }
   ]
 }
