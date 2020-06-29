@@ -7,8 +7,8 @@ const IWSY = (playerElement, scriptObject) => {
 	let afterRun;
 	let path;
 	let plugins;
-	const timeouts = [];
-	const intervals = [];
+	let timeouts = [];
+	let intervals = [];
 
 	// Set up all the blocks
 	const setupBlocks = () => {
@@ -162,6 +162,9 @@ const IWSY = (playerElement, scriptObject) => {
 					}
 					const vfxElements = block.textPanel.getElementsByClassName(`iwsy-vfx`);
 					// Save all the vfx items in this step
+					if (!Array.isArray(script.vfxElements)) {
+						script.vfxElements = [];
+					}
 					for (const vfxElement of vfxElements) {
 						script.vfxElements.push({
 							block,
@@ -216,6 +219,9 @@ const IWSY = (playerElement, scriptObject) => {
 	};
 
 	addIntervalTimer = (interval) => {
+		if (!Array.isArray(intervals)) {
+			intervals = [];
+		}
 		intervals.push(interval);
 	};
 
@@ -225,8 +231,11 @@ const IWSY = (playerElement, scriptObject) => {
 		intervals.splice(pos, 1);
 	};
 
-	addTimeoutTimer = (interval) => {
-		intervals.push(interval);
+	addTimeoutTimer = (timeout) => {
+		if (!Array.isArray(timeouts)) {
+			timeouts = [];
+		}
+		timeouts.push(timeout);
 	};
 
 	clearAllTimers = () => {
@@ -325,6 +334,9 @@ const IWSY = (playerElement, scriptObject) => {
 		const vfx = script.vfx;
 		for (const item of vfx) {
 			if (item.name === slide) {
+				if (!Array.isArray(step.vfxRunning)) {
+					step.vfxRunning = [];
+				}
 				step.vfxRunning.push(vfxElement);
 				doPanzoom(vfxElement, item, () => {
 					if (step.continue !== `yes`) {
@@ -660,13 +672,19 @@ const IWSY = (playerElement, scriptObject) => {
 			if (colon > 0) {
 				const aspectW = aspect.substr(0, colon);
 				const aspectH = aspect.substr(colon + 1);
-				const height = Math.round(parseFloat(player.offsetWidth) * aspectH / aspectW);
-				player.style.height = `${Math.round(height)}px`;
+				if (document.fullscreenElement) {
+					player.style.width = window.innerWidth;
+					player.style.height = window.innerHeight;
+					player.style.border = ``;
+				} else {
+					const height = Math.round(parseFloat(player.offsetWidth) * aspectH / aspectW);
+					player.style.height = `${Math.round(height)}px`;
+					player.style.border = step.border;
+				}
 			}
 			player.style.position = `relative`;
 			player.style.overflow = `hidden`;
 			player.style.cursor = `none`;
-			player.style.border = step.border;
 			if (step.background) {
 				player.style.background = step.background.split(`&quot;`).join(`"`);
 			}
@@ -882,6 +900,7 @@ const IWSY = (playerElement, scriptObject) => {
 		script.speed = `normal`;
 		script.labels = {};
 		script.stop = false;
+		script.vfxElements = [];
 		removeStyles();
 		for (const block of script.blocks) {
 			const element = block.element;
@@ -921,7 +940,6 @@ const IWSY = (playerElement, scriptObject) => {
 			}
 		});
 		setupBlocks();
-		script.vfxElements = [];
 	};
 
 	const actions = {
@@ -985,6 +1003,7 @@ const IWSY = (playerElement, scriptObject) => {
             
 			const actionName = step.action.split(` `).join(``);
 			let handler = actions[actionName];
+			step.vfxRunning = [];
 			if (script.runMode === `auto`) {
 				if (typeof handler === `undefined`) {
 					handler = plugins[actionName];
@@ -995,7 +1014,6 @@ const IWSY = (playerElement, scriptObject) => {
 				if (onStepCB) {
 					onStepCB(step.index);
 				}
-				step.vfxRunning = [];
 				try {
 					handler(step);
 				} catch (err) {

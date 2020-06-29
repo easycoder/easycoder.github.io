@@ -41,7 +41,7 @@ window.onload = () => {
 					iwsy.setPath(path.slice(0, slash + 1));
 					iwsy.onStep(() => {
 					});
-					iwsy.run(`normal`, mode, () => {
+					iwsy.run(`fullscreen`, mode, () => {
 						console.log(`All done`);
 					});
 				} else {
