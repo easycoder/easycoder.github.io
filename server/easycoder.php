@@ -17,8 +17,6 @@
   function easycoder_enqueue_script() {  
     wp_enqueue_script('easycoder_script',
       'https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js', array(), '2.7.3');
-    // wp_enqueue_script('easycoder_script', 'https://rembrandt.easycoder.software/dist/easycoder.js',
-      array(), '2.7.3');
   }
   
   // Set up default plugin and REST scripts
