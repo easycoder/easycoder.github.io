@@ -164,7 +164,7 @@ const EasyCoder_IWSY = {
 			let script;
 			switch (action) {
 			case `init`:
-				program.require(`js`, `iwsy.js`,
+				program.require(`js`, `https://easycoder.github.io/iwsy/iwsy.js`,
 					function () {
 						program.run(command.pc + 1);
 					});
