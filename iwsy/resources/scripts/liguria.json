@@ -359,15 +359,15 @@
   "content": [
     {
       "name": "Manarola",
-      "content": "## Provincia di La Spezia - Manarola%0a~img:resources/users/2020/160/1/images/quickstart/cinqueterre.jpg:left 50%~Romantic Manarola – a hamlet of Riomaggiore – spills down a ravine to the wild and rugged Cinque Terre coastline. Besides its natural beauty, the village is also famous for its sweet Sciacchetrà wine, celebrated by Gabriele D'Annunzio in one of his amazing poems. Manarola has brightly painted houses, priceless medieval relics and a tiny harbour that features a boat ramp and a swimming hole; to the north, on the way to Corniglia, there's a stunning viewpoint (Punta Bonfiglio) where visitors can enjoy a drink in a bar between the village’s cemetery and the sea. Everywhere is the scent of the lemon trees, thyme, rosemary and Mediterranean maquis; the grapevines – grown on terraces – embrace the village in a tight hug."
+      "content": "## Provincia di La Spezia - Manarola%0a~img:resources/help/quickstart/cinqueterre.jpg:left 50%~Romantic Manarola – a hamlet of Riomaggiore – spills down a ravine to the wild and rugged Cinque Terre coastline. Besides its natural beauty, the village is also famous for its sweet Sciacchetrà wine, celebrated by Gabriele D'Annunzio in one of his amazing poems. Manarola has brightly painted houses, priceless medieval relics and a tiny harbour that features a boat ramp and a swimming hole; to the north, on the way to Corniglia, there's a stunning viewpoint (Punta Bonfiglio) where visitors can enjoy a drink in a bar between the village’s cemetery and the sea. Everywhere is the scent of the lemon trees, thyme, rosemary and Mediterranean maquis; the grapevines – grown on terraces – embrace the village in a tight hug."
     },
     {
       "name": "Apricale",
-      "content": "## Provincia di Imperia - Apricale%0a~img:resources/users/2020/160/1/images/quickstart/imperia.jpg:left 50%~Apricale is a picturesque small village to the north-east of Dolceacqua in western Liguria and surrounded by forested hills, included on the list of the 'most beautiful villages in Italy'.%0a%0aJust one of several attractive hill villages in this region, Apricale is compact and easy to explore. Most of the sights of interest are on or very close to the square in the centre of the village, although of course you will also want to follow the main street along the ridge to enjoy more views and to appreciate the medieval character of Apricale.%0a%0a%0a"
+      "content": "## Provincia di Imperia - Apricale%0a~img:resources/help/quickstart/imperia.jpg:left 50%~Apricale is a picturesque small village to the north-east of Dolceacqua in western Liguria and surrounded by forested hills, included on the list of the 'most beautiful villages in Italy'.%0a%0aJust one of several attractive hill villages in this region, Apricale is compact and easy to explore. Most of the sights of interest are on or very close to the square in the centre of the village, although of course you will also want to follow the main street along the ridge to enjoy more views and to appreciate the medieval character of Apricale.%0a%0a%0a"
     },
     {
       "name": "Noli",
-      "content": "## Provincia di Savona - Noli%0a~img:resources/users/2020/160/1/images/quickstart/savona.jpg:left 50%~The seaside village of Noli lies a few km west of Savona, in the central part of Liguria. Although popular with Italians it's scarcely known to anyone else outside of the area. It's a beautiful quiet and relatively unspoiled gem, with a good beach and right behind it the old town with pedestrian-only streets and a sprinkling of shops and restaurants, all preserving the ancient architecture and topped by a small castle. Although it lies on the main &quot;Via Aurelia&quot; coast road, all the through traffic now goes on the Autostrada, leaving Noli free from noisy vehicles. The coast road is also spectacular and it's well worth forsaking the motorway to explore the coastline between Savona and the busy resorts of Finale Ligure and Loano."
+      "content": "## Provincia di Savona - Noli%0a~img:resources/help/quickstart/savona.jpg:left 50%~The seaside village of Noli lies a few km west of Savona, in the central part of Liguria. Although popular with Italians it's scarcely known to anyone else outside of the area. It's a beautiful quiet and relatively unspoiled gem, with a good beach and right behind it the old town with pedestrian-only streets and a sprinkling of shops and restaurants, all preserving the ancient architecture and topped by a small castle. Although it lies on the main &quot;Via Aurelia&quot; coast road, all the through traffic now goes on the Autostrada, leaving Noli free from noisy vehicles. The coast road is also spectacular and it's well worth forsaking the motorway to explore the coastline between Savona and the busy resorts of Finale Ligure and Loano."
     },
     {
       "name": "and so on",
@@ -391,7 +391,7 @@
       "name": "manarola",
       "type": "panzoom",
       "aspect": "8:9",
-      "url": "resources/users/2020/160/1/images/quickstart/manarola.jpg",
+      "url": "resources/help/quickstart/manarola.jpg",
       "duration": 10,
       "startsize": 100,
       "startxoff": -50,
@@ -404,7 +404,7 @@
       "name": "apricale",
       "type": "panzoom",
       "aspect": "8:9",
-      "url": "resources/users/2020/160/1/images/quickstart/apricale.jpg",
+      "url": "resources/help/quickstart/apricale.jpg",
       "duration": 10,
       "startsize": 100,
       "startxoff": 0,
@@ -417,7 +417,7 @@
       "name": "noli",
       "type": "panzoom",
       "aspect": "8:9",
-      "url": "resources/users/2020/160/1/images/quickstart/noli.jpg",
+      "url": "resources/help/quickstart/noli.jpg",
       "duration": 10,
       "startsize": 100,
       "startxoff": 0,
