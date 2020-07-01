@@ -170,7 +170,7 @@
         "top": 0,
         "width": 1000,
         "height": 1000,
-        "background": "url('resources/help/quickstart/SemoigoDawn.jpg')",
+        "background": "url('https://easycoder.github.io/iwsy/resources/help/quickstart/SemoigoDawn.jpg')",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
