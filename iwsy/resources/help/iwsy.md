@@ -10,7 +10,7 @@ I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initia
 
 ## An example
 
-Here is a simple show that forms the basis of our ~page:quickstart:quickstart tutorial~:
+Our ~page:quickstart:quickstart tutorial~ is a simplified version of the following demo:
 
 ~embed:/resources/users/2020/160/1/scripts/demo.json~
 
