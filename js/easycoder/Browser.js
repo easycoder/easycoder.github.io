@@ -236,13 +236,14 @@ const EasyCoder_Browser = {
 
 		compile: (compiler) => {
 			const lino = compiler.getLino();
-			if (compiler.nextTokenIs(`body`)) {
+			const name = compiler.nextToken();
+			if ([`body`, `styles`].includes(name)) {
 				compiler.next();
 				compiler.addCommand({
 					domain: `browser`,
 					keyword: `clear`,
 					lino,
-					name: null
+					name
 				});
 				return true;
 			}
@@ -264,7 +265,17 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			const command = program[program.pc];
-			if (command.name) {
+			switch (command.name) {
+			case `body`:
+				document.body.innerHTML = ``;
+				break;
+			case `styles`:
+				// document.querySelectorAll(`[style]`).forEach(el => el.removeAttribute(`style`));
+				document.querySelectorAll(`link[rel="stylesheet"]`)
+					.forEach(el => el.parentNode.removeChild(el));
+				document.querySelectorAll(`style`).forEach(el => el.parentNode.removeChild(el)); 
+				break;
+			default:
 				const targetRecord = program.getSymbolRecord(command.name);
 				const target = targetRecord.element[targetRecord.index];
 				switch (targetRecord.keyword) {
@@ -276,8 +287,6 @@ const EasyCoder_Browser = {
 					target.innerHTML = ``;
 					break;
 				}
-			} else {
-				document.body.innerHTML = ``;
 			}
 			return command.pc + 1;
 		}

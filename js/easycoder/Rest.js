@@ -8,6 +8,16 @@ const EasyCoder_Rest = {
 			const lino = compiler.getLino();
 			const request = compiler.nextToken();
 			switch (request) {
+			case `path`:
+				const path = compiler.getNextValue();
+				compiler.addCommand({
+					domain: `rest`,
+					keyword: `rest`,
+					lino,
+					request: `path`,
+					path
+				});
+				return true;
 			case `get`:
 				if (compiler.nextIsSymbol(true)) {
 					const targetRecord = compiler.getSymbolRecord();
@@ -109,19 +119,22 @@ const EasyCoder_Rest = {
 
 		run: (program) => {
 			const command = program[program.pc];
+			if (command.request == `path`) {
+				EasyCoder_Rest.restPath = program.getValue(command.path);
+				return command.pc + 1;
+			}
+
 			const url = program.getValue(command.url);
 			// Default is the path for a WordPress installation
-			let rest = `/wp-content/plugins/easycoder/rest.php`
-			const restDef = document.getElementById(`easycoder-rest`);
-			if (restDef) {
-				rest = restDef.innerText;
+			if (!EasyCoder_Rest.restPath) {
+				EasyCoder_Rest.restPath = `/wp-content/plugins/easycoder/rest.php`;
 			}
 			let path = url;
 			if (!url.startsWith(`http`)) {
 				if (url[0] == `/`) {
 					path = url.substr(1);
 				} else {
-					path = `${rest}/${url}`;
+					path = `${EasyCoder_Rest.restPath}/${url}`;
 				}
 			}
 
