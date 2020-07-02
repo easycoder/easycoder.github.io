@@ -49,13 +49,18 @@
     module FileManModule
     module HelpModule
     variable Mobile
+    variable Properties
+    variable Resources
+    variable CDN
     variable LastSavedState
     variable Content
     variable Script
     variable Presentation
     variable OriginalPresentation
     variable Name
-    variable ReadOnly
+    variable Password
+    variable Valid
+    variable Static
     variable CallStack
     variable Message
     variable Section
@@ -67,6 +72,7 @@
     variable UserHome
     variable UserEmail
     variable UserPassword
+    variable UserPath
     variable Args
     variable Protocol
     variable Domain
@@ -89,19 +95,42 @@
     variable Files
     variable FileIsOpen
     
-!	Test if site is on a static host
-    clear ReadOnly
-    rest get Item from `test`
-    or begin
-    	print `Static site`
-        set ReadOnly
-        go to Start
-    end
+    clear styles
+    clear body
 
-Start:
     json parse url the location as Args
     put property `protocol` of Args into Protocol
     put property `domain` of Args into Domain
+
+!	Test if site is on a static host
+    clear Static
+    rest get Item from Protocol cat Domain cat `/rest.php/test` or go to SetStatic
+
+CheckProperties:
+	put empty into UserPath
+	rest get Properties from Protocol cat Domain cat `/easycoder-properties.json`
+	or begin
+        print `No properties`
+        go to SetStatic
+    end
+    if Properties is not empty
+    begin
+    	put property `resources` of Properties into Resources
+    	put property `path` of Properties into UserPath
+    	go to Start
+    end
+
+SetStatic:
+    print `Static website`
+    set Static
+
+Start:
+    if Resources is empty
+    begin
+    	put `resources` into Resources
+    	put `https://easycoder.github.io/iwsy/resources` into CDN
+    end
+    else put Protocol cat Domain cat `/` cat Resources into CDN
     
     put empty into CallStack
     history set
@@ -160,7 +189,7 @@ Start:
     create Link in TD
     create Gear in Link
     set the style of Gear to `height:1em`
-    set attribute `src` of Gear to `resources/icon/gear.png`
+    set attribute `src` of Gear to CDN cat `/icon/gear.png`
     set attribute `title` of Gear to `Settings & Information`
     
     create TD in TR
@@ -172,48 +201,55 @@ Start:
     create Link in Buttons
     create New in Link
     set the style of New to `width:40px;margin-right:0.5em`
-    set attribute `src` of New to `resources/icon/new.png`
+    set attribute `src` of New to CDN cat `/icon/new.png`
     set attribute `title` of New to `New`
     create Link in Buttons
     create Open in Link
     set the style of Open to `width:40px;margin-right:0.5em`
-    set attribute `src` of Open to `resources/icon/open.png`
+    set attribute `src` of Open to CDN cat `/icon/open.png`
     set attribute `title` of Open to `Open`
     create Link in Buttons
     create Save in Link
     set the style of Save to `width:40px;margin-right:1.5em`
-    set attribute `src` of Save to `resources/icon/save.png`
+    set attribute `src` of Save to CDN cat `/icon/save.png`
     set attribute `title` of Save to `Save`
     create Link in Buttons
     create Delete in Link
     set the style of Delete to `width:40px;margin-right:1.5em`
-    set attribute `src` of Delete to `resources/icon/trash.png`
+    set attribute `src` of Delete to CDN cat `/icon/trash.png`
     set attribute `title` of Delete to `Delete`
-    create Link in Buttons
-    create FileMan in Link
-    set the style of FileMan to `width:40px;margin-right:1.5em`
-    set attribute `src` of FileMan to `resources/icon/fileman.png`
-    set attribute `title` of FileMan to `File Manager`
+    if not Static
+    begin
+	    create Link in Buttons
+	    create FileMan in Link
+	    set the style of FileMan to `width:40px;margin-right:1.5em`
+	    set attribute `src` of FileMan to CDN cat `/icon/fileman.png`
+	    set attribute `title` of FileMan to `File Manager`
+    end
     create Link in Buttons
     create RunStop in Link
     set the style of RunStop to `width:40px;margin-right:0.5em`
-    set attribute `src` of RunStop to `resources/icon/run.png`
+    set attribute `src` of RunStop to CDN cat `/icon/run.png`
     set attribute `title` of RunStop to `Run`
     create Link in Buttons
     create FullScreen in Link
     set the style of FullScreen to `width:40px;margin-right:1.5em`
-    set attribute `src` of FullScreen to `resources/icon/fullscreen.png`
+    set attribute `src` of FullScreen to CDN cat `/icon/fullscreen.png`
     set attribute `title` of FullScreen to `Run full-screen`
     create Link in Buttons
     create Help in Link
     set the style of Help to `width:40px;margin-right:1.5em`
-    set attribute `src` of Help to `resources/icon/help.png`
+    set attribute `src` of Help to CDN cat `/icon/help.png`
     set attribute `title` of Help to `Help`
-    create Link in Buttons
-    create User in Link
-    set the style of User to `width:40px;position:absolute;top:0.5em;right:0.5em`
-    set attribute `src` of User to `resources/icon/user.png`
-    set attribute `title` of User to `Login`
+    if UserPath is empty
+    begin
+        create Link in Buttons
+        create User in Link
+        set the style of User to `width:40px;position:absolute;top:0.5em;right:0.5em`
+        set attribute `src` of User to CDN cat `/icon/user.png`
+        set attribute `title` of User to `Login`
+    	on click User go to DoUser
+    end
     
     create Player in Left
     set the style of Player to `margin:0.5em`
@@ -332,7 +368,7 @@ Start:
         clear Player
         clear Running
         iwsy stop
-        set attribute `src` of RunStop to `resources/icon/run.png`
+        set attribute `src` of RunStop to CDN cat `/icon/run.png`
         set the content of ScriptName to empty
         put empty into CurrentScriptName
         gosub to CreateNewPresentation
@@ -423,10 +459,13 @@ Start:
     on click FileMan
     begin
     	if Running stop
-        if UserRecord is empty stop
+    	if UserPath is empty
+    	begin
+            if UserRecord is empty stop
+        end
     	if FileManModule is not running
         begin
-            rest get Script from `/resources/ecs/fileman.txt?v=` cat now
+        	rest get Script from CDN cat `/ecs/fileman.txt?v=` cat now
             run Script with FileManPanel as FileManModule
         end
         set style `display` of Player to `none`
@@ -440,23 +479,6 @@ Start:
     on click RunStop go to DoRunStop
     on click FullScreen go to RunFullScreen
     
-    on click User
-    begin
-    	if UserRecord
-        begin
-        	put empty into UserRecord
-            put empty into storage as `.user`
-            set attribute `src` of User to `resources/icon/user.png`
-            set attribute `title` of User to `Login`
-            gosub to SetStatusRed
-            set the text of Status to `Not logged in`
-            put empty into storage as `user.email`
-            put empty into storage as `user.password`
-            go to ResetStatus
-        end
-        else send `login` to UserModule
-    end
-
     gosub to CreateNewPresentation
     put Presentation into LastSavedState
     gosub to SetupSteps
@@ -469,10 +491,13 @@ Start:
     clear Running
     iwsy load Player Presentation
 
-   	create UserPanel in Controls
-   	rest get Script from `/resources/ecs/user.txt?v=` cat now
-    run Script with UserPanel as UserModule
-    send to UserModule
+    create UserPanel in Controls
+	if UserPath is empty
+    begin
+        rest get Script from CDN cat `/ecs/user.txt?v=` cat now
+        run Script with UserPanel as UserModule
+        send to UserModule
+    end
     
     on message
     begin
@@ -501,6 +526,11 @@ Start:
         	put property `block` of Message into N
             iwsy block N
         end
+        else if Action is `password`
+        begin
+            gosub to CheckAdminPassword
+            stop
+        end
         else if Action is `user`
         begin
         	put property `user` of Message into UserRecord
@@ -508,10 +538,10 @@ Start:
             put property `home` of UserRecord into UserHome
             put UserHome cat `/` cat property `id` of UserRecord into UserHome
             put UserHome into storage as `user.home`
-            iwsy path `resources/users/` cat UserHome cat `/scripts/`
+            iwsy path Resources cat `/users/` cat UserHome cat `/scripts/`
             put property `email` of UserRecord into UserEmail
             get UserPassword from storage as `user.password`
-            set attribute `src` of User to `resources/icon/user-loggedin.png`
+            set attribute `src` of User to CDN cat `/icon/user-loggedin.png`
             set attribute `title` of User to `Logged in as ` cat property `name` of UserRecord
             gosub to SetStatusGreen
             set the text of Status to `Logged in as  '` cat Name cat property `name` of UserRecord cat `'`
@@ -531,7 +561,7 @@ Start:
     put property `arg` of Args into Arg
     if Arg includes `.json`
     begin
-        rest get Presentation from `/resources/users/` cat Arg cat `?v=` cat now
+        rest get Presentation from `/` cat Resources cat `/users/` cat Arg cat `?v=` cat now
 		gosub to NotifyModules
     	iwsy script Presentation
         set style `display` of Player to `block`
@@ -540,7 +570,7 @@ Start:
         create FSPrompt in Mask
         set the style of FSPrompt to
         	`width:50%;height:50%;position:absolute;left:50%;top:50%;transform:translate(-50%, -50%)`
-        set attribute `src` of FSPrompt to `resources/img/fullscreen.png`
+        set attribute `src` of FSPrompt to CDN cat `/img/fullscreen.png`
         on click FSPrompt go to FullScreenManual
         on key
         begin
@@ -556,6 +586,33 @@ Start:
 	    if Item is empty fork to ShowHelp
     end
     
+	stop
+
+CheckAdminPassword:
+    get Password from storage as `.password`
+    if Password is empty put prompt `Please type the admin password` with `` into Password
+    rest get Valid from `verify/` cat Password
+    or begin
+        alert `Unable to verify password.`
+        put empty into storage as `.password`
+    end
+    if Valid is `yes` put Password into storage as `.password`
+    return
+
+DoUser:
+   	if UserRecord
+    begin
+       	put empty into UserRecord
+        put empty into storage as `.user`
+        set attribute `src` of User to CDN cat `/icon/user.png`
+        set attribute `title` of User to `Login`
+        gosub to SetStatusRed
+        set the text of Status to `Not logged in`
+        put empty into storage as `user.email`
+        put empty into storage as `user.password`
+        go to ResetStatus
+    end
+    else send `login` to UserModule
 	stop
 
 FullScreenAuto:
@@ -587,7 +644,7 @@ ShowHelp:
     begin
         require js
         	`https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/showdown.js?v=` cat now
-        rest get Script from `/resources/ecs/help.txt?v=` cat now
+        rest get Script from CDN cat `/ecs/help.txt?v=` cat now
         run Script with HelpPanel as HelpModule
     end
     set style `display` of Player to `none`
@@ -628,7 +685,7 @@ CreateNewPresentation:
 SetupSteps:
     if StepsModule is not running
     begin
-    	rest get Script from `/resources/ecs/steps.txt?v=` cat now
+    	rest get Script from CDN cat `/ecs/steps.txt?v=` cat now
         run Script with StepsPanel and Presentation as StepsModule
     end
     return
@@ -636,7 +693,7 @@ SetupSteps:
 SetupBlocks:
     if BlocksModule is not running
     begin
-    	rest get Script from `/resources/ecs/blocks.txt?v=` cat now
+    	rest get Script from CDN cat `/ecs/blocks.txt?v=` cat now
         run Script with BlocksPanel and Presentation as BlocksModule
     end
     return
@@ -644,7 +701,7 @@ SetupBlocks:
 SetupContent:
     if ContentModule is not running
     begin
-    	rest get Script from `/resources/ecs/content.txt?v=` cat now
+    	rest get Script from CDN cat `/ecs/content.txt?v=` cat now
         run Script with ContentPanel and Presentation as ContentModule
     end
     return
@@ -652,7 +709,7 @@ SetupContent:
 SetupVFX:
     if VFXModule is not running
     begin
-    	rest get Script from `/resources/ecs/vfx.txt?v=` cat now
+    	rest get Script from CDN cat `/ecs/vfx.txt?v=` cat now
         run Script with VFXPanel and Presentation as VFXModule
     end
     return
@@ -660,7 +717,7 @@ SetupVFX:
 SetupJSON:
     if JSONModule is not running
     begin
-    	rest get Script from `/resources/ecs/json.txt?v=` cat now
+    	rest get Script from CDN cat `/ecs/json.txt?v=` cat now
         run Script with JSONPanel and Presentation as JSONModule
     end
     return
@@ -745,7 +802,20 @@ DoOpen:
     set style `display` of FileListing to `inline-block`
 
   ! Fill the browser with content from the server
-    if UserRecord
+  	if UserPath
+    begin
+        rest get Files from `ulist/` cat Resources cat `/` cat UserPath cat `/scripts?v=` cat now
+        put the json count of Files into FileCount
+        put empty into Content
+        put 0 into N
+        while N is less than FileCount
+        begin
+            put element N of Files into Item
+            if property `type` of Item is `json` json add property `name` of Item to Content
+            add 1 to N
+        end
+    end
+    else if UserRecord
     begin
         rest get Files from `ulist/` cat UserEmail cat `/` cat UserPassword cat `/`
         	cat `users/` cat UserHome cat `/scripts?v=` cat now
@@ -821,8 +891,10 @@ SelectFile:
     index File to the index of FileName
     set the content of ScriptName to File
     put File into CurrentScriptName
-	if UserRecord rest get Presentation from
-    	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
+    if UserPath rest get Presentation from
+    	`/` cat Resources cat `/` cat UserPath cat `/scripts/` cat File cat `?v=` cat now
+	else if UserRecord rest get Presentation from
+    	`/` cat Resources cat `/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
     else get Presentation from storage as File
 	gosub to NotifyModules
     json format Presentation
@@ -832,7 +904,7 @@ SelectFile:
     set the text of Status to `Presentation '` cat File cat `' loaded`
     fork to ResetStatus
     clear Running
-    set attribute `src` of RunStop to `resources/icon/run.png`
+    set attribute `src` of RunStop to CDN cat `/icon/run.png`
     set style `display` of FileManPanel to `none`
     set style `display` of HelpPanel to `none`
     if HelpModule is running send `stop` to HelpModule
@@ -863,7 +935,7 @@ StopRun:
     iwsy stop
     clear Running
     gosub to ClearStepsButtons
-    set attribute `src` of RunStop to `resources/icon/run.png`
+    set attribute `src` of RunStop to CDN cat `/icon/run.png`
 	return
 
 DoRunStop:
@@ -877,7 +949,7 @@ DoRunStop:
         set style `display` of FileManPanel to `none`
         set style `display` of HelpPanel to `none`
 		gosub to ClearStepsButtons
-        set attribute `src` of RunStop to `resources/icon/runstop.png`
+        set attribute `src` of RunStop to CDN cat `/icon/runstop.png`
         
         put 0 into N
         gosub to SelectSection
@@ -909,7 +981,7 @@ DoRunStop:
 		iwsy run then
         begin
 			gosub to ClearStepsButtons
-    		set attribute `src` of RunStop to `resources/icon/run.png`
+    		set attribute `src` of RunStop to CDN cat `/icon/run.png`
             clear Running
             put OriginalPresentation into Presentation
             go to PrepareScript
