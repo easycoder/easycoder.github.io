@@ -35,11 +35,28 @@
     variable UserRecord
     variable Email
     variable Password
+    variable AdminPassword
     variable CurrentPath
     variable FilePath
     variable Path
     variable N
     variable Even
+    variable Args
+    variable Protocol
+    variable Domain
+    variable Properties
+    variable UserPath
+    variable Resources
+    variable Message
+    variable Post
+
+    json parse url the location as Args
+    put property `protocol` of Args into Protocol
+    put property `domain` of Args into Domain
+	rest get Properties from Protocol cat Domain cat `/easycoder-properties.json`
+   	put property `path` of Properties into UserPath
+    put property `resources` of Properties into Resources
+    if Resources is empty put `resources` into Resources
 
     if portrait
     begin
@@ -122,23 +139,50 @@
 Show:
     set style `display` of Container to `block`
 
-	get UserRecord from storage as `.user`
-    put property `email` of UserRecord into Email
-    get Password from storage as `user.password`
-    put property `home` of UserRecord into Home
-    put Home cat `/` cat property `id` of UserRecord cat `/images` into Home
-    put `users/` cat Home into Home
+	if UserPath
+    begin
+    	put UserPath cat `/images` into Home
+    end
+    else
+    begin
+        get UserRecord from storage as `.user`
+        put property `email` of UserRecord into Email
+        get Password from storage as `user.password`
+        put property `home` of UserRecord into Home
+        put Home cat `/` cat property `id` of UserRecord cat `/images` into Home
+        put `users/` cat Home into Home
+    end
     get CurrentPath from storage as `.filepath`
     if CurrentPath is empty put Home into CurrentPath
+    get AdminPassword from storage as `.password`
 
 !	Build the list
 Browser:
     put CurrentPath into storage as `.filepath`
-    rest get Content from `ulist/` cat Email cat `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
-    or begin
-        alert `Failed to list files.`
-        put empty into storage as `.filepath`
-        go to Show
+    if UserPath
+    begin
+        if AdminPassword is empty
+        begin
+            set Message to object
+            set property `Action` of Message to `password`
+            send Message to parent
+            stop
+        end
+        rest get Content from `list/` cat AdminPassword cat `/` cat CurrentPath cat `?v=` cat now
+        or begin
+            alert `Failed to list files.`
+            put empty into storage as `.filepath`
+            stop
+        end
+    end
+    else
+    begin
+        rest get Content from `ulist/` cat Email cat `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
+        or begin
+            alert `Failed to list files.`
+            put empty into storage as `.filepath`
+            stop
+        end
     end
     put CurrentPath into Path
     set the content of Location to `Current path: ` cat Path
@@ -199,7 +243,9 @@ Browser:
         if FileCount is 0
         begin
             put Path into CurrentPath
-            rest post to `udelete/` cat Email cat `/` cat Password cat `/` cat CurrentPath or
+            if UserPath put `delete/` cat AdminPassword cat `/` cat CurrentPath into Post
+            else put `udelete/` cat Email cat `/` cat Password cat `/` cat CurrentPath into Post
+            rest post to Post or
             begin
                 alert `Failed to delete a file.`
                 stop
@@ -240,12 +286,14 @@ SelectFile:
         set the text of URL to `resources/` cat FilePath
         on click DeleteButton
         begin
-          rest post to `udelete/` cat Email cat `/` cat Password cat `/` cat FilePath or
-          begin
-              alert `Failed to delete the image.`
-              stop
-          end
-          go to CloseMedia
+            if UserPath put `delete/` cat AdminPassword cat `/` cat FilePath into Post
+            else put `udelete/` cat Email cat `/` cat Password cat `/` cat FilePath into Post
+            rest post to Post or
+            begin
+                alert `Failed to delete the image.`
+                stop
+            end
+            go to CloseMedia
         end
     end
     stop
@@ -267,7 +315,8 @@ Upload:
     else
     begin
         put CurrentPath into Path
-        put `upload/` cat Email cat `/` cat Password cat `/` cat Path into Path
+        if UserPath put `upload/` cat AdminPassword cat `/` cat Path into Path
+        else put `uupload/` cat Password cat `/` cat Email cat `/` cat Password cat `/` cat Path into Path
         upload UploadFile to Path with UploadProgress and UploadStatus
         goto Browser
     end

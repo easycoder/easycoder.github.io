@@ -36,11 +36,33 @@
     variable N
     variable M
     variable NBlocks
+    variable Args
+    variable Protocol
+    variable Domain
+    variable Resources
+    variable Properties
+    variable CDN
     
+    json parse url the location as Args
+    put property `protocol` of Args into Protocol
+    put property `domain` of Args into Domain
+
+	rest get Properties from Protocol cat Domain cat `/easycoder-properties.json`
+    if Properties is not empty
+    begin
+    	put property `resources` of Properties into Resources
+    end
+    if Resources is empty
+    begin
+    	put `resources` into Resources
+    	put `https://easycoder.github.io/iwsy/resources` into CDN
+    end
+    else put Protocol cat Domain cat `/` cat Resources into CDN
+
     put -1 into SelectedBlock
     
-    rest get PropertyNames from `/resources/json/propertyNames.json`
-    rest get PropertyDefaults from `/resources/json/propertyDefaults.json`
+    rest get PropertyNames from CDN cat `/json/propertyNames.json`
+    rest get PropertyDefaults from CDN cat `/json/propertyDefaults.json`
     
     on message go to Start
     set ready
