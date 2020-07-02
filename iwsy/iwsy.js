@@ -750,7 +750,7 @@ const IWSY = (playerElement, scriptObject) => {
 		if (group.slice(0, 4) === `img:`) {
 			const data = group.slice(4);
 			const pipe = data.indexOf(`|`);
-			if (copipelon > 0) {
+			if (pipe > 0) {
 				const src = data.slice(0, pipe);
 				const classes = data.slice(pipe + 1).split(` `);
 				const styles = [];
