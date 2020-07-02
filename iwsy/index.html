@@ -14,6 +14,7 @@
         script Launcher
 
         variable Script
+        rest path `/rest.php`
         require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/iwsy.js?v=` cat now
         rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/iwsy/resources/ecs/iwsy.txt?v=` cat now
         run Script
