@@ -49,7 +49,6 @@
     module FileManModule
     module HelpModule
     variable Mobile
-    variable Properties
     variable Resources
     variable CDN
     variable LastSavedState
@@ -72,7 +71,7 @@
     variable UserHome
     variable UserEmail
     variable UserPassword
-    variable UserPath
+    variable IsHome
     variable Args
     variable Protocol
     variable Domain
@@ -97,41 +96,36 @@
     
     clear styles
     clear body
+    
+    rest path `rest.php`
 
     json parse url the location as Args
     put property `protocol` of Args into Protocol
     put property `domain` of Args into Domain
+    if Domain is `iwannashowyou.com`
+    begin
+    	put Protocol cat Domain cat `/resources` into CDN
+    	set IsHome
+    end
+    else
+    begin
+    	put `https://easycoder.github.io/iwsy/resources` into CDN
+    	clear IsHome
+    end
+!	If the debug flag is set use admin storage
+    get Item from storage as `debug`
+    if Item is `true` clear IsHome
 
 !	Test if site is on a static host
     clear Static
-    rest get Item from Protocol cat Domain cat `/rest.php/test` or go to SetStatic
-
-CheckProperties:
-	put empty into UserPath
-	rest get Properties from Protocol cat Domain cat `/easycoder-properties.json`
-	or begin
-        print `No properties`
-        go to SetStatic
-    end
-    if Properties is not empty
-    begin
-    	put property `resources` of Properties into Resources
-    	put property `path` of Properties into UserPath
-    	go to Start
+    rest get Item from `test`
+    or begin
+        print `Static website`
+    	set Static
+    	put empty into CDN
     end
 
-SetStatic:
-    print `Static website`
-    set Static
-
-Start:
-    if Resources is empty
-    begin
-    	put `resources` into Resources
-    	put `https://easycoder.github.io/iwsy/resources` into CDN
-    end
-    else put Protocol cat Domain cat `/` cat Resources into CDN
-    
+Start:    
     put empty into CallStack
     history set
     on restore
@@ -241,7 +235,7 @@ Start:
     set the style of Help to `width:40px;margin-right:1.5em`
     set attribute `src` of Help to CDN cat `/icon/help.png`
     set attribute `title` of Help to `Help`
-    if UserPath is empty
+    if IsHome
     begin
         create Link in Buttons
         create User in Link
@@ -395,13 +389,7 @@ Start:
         if Name is not CurrentScriptName put empty into LastSavedState
         if Presentation is not LastSavedState
         begin
-            if UserRecord
-            begin
-            	put Presentation into Content
-                json format Content
-                gosub to SavePresentation
-            end
-            else put Presentation into storage as Name
+        	gosub to SavePresentation
             put Presentation into LastSavedState
             gosub to SetStatusGreen
             set the text of Status to `Presentation '` cat Name cat `' saved`
@@ -425,18 +413,7 @@ Start:
             set the text of Status to `Nothing to delete`
             go to ResetStatus
         end
-        if confirm `Are you sure you want to delete "` cat Name cat `"?`
-        begin
-            if UserRecord gosub to DeletePresentation
-            else remove Name from storage
-            gosub to SetStatusGreen
-            set the text of Status to `Script "` cat Name cat `" deleted`
-            set the content of ScriptName to empty
-            put empty into CurrentScriptName
-            put empty into Presentation
-            put Presentation into LastSavedState
-            go to ResetStatus
-        end
+        if confirm `Are you sure you want to delete "` cat Name cat `"?` gosub to DeletePresentation
     end
     
     on click Gear
@@ -458,13 +435,13 @@ Start:
     
     on click FileMan
     begin
+    	gosub to CheckAdminPassword
+        if Password is empty stop
     	if Running stop
-    	if UserPath is empty
-    	begin
-            if UserRecord is empty stop
-        end
+    	if Static stop
     	if FileManModule is not running
         begin
+    		print `Load FileMan module`
         	rest get Script from CDN cat `/ecs/fileman.txt?v=` cat now
             run Script with FileManPanel as FileManModule
         end
@@ -492,7 +469,7 @@ Start:
     iwsy load Player Presentation
 
     create UserPanel in Controls
-	if UserPath is empty
+	if IsHome
     begin
         rest get Script from CDN cat `/ecs/user.txt?v=` cat now
         run Script with UserPanel as UserModule
@@ -525,11 +502,6 @@ Start:
         	set style `display` of Player to `block`
         	put property `block` of Message into N
             iwsy block N
-        end
-        else if Action is `password`
-        begin
-            gosub to CheckAdminPassword
-            stop
         end
         else if Action is `user`
         begin
@@ -654,14 +626,42 @@ ShowHelp:
     stop
 
 SavePresentation:
+   	put Presentation into Content
+    json format Content
+    if Static go to SaveToStorage
+    if UserRecord go to SaveToUser
+    if IsHome go to SaveToStorage
+    gosub to CheckAdminPassword
+    if Password is empty return
+	rest post Content to `save/` cat Password cat `/scripts/` cat Name
+	return
+
+SaveToUser:
 	rest post Content to `usave/` cat UserEmail cat `/` cat UserPassword cat `/`
     	cat `users/` cat UserHome cat `/scripts/` cat Name
 	return
 
+SaveToStorage:
+	put Presentation into storage as Name
+	return
+
 DeletePresentation:
+    if Static go to DeleteFromStorage
+	if UserRecord go to DeleteFromUser
+    if IsHome go to DeleteFromStorage
+    gosub to CheckAdminPassword
+    if Password is empty return
+	rest post Content to `delete/` cat Password cat `/scripts/` cat Name
+	return
+
+DeleteFromUser:
 	rest post Content to `udelete/` cat UserEmail cat `/` cat UserPassword cat `/`
     	cat `users/` cat UserHome cat `/scripts/` cat Name
 	return
+
+DeleteFromStorage:
+	remove Name from storage
+    return
 
 CreateNewPresentation:
     set Presentation to object
@@ -685,6 +685,7 @@ CreateNewPresentation:
 SetupSteps:
     if StepsModule is not running
     begin
+    	print `Load Steps module`
     	rest get Script from CDN cat `/ecs/steps.txt?v=` cat now
         run Script with StepsPanel and Presentation as StepsModule
     end
@@ -693,6 +694,7 @@ SetupSteps:
 SetupBlocks:
     if BlocksModule is not running
     begin
+    	print `Load Blocks module`
     	rest get Script from CDN cat `/ecs/blocks.txt?v=` cat now
         run Script with BlocksPanel and Presentation as BlocksModule
     end
@@ -701,6 +703,7 @@ SetupBlocks:
 SetupContent:
     if ContentModule is not running
     begin
+    	print `Load Content module`
     	rest get Script from CDN cat `/ecs/content.txt?v=` cat now
         run Script with ContentPanel and Presentation as ContentModule
     end
@@ -709,6 +712,7 @@ SetupContent:
 SetupVFX:
     if VFXModule is not running
     begin
+    	print `Load VFX module`
     	rest get Script from CDN cat `/ecs/vfx.txt?v=` cat now
         run Script with VFXPanel and Presentation as VFXModule
     end
@@ -717,6 +721,7 @@ SetupVFX:
 SetupJSON:
     if JSONModule is not running
     begin
+    	print `Load JSON module`
     	rest get Script from CDN cat `/ecs/json.txt?v=` cat now
         run Script with JSONPanel and Presentation as JSONModule
     end
@@ -781,7 +786,7 @@ DoOpen:
     begin
       if confirm `Content has changed. Do you want to save it?`
       begin
-      	if UserRecord rest post Content to `save/` cat `users/` cat UserHome cat `/` cat Name
+      	if UserRecord gosub to SavePresentation
       	else put Content into storage as Name
       end
     end
@@ -797,54 +802,60 @@ DoOpen:
     end
     wait 10 ticks
 
-  ! Make the browser panel visible
+! Make the browser panel visible
     set style `display` of Media to `block`
     set style `display` of FileListing to `inline-block`
 
-  ! Fill the browser with content from the server
-  	if UserPath
+! Fill the browser with content from the server
+  	if Static go to OpenFromStorage
+    if UserRecord go to OpenFromUser
+  	if IsHome go to OpenFromStorage
+
+	gosub to CheckAdminPassword
+    if Password is empty stop
+    rest get Files from `list/` cat Password cat `/scripts?v=` cat now
+    put the json count of Files into FileCount
+    put empty into Content
+    put 0 into N
+    while N is less than FileCount
     begin
-        rest get Files from `ulist/` cat Resources cat `/` cat UserPath cat `/scripts?v=` cat now
-        put the json count of Files into FileCount
-        put empty into Content
-        put 0 into N
-        while N is less than FileCount
+        put element N of Files into Item
+        if property `type` of Item is `json` json add property `name` of Item to Content
+        add 1 to N
+    end
+	go to ProcessFiles
+
+OpenFromUser:
+    rest get Files from `ulist/` cat UserEmail cat `/` cat UserPassword cat `/`
+      	cat `users/` cat UserHome cat `/scripts?v=` cat now
+    put the json count of Files into FileCount
+    put empty into Content
+    put 0 into N
+    while N is less than FileCount
+    begin
+        put element N of Files into Item
+        if property `type` of Item is `json` json add property `name` of Item to Content
+        add 1 to N
+    end
+	go to ProcessFiles
+
+OpenFromStorage:
+    get Files from storage
+    put the json count of Files into FileCount
+    put empty into Content
+    put 0 into N
+    while N is less than FileCount
+    begin
+        put element N of Files into Item
+        if left 1 of Item is not `.`
         begin
-            put element N of Files into Item
-            if property `type` of Item is `json` json add property `name` of Item to Content
-            add 1 to N
+            if the position of `.json` in Item is not -1 json add Item to Content
         end
+        add 1 to N
     end
-    else if UserRecord
-    begin
-        rest get Files from `ulist/` cat UserEmail cat `/` cat UserPassword cat `/`
-        	cat `users/` cat UserHome cat `/scripts?v=` cat now
-        put the json count of Files into FileCount
-        put empty into Content
-        put 0 into N
-        while N is less than FileCount
-        begin
-            put element N of Files into Item
-            if property `type` of Item is `json` json add property `name` of Item to Content
-            add 1 to N
-        end
-    end
-    else
-    begin
-    	get Files from storage
-	  	put the json count of Files into FileCount
-	  	put empty into Content
-	  	put 0 into N
-	  	while N is less than FileCount
-	  	begin
-	  		put element N of Files into Item
-	    	if left 1 of Item is not `.`
-            begin
-            	if the position of `.json` in Item is not -1 json add Item to Content
-            end
-	    	add 1 to N
-	  	end
-    end
+	go to ProcessFiles
+
+ProcessFiles:
     json sort Content
     put empty into FileList
     put the json count of Content into FileCount
@@ -891,11 +902,23 @@ SelectFile:
     index File to the index of FileName
     set the content of ScriptName to File
     put File into CurrentScriptName
-    if UserPath rest get Presentation from
-    	`/` cat Resources cat `/` cat UserPath cat `/scripts/` cat File cat `?v=` cat now
-	else if UserRecord rest get Presentation from
+    
+    if Static go to SelectFromStorage
+    if UserRecord go to SelectFromUser
+    if IsHome go to SelectFromStorage
+    
+    rest get Presentation from `/resources/scripts/` cat File cat `?v=` cat now
+    go to UseFile
+
+SelectFromUser:
+	if UserRecord rest get Presentation from
     	`/` cat Resources cat `/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
-    else get Presentation from storage as File
+    go to UseFile
+
+SelectFromStorage:
+    get Presentation from storage as File
+
+UseFile:
 	gosub to NotifyModules
     json format Presentation
     put Presentation into LastSavedState

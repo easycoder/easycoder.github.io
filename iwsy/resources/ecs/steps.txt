@@ -47,8 +47,7 @@
     variable Args
     variable Protocol
     variable Domain
-    variable Properties
-    variable Resources
+    variable IsHome
     variable CDN
     variable Steps
     variable Step
@@ -93,11 +92,18 @@
     json parse url the location as Args
     put property `protocol` of Args into Protocol
     put property `domain` of Args into Domain
-    
-    rest get Properties from Protocol cat Domain cat `/easycoder-properties.json`
-    put property `resources` of Properties into Resources
-    if Resources is empty put `https://easycoder.github.io/iwsy/resources` into CDN
-    else put Protocol cat Domain cat `/` cat Resources into CDN
+    if Domain is `iwannashowyou.com`
+    begin
+    	put `https://easycoder.github.io/iwsy/resources` into CDN
+    	set IsHome
+    end
+    else
+    	put Protocol cat Domain cat `/resources` into CDN
+    	clear IsHome
+    end
+!	If the debug flag is set use admin storage
+    get Item from storage as `debug`
+    if Item clear IsHome
 
     create StepsPanel in Panel
 	set the style of StepsPanel to `flex:1;overflow-y:scroll`

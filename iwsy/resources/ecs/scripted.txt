@@ -36,6 +36,8 @@
   variable N
   variable FileIsOpen
   variable Item
+  
+  rest path `rest.php`
 
   set the title to `Script Editor`
 

@@ -12,7 +12,7 @@ I Wanna Show You (~iwsy~, pronounced "You-zee" as an approximation to the initia
 
 Our ~page:quickstart:quickstart tutorial~ is a simplified version of the following demo:
 
-~embed:/resources/users/2020/160/1/scripts/demo.json~
+~embed:https://easycoder.github.io/iwsy/resources/scripts/demo.json~
 
 ## Quickstart tutorial
 
