@@ -912,7 +912,7 @@ SelectFile:
 
 SelectFromUser:
 	if UserRecord rest get Presentation from
-    	`/` cat Resources cat `/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
+    	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
     go to UseFile
 
 SelectFromStorage:
