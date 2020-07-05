@@ -302,7 +302,7 @@ Upload:
     else
     begin
         put CurrentPath into Path
-        if IsHome put `uupload/` cat Password cat `/` cat Email cat `/` cat Password cat `/` cat Path into Path
+        if IsHome put `uupload/` cat Email cat `/` cat Password cat `/` cat Path into Path
         else put `upload/` cat AdminPassword cat `/` cat Path into Path
         upload UploadFile to Path with UploadProgress and UploadStatus
         goto Browser
