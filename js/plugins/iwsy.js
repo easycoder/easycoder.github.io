@@ -30,6 +30,15 @@ const EasyCoder_IWSY = {
 				}
 				break;
 			case `init`:
+				const cdn = compiler.nextValue();
+				compiler.addCommand({
+					domain: `iwsy`,
+					keyword: `iwsy`,
+					lino,
+					action,
+					cdn
+				});
+				return true;
 			case `stop`:
 				compiler.next();
 				compiler.addCommand({
@@ -164,15 +173,13 @@ const EasyCoder_IWSY = {
 			let script;
 			switch (action) {
 			case `init`:
-				program.require(`js`, `https://easycoder.github.io/iwsy/iwsy.js`,
+				const cdn = program.getValue(command.cdn);
+				program.require(`js`, `${cdn}/iwsy.js`,
 					function () {
 						program.run(command.pc + 1);
 					});
 				return 0;
 			case `load`:
-				// if (program.iwsyFunctions) {
-				// 	throw Error(`IWSY has already been set up`);
-				// }
 				const playerRecord = program.getSymbolRecord(command.player);
 				const player = playerRecord.element[playerRecord.index];
 				player.innerHTML = ``;

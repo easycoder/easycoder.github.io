@@ -5,7 +5,6 @@ const IWSY = (playerElement, scriptObject) => {
 	let script = scriptObject;
 	let homeScript = script;
 	let afterRun;
-	let path;
 	let plugins;
 	let timeouts = [];
 	let intervals = [];
@@ -980,25 +979,35 @@ const IWSY = (playerElement, scriptObject) => {
 			const onStepCB = script.onStepCB;
 			if (step.action === `chain`) {
 				const runMode = script.runMode;
-				fetch(`${path}${step.script}?v=${Date.now()}`)
-					.then(response => {
-						if (response.status >= 400) {
-							throw Error(`Unable to load ${step.script}: ${response.status}`);
-						}
-						response.json().then(data => {
-							script = data;
-							if (onStepCB) {
-								onStepCB(-1);
+				if (step.mode === `static`) {
+					script = window.localStorage.getItem(step.script);
+					if (onStepCB) {
+						onStepCB(-1);
+					}
+					initScript();
+					script.runMode = runMode;
+					doStep(script.steps[1]);
+				} else {
+					fetch(`${script.path}${step.script}?v=${Date.now()}`)
+						.then(response => {
+							if (response.status >= 400) {
+								throw Error(`Unable to load ${step.script}: ${response.status}`);
 							}
-							initScript();
-							script.runMode = runMode;
-							doStep(script.steps[1]);
+							response.json().then(data => {
+								script = data;
+								if (onStepCB) {
+									onStepCB(-1);
+								}
+								initScript();
+								script.runMode = runMode;
+								doStep(script.steps[1]);
+							});
+						})
+						.catch(err => {
+							throw Error(`Fetch Error :${err}`);
 						});
-					})
-					.catch(err => {
-						throw Error(`Fetch Error :${err}`);
-					});
-				return;
+					return;
+				}
 			}
             
 			const actionName = step.action.split(` `).join(``);
@@ -1049,11 +1058,6 @@ const IWSY = (playerElement, scriptObject) => {
 		removeBlocks();
 		script = newScript;
 		initScript();
-	};
-    
-	// Set the path
-	const setPath = p => {
-		path = p;
 	};
     
 	// Go to a specified step number
