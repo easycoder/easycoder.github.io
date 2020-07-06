@@ -988,7 +988,7 @@ const IWSY = (playerElement, scriptObject) => {
 					script.runMode = runMode;
 					doStep(script.steps[1]);
 				} else {
-					fetch(`${script.path}${step.script}?v=${Date.now()}`)
+					fetch(`${step.path}${step.script}?v=${Date.now()}`)
 						.then(response => {
 							if (response.status >= 400) {
 								throw Error(`Unable to load ${step.script}: ${response.status}`);
@@ -1267,7 +1267,6 @@ const IWSY = (playerElement, scriptObject) => {
 	return {
 		getScript,
 		setScript,
-		setPath,
 		gotoStep,
 		block,
 		run,
