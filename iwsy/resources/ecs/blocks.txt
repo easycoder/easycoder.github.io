@@ -36,29 +36,16 @@
     variable N
     variable M
     variable NBlocks
-    variable Args
-    variable Protocol
-    variable Domain
     variable IsHome
     variable CDN
     
-    json parse url the location as Args
-    put property `protocol` of Args into Protocol
-    put property `domain` of Args into Domain
-    if Domain is `iwannashowyou.com`
-    begin
-    	put `https://easycoder.github.io/iwsy/resources` into CDN
-    	set IsHome
-    end
-    else
-    	put Protocol cat Domain cat `/resources` into CDN
-    	clear IsHome
-    end
+    get IsHome from storage as `.ishome`
+    get CDN from storage as `.cdn`
 
     put -1 into SelectedBlock
     
-    rest get PropertyNames from CDN cat `/json/propertyNames.json`
-    rest get PropertyDefaults from CDN cat `/json/propertyDefaults.json`
+    rest get PropertyNames from CDN cat `/resources/json/propertyNames.json`
+    rest get PropertyDefaults from CDN cat `/resources/json/propertyDefaults.json`
     
     on message go to Start
     set ready
