@@ -47,14 +47,9 @@
     variable Item
     variable Post
 
-    json parse url the location as Args
-    put property `domain` of Args into Domain
-    if Domain is `iwannashowyou.com` set IsHome 
-    else clear IsHome
-!	If the debug flag is set use admin storage
-    get Item from storage as `debug`
-    if Item is `true` clear IsHome
-    get AdminPassword from storage as `.password`
+    get IsHome from storage as `.ishome`
+    get CDN from storage as `.cdn`
+	get AdminPassword from storage as `.password`
 
     if portrait
     begin

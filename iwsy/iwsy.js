@@ -180,10 +180,10 @@ const IWSY = (playerElement, scriptObject) => {
 	// Set the visibility of a block
 	const setVisibility = (block, showHide) => {
 		if (showHide) {
-			block.element.style.opacity = `1.0`;
+			// block.element.style.opacity = `1.0`;
 			block.element.style.display = `block`;
 		} else {
-			block.element.style.opacity = `0.0`;
+			// block.element.style.opacity = `0.0`;
 			block.element.style.display = `none`;
 		}
 	};
@@ -202,11 +202,7 @@ const IWSY = (playerElement, scriptObject) => {
 				}
 			}
 		}
-		if (script.runMode === `manual`) {
-			enterManualMode(step);
-		} else {
-			step.next();
-		}
+		step.next();
 	};
 
 	const show = step => {
@@ -266,12 +262,17 @@ const IWSY = (playerElement, scriptObject) => {
 		if (script.speed === `scan`) {
 			for (const block of stepBlocks)
 			{
-				setVisibility(step, block, showHide);
+				if (upDown) {
+					block.element.style.opacity = `1.0`;
+					block.element.style.display = `block`;
+				} else {
+					block.element.style.opacity = `0.0`;
+					block.element.style.display = `none`;
+				}
 			}
-			step.next();
 		} else {
 			const animSteps = Math.round(step.duration * 25);
-			const continueFlag = step.continue;
+			const continueFlag = step.continue === `yes`;
 			for (const block of stepBlocks)
 			{
 				block.element.style.display = `block`;
@@ -590,7 +591,7 @@ const IWSY = (playerElement, scriptObject) => {
 		} else {
 			const animSteps = Math.round(step.duration * 25);
 			let animStep = 0;
-			const continueFlag = step.continue;
+			const continueFlag = step.continue === `yes`;
 			const interval = setInterval(() => {
 				if (animStep < animSteps) {
 					const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
@@ -694,10 +695,11 @@ const IWSY = (playerElement, scriptObject) => {
 
 	// Scan the script
 	const scan = () => {
-		script.speed = `scan`;
 		removeBlocks();
 		setupBlocks();
 		player.innerHTML = ``;
+		initScript();
+		script.speed = `scan`;
 		doStep(script.steps[0]);
 	};
 
@@ -900,6 +902,7 @@ const IWSY = (playerElement, scriptObject) => {
 		script.labels = {};
 		script.stop = false;
 		script.vfxElements = [];
+		script.scanFinished = false;
 		removeStyles();
 		for (const block of script.blocks) {
 			const element = block.element;
@@ -917,17 +920,25 @@ const IWSY = (playerElement, scriptObject) => {
 			if (index < script.steps.length - 1) {
 				const nextStep = script.steps[step.index + 1];
 				step.next = () => {
-					if (script.runMode == `auto` || script.speed === `scan`) {
-						setTimeout(() => {
-							if (script.stop) {
-								script.stop = false;
-								restoreCursor();
-							} else {
-								doStep(nextStep);
-							}
-						}, 0);
+					if (script.scanFinished) {
+						script.scanFinished = false;
 					} else {
-						doStep(nextStep);
+						if (script.speed === `scan` && nextStep.index === script.scanTarget) {
+							script.speed = `normal`;
+							script.scanFinished = true;
+						}
+						if (script.runMode == `auto` || script.speed === `scan`) {
+							setTimeout(() => {
+								if (script.stop) {
+									script.stop = false;
+									restoreCursor();
+								} else {
+									doStep(nextStep);
+								}
+							}, 0);
+						} else {
+							doStep(nextStep);
+						}
 					}
 				};
 			}
@@ -966,14 +977,6 @@ const IWSY = (playerElement, scriptObject) => {
 				console.log(`Step ${step.index}: ${step.title}`);
 			} else {
 				console.log(`Step ${step.index}: ${step.action}`);
-			}
-			if (script.speed === `scan` && step.index === script.scanTarget) {
-				script.speed = `normal`;
-				for (const block of script.blocks) {
-					if (block.element) {
-						block.element.style.display = `block`;
-					}
-				}
 			}
 
 			const onStepCB = script.onStepCB;

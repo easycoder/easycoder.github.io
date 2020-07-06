@@ -22,27 +22,11 @@
     variable Item
     variable Len
     variable N
-    variable Args
-    variable Protocol
-    variable Domain
     variable IsHome
     variable CDN
 
-    json parse url the location as Args
-    put property `protocol` of Args into Protocol
-    put property `domain` of Args into Domain
-    if Domain is `iwannashowyou.com`
-    begin
-    	put `https://easycoder.github.io/iwsy/resources` into CDN
-    	set IsHome
-    end
-    else
-    	put Protocol cat Domain cat `/resources` into CDN
-    	clear IsHome
-    end
-!	If the debug flag is set use admin storage
-    get Item from storage as `debug`
-    if Item clear IsHome
+    get IsHome from storage as `.ishome`
+    get CDN from storage as `.cdn`
 
     if portrait
     begin
@@ -80,7 +64,7 @@ GetPage:
 	put 0 into ImageCount
 	put 0 into LinkCount
     iwsy remove styles
-    rest get Content from CDN cat `/help/` cat Page cat `.md?v=` cat now
+    rest get Content from CDN cat `/resources/help/` cat Page cat `.md?v=` cat now
     or begin
     	put empty into Page
         go to GetPage
@@ -111,7 +95,7 @@ GetPage:
         add 1 to N
         put left N of Data into Data
     	iwsy load Player Embed
-        iwsy path Data
+!        iwsy path Data
         iwsy run
     end
     stop
@@ -122,7 +106,7 @@ GetPage:
 !	Decorate is called for every occurrence of ~...~ in the topic data
 Decorate:
     put the payload of DecoratorCallback into Payload
-    if Payload is `iwsy` put `<img src="` cat CDN cat `/icon/iwsy.png?v=` cat now cat `" `
+    if Payload is `iwsy` put `<img src="` cat CDN cat `/resources/icon/iwsy.png?v=` cat now cat `" `
     	cat `style="height:0.8em;position:relative;top:0.1em" />` into Payload
     else if Payload is `clear` put `<div style="height:1px;clear:both"></div>` into Payload
     else

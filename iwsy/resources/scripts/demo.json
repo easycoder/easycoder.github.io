@@ -96,7 +96,7 @@
       "duration": 3,
       "block": "main title",
       "target": "off left",
-      "continue": true
+      "continue": "yes"
     },
     {
       "title": "slide subtitle right",
@@ -105,7 +105,7 @@
       "duration": 3,
       "block": "subtitle",
       "target": "off right",
-      "continue": false
+      "continue": "no"
     },
     {
       "title": "fade down background",
@@ -155,10 +155,12 @@
       "continue": ""
     },
     {
-      "title": "chain to liguria",
+      "title": "chain to liguria ",
       "action": "chain",
       "label": "",
-      "script": "liguria.json"
+      "script": "liguria.json",
+      "path": "/resources/scripts/",
+      "mode": "admin"
     }
   ],
   "blocks": [

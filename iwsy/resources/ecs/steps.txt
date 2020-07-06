@@ -44,9 +44,7 @@
     img DeleteStep
     img ShowStep
     a Link
-    variable Args
-    variable Protocol
-    variable Domain
+    variable Static
     variable IsHome
     variable CDN
     variable Steps
@@ -67,6 +65,7 @@
     variable Name
     variable Name2
     variable Item
+    variable Mode
     variable ActionNames
     variable InitProperties
     variable InitProperty
@@ -82,28 +81,28 @@
     variable TargetText
     variable Email
     variable Password
+    variable AdminPassword
+    variable Valid
     variable UserHome
     variable Files
     variable FileCount
+    variable UserRecord
     variable N
     variable B
 
     put -1 into SelectedStep
-    json parse url the location as Args
-    put property `protocol` of Args into Protocol
-    put property `domain` of Args into Domain
-    if Domain is `iwannashowyou.com`
-    begin
-    	put `https://easycoder.github.io/iwsy/resources` into CDN
-    	set IsHome
+
+    get IsHome from storage as `.ishome`
+    get CDN from storage as `.cdn`
+
+!	Test if site is on a static host
+    clear Static
+    rest get Item from `test`
+    or begin
+        print `Static website`
+    	set Static
+    	put empty into CDN
     end
-    else
-    	put Protocol cat Domain cat `/resources` into CDN
-    	clear IsHome
-    end
-!	If the debug flag is set use admin storage
-    get Item from storage as `debug`
-    if Item clear IsHome
 
     create StepsPanel in Panel
 	set the style of StepsPanel to `flex:1;overflow-y:scroll`
@@ -113,7 +112,7 @@
     stop
     
 Start:
-    if the message is empty go to Restart
+    if the message is empty go to Start2
 
 	put the message into Message
     gosub to SetupArrays
@@ -152,7 +151,7 @@ Start:
     	stop
     end
 
-Restart:
+Start2:
     gosub to SetupArrays
 	set style `display` of Panel to `flex`
 	set style `flex-direction` of Panel to `column`
@@ -168,7 +167,7 @@ Restart:
     create Link in Cell
     create AddStep in Link
     set the style of AddStep to `width:1em;margin-top:0.1em`
-    set attribute `src` of AddStep to CDN cat `/icon/plus.png`
+    set attribute `src` of AddStep to CDN cat `/resources/icon/plus.png`
     on click AddStep go to AddNewStep
 
 	gosub to SetupArrays
@@ -186,7 +185,7 @@ Restart:
     	index ShowStep to N
         create ShowStep in Link
         set the style of ShowStep to `width:1em;margin-top:0.1em`
-        set attribute `src` of ShowStep to CDN cat `/icon/binoculars.png`
+        set attribute `src` of ShowStep to CDN cat `/resources//icon/binoculars.png`
     	create StepButton in Row1
         set the style of StepButton to `flex:1`
         put element N of Steps into CurrentStep
@@ -218,7 +217,7 @@ Restart:
             create Link in Cell
             create DeleteStep in Link
             set the style of DeleteStep to `width:1em;margin-top:0.1em`
-            set attribute `src` of DeleteStep to `resources/icon/stop.png`
+            set attribute `src` of DeleteStep to `/resources/icon/stop.png`
         end
         index Editor to N
         create Editor in Row
@@ -384,7 +383,12 @@ ASA2:
     set element SelectedStep of Steps to CurrentStep
 ASA3:
     set property `steps` of Presentation to Steps
-    go to Restart
+
+Restart:
+	set Message to object
+    set property `action` of Message to `refresh`
+    send Message to parent
+    go to Start2
 
 CreateNewStep:
     set CurrentStep to object
@@ -579,7 +583,7 @@ ReloadBlocks:
     create Link in BlockData
     create PlusIcon in Link
     set the style of PlusIcon to `width:1em;margin-top:0.1em`
-    set attribute `src` of PlusIcon to `resources/icon/plus.png`
+    set attribute `src` of PlusIcon to `/resources/icon/plus.png`
     on click PlusIcon
     begin
     	gosub to SaveCurrentStep
@@ -624,7 +628,7 @@ ReloadBlocks:
             create Link in BlockData
             create UpContent in Link
             set the style of UpContent to `width:1em;margin:0.1em 0 0 0.2em`
-            set attribute `src` of UpContent to `resources/icon/up.png`
+            set attribute `src` of UpContent to `/resources/icon/up.png`
         end
         create BlockData in BlockRow
         set the style of BlockData to `width:1.4em;text-align:center`
@@ -632,7 +636,7 @@ ReloadBlocks:
         create Link in BlockData
         create DeleteContent in Link
         set the style of DeleteContent to `width:1em;margin-top:0.1em`
-        set attribute `src` of DeleteContent to `resources/icon/stop.png`
+        set attribute `src` of DeleteContent to `/resources/icon/stop.png`
         add 1 to B
     end
     on change BlockSelect
@@ -734,38 +738,65 @@ EditLoad:
 	return
 
 EditChain:
+    get UserRecord from storage as `.user`
     get Email from storage as `user.email`
     get Password from storage as `user.password`
     get UserHome from storage as `user.home`
 	set ChainNames to array
-    if UserHome
+    
+    if Static go to EditChainFromStorage
+    if UserRecord go to EditChainFromUser
+    if IsHome go to EditChainFromStorage
+	
+    get AdminPassword from storage as `.password`
+    if AdminPassword is empty put prompt `Please type the admin password` with `` into AdminPassword
+    rest get Valid from `verify/` cat AdminPassword
+    or begin
+        alert `Unable to verify password.`
+        put empty into storage as `.password`
+    end
+    if Valid is `yes` put AdminPassword into storage as `.password`
+   	else return
+
+    rest get Files from `list/` cat AdminPassword cat `/scripts`
+    put the json count of Files into FileCount
+    put 0 into N
+    while N is less than FileCount
     begin
-        rest get Files from `ulist/` cat Email cat `/` cat Password cat `/`
-        	cat `users/` cat UserHome cat `/scripts`
-        put the json count of Files into FileCount
-        put 0 into N
-        while N is less than FileCount
+        put element N of Files into Item
+        if property `type` of Item is `json` json add property `name` of Item to ChainNames
+        add 1 to N
+     end
+     go to ProcessChainNames
+
+EditChainFromUser:
+    rest get Files from `ulist/` cat Email cat `/` cat Password cat `/`
+       	cat `users/` cat UserHome cat `/scripts`
+    put the json count of Files into FileCount
+    put 0 into N
+    while N is less than FileCount
+    begin
+        put element N of Files into Item
+        if property `type` of Item is `json` json add property `name` of Item to ChainNames
+        add 1 to N
+     end
+     go to ProcessChainNames
+
+EditChainFromStorage:
+	get Files from storage
+ 	put the json count of Files into FileCount
+  	put 0 into N
+  	while N is less than FileCount
+  	begin
+  		put element N of Files into Item
+    	if left 1 of Item is not `.`
         begin
-            put element N of Files into Item
-            if property `type` of Item is `json` json add property `name` of Item to ChainNames
-            add 1 to N
+          	if the position of `.json` in Item is not -1 json add Item to ChainNames
         end
+	   	add 1 to N
     end
-    else
-    begin
-    	get Files from storage
-	  	put the json count of Files into FileCount
-	  	put 0 into N
-	  	while N is less than FileCount
-	  	begin
-	  		put element N of Files into Item
-	    	if left 1 of Item is not `.`
-            begin
-            	if the position of `.json` in Item is not -1 json add Item to ChainNames
-            end
-	    	add 1 to N
-	  	end
-    end
+
+ProcessChainNames:
     json sort ChainNames
     create TR in Table
     create TD in TR
@@ -796,7 +827,7 @@ EditBlockList:
     create Link in BlockData
     create PlusIcon in Link
     set the style of PlusIcon to `width:1em;margin-top:0.1em`
-    set attribute `src` of PlusIcon to `resources/icon/plus.png`
+    set attribute `src` of PlusIcon to `/resources/icon/plus.png`
     on click PlusIcon
     begin
     	gosub to SaveCurrentStep
@@ -827,7 +858,7 @@ EditBlockList:
         create Link in BlockData
         create DeleteContent in Link
         set the style of DeleteContent to `width:1em;margin-top:0.1em`
-        set attribute `src` of DeleteContent to `resources/icon/stop.png`
+        set attribute `src` of DeleteContent to `/resources/icon/stop.png`
     	add 1 to B
     end
     on change BlockSelect
@@ -1133,6 +1164,20 @@ SaveCurrentStep:
     begin
     	index ChainSelect to SelectedStep
     	set property `script` of CurrentStep to ChainSelect
+        if Static put `static` into Mode
+        else if UserRecord
+        begin
+        	put `user` into Mode
+            set property `path` of CurrentStep to Email cat `/` cat Password cat `/`
+       			cat `users/` cat UserHome cat `/scripts/`
+        end
+        else if IsHome put `static` into Mode
+        else 
+        begin
+        	put `admin` into Mode
+            set property `path` of CurrentStep to `/resources/scripts/`
+        end
+        set property `mode` of CurrentStep to Mode
     end
     index URLInput to SelectedStep
     set element SelectedStep of Steps to CurrentStep
