@@ -4,7 +4,7 @@
 
 This action performs any combination of zoom, move and changing text size and/or color.
 
-~img:resources/users/2020/160/1/images/quickstart/zoom-title.png:100%~
+~img:https://easycoder.github.io/iwsy/resources/help/img/zoom-title.png|100%~
 
 The **Action**, **Name** and **Label** properties are present for all actions.
 

@@ -4,7 +4,7 @@
 
 This action pauses the presentation for a given nmber of seconds.
 
-~img:resources/users/2020/160/1/images/quickstart/pause.png:100%~
+~img:https://easycoder.github.io/iwsy/resources/help/img/pause.png|100%~
 
 The **Action**, **Name** and **Label** properties are present for all actions.
 

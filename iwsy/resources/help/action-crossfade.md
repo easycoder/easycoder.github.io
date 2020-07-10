@@ -4,7 +4,7 @@
 
 This action crossfades the text of a block, replacing it with new content.
 
-~img:resources/users/2020/160/1/images/quickstart/action-crossfade.png:100%~
+~img:https://easycoder.github.io/iwsy/resources/help/img/action-crossfade.png|100%~
 
 The **Action**, **Name** and **Label** properties are present for all actions.
 

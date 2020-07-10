@@ -4,7 +4,7 @@
 
 Every ~iwsy~ presentation starts with an `init` action, which defines the environment in which the presentation will run. The editor looks like this:
 
-~img:resources/users/2020/160/1/images/help/editor-init.png:100%~
+~img:https://easycoder.github.io/iwsy/resources/help/img/editor-init.png|100%~
 
 Here there are a set of _properties_ relating to the `init` action. All these are editable. The Title is there for your convenience; it has no affect on the presentation. The properties are as follows:
 
