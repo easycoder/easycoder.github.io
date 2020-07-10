@@ -29,4 +29,4 @@ When the color of text is to be changed, the size values in both **Block** and *
 
 Fades and other animated effects run at 25 frames/sec, as a compromise between visual smoothness and processing requirements.
 
-Next: ~page:action-pause:Pause~
+Next: ~page:action-animate:Animate~
