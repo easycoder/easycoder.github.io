@@ -2,8 +2,8 @@
 
 # The Project panel
 
-The right-hand side of the screen holds the Project panel. When you start up - or after you click the ~img:resources/users/2020/160/1/images/help/new.png:icon~(New) button - it looks like this:
-~img:resources/users/2020/160/1/images/help/project.png:100%~
+The right-hand side of the screen holds the Project panel. When you start up - or after you click the ~img:https://easycoder.github.io/iwsy/resources/icon/new.png|icon~(New) button - it looks like this:
+~img:https://easycoder.github.io/iwsy/resources/help/img/project.png|100%~
 
 There are 3 main sections.
 
