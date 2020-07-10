@@ -5,7 +5,7 @@
 The right-hand side of the screen holds the Project panel. When you start up - or after you click the ~img:https://easycoder.github.io/iwsy/resources/icon/new.png|icon~(New) button - it looks like this:
 ~img:https://easycoder.github.io/iwsy/resources/help/img/project.png|100%~
 
-There are 3 main sections.
+There are 5 sections.
 
 ## 1 - Steps
 
@@ -28,3 +28,13 @@ It's common to use the same layout for multiple slides in a presentation, and on
 This lists all the content text items used in your presentation. Each one is named. In the step editor you assign content to blocks by clicking names from a drop-down list. This makes it much easier to see what is where than by having the full text visible at each point.
 
 All content text is written using **_MarkDown_**; a format that is mostly plain text, plus simple markup tags to define headers and other text features. ~iwsy~ provides a set of custom MarkDown extensions that define image and other attributes. These help pages are written using the same system. See ~page:addContent:Adding content~.
+
+## 4 - VFX
+
+VFX stands for "Visual Effects". At this time we only have one; a pan and zoom. With this you can implement the "Ken Burns Effect", named after its inventor, a New York based documentary film maker. The effect is widely used in television to bring movement to still photos, without which the eye rapidly gets bored. The amount of movement can be very slight but the eye is tricked into thinking it's looking at video. The effect is demonstrated on our ~page:iwsy:Home and Introduction~ page.
+
+This section is where you supply all the data needed to achieve the effect for a single image.
+
+## 5 - JSON
+
+In this section you have a listing of the entire script as a JSON file. You can view and edit any of the sections or copy/paste.

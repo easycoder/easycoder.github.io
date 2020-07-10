@@ -14,7 +14,7 @@ Click the **Blocks** button over in the right-hand panel, then click the ~img:ht
 
 ~img:https://easycoder.github.io/iwsy/resources/help/quickstart/newblock.png|100%~
 
-Most of these default values are fine as they are; they describe a block that occupies the whole window area. Let's just change the ~m:name~ property to ~m:background~ and the ~m:background~ property to ~m:url('https://easycoder.github.io/iwsy/resources/help/quickstart/SemoigoDawn.jpg')~. When the presentation runs, the effect will be to display a full-size image. This is what the panel should look like now:
+Most of these default values are fine as they are; they describe a block that occupies the whole window area. Let's just change the ~m:name~ property to ~m:background~ and the ~m:background~ property to ~m:url('https://easycoder.github.io/iwsy/resources/help/quickstart/SemoigoDawn.jpg')~. Be sure to use single-quotes as shown. When the presentation runs, the effect will be to display a full-size image. This is what the panel should look like now:
 
 ~img:https://easycoder.github.io/iwsy/resources/help/quickstart/first-block.png|100%~
 

@@ -30,6 +30,8 @@
 
 ~page:action-transition:The "transition" action~
 
+~page:action-animate:The "animate" action~
+
 ~page:action-pause:The "pause" action~
 
 ~page:action-chain:The "chain" action~
