@@ -1175,8 +1175,8 @@ const EasyCoder_Core = {
 			let content = ``;
 			try {
 				content = value.split(original).join(replacement);
-			} catch (err) {
-			}
+			// eslint-disable-next-line no-empty
+			} catch (err) {}
 			target.value[target.index] = {
 				type: `constant`,
 				numeric: false,
@@ -2185,6 +2185,7 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Split;
 		case `stop`:
 			return EasyCoder_Core.Stop;
+		case `subtract`:
 		case `take`:
 			return EasyCoder_Core.Take;
 		case `toggle`:
@@ -3058,7 +3059,7 @@ const EasyCoder_Core = {
 				return !program.getValue(condition.value);
 			case `moduleRunning`:
 				let moduleRecord = program.getSymbolRecord(condition.name);
-				if (EasyCoder.scripts.hasOwnProperty(moduleRecord.program) ) {
+				if (typeof moduleRecord.program !== `undefined`) {
 					let p = EasyCoder.scripts[moduleRecord.program];
 					return condition.sense ? p.running : !p.running;
 				}
