@@ -383,8 +383,8 @@ const EasyCoder_Float = {
 			return EasyCoder_Float.Fdivide;
 		case `fmultiply`:
 			return EasyCoder_Float.Fmultiply;
-		case `subtract`:
-		case `take`:
+		case `fsubtract`:
+		case `ftake`:
 			return EasyCoder_Float.Ftake;
 		default:
 			return null;
