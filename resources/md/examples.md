@@ -7,6 +7,7 @@ The following websites were all built entirely in EasyCoder script:
  - [Here on the map](https://hereonthemap.com)
  - [Rembrandt.ie](https://rembrandt.ie)
  - [Storyteller](https://storyteller20.neocities.org)
+ - [I Wanna Show You](https://iwannashowyou.com)
 
 ## Dice roller /SHOW-DICEROLLER/
 
@@ -31,6 +32,14 @@ Storyteller is a tool for building static websites using Markdown instead of HTM
 To use Storyteller all you need is to copy a short `index.html` file to your server and provide the topics as described. This is all covered by the documentation on the [Storyteller website](https://easycoder.github.io/examples/storyteller).
 
 Storyteller is written in ~ec~; its source code is in the [Storyteller repository](https://github.com/easycoder/storyteller).
+
+## I Wanna Show You (IWSY)
+
+IWSY is a web app for building slideshows and presentations that can be embedded in any web page or run from the IWSY app in the same way as from PowerPoint. The emphasis is less on providing elaborate static slides and more in manipulating text and images to provide an experience midway between a PowerPoint presentation and a video. Text can be panned, zoomed and color-changed and images can have a "Ken Burns" effect, so it's possible to create a show where the screen is never quite static but still offers the user the option to step through manually.
+
+IWSY presentations are JSON files that are created edited in the IWSY editor and then run by the presentation engine, a single JavaScript file.
+
+See the [IWSY website](https://iwannashowyou.com); the source is in the [EasyCoder repository](https://easycoder.github.io) in the `iwsy` directory.
 
 ## The Game of Life /SHOW-LIFE/
 
