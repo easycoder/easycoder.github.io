@@ -35,6 +35,8 @@
   variable N
   variable FileIsOpen
   variable Item
+  
+  rest path `rest.php`
 
   set the title to `Script Editor`
 
@@ -55,6 +57,7 @@
   set the text of Delete to `Delete`
   create Status in Buttons
   set the style of Status to `position:absolute;float:right;padding-left:2em;color:green`
+  debug step
 
   create ScriptName in Container
   set the style of ScriptName to `display:flex;margin:0.5em 0`
@@ -71,7 +74,7 @@
   create ContentEditor in ContentDiv
   set the style of ContentEditor to `width:100%;height:100%`
 
-  codemirror init basic profile `/easycoder/plugins/codemirror-ecs.js`
+  codemirror init basic profile `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror-ecs.js`
   require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
   require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
   require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`

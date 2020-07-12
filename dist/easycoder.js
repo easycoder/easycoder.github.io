@@ -8,7 +8,12 @@ const EasyCoder_Core = {
 			const lino = compiler.getLino();
 			compiler.next();
 			// Get the (first) value
-			const value1 = compiler.getValue();
+			let value1;
+			try {
+				value1 = compiler.getValue();
+			} catch (err) {
+				return false;
+			}
 			if (compiler.tokenIs(`to`)) {
 				compiler.next();
 				// Check if a value holder is next
@@ -424,14 +429,19 @@ const EasyCoder_Core = {
 
 		compile: compiler => {
 			const lino = compiler.getLino();
-			var target;
+			let target;
 			if (compiler.nextIsSymbol()) {
 				// It may be the target
 				const symbol = compiler.getSymbol();
 				target = compiler.getCommandAt(symbol.pc).name;
 			}
 			// Get the value even if we have a target
-			const value1 = compiler.getValue();
+			let value1;
+			try {
+				value1 = compiler.getValue();
+			} catch (err) {
+				return false;
+			}
 			if (compiler.tokenIs(`by`)) {
 				compiler.next();
 			}
@@ -887,14 +897,19 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const lino = compiler.getLino();
 			compiler.next();
-			var target;
+			let target;
 			if (compiler.isSymbol()) {
 				// It may be the target
 				const symbol = compiler.getSymbol();
 				target = compiler.getCommandAt(symbol.pc).name;
 			}
 			// Get the value even if we have a target
-			const value1 = compiler.getValue();
+			let value1;
+			try {
+				value1 = compiler.getValue();
+			} catch (err) {
+				return false;
+			}
 			if (compiler.tokenIs(`by`)) {
 				compiler.next();
 			}
@@ -1866,7 +1881,12 @@ const EasyCoder_Core = {
 			const lino = compiler.getLino();
 			compiler.next();
 			// Get the (first) value
-			const value1 = compiler.getValue();
+			let value1;
+			try {
+				value1 = compiler.getValue();
+			} catch (err) {
+				return false;
+			}
 			if (compiler.tokenIs(`from`)) {
 				compiler.next();
 				if (compiler.isSymbol()) {

@@ -250,6 +250,7 @@ DoNotes:
 
 RunCodex:
 	require js `dist/plugins/codemirror.js`
+	require js `dist/plugins/float.js`
 	rest get Script from `/resources/ecs/codex.ecs`
 	send `pause` to CurrentModule
 	set style `display` of Body to `none`
