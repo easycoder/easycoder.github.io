@@ -134,7 +134,6 @@ L2:
 
 Restart:
   clear Container
-alert `Keyword:` cat Keyword cat ` - Group:` cat Group cat ` - Package:` cat PackageName
   rest get Package from `/resources/doc/` cat PackageName cat `.json`
   or begin
   	put `core` into PackageName
