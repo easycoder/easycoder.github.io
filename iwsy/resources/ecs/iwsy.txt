@@ -103,27 +103,26 @@
     put property `protocol` of Args into Protocol
     put property `domain` of Args into Domain
 
+	put `https://easycoder.github.io/iwsy` into CDN
 !	Test if site is on a static host
     clear Static
-    rest get Item from Protocol cat Domain cat `/test`
+    rest get Item from Protocol cat Domain cat `/rest.php/test`
     or begin
         print `Static website`
     	set Static
         clear IsHome
-    	put empty into CDN
         go to Start
     end
 
     if Domain is `iwannashowyou.com` set IsHome else clear IsHome
     if IsHome put Protocol cat Domain into CDN
-    else put `https://easycoder.github.io/iwsy` into CDN
-    iwsy init CDN
     
 !	If the debug flag is set use admin storage but continue with local CDN
     get Item from storage as `debug`
     if Item is `true` clear IsHome
 
 Start:
+    iwsy init CDN
     put Static into storage as `.static`
 	put IsHome into storage as `.ishome`
 	put CDN into storage as `.cdn`
@@ -533,7 +532,7 @@ Start:
     put property `arg` of Args into Arg
     if Arg includes `.json`
     begin
-        rest get Presentation from `/` cat Resources cat `/users/` cat Arg cat `?v=` cat now
+        rest get Presentation from Protocol cat Domain cat `/` cat Resources cat `/users/` cat Arg cat `?v=` cat now
 		gosub to NotifyModules
     	iwsy script Presentation
         set style `display` of Player to `block`
@@ -907,12 +906,12 @@ SelectFile:
     if UserRecord go to SelectFromUser
     if IsHome go to SelectFromStorage
     
-    rest get Presentation from `/resources/scripts/` cat File cat `?v=` cat now
+    rest get Presentation from Protocol cat Domain cat `/resources/scripts/` cat File cat `?v=` cat now
     go to UseFile
 
 SelectFromUser:
 	if UserRecord rest get Presentation from
-    	`/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
+    	Protocol cat Domain cat `/resources/users/` cat UserHome cat `/scripts/` cat File cat `?v=` cat now
     go to UseFile
 
 SelectFromStorage:
