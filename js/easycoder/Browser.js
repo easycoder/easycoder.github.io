@@ -451,8 +451,9 @@ const EasyCoder_Browser = {
 						}
 					} else {
 						const imports = compiler.imports;
-						if (imports && imports.length > 0) {
-							// This section is used by Codex to force run in Run panel, which must be the first import
+						if (imports && imports.length > 0
+							&& compiler.program[compiler.symbols[imports[0]].pc].keyword === `div`) {
+							// This is used by Codex to force run in Run panel, which must be the first import
 							compiler.addCommand({
 								domain: `browser`,
 								keyword: `create`,
@@ -462,16 +463,15 @@ const EasyCoder_Browser = {
 								imported: true
 							});
 							return true;
-						} else {
-							compiler.addCommand({
-								domain: `browser`,
-								keyword: `create`,
-								lino,
-								name: symbolRecord.name,
-								parent: `body`
-							});
-							return true;
 						}
+						compiler.addCommand({
+							domain: `browser`,
+							keyword: `create`,
+							lino,
+							name: symbolRecord.name,
+							parent: `body`
+						});
+						return true;
 					}
 				}
 			}
