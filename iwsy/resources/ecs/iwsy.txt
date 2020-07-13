@@ -99,20 +99,21 @@
     
     rest path `rest.php`
 
-!	Test if site is on a static host
-    clear Static
-    rest get Item from `test`
-    or begin
-        print `Static website`
-    	set Static
-    	put empty into CDN
-    end
-    put Static into storage as `.static`
-    if Static go to Start
-
     json parse url the location as Args
     put property `protocol` of Args into Protocol
     put property `domain` of Args into Domain
+
+!	Test if site is on a static host
+    clear Static
+    rest get Item from Protocol cat Domain cat `/test`
+    or begin
+        print `Static website`
+    	set Static
+        clear IsHome
+    	put empty into CDN
+        go to Start
+    end
+
     if Domain is `iwannashowyou.com` set IsHome else clear IsHome
     if IsHome put Protocol cat Domain into CDN
     else put `https://easycoder.github.io/iwsy` into CDN
@@ -123,6 +124,7 @@
     if Item is `true` clear IsHome
 
 Start:
+    put Static into storage as `.static`
 	put IsHome into storage as `.ishome`
 	put CDN into storage as `.cdn`
     put empty into CallStack

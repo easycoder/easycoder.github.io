@@ -129,7 +129,7 @@ Decorate:
 
 !	Process an image, including positioning and class information
 ProcessImage:
-	put the position of `:` in Data into N
+	put the position of `|` in Data into N
     if N is -1
     begin
         put `<img id="ec-image-` cat ImageCount cat `" src="` cat Data cat `?v=` cat now cat `" />` into Payload

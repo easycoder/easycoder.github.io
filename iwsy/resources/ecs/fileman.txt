@@ -41,14 +41,10 @@
     variable Path
     variable N
     variable Even
-    variable Args
-    variable Domain
     variable IsHome
-    variable Item
     variable Post
 
     get IsHome from storage as `.ishome`
-    get CDN from storage as `.cdn`
 	get AdminPassword from storage as `.password`
 
     if portrait
@@ -132,7 +128,7 @@
 Show:
     set style `display` of Container to `block`
 
-	if IsHome
+	if IsHome is `true`
     begin
         get UserRecord from storage as `.user`
         put property `email` of UserRecord into Email
@@ -148,7 +144,7 @@ Show:
 !	Build the list
 Browser:
     put CurrentPath into storage as `.filepath`
-    if IsHome
+    if IsHome is `true`
     begin
         rest get Content from `ulist/` cat Email cat `/` cat Password cat `/` cat CurrentPath cat `?v=` cat now
         or begin
@@ -225,7 +221,7 @@ Browser:
         if FileCount is 0
         begin
             put Path into CurrentPath
-            if IsHome put `udelete/` cat Email cat `/` cat Password cat `/` cat CurrentPath into Post
+            if IsHome is `true` put `udelete/` cat Email cat `/` cat Password cat `/` cat CurrentPath into Post
             else put `delete/` cat AdminPassword cat `/` cat CurrentPath into Post
             rest post to Post or
             begin
@@ -268,7 +264,7 @@ SelectFile:
         set the text of URL to `resources/` cat FilePath
         on click DeleteButton
         begin
-            if IsHome put `udelete/` cat Email cat `/` cat Password cat `/` cat FilePath into Post
+            if IsHome is `true` put `udelete/` cat Email cat `/` cat Password cat `/` cat FilePath into Post
             else put `delete/` cat AdminPassword cat `/` cat FilePath into Post
             rest post to Post or
             begin
@@ -297,7 +293,7 @@ Upload:
     else
     begin
         put CurrentPath into Path
-        if IsHome put `uupload/` cat Email cat `/` cat Password cat `/` cat Path into Path
+        if IsHome is `true` put `uupload/` cat Email cat `/` cat Password cat `/` cat Path into Path
         else put `upload/` cat AdminPassword cat `/` cat Path into Path
         upload UploadFile to Path with UploadProgress and UploadStatus
         goto Browser
