@@ -1,6 +1,6 @@
 const EasyCoder_Json = {
 
-	name: `EasyCoder_JSON`,
+	name: `EasyCoder_Json`,
 
 	Json: {
 
@@ -426,7 +426,7 @@ const EasyCoder_Json = {
 			}
 			if (compiler.tokenIs(`json`)) {
 				const type = compiler.nextToken();
-				if ([`size`, `count`, `keys`].includes(type)) {
+				if ([`size`, `count`].includes(type)) {
 					compiler.skip(`of`);
 					if (compiler.isSymbol()) {
 						const target = compiler.getSymbolRecord();
@@ -437,6 +437,26 @@ const EasyCoder_Json = {
 								type,
 								name: target.name
 							};
+						}
+					}
+				} else if (type === `keys`) {
+					let sorted = true;
+					if (compiler.nextTokenIs(`unsorted`)) {
+						sorted = false;
+						compiler.next();
+					}
+					if (compiler.tokenIs(`of`)) {
+						if (compiler.nextIsSymbol()) {
+							const target = compiler.getSymbolRecord();
+							compiler.next();
+							if (target.isVHolder) {
+								return {
+									domain: `json`,
+									type,
+									name: target.name,
+									sorted
+								};
+							}
 						}
 					}
 				} else if (type === `index`) {
@@ -481,6 +501,15 @@ const EasyCoder_Json = {
 				symbolRecord = program.getSymbolRecord(value.name);
 				data = program.getValue(symbolRecord.value[symbolRecord.index]);
 				content = data ? JSON.stringify(Object.keys(JSON.parse(data)).sort()) : `[]`;
+				if (data) {
+					content = Object.keys(JSON.parse(data));
+					if (value.sorted) {
+						content= content.sort();
+					}
+					content = JSON.stringify(content);
+				} else {
+					content = `[]`;
+				}
 				return {
 					type: `constant`,
 					numeric: false,
