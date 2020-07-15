@@ -410,20 +410,45 @@ const EasyCoder_Float = {
 
 	value: {
 
-		compile: () => {
+		compile: (compiler) => {
+			const type = compiler.getToken();
+			if (type === `round`) {
+				try {
+					const value = compiler.getNextValue();
+					const decimals = compiler.getValue();
+					return {
+						domain: `float`,
+						type,
+						value,
+						decimals
+					};
+				} catch (err) {
+					return null;
+				}
+			}
 			return null;
 		},
 
-		get: () => {
+		get: (program, value) => {
+			switch (value.type) {
+			case `round`:
+				const v = parseFloat(program.getValue(value.value));
+				const dp = program.getValue(value.decimals);
+				return {
+					type: `constant`,
+					numeric: false,
+					content: String(v.toFixed(dp))
+				};
+			}
 			return null;
 		}
 	},
 
 	condition: {
 
-		compile: () => {},
+		compile: () => { },
 
-		test: () => {}
+		test: () => { }
 	}
 };
 
