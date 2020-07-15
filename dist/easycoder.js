@@ -3546,8 +3546,8 @@ const EasyCoder_Browser = {
 						}
 					} else {
 						const imports = compiler.imports;
-						if (imports && imports.length > 0
-							&& compiler.program[compiler.symbols[imports[0]].pc].keyword === `div`) {
+						if (imports && imports.length > 0 && compiler.parent === `Codex`) {
+							// && compiler.program[compiler.parent.symbols[imports[0]].pc].keyword === `div`) {
 							// This is used by Codex to force run in Run panel, which must be the first import
 							compiler.addCommand({
 								domain: `browser`,
@@ -8162,7 +8162,6 @@ const EasyCoder = {
 			console.log(errString);
 			return;
 		}
-		// const compiler = EasyCoder_Compiler;
 		const {
 			tokens,
 			scriptLines
@@ -8205,7 +8204,7 @@ const EasyCoder = {
 	},
 
 	verifySymbol: function (name) {
-		return this.symbols.hasOwnProperty(name);
+		return typeof this.symbols[name] !== `undefined`;
 	},
 
 	encode: function (value) {
@@ -8348,10 +8347,11 @@ const EasyCoder = {
 		this.compiler = compiler;
 		compiler.value = EasyCoder_Value;
 		compiler.condition = EasyCoder_Condition;
+		compiler.parent = parent;
 		compiler.domain = this.domain;
 		compiler.imports = imports;
 		compiler.continue = false;
-		const program = EasyCoder_Compiler.compile(tokens);
+		const program = compiler.compile(tokens);
 		//    console.log('Program: ' + JSON.stringify(program, null, 2));
 		this.compiling = false;
 
