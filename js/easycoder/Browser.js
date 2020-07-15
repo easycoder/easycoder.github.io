@@ -451,8 +451,8 @@ const EasyCoder_Browser = {
 						}
 					} else {
 						const imports = compiler.imports;
-						if (imports && imports.length > 0
-							&& compiler.program[compiler.symbols[imports[0]].pc].keyword === `div`) {
+						if (imports && imports.length > 0 && compiler.parent === `Codex`) {
+							// && compiler.program[compiler.parent.symbols[imports[0]].pc].keyword === `div`) {
 							// This is used by Codex to force run in Run panel, which must be the first import
 							compiler.addCommand({
 								domain: `browser`,
