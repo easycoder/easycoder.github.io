@@ -30,15 +30,19 @@ const EasyCoder_IWSY = {
 				}
 				break;
 			case `init`:
-				const cdn = compiler.getNextValue();
-				compiler.addCommand({
-					domain: `iwsy`,
-					keyword: `iwsy`,
-					lino,
-					action,
-					cdn
-				});
-				return true;
+				try {
+					const cdn = compiler.getNextValue();
+					compiler.addCommand({
+						domain: `iwsy`,
+						keyword: `iwsy`,
+						lino,
+						action,
+						cdn
+					});
+					return true;
+				} catch (err) {
+					throw Error(`iwsy init: No CDN URL given`);
+				}
 			case `stop`:
 				compiler.next();
 				compiler.addCommand({
