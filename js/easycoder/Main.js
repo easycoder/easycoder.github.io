@@ -38,7 +38,6 @@ const EasyCoder = {
 			console.log(errString);
 			return;
 		}
-		// const compiler = EasyCoder_Compiler;
 		const {
 			tokens,
 			scriptLines
@@ -81,7 +80,7 @@ const EasyCoder = {
 	},
 
 	verifySymbol: function (name) {
-		return this.symbols.hasOwnProperty(name);
+		return typeof this.symbols[name] !== `undefined`;
 	},
 
 	encode: function (value) {
@@ -224,10 +223,11 @@ const EasyCoder = {
 		this.compiler = compiler;
 		compiler.value = EasyCoder_Value;
 		compiler.condition = EasyCoder_Condition;
+		compiler.parent = parent;
 		compiler.domain = this.domain;
 		compiler.imports = imports;
 		compiler.continue = false;
-		const program = EasyCoder_Compiler.compile(tokens);
+		const program = compiler.compile(tokens);
 		//    console.log('Program: ' + JSON.stringify(program, null, 2));
 		this.compiling = false;
 
