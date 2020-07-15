@@ -1,5 +1,7 @@
 !   The Mexican Wave
 
+	script Wave
+
     div Container
     div Rectangle
     variable Height
@@ -32,9 +34,9 @@
 	    set the style of Rectangle to
 	       `position:absolute;width:9%;background:peru;`
 	        cat `display:inline-block;margin-left:0.5%`
-	    set style `top` of Rectangle to `50%`
+	    set style `top` of Rectangle to 200
         set style `left` of Rectangle to `calc(10% * ` cat N cat `)`
-	    set style `height` of Rectangle to `100px`
+	    set style `height` of Rectangle to `1px`
     	add 1 to N
     end
 
@@ -71,7 +73,8 @@ Loop:
             	clear AllDone ! not finished yet
 		        if Time is greater than Start
 	            begin
-	        		put sin Angle radius 100 into Height
+	        		put cos Angle radius 100 into Height
+                    negate Height
 	        		set style `top` of Rectangle to `calc(50% - ` cat Height cat `px)`
 	        		set style `height` of Rectangle to `calc(100px + ` cat Height cat `px)`
         			add 1 to Angle
