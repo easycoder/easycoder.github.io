@@ -97,7 +97,7 @@
     clear styles
     clear body
     
-    rest path `rest.php`
+    rest path `/rest.php`
 
     json parse url the location as Args
     put property `protocol` of Args into Protocol
