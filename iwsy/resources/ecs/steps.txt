@@ -92,17 +92,9 @@
 
     put -1 into SelectedStep
 
+    get Static from storage as `.static`
     get IsHome from storage as `.ishome`
     get CDN from storage as `.cdn`
-
-!	Test if site is on a static host
-    clear Static
-    rest get Item from `test`
-    or begin
-        print `Static website`
-    	set Static
-    	put empty into CDN
-    end
 
     create StepsPanel in Panel
 	set the style of StepsPanel to `flex:1;overflow-y:scroll`
