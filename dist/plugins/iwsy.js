@@ -64,16 +64,16 @@ const EasyCoder_IWSY = {
 					return true;
 				}
 				return false;	
-			// case `path`:	
-			// 	const path = compiler.getNextValue();
-			// 	compiler.addCommand({
-			// 		domain: `iwsy`,
-			// 		keyword: `iwsy`,
-			// 		lino,
-			// 		action,
-			// 		path
-			// 	});
-			// 	return true;			
+			case `path`:	
+				const path = compiler.getNextValue();
+				compiler.addCommand({
+					domain: `iwsy`,
+					keyword: `iwsy`,
+					lino,
+					action,
+					path
+				});
+				return true;			
 			case `script`:
 				const script = compiler.getNextValue();
 				compiler.addCommand({
@@ -197,11 +197,11 @@ const EasyCoder_IWSY = {
 				}
 				program.iwsyFunctions = IWSY(player, script);
 				break;
-			// case `path`:
-			// 	if (program.iwsyFunctions) {
-			// 		program.iwsyFunctions.setPath(program.getValue(command.path));
-			// 	}
-			// 	break;
+			case `path`:
+				if (program.iwsyFunctions) {
+					program.iwsyFunctions.setPath(program.getValue(command.path));
+				}
+				break;
 			case `script`:
 				script = program.getValue(command.script);
 				try {
@@ -234,7 +234,6 @@ const EasyCoder_IWSY = {
 			case `stop`:
 				if (program.iwsyFunctions) {
 					program.iwsyFunctions.stop();
-					// delete program.iwsyFunctions;
 				}
 				break;
 			case `removeStyles`:
