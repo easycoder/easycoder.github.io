@@ -4,6 +4,7 @@ const IWSY = (playerElement, scriptObject) => {
 	let player = playerElement;
 	let script = scriptObject;
 	let homeScript = script;
+	let thePath = ``;
 	let afterRun;
 	let plugins;
 	let timeouts = [];
@@ -991,7 +992,7 @@ const IWSY = (playerElement, scriptObject) => {
 					script.runMode = runMode;
 					doStep(script.steps[1]);
 				} else {
-					fetch(`${step.path}${step.script}?v=${Date.now()}`)
+					fetch(`${thePath}/${step.script}?v=${Date.now()}`)
 						.then(response => {
 							if (response.status >= 400) {
 								throw Error(`Unable to load ${step.script}: ${response.status}`);
@@ -1061,6 +1062,11 @@ const IWSY = (playerElement, scriptObject) => {
 		removeBlocks();
 		script = newScript;
 		initScript();
+	};
+    
+	// Set the path (for 'embed')
+	const setPath = path => {
+		thePath = path;
 	};
     
 	// Go to a specified step number
@@ -1270,6 +1276,7 @@ const IWSY = (playerElement, scriptObject) => {
 	return {
 		getScript,
 		setScript,
+		setPath,
 		gotoStep,
 		block,
 		run,
