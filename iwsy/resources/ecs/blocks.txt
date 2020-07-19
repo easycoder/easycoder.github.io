@@ -36,10 +36,8 @@
     variable N
     variable M
     variable NBlocks
-    variable IsHome
     variable CDN
     
-    get IsHome from storage as `.ishome`
     get CDN from storage as `.cdn`
 
     put -1 into SelectedBlock
@@ -72,7 +70,7 @@ Restart:
     create Link in Cell
     create AddBlock in Link
     set the style of AddBlock to `width:1em;margin-top:0.1em`
-    set attribute `src` of AddBlock to `/resources/icon/plus.png`
+    set attribute `src` of AddBlock to CDN cat `/resources/icon/plus.png`
     on click AddBlock
     begin
         set Defaults to object
@@ -117,7 +115,7 @@ Restart:
     	index ShowBlock to N
         create ShowBlock in Link
         set the style of ShowBlock to `width:1em;margin:0.1em 0.2em 0 0`
-        set attribute `src` of ShowBlock to `/resources/icon/binoculars.png`
+        set attribute `src` of ShowBlock to CDN cat `/resources/icon/binoculars.png`
         create EditButton in Cell
         set the style of EditButton to `flex:1`
     	put element N of Blocks into Block
@@ -133,12 +131,12 @@ Restart:
             create Link in Cell
             create Up in Link
             set the style of Up to `width:1em;margin:0.2em 0 0 0.2em`
-            set attribute `src` of Up to `/resources/icon/up.png`
+            set attribute `src` of Up to CDN cat `/resources/icon/up.png`
         end
         create Link in Cell
         create DeleteBlock in Link
         set the style of DeleteBlock to `width:1em;margin:0.2em 0 0 0.2em`
-        set attribute `src` of DeleteBlock to `/resources/icon/stop.png`
+        set attribute `src` of DeleteBlock to CDN cat `/resources/icon/stop.png`
         create Editor in Row
         set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none`
     	add 1 to N
