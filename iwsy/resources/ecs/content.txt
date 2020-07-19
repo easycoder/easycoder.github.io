@@ -66,7 +66,7 @@ Restart:
     create Link in Cell
     create AddItem in Link
     set the style of AddItem to `width:1em;margin-top:0.1em`
-    set attribute `src` of AddItem to `resources/icon/plus.png`
+    set attribute `src` of AddItem to `/resources/icon/plus.png`
     on click AddItem
     begin
         set Item to object

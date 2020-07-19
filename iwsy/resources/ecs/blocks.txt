@@ -72,7 +72,7 @@ Restart:
     create Link in Cell
     create AddBlock in Link
     set the style of AddBlock to `width:1em;margin-top:0.1em`
-    set attribute `src` of AddBlock to `resources/icon/plus.png`
+    set attribute `src` of AddBlock to `/resources/icon/plus.png`
     on click AddBlock
     begin
         set Defaults to object
@@ -117,7 +117,7 @@ Restart:
     	index ShowBlock to N
         create ShowBlock in Link
         set the style of ShowBlock to `width:1em;margin:0.1em 0.2em 0 0`
-        set attribute `src` of ShowBlock to `resources/icon/binoculars.png`
+        set attribute `src` of ShowBlock to `/resources/icon/binoculars.png`
         create EditButton in Cell
         set the style of EditButton to `flex:1`
     	put element N of Blocks into Block
