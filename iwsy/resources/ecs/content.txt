@@ -29,6 +29,9 @@
     variable N
     variable NumItems
     variable Content
+    variable CDN
+    
+    get CDN from storage as `.cdn`
     
     put -1 into SelectedItem
     
@@ -66,7 +69,7 @@ Restart:
     create Link in Cell
     create AddItem in Link
     set the style of AddItem to `width:1em;margin-top:0.1em`
-    set attribute `src` of AddItem to `/resources/icon/plus.png`
+    set attribute `src` of AddItem to CDN cat `/resources/icon/plus.png`
     on click AddItem
     begin
         set Item to object
@@ -118,12 +121,12 @@ Restart:
             create Link in Cell
             create Up in Link
             set the style of Up to `width:1em;margin:0.2em 0 0 0.2em`
-            set attribute `src` of Up to `/resources/icon/up.png`
+            set attribute `src` of Up to CDN cat `/resources/icon/up.png`
         end
         create Link in Cell
         create DeleteItem in Link
         set the style of DeleteItem to `width:1em;margin:0.2em 0 0 0.2em`
-        set attribute `src` of DeleteItem to `/resources/icon/stop.png`
+        set attribute `src` of DeleteItem to CDN cat `/resources/icon/stop.png`
         create Editor in Row
         set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none`
     	add 1 to N
