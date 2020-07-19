@@ -95,7 +95,7 @@ GetPage:
         add 1 to N
         put left N of Data into Data
     	iwsy load Player Embed
-!        iwsy path Data
+        iwsy path Data
         iwsy run
     end
     stop

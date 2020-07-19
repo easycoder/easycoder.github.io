@@ -808,8 +808,9 @@ DoOpen:
 ! Fill the browser with content from the server
   	if Static go to OpenFromStorage
     if UserRecord go to OpenFromUser
-  	if IsHome go to OpenFromStorage
+!  	if IsHome go to OpenFromStorage
 
+OpenFromAdmin:
 	gosub to CheckAdminPassword
     if AdminPassword is empty stop
     rest get Files from `list/` cat AdminPassword cat `/scripts?v=` cat now
@@ -904,8 +905,9 @@ SelectFile:
     
     if Static go to SelectFromStorage
     if UserRecord go to SelectFromUser
-    if IsHome go to SelectFromStorage
-    
+!    if IsHome go to SelectFromStorage
+
+SelectFromAdmin:
     rest get Presentation from Protocol cat Domain cat `/resources/scripts/` cat File cat `?v=` cat now
     go to UseFile
 
@@ -1000,6 +1002,7 @@ DoRunStop:
         set Message to object
         set property `action` of Message to `running`
         send Message to StepsModule
+    	iwsy init CDN
 		iwsy run then
         begin
 			gosub to ClearStepsButtons

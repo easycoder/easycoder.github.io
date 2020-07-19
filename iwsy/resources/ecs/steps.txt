@@ -736,10 +736,12 @@ EditChain:
     get UserHome from storage as `user.home`
 	set ChainNames to array
     
-    if Static go to EditChainFromStorage
+    if Static is `static` go to EditChainFromStorage
     if UserRecord go to EditChainFromUser
-    if IsHome go to EditChainFromStorage
-	
+!    if IsHome go to EditChainFromStorage
+
+EditChainFromAdmin:
+print `EditChainFromAdmin`
     get AdminPassword from storage as `.password`
     if AdminPassword is empty put prompt `Please type the admin password` with `` into AdminPassword
     rest get Valid from `verify/` cat AdminPassword
@@ -762,6 +764,7 @@ EditChain:
      go to ProcessChainNames
 
 EditChainFromUser:
+print `EditChainFromUser`
     rest get Files from `ulist/` cat Email cat `/` cat Password cat `/`
        	cat `users/` cat UserHome cat `/scripts`
     put the json count of Files into FileCount
@@ -775,6 +778,7 @@ EditChainFromUser:
      go to ProcessChainNames
 
 EditChainFromStorage:
+print `EditChainFromStorage`
 	get Files from storage
  	put the json count of Files into FileCount
   	put 0 into N
