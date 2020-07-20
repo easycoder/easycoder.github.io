@@ -178,11 +178,16 @@ const EasyCoder_IWSY = {
 			switch (action) {
 			case `init`:
 				const cdn = program.getValue(command.cdn);
-				program.require(`js`, `${cdn}/iwsy.js`,
-					function () {
-						program.run(command.pc + 1);
-					});
-				return 0;
+				if (typeof IWSY === `undefined`) {
+					program.require(`js`, `${cdn}/iwsy.js`,
+						function () {
+							program.run(command.pc + 1);
+						});
+					return 0;
+				} else {
+					program.run(command.pc + 1);
+				}
+				break;
 			case `load`:
 				const playerRecord = program.getSymbolRecord(command.player);
 				const player = playerRecord.element[playerRecord.index];
