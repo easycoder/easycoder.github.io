@@ -184,9 +184,7 @@ const EasyCoder_IWSY = {
 							program.run(command.pc + 1);
 						});
 					return 0;
-				} else {
-					program.run(command.pc + 1);
-				}
+				} 
 				break;
 			case `load`:
 				const playerRecord = program.getSymbolRecord(command.player);

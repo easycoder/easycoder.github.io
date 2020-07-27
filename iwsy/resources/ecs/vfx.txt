@@ -14,9 +14,6 @@
     input AspectRatioInput
     input URLInput
     input DurationInput
-    input StartSizeInput
-    input StartXOffsetInput
-    input StartYOffsetInput
     input EndSizeInput
     input EndXOffsetInput
     input EndYOffsetInput
@@ -96,9 +93,6 @@ Restart:
         set the elements of AspectRatioInput to NumItems
         set the elements of URLInput to NumItems
         set the elements of DurationInput to NumItems
-        set the elements of StartSizeInput to NumItems
-        set the elements of StartXOffsetInput to NumItems
-        set the elements of StartYOffsetInput to NumItems
         set the elements of EndSizeInput to NumItems
         set the elements of EndXOffsetInput to NumItems
         set the elements of EndYOffsetInput to NumItems
@@ -167,9 +161,6 @@ Restart:
         index AspectRatioInput to SelectedItem
         index URLInput to SelectedItem
         index DurationInput to SelectedItem
-        index StartSizeInput to SelectedItem
-        index StartXOffsetInput to SelectedItem
-        index StartYOffsetInput to SelectedItem
         index EndSizeInput to SelectedItem
         index EndXOffsetInput to SelectedItem
         index EndYOffsetInput to SelectedItem
@@ -229,7 +220,7 @@ ReloadEditor:
                 put property `url` of Item into Value
                 if Value is empty put empty into Value
                 set the text of URLInput to Value
-                
+
             	create Row in Editor
                 set the style of Row to `display:flex`
                 create Cell in Row
@@ -238,41 +229,8 @@ ReloadEditor:
                 create DurationInput in Row
                 set the style of DurationInput to `flex:1`
                 put property `duration` of Item into Value
-                if Value is empty put 1 into Value
+!                if Value is empty put 1 into Value
                 set the text of DurationInput to Value
-                
-            	create Row in Editor
-                set the style of Row to `display:flex`
-                create Cell in Row
-                set the style of Cell to `width:5em`
-                set the content of Cell to `Start Size`
-                create StartSizeInput in Row
-                set the style of StartSizeInput to `flex:1`
-                put property `startsize` of Item into Value
-                if Value is empty put 100 into Value
-                set the text of StartSizeInput to Value
-                
-            	create Row in Editor
-                set the style of Row to `display:flex`
-                create Cell in Row
-                set the style of Cell to `width:5em`
-                set the content of Cell to `Start Xoff`
-                create StartXOffsetInput in Row
-                set the style of StartXOffsetInput to `flex:1`
-                put property `startxoff` of Item into Value
-                if Value is empty put 0 into Value
-                set the text of StartXOffsetInput to Value
-                
-            	create Row in Editor
-                set the style of Row to `display:flex`
-                create Cell in Row
-                set the style of Cell to `width:5em`
-                set the content of Cell to `Start Yoff`
-                create StartYOffsetInput in Row
-                set the style of StartYOffsetInput to `flex:1`
-                put property `startyoff` of Item into Value
-                if Value is empty put 0 into Value
-                set the text of StartYOffsetInput to Value
                 
             	create Row in Editor
                 set the style of Row to `display:flex`
@@ -282,7 +240,6 @@ ReloadEditor:
                 create EndSizeInput in Row
                 set the style of EndSizeInput to `flex:1`
                 put property `endsize` of Item into Value
-                if Value is empty put 100 into Value
                 set the text of EndSizeInput to Value
                 
             	create Row in Editor
@@ -293,7 +250,6 @@ ReloadEditor:
                 create EndXOffsetInput in Row
                 set the style of EndXOffsetInput to `flex:1`
                 put property `endxoff` of Item into Value
-                if Value is empty put 0 into Value
                 set the text of EndXOffsetInput to Value
                 
             	create Row in Editor
@@ -304,7 +260,6 @@ ReloadEditor:
                 create EndYOffsetInput in Row
                 set the style of EndYOffsetInput to `flex:1`
                 put property `endyoff` of Item into Value
-                if Value is empty put 0 into Value
                 set the text of EndYOffsetInput to Value
             end
             create Row in Editor
@@ -375,18 +330,12 @@ SaveSelectedItem:
     	index AspectRatioInput to SelectedItem
     	index URLInput to SelectedItem
     	index DurationInput to SelectedItem
-    	index StartSizeInput to SelectedItem
-    	index StartXOffsetInput to SelectedItem
-    	index StartYOffsetInput to SelectedItem
     	index EndSizeInput to SelectedItem
     	index EndXOffsetInput to SelectedItem
     	index EndYOffsetInput to SelectedItem
     	set property `aspect` of Item to AspectRatioInput
     	set property `url` of Item to URLInput
     	set property `duration` of Item to DurationInput
-    	set property `startsize` of Item to StartSizeInput
-    	set property `startxoff` of Item to StartXOffsetInput
-    	set property `startyoff` of Item to StartYOffsetInput
     	set property `endsize` of Item to EndSizeInput
     	set property `endxoff` of Item to EndXOffsetInput
     	set property `endyoff` of Item to EndYOffsetInput

@@ -24,6 +24,7 @@
     tr TR
     td TD
     select ActionSelect
+    select DisplaySelect
     select BlockSelect
     select ContentSelect
     select TargetSelect
@@ -71,9 +72,10 @@
     variable InitProperty
     variable BlockNames
     variable ContentNames
+    variable DisplayTypes
     variable ContinueTypes
     variable ChainNames
-    variable YesNo
+    variable Options
     variable Response
     variable Message
     variable Running
@@ -137,10 +139,12 @@ Start:
     if property `action` of Message is `step`
     begin
     	put property `step` of Message into N
-        if N is not less than the json count of Steps stop
-        index StepButton to N
-        set style `background-color` of StepButton to `#cfc`
-    	stop
+        if N is less than the json count of Steps
+        begin
+	        index StepButton to N
+    	    set style `background-color` of StepButton to `#cfc`
+    	end
+        stop
     end
 
 Start2:
@@ -297,6 +301,7 @@ Start2:
 
 !	Set up the fixed lists
     set ActionNames to array
+    json add `noop` to ActionNames
     json add `set content` to ActionNames
     json add `show` to ActionNames
     json add `hide` to ActionNames
@@ -314,6 +319,9 @@ Start2:
     json add `background` to InitProperties
     json add `border` to InitProperties
     json add `css` to InitProperties
+    set DisplayTypes to array
+    json add `block` to DisplayTypes
+    json add `hidden` to DisplayTypes
     set ContinueTypes to array
     json add `yes` to ContinueTypes
     json add `no` to ContinueTypes
@@ -337,6 +345,7 @@ SetupArrays:
     set the elements of DurationInput to N
     set the elements of URLInput to N
     set the elements of ChainSelect to N
+    set the elements of DisplaySelect to N
     set the elements of ContinueSelect to N
     set the elements of Editor to N
     put property `blocks` of Presentation into Blocks
@@ -556,6 +565,17 @@ EditInit:
 EditSetContent:
 	create TR in Table
     create TD in TR
+    set the content of TD to `Display:`
+    create TD in TR
+    index DisplaySelect to SelectedStep
+    create DisplaySelect in TD
+    set the style of DisplaySelect to `width:100%`
+    put property `display` of CurrentStep into Options
+    if Options is not `block` put `hidden` into Options
+    set DisplaySelect from DisplayTypes as Options
+
+	create TR in Table
+    create TD in TR
     set the content of TD to `Blocks:`
     create TD in TR
 	create BlockTable in TD
@@ -738,10 +758,8 @@ EditChain:
     
     if Static is `static` go to EditChainFromStorage
     if UserRecord go to EditChainFromUser
-!    if IsHome go to EditChainFromStorage
 
 EditChainFromAdmin:
-print `EditChainFromAdmin`
     get AdminPassword from storage as `.password`
     if AdminPassword is empty put prompt `Please type the admin password` with `` into AdminPassword
     rest get Valid from `verify/` cat AdminPassword
@@ -764,7 +782,6 @@ print `EditChainFromAdmin`
      go to ProcessChainNames
 
 EditChainFromUser:
-print `EditChainFromUser`
     rest get Files from `ulist/` cat Email cat `/` cat Password cat `/`
        	cat `users/` cat UserHome cat `/scripts`
     put the json count of Files into FileCount
@@ -778,7 +795,6 @@ print `EditChainFromUser`
      go to ProcessChainNames
 
 EditChainFromStorage:
-print `EditChainFromStorage`
 	get Files from storage
  	put the json count of Files into FileCount
   	put 0 into N
@@ -920,9 +936,9 @@ EditContinue:
     index ContinueSelect to SelectedStep
     create ContinueSelect in TD
     set the style of ContinueSelect to `width:100%`
-    put property `continue` of CurrentStep into YesNo
-    if not YesNo put `no` into YesNo
-    set ContinueSelect from ContinueTypes as YesNo
+    put property `continue` of CurrentStep into Options
+    if not Options put `no` into Options
+    set ContinueSelect from ContinueTypes as Options
 	return
 
 !	Create a new action with a full set of empty properties
@@ -1054,6 +1070,8 @@ SaveCurrentStep:
     end
     else if Action is `set content`
     begin
+    	index DisplaySelect to SelectedStep
+        set property `display` of CurrentStep to DisplaySelect
 		set Blocks to array
         put 0 into N
         while N is less than the elements of BlockSelect
@@ -1167,7 +1185,6 @@ SaveCurrentStep:
             set property `path` of CurrentStep to Email cat `/` cat Password cat `/`
        			cat `users/` cat UserHome cat `/scripts/`
         end
-        else if IsHome put `static` into Mode
         else 
         begin
         	put `admin` into Mode

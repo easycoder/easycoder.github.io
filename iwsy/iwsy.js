@@ -18,6 +18,7 @@ const IWSY = (playerElement, scriptObject) => {
 				current[name] = block.defaults[name];
 			}
 			block.current = current;
+			block.vfx = [];
 		}
 	};
 
@@ -141,8 +142,14 @@ const IWSY = (playerElement, scriptObject) => {
 		text.style[`text-align`] = defaults.textAlign;
 	};
 
+	// No operation
+	const noop = step => {
+		step.next();
+	};
+
 	// Set the content of one or more blocks
 	const setcontent = step => {
+		let continueFlag = true;
 		for (const item of step.blocks)
 		{
 			for (const block of script.blocks) {
@@ -155,27 +162,75 @@ const IWSY = (playerElement, scriptObject) => {
 							const converter = new showdown.Converter({
 								extensions: [`IWSY`]
 							});
-							block.textPanel.innerHTML =
-                                converter.makeHtml(text.content.split(`%0a`).join(`\n`));
+							const converted = converter.makeHtml(text.content.split(`%0a`).join(`\n`));
+							const tag = converted.match(/data-slide="([\w-_.]*)"/);
+							if (tag) {
+								const imagesLoading = [];
+								for (const vfx of script.vfx) {
+									if (vfx.name === tag[1]) {
+										vfx.container = block.textPanel;
+										if (vfx.url) {
+											if (vfx.url[0] === `=`) {
+												const lastVFX = vfx.url.slice(1);
+												for (const index in block.vfx) {
+													const vfx2 = block.vfx[index];
+													if (vfx2.name === lastVFX) {
+														vfx.image = vfx2.image;
+														initImage(vfx);
+														vfx.startsize = vfx2.endsize;
+														vfx.startxoff = vfx2.endxoff;
+														vfx.startyoff = vfx2.endyoff;
+														vfx.w = vfx2.w2;
+														vfx.h = vfx2.h2;
+														vfx.xoff = vfx2.xoff2;
+														vfx.yoff = vfx2.yoff2;
+														if (!vfx.image) {
+															throw new Error(`Unknown vfx ${lastVFX}`);
+														}
+														block.vfx[index] = vfx;
+													}
+													break;
+												}
+											} else {
+												block.vfx.push(vfx);
+												continueFlag = false;
+												block.textPanel.innerHTML = converted;
+												const image = new Image();
+												vfx.image = image;
+												image.id = vfx.name;
+												image.src = vfx.url;
+												image.addEventListener(`load`, () => {
+													initImage(vfx);
+													const index = imagesLoading.indexOf(image);
+													if (index > -1) {
+														imagesLoading.splice(index, 1);
+													}
+													if (imagesLoading.length === 0) {
+														step.next();
+													}
+												});
+												imagesLoading.push(image);
+												block.textPanel.appendChild(image);
+											}
+											break;
+										}
+										break;
+									}
+								}
+							} else {
+								block.textPanel.innerHTML = converted;
+							}
 							break;
 						}
 					}
-					const vfxElements = block.textPanel.getElementsByClassName(`iwsy-vfx`);
-					// Save all the vfx items in this step
-					if (!Array.isArray(script.vfxElements)) {
-						script.vfxElements = [];
-					}
-					for (const vfxElement of vfxElements) {
-						script.vfxElements.push({
-							block,
-							vfxElement
-						});
-					}
+					block.element.style.display = step.display;
 					break;
 				}
 			}
 		}
-		step.next();
+		if (continueFlag) {
+			step.next();
+		}
 	};
 
 	// Set the visibility of a block
@@ -327,48 +382,129 @@ const IWSY = (playerElement, scriptObject) => {
 		doFade(step, false);
 	};
 
+	const initImage = vfx => {
+		const container = vfx.container;
+		const image = vfx.image;
+		let aspectW = 4;
+		let aspectH = 3;
+		const colon = vfx.aspect.indexOf(`:`);
+		if (colon) {
+			aspectW = vfx.aspect.slice(0,colon);
+			aspectH = vfx.aspect.slice(colon + 1);
+		}
+		const ratio = aspectW / aspectH;
+		const width = container.offsetWidth;
+		const height = width / ratio;
+		container.style.height = `${Math.round(height)}px`;
+		container.style.display = `inline-block`;
+		container.style.overflow = `hidden`;
+
+		const realWidth = image.naturalWidth;
+		const realHeight = image.naturalHeight;
+		const realRatio = realWidth / realHeight;
+		let w;
+		let h;
+		if (ratio < realRatio) {
+			h = height;
+			w = height * realRatio;
+		} else {
+			w = width;
+			h = width / realRatio;
+		}
+		const w2 = w * vfx.endsize / 100;
+		const h2 = h * vfx.endsize / 100;
+		w *= vfx.startsize / 100;
+		h *= vfx.startsize / 100;
+		const xoff = -width * vfx.startxoff / 100;
+		const yoff = -height * vfx.startyoff / 100;
+		const xoff2 = -width * vfx.endxoff / 100;
+		const yoff2 = -height * vfx.endyoff / 100;
+
+		vfx.w = w;
+		vfx.w2 = w2;
+		vfx.h = h;
+		vfx.h2 = h2;
+		vfx.xoff = xoff;
+		vfx.xoff2 = xoff2;
+		vfx.yoff = yoff;
+		vfx.yoff2 = yoff2;
+
+		image.style.position = `absolute`;
+		image.style.width = `${w}px`;
+		image.style.height = `${h}px`;
+		image.style.left = `${xoff}px`;
+		image.style.top = `${yoff}px`;
+	};
+
+	const doPanzoom = (timestamp, vfx) => {
+		if (vfx.start === undefined) {
+			vfx.start = timestamp;
+		}
+		const image = vfx.image;
+		const elapsed = timestamp - vfx.start;
+		const duration = vfx.duration * 1000;
+		if (elapsed < duration) {
+			const ratio =  0.5 - Math.cos(Math.PI * elapsed / duration) / 2;
+			image.style.width = `${vfx.w + (vfx.w2 - vfx.w) * ratio}px`;
+			image.style.height = `${vfx.h + (vfx.h2 - vfx.h) * ratio}px`;
+			image.style.left = `${vfx.xoff + (vfx.xoff2 - vfx.xoff) * ratio}px`;
+			image.style.top = `${vfx.yoff + (vfx.yoff2 - vfx.yoff) * ratio}px`;
+			requestAnimationFrame(timestamp => {
+				doPanzoom(timestamp, vfx);
+			});
+		} else {
+			image.style.width = `${vfx.w2}px`;
+			image.style.height = `${vfx.h2}px`;
+			image.style.left = `${vfx.xoff2}px`;
+			image.style.top = `${vfx.yoff2}px`;
+			if (vfx.then) {
+				vfx.then();
+			}
+		}
+	};
+
 	// This is where the vfx animations are started
-	const startVFX = (step, vfxElement) => {
+	const startVFX = (step, vfx) => {
+		const vfxElement = vfx.container;
 		vfxElement.style.position = `relative`;
 		vfxElement.style.display = `inline-block`;
-		const slide = vfxElement.dataset.slide;
-		const vfx = script.vfx;
-		for (const item of vfx) {
-			if (item.name === slide) {
-				if (!Array.isArray(step.vfxRunning)) {
-					step.vfxRunning = [];
+		for (const item of script.vfx) {
+			if (item.name === vfx.name) {
+				if (!Array.isArray(step.vfx)) {
+					step.vfx = [];
 				}
-				step.vfxRunning.push(vfxElement);
-				doPanzoom(vfxElement, item, () => {
-					if (step.continue !== `yes`) {
-						const index = step.vfxRunning.indexOf(vfxElement);
-						if (index > -1) {
-							step.vfxRunning.splice(index, 1);
-						}
-						if (step.vfxRunning.length === 0) {
-							step.next();
-						}
+				step.vfx.push(item);
+				vfx.then = () => {
+					const index = step.vfx.indexOf(item);
+					if (index > -1) {
+						step.vfx.splice(index, 1);
 					}
+					if (step.vfx.length === 0 && step.continue !== `yes`) {
+						step.next();
+					}
+				};
+				delete(vfx.start);
+				requestAnimationFrame(timestamp => {
+					doPanzoom(timestamp, vfx);
 				});
+				break;
 			}
 		} 
+		if (step.vfx.length === 0) {
+			step.next();
+		}
 	};
 
 	// Animate blocks
 	const animate = step => {
-		const continueFlag = step.continue === `yes`;
+		let continueFlag = true;
 		for (const name of step.blocks)
 		{
 			for (const block of script.blocks) {
 				if (block.defaults.name === name) {
-					if (!block.element) {
-						createBlock(block);
-						setVisibility(block, true);
-					}
-					for (const item of script.vfxElements) {
-						if (item.block === block) {
-							startVFX(step, item.vfxElement);
-						}
+					for (const vfx of block.vfx) {
+						continueFlag = step.continue === `yes`;
+						startVFX(step, vfx);
 					}
 					break;
 				}
@@ -376,9 +512,27 @@ const IWSY = (playerElement, scriptObject) => {
 		}
 		if (script.runMode === `manual`) {
 			enterManualMode(step);
-		} else if (continueFlag || step.vfxRunning.length === 0) {
+		} else if (continueFlag) {
 			step.next();
 		}
+	};
+
+	// Run a pan-zoom
+	const panzoom = arg => {
+		player.innerText = ``;
+		const vfx = JSON.parse(arg);
+		vfx.container = player;
+		const image = new Image();
+		vfx.image = image;
+		image.src = spec.url;
+		// image.style.display = `none`;
+		image.addEventListener(`load`, () => {
+			initImage(spec);
+			requestAnimationFrame(timestamp => {
+				doPanzoom(timestamp, vfx);
+			});
+		});
+		player.appendChild(image);
 	};
 
 	// Handle a crossfade
@@ -902,7 +1056,6 @@ const IWSY = (playerElement, scriptObject) => {
 		script.speed = `normal`;
 		script.labels = {};
 		script.stop = false;
-		script.vfxElements = [];
 		script.scanFinished = false;
 		removeStyles();
 		for (const block of script.blocks) {
@@ -955,6 +1108,7 @@ const IWSY = (playerElement, scriptObject) => {
 
 	const actions = {
 		init,
+		noop,
 		setcontent,
 		show,
 		hide,
@@ -1008,7 +1162,7 @@ const IWSY = (playerElement, scriptObject) => {
 							});
 						})
 						.catch(err => {
-							throw Error(`Fetch Error :${err}`);
+							console.log(`Fetch Error :${err}`);
 						});
 					return;
 				}
@@ -1016,7 +1170,6 @@ const IWSY = (playerElement, scriptObject) => {
             
 			const actionName = step.action.split(` `).join(``);
 			let handler = actions[actionName];
-			step.vfxRunning = [];
 			if (script.runMode === `auto`) {
 				if (typeof handler === `undefined`) {
 					handler = plugins[actionName];
@@ -1194,79 +1347,6 @@ const IWSY = (playerElement, scriptObject) => {
 		for (const style of styles) {
 			style.parentNode.removeChild(style);
 		}
-	};
-
-	// Run a pan-zoom
-	const panzoom = arg => {
-		player.innerText = ``;
-		doPanzoom(player, JSON.parse(arg));
-	};
-
-	const doPanzoom = (container, spec, then) => {
-		let  aspectW = 4;
-		let aspectH = 3;
-		const colon = spec.aspect.indexOf(`:`);
-		if (colon) {
-			aspectW = spec.aspect.slice(0,colon);
-			aspectH = spec.aspect.slice(colon + 1);
-		}
-		const ratio = aspectW / aspectH;
-		const width = container.offsetWidth;
-		const height = width / ratio;
-		container.style.height = `${Math.round(height)}px`;
-		container.style.display = `inline-block`;
-		container.style.overflow = `hidden`;
-
-		const image = new Image();
-		container.appendChild(image);
-
-		image.addEventListener(`load`, () => {
-			const realWidth = image.naturalWidth;
-			const realHeight = image.naturalHeight;
-			const realRatio = realWidth / realHeight;
-			let w;
-			let h;
-			if (ratio < realRatio) {
-				h = height;
-				w = height * realRatio;
-			} else {
-				w = width;
-				h = width / realRatio;
-			}
-			const w2 = w * spec.endsize / 100;
-			const h2 = h * spec.endsize / 100;
-			w *= spec.startsize / 100;
-			h *= spec.startsize / 100;
-			const xoff = width * spec.startxoff / 100;
-			const yoff = height * spec.startyoff / 100;
-			const xoff2 = width * spec.endxoff / 100;
-			const yoff2 = height * spec.endyoff / 100;
-
-			image.style.position = `absolute`;
-			image.style.width = `${w}px`;
-			image.style.height = `${h}px`;
-			image.style.left = `${xoff}px`;
-			image.style.top = `${yoff}px`;
-			const animSteps = Math.round(spec.duration * 25);
-			let animStep = 0;
-			const interval = setInterval(() => {
-				if (animStep < animSteps) {
-					const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-					image.style.width = `${w + (w2 - w) * ratio}px`;
-					image.style.height = `${h + (h2 - h) * ratio}px`;
-					image.style.left = `${xoff + (xoff2 - xoff) * ratio}px`;
-					image.style.top = `${yoff + (yoff2 - yoff) * ratio}px`;
-					animStep++;
-				} else {
-					clearIntervalTimer(interval);
-					if (then) {
-						then();
-					}
-				}
-			}, 40);
-			addIntervalTimer(interval);
-		});
-		image.src = spec.url;
 	};
 
 	///////////////////////////////////////////////////////////////////////////

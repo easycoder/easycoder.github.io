@@ -49,7 +49,6 @@
     module FileManModule
     module HelpModule
     variable Mobile
-    variable Resources
     variable CDN
     variable LastSavedState
     variable Content
@@ -465,6 +464,7 @@ Start:
     put 0 into N
     gosub to SelectSection
     clear Running
+    print `Load IWSY`
     iwsy load Player Presentation
 
     create UserPanel in Controls
@@ -509,7 +509,7 @@ Start:
             put property `home` of UserRecord into UserHome
             put UserHome cat `/` cat property `id` of UserRecord into UserHome
             put UserHome into storage as `user.home`
-!            iwsy path Resources cat `/users/` cat UserHome cat `/scripts/`
+            iwsy path `/resources/users/` cat UserHome cat `/scripts/`
             put property `email` of UserRecord into UserEmail
             get UserPassword from storage as `user.password`
             set attribute `src` of User to CDN cat `/resources/icon/user-loggedin.png`
@@ -532,7 +532,7 @@ Start:
     put property `arg` of Args into Arg
     if Arg includes `.json`
     begin
-        rest get Presentation from Protocol cat Domain cat `/` cat Resources cat `/users/` cat Arg cat `?v=` cat now
+        rest get Presentation from Protocol cat Domain cat `/reaources/users/` cat Arg cat `?v=` cat now
 		gosub to NotifyModules
     	iwsy script Presentation
         set style `display` of Player to `block`

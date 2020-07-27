@@ -10,7 +10,7 @@
       "css": ""
     },
     {
-      "title": "set up blocks",
+      "title": "set up text blocks",
       "action": "set content",
       "label": "",
       "blocks": [
@@ -19,32 +19,66 @@
           "content": "Manarola"
         },
         {
-          "block": "manarola photo",
-          "content": "manarola photo"
-        },
-        {
           "block": "apricale text",
           "content": "Apricale"
         },
         {
-          "block": "apricale photo",
-          "content": "apricale photo"
-        },
-        {
           "block": "noli text",
           "content": "Noli"
-        },
-        {
-          "block": "noli photo",
-          "content": "noli photo"
         }
-      ]
+      ],
+      "display": "hidden"
     },
     {
-      "title": "pause 1 second",
-      "action": "pause",
+      "title": "set up Manarola start",
+      "action": "set content",
       "label": "",
-      "duration": 1.1
+      "blocks": [
+        {
+          "block": "manarola photo",
+          "content": "Manarola start"
+        }
+      ],
+      "display": "block"
+    },
+    {
+      "title": "set up Apricale start",
+      "action": "set content",
+      "label": "",
+      "duration": 9,
+      "blocks": [
+        {
+          "block": "apricale photo",
+          "content": "Apricale start"
+        }
+      ],
+      "display": "block"
+    },
+    {
+      "title": "set up Noli start",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "noli photo",
+          "content": "Noli start"
+        }
+      ],
+      "display": "block"
+    },
+    {
+      "title": "---",
+      "action": "noop",
+      "label": ""
+    },
+    {
+      "title": "position Manarola",
+      "action": "animate",
+      "label": "",
+      "blocks": [
+        "manarola photo"
+      ],
+      "continue": "no"
     },
     {
       "title": "fade up Manarola",
@@ -55,7 +89,19 @@
         "manarola photo"
       ],
       "duration": 3,
-      "continue": "yes"
+      "continue": "no"
+    },
+    {
+      "title": "set up Manarola finish",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "manarola photo",
+          "content": "Manarola finish"
+        }
+      ],
+      "display": "block"
     },
     {
       "title": "animate Manarola",
@@ -71,6 +117,33 @@
       "action": "pause",
       "label": "",
       "duration": 9
+    },
+    {
+      "title": "---",
+      "action": "noop",
+      "label": ""
+    },
+    {
+      "title": "position Apricale",
+      "action": "animate",
+      "label": "",
+      "blocks": [
+        "apricale photo"
+      ],
+      "continue": "no"
+    },
+    {
+      "title": "setup Apricale finish",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "apricale photo",
+          "content": "Apricale finish"
+        }
+      ],
+      "continue": "no",
+      "display": "block"
     },
     {
       "title": "fade down Manarola",
@@ -110,6 +183,32 @@
       "duration": 9
     },
     {
+      "title": "---",
+      "action": "noop",
+      "label": ""
+    },
+    {
+      "title": "position Noli",
+      "action": "animate",
+      "label": "",
+      "blocks": [
+        "noli photo"
+      ],
+      "continue": "no"
+    },
+    {
+      "title": "set up Noli finish",
+      "action": "set content",
+      "label": "",
+      "blocks": [
+        {
+          "block": "noli photo",
+          "content": "Noli finish"
+        }
+      ],
+      "display": "block"
+    },
+    {
       "title": "fade down Apricale",
       "action": "fade down",
       "label": "",
@@ -145,6 +244,11 @@
       "action": "pause",
       "label": "",
       "duration": 9
+    },
+    {
+      "title": "---",
+      "action": "noop",
+      "label": ""
     },
     {
       "title": "fade down Noli",
@@ -206,7 +310,6 @@
       "label": "",
       "script": "demo.json",
       "path": "/resources/scripts/",
-      "mode": "admin",
       "blocks": []
     }
   ],
@@ -240,7 +343,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "url('https://easycoder.github.io/iwsy/resources/help/quickstart/manarola.jpg')",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -282,7 +385,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "url('https://easycoder.github.io/iwsy/resources/help/quickstart/apricale.jpg')",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -324,7 +427,7 @@
         "top": 0,
         "width": 500,
         "height": 1000,
-        "background": "url('https://easycoder.github.io/iwsy/resources/help/quickstart/noli.jpg')",
+        "background": "",
         "border": "",
         "borderRadius": "",
         "fontFamily": "",
@@ -377,56 +480,89 @@
       "content": "%0a... and so on.%0a%0aNow we'll chain back to the intro screen"
     },
     {
-      "name": "manarola photo",
-      "content": "~vfx:100% manarola~"
+      "name": "Manarola start",
+      "content": "~vfx:manarola-start~"
     },
     {
-      "name": "apricale photo",
-      "content": "~vfx:100% apricale~"
+      "name": "Manarola finish",
+      "content": "~vfx:manarola-finish~"
     },
     {
-      "name": "noli photo",
-      "content": "~vfx:100% noli~"
+      "name": "Apricale start",
+      "content": "~vfx:apricale-start~"
+    },
+    {
+      "name": "Apricale finish",
+      "content": "~vfx:apricale-finish~"
+    },
+    {
+      "name": "Noli start",
+      "content": "~vfx:noli-start~"
+    },
+    {
+      "name": "Noli finish",
+      "content": "~vfx:noli-finish~"
     }
   ],
   "vfx": [
     {
-      "name": "manarola",
+      "name": "manarola-start",
       "type": "panzoom",
       "aspect": "8:9",
       "url": "https://easycoder.github.io/iwsy/resources/help/quickstart/manarola.jpg",
+      "duration": 0,
+      "endsize": 100,
+      "endxoff": 50,
+      "endyoff": 0
+    },
+    {
+      "name": "manarola-finish",
+      "type": "panzoom",
+      "aspect": "8:9",
+      "url": "=manarola-start",
       "duration": 10,
-      "startsize": 100,
-      "startxoff": -50,
-      "startyoff": 0,
       "endsize": 100,
       "endxoff": 0,
       "endyoff": 0
     },
     {
-      "name": "apricale",
+      "name": "apricale-start",
       "type": "panzoom",
       "aspect": "8:9",
       "url": "https://easycoder.github.io/iwsy/resources/help/quickstart/apricale.jpg",
-      "duration": 10,
-      "startsize": 100,
-      "startxoff": 0,
-      "startyoff": 0,
+      "duration": 0,
       "endsize": 100,
-      "endxoff": -50,
+      "endxoff": 0,
       "endyoff": 0
     },
     {
-      "name": "noli",
+      "name": "apricale-finish",
+      "type": "panzoom",
+      "aspect": "8:9",
+      "url": "=apricale-start",
+      "duration": 10,
+      "endsize": 100,
+      "endxoff": 50,
+      "endyoff": 0
+    },
+    {
+      "name": "noli-start",
       "type": "panzoom",
       "aspect": "8:9",
       "url": "https://easycoder.github.io/iwsy/resources/help/quickstart/noli.jpg",
-      "duration": 10,
-      "startsize": 100,
-      "startxoff": 0,
-      "startyoff": 0,
+      "duration": 0,
       "endsize": 100,
-      "endxoff": -50,
+      "endxoff": 0,
+      "endyoff": 0
+    },
+    {
+      "name": "noli-finish",
+      "type": "panzoom",
+      "aspect": "8:9",
+      "url": "=noli-start",
+      "duration": 10,
+      "endsize": 100,
+      "endxoff": 50,
       "endyoff": 0
     }
   ]
