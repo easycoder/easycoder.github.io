@@ -24,7 +24,8 @@
           "block": "background",
           "content": ""
         }
-      ]
+      ],
+      "display": "hidden"
     },
     {
       "title": "fade up background",
@@ -55,7 +56,8 @@
           "block": "subtitle",
           "content": "subtitle"
         }
-      ]
+      ],
+      "display": "hidden"
     },
     {
       "title": "zoom up title",
@@ -325,5 +327,6 @@
       "name": "for example",
       "content": "## For example%0aHere are 3 slides from a presentation    %0aabout villages in Liguria, Italy"
     }
-  ]
+  ],
+  "vfx": []
 }

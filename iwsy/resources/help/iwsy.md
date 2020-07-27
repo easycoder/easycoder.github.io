@@ -20,9 +20,9 @@ These help pages contain everything there is to know about ~iwsy~, but there's a
 
 ## Feature summary
 
-There are many slideshow/presentation packages, most being quite similar to PowerPoint. The aim here is not to create another identical one but to tackle one or two of the things the others don't do so well. Top of the list is the ability to embed a show into another web page in a seamless manner. The development of ~iwsy~ is driven by the desire to meet this need rather than to excel at formal presentations.
+There are many slideshow/presentation packages, most being quite similar to PowerPoint. The aim here is not to create another clone but to tackle one or two of the things the others don't do so well. Top of the list is the ability to embed a show into another web page in a seamless manner. The development of ~iwsy~ is driven by the desire to meet this need rather than to excel at formal presentations.
 
-We are also working on a range of features for making the pages themselves dynamic. This covers a number of areas such as transitions, "Ken Burns" effects and the use of audio.
+The other difference is in making the pages themselves dynamic. This covers a number of areas such as transitions, "Ken Burns" effects and the use of audio.
 
 The basic features of ~iwsy~ are:
 
