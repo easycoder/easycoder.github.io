@@ -300,6 +300,40 @@ const IWSY = (playerElement, scriptObject) => {
 		}
 	};
 
+	// Animate a fade
+	const animateFade = (timestamp, vfx) => {
+		if (script.stop) {
+			return;
+		}
+		if (vfx.start === undefined) {
+			vfx.start = timestamp;
+		}
+		const elapsed = timestamp - vfx.start;
+		if (elapsed < vfx.duration) {
+			const ratio =  0.5 - Math.cos(Math.PI * elapsed / vfx.duration) / 2;
+			for (const block of vfx.stepBlocks)
+			{
+				block.element.style.opacity = vfx.upDown ? ratio : 1.0 - ratio;
+			}
+			requestAnimationFrame(timestamp => {
+				animateFade(timestamp, vfx);
+			});
+		} else {
+			for (const block of vfx.stepBlocks)
+			{
+				block.element.style.opacity = vfx.upDown ? 1 : 0;
+				block.element.style.display = vfx.upDown ? `block` :`none`;
+			}
+			if (!vfx.continueFlag) {
+				if (script.runMode === `manual`) {
+					enterManualMode(step);
+				} else {
+					vfx.step.next();
+				}
+			}
+		}
+	};
+
 	// Fade up or down
 	const doFade = (step, upDown) => {
 		const stepBlocks = [];
@@ -327,48 +361,20 @@ const IWSY = (playerElement, scriptObject) => {
 				}
 			}
 		} else {
-			const animSteps = Math.round(step.duration * 25);
-			const continueFlag = step.continue === `yes`;
 			for (const block of stepBlocks)
 			{
 				block.element.style.display = `block`;
 			}
-			let animStep = 0;
-			const interval = setInterval(() => {
-				try {
-					if (animStep < animSteps) {
-						const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-						for (const block of stepBlocks)
-						{
-							// if (block.element) {
-							block.element.style.opacity = upDown ? ratio : 1.0 - ratio;
-							// }
-						}
-						animStep++;
-					} else {
-						for (const block of stepBlocks)
-						{
-							// if (block.element) {
-							block.element.style.opacity = upDown ? 1 : 0;
-							block.element.style.display = upDown ? `block` :`none`;
-							// }
-						}
-						clearIntervalTimer(interval);
-						if (!continueFlag) {
-							if (script.runMode === `manual`) {
-								enterManualMode(step);
-							} else {
-								step.next();
-							}
-						}
-					}
-				} catch(err) {
-					clearIntervalTimer(interval);
-					throw Error(err);
-				}
-			}, 40);
-			addIntervalTimer(interval);
-			if (continueFlag) {
+			const vfx = {};
+			vfx.step = step;
+			vfx.stepBlocks = stepBlocks;
+			vfx.upDown = upDown;
+			vfx.duration = step.duration * 1000;
+			vfx.continueFlag = step.continue === `yes`;
+			requestAnimationFrame(timestamp => {
+				animateFade(timestamp, vfx);
+			});
+			if (vfx.continueFlag) {
 				step.next();
 			}
 		}
@@ -436,7 +442,11 @@ const IWSY = (playerElement, scriptObject) => {
 		image.style.top = `${yoff}px`;
 	};
 
-	const doPanzoom = (timestamp, vfx) => {
+	// Animate a pan-zoom
+	const animatePanzoom = (timestamp, vfx) => {
+		if (script.stop) {
+			return;
+		}
 		if (vfx.start === undefined) {
 			vfx.start = timestamp;
 		}
@@ -450,7 +460,7 @@ const IWSY = (playerElement, scriptObject) => {
 			image.style.left = `${vfx.xoff + (vfx.xoff2 - vfx.xoff) * ratio}px`;
 			image.style.top = `${vfx.yoff + (vfx.yoff2 - vfx.yoff) * ratio}px`;
 			requestAnimationFrame(timestamp => {
-				doPanzoom(timestamp, vfx);
+				animatePanzoom(timestamp, vfx);
 			});
 		} else {
 			image.style.width = `${vfx.w2}px`;
@@ -485,7 +495,7 @@ const IWSY = (playerElement, scriptObject) => {
 				};
 				delete(vfx.start);
 				requestAnimationFrame(timestamp => {
-					doPanzoom(timestamp, vfx);
+					animatePanzoom(timestamp, vfx);
 				});
 				break;
 			}
@@ -529,10 +539,44 @@ const IWSY = (playerElement, scriptObject) => {
 		image.addEventListener(`load`, () => {
 			initImage(spec);
 			requestAnimationFrame(timestamp => {
-				doPanzoom(timestamp, vfx);
+				animatePanzoom(timestamp, vfx);
 			});
 		});
 		player.appendChild(image);
+	};
+
+	// Animate a crossfade
+	const animateCrossfade = (timestamp, vfx) => {
+		if (script.stop) {
+			return;
+		}
+		if (vfx.start === undefined) {
+			vfx.start = timestamp;
+		}
+		const elapsed = timestamp - vfx.start;
+		if (elapsed < vfx.duration) {
+			const ratio =  0.5 - Math.cos(Math.PI * elapsed / vfx.duration) / 2;
+			vfx.block.element.style.opacity = 1.0 - ratio;
+			vfx.element.style.opacity = ratio;
+			requestAnimationFrame(timestamp => {
+				animateCrossfade(timestamp, vfx);
+			});
+		} else {
+			vfx.block.textPanel.innerHTML = vfx.newText;
+			if (vfx.content.url) {
+				vfx.block.element.style.background = `url("${vfx.content.url}")`;
+			}
+			vfx.block.element.style[`background-size`] = `cover`;
+			vfx.block.element.style.opacity = 1.0 ;
+			removeElement(vfx.element);
+			if (!vfx.continueFlag) {
+				if (script.runMode === `manual`) {
+					enterManualMode(step);
+				} else {
+					vfx.step.next();
+				}
+			}
+		}
 	};
 
 	// Handle a crossfade
@@ -545,10 +589,14 @@ const IWSY = (playerElement, scriptObject) => {
 				const newText = converter.makeHtml(content.content.split(`%0a`).join(`\n`));
 				for (const block of script.blocks) {
 					if (block.defaults.name === step.block) {
+						if (block.element === undefined) {
+							throw Error(`Block '${block.defaults.name}' has no DOM element.`);
+						}
 						if (script.speed === `scan`) {
 							block.textPanel.innerHTML = newText;
 							step.next();
 						} else {
+							const continueFlag = step.continue === `yes`;
 							const element = document.createElement(`div`);
 							player.appendChild(element);
 							element.style.position = `absolute`;
@@ -575,35 +623,18 @@ const IWSY = (playerElement, scriptObject) => {
 							text.style[`text-align`] = block.textPanel.style[`text-align`];
 							text.style.color = block.textPanel.style.color;
 							text.innerHTML = newText;
+							const vfx = {};
+							vfx.step = step;
+							vfx.block = block;
+							vfx.element = element;
+							vfx.content = content;
+							vfx.newText = newText;
+							vfx.duration = step.duration * 1000;
+							vfx.continueFlag = continueFlag;
+							requestAnimationFrame(timestamp => {
+								animateCrossfade(timestamp, vfx);
+							});
                 
-							const animSteps = Math.round(step.duration * 25);
-							const continueFlag = step.continue === `yes`;
-							let animStep = 0;
-							const interval = setInterval(() => {
-								if (animStep < animSteps) {
-									const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-									block.element.style.opacity = 1.0 - ratio;
-									element.style.opacity = ratio;
-									animStep++;
-								} else {
-									clearIntervalTimer(interval);
-									block.textPanel.innerHTML = newText;
-									if (content.url) {
-										block.element.style.background = `url("${content.url}")`;
-									}
-									block.element.style[`background-size`] = `cover`;
-									block.element.style.opacity = 1.0 ;
-									removeElement(element);
-									if (!continueFlag) {
-										if (script.runMode === `manual`) {
-											enterManualMode(step);
-										} else {
-											step.next();
-										}
-									}
-								}
-							}, 40);
-							addIntervalTimer(interval);
 							if (continueFlag) {
 								step.next();
 							}
@@ -721,6 +752,37 @@ const IWSY = (playerElement, scriptObject) => {
 		block.current.fontSize = target.defaults.fontSize;
 	};
 
+	// Animate a transition
+	const animateTransition = (timestamp, vfx) => {
+		if (script.stop) {
+			return;
+		}
+		if (vfx.start === undefined) {
+			vfx.start = timestamp;
+		}
+		const elapsed = timestamp - vfx.start;
+		if (elapsed < vfx.duration) {
+			const ratio =  0.5 - Math.cos(Math.PI * elapsed / vfx.duration) / 2;
+			try {
+				doTransitionStep(vfx.block, vfx.target, ratio);
+				requestAnimationFrame(timestamp => {
+					animateTransition(timestamp, vfx);
+				});
+			} catch (err) {
+				console.log(err);
+			}
+		} else {
+			setFinalState(vfx.block,vfx.target);
+			if (!vfx.continueFlag) {
+				if (script.runMode === `manual`) {
+					enterManualMode(step);
+				} else {
+					vfx.step.next();
+				}
+			}
+		}
+	};
+
 	// Handle a transition
 	const transition = step => {
 		let block = null;
@@ -744,31 +806,16 @@ const IWSY = (playerElement, scriptObject) => {
 			setFinalState(block,target);
 			step.next();
 		} else {
-			const animSteps = Math.round(step.duration * 25);
-			let animStep = 0;
 			const continueFlag = step.continue === `yes`;
-			const interval = setInterval(() => {
-				if (animStep < animSteps) {
-					const ratio =  0.5 - Math.cos(Math.PI * animStep / animSteps) / 2;
-					try {
-						doTransitionStep(block, target, ratio);
-					} catch (err) {
-						clearIntervalTimer(interval);
-					}
-					animStep++;
-				} else {
-					clearIntervalTimer(interval);
-					setFinalState(block,target);
-					if (!continueFlag) {
-						if (script.runMode === `manual`) {
-							enterManualMode(step);
-						} else {
-							step.next();
-						}
-					}
-				}
-			}, 40);
-			addIntervalTimer(interval);
+			const vfx = {};
+			vfx.step = step;
+			vfx.block = block;
+			vfx.target = target;
+			vfx.duration = step.duration * 1000;
+			vfx.continueFlag = continueFlag;
+			requestAnimationFrame(timestamp => {
+				animateTransition(timestamp, vfx);
+			});
 			if (continueFlag) {
 				step.next();
 			}
@@ -1084,7 +1131,7 @@ const IWSY = (playerElement, scriptObject) => {
 						if (script.runMode == `auto` || script.speed === `scan`) {
 							setTimeout(() => {
 								if (script.stop) {
-									script.stop = false;
+									// script.stop = false;
 									restoreCursor();
 								} else {
 									doStep(nextStep);

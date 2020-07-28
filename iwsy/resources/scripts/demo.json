@@ -38,12 +38,6 @@
       "continue": false
     },
     {
-      "title": "pause 2 seconds",
-      "action": "pause",
-      "label": "",
-      "duration": 2
-    },
-    {
       "title": "set up title and subtitle",
       "action": "set content",
       "label": "",
