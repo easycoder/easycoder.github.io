@@ -292,7 +292,7 @@
       "title": "pause",
       "action": "pause",
       "label": "",
-      "duration": 5
+      "duration": 2
     },
     {
       "title": "hide the message",
@@ -477,7 +477,7 @@
     },
     {
       "name": "and so on",
-      "content": "%0a... and so on.%0a%0aNow we'll chain back to the intro screen"
+      "content": "%0a... and so on.%0a%0aNow we'll chain back to the intro screen."
     },
     {
       "name": "Manarola start",
