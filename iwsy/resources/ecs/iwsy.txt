@@ -49,6 +49,7 @@
     module FileManModule
     module HelpModule
     variable Mobile
+    variable Resources
     variable CDN
     variable LastSavedState
     variable Content
@@ -112,13 +113,16 @@
         clear IsHome
         go to Start
     end
-
-    if Domain is `iwannashowyou.com` set IsHome else clear IsHome
-    if IsHome put Protocol cat Domain into CDN
     
-!	If the debug flag is set use admin storage but continue with local CDN
+    if Domain is `iwannashowyou.com` set IsHome else clear IsHome
+
+!   Not static, so test if the 'dist' folder exists. If so, use it as the CDN
+    rest get Item from Protocol cat Domain cat `/rest.php/dist` or go to Start
+    put Protocol cat Domain into CDN
+    
+!	If the debug flag is set use admin storage but local CDN
     get Item from storage as `debug`
-    if Item is `true` clear IsHome
+    if Item is `true` set Static
 
 Start:
     iwsy init CDN
@@ -440,6 +444,7 @@ Start:
     	if FileManModule is not running
         begin
     		print `Load FileMan module`
+    		print CDN
         	rest get Script from CDN cat `/resources/ecs/fileman.txt?v=` cat now
             run Script with FileManPanel as FileManModule
         end
@@ -464,7 +469,6 @@ Start:
     put 0 into N
     gosub to SelectSection
     clear Running
-    print `Load IWSY`
     iwsy load Player Presentation
 
     create UserPanel in Controls
@@ -509,7 +513,7 @@ Start:
             put property `home` of UserRecord into UserHome
             put UserHome cat `/` cat property `id` of UserRecord into UserHome
             put UserHome into storage as `user.home`
-            iwsy path `/resources/users/` cat UserHome cat `/scripts/`
+!            iwsy path Resources cat `/users/` cat UserHome cat `/scripts/`
             put property `email` of UserRecord into UserEmail
             get UserPassword from storage as `user.password`
             set attribute `src` of User to CDN cat `/resources/icon/user-loggedin.png`
@@ -532,7 +536,7 @@ Start:
     put property `arg` of Args into Arg
     if Arg includes `.json`
     begin
-        rest get Presentation from Protocol cat Domain cat `/reaources/users/` cat Arg cat `?v=` cat now
+        rest get Presentation from Protocol cat Domain cat `/` cat Resources cat `/users/` cat Arg cat `?v=` cat now
 		gosub to NotifyModules
     	iwsy script Presentation
         set style `display` of Player to `block`
@@ -808,9 +812,8 @@ DoOpen:
 ! Fill the browser with content from the server
   	if Static go to OpenFromStorage
     if UserRecord go to OpenFromUser
-!  	if IsHome go to OpenFromStorage
+  	if IsHome go to OpenFromStorage
 
-OpenFromAdmin:
 	gosub to CheckAdminPassword
     if AdminPassword is empty stop
     rest get Files from `list/` cat AdminPassword cat `/scripts?v=` cat now
@@ -905,9 +908,8 @@ SelectFile:
     
     if Static go to SelectFromStorage
     if UserRecord go to SelectFromUser
-!    if IsHome go to SelectFromStorage
-
-SelectFromAdmin:
+    if IsHome go to SelectFromStorage
+    
     rest get Presentation from Protocol cat Domain cat `/resources/scripts/` cat File cat `?v=` cat now
     go to UseFile
 
@@ -1002,7 +1004,6 @@ DoRunStop:
         set Message to object
         set property `action` of Message to `running`
         send Message to StepsModule
-    	iwsy init CDN
 		iwsy run then
         begin
 			gosub to ClearStepsButtons
