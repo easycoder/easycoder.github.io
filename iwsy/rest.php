@@ -32,6 +32,14 @@
             switch ($action) {
         
                 case 'test':
+                    // To check for a static server (if this is not present an error willl be thrown)
+                    exit;
+                
+                case 'dist':
+                    // To test if the EasyCoder distribution is present
+                    if (!file_exists('dist')) {
+                        http_response_code(404);
+                    }
                     exit;
             
                 case 'list':
