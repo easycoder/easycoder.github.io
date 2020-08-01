@@ -116,12 +116,12 @@
     
     if Domain is `iwannashowyou.com` set IsHome else clear IsHome
 
-!   Not static, so test if the 'dist' folder exists. If so, use it as the CDN
-    rest get Item from Protocol cat Domain cat `/rest.php/dist` or go to Start
-    put Protocol cat Domain into CDN
+!	Not static, so see if the launcher has provided a CDN
+	get Item from storage as `.cdn`
+    if Item is not empty put Item into CDN
     
 !	If the debug flag is set use admin storage but local CDN
-    get Item from storage as `debug`
+    get Item from storage as `.debug`
     if Item is `true` set Static
 
 Start:
