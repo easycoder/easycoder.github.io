@@ -75,9 +75,7 @@
       "title": "position Manarola",
       "action": "animate",
       "label": "",
-      "blocks": [
-        "manarola photo"
-      ],
+      "block": "manarola photo",
       "continue": "no"
     },
     {
@@ -107,9 +105,7 @@
       "title": "animate Manarola",
       "action": "animate",
       "label": "",
-      "blocks": [
-        "manarola photo"
-      ],
+      "block": "manarola photo",
       "continue": "yes"
     },
     {
@@ -127,9 +123,7 @@
       "title": "position Apricale",
       "action": "animate",
       "label": "",
-      "blocks": [
-        "apricale photo"
-      ],
+      "block": "apricale photo",
       "continue": "no"
     },
     {
@@ -171,9 +165,7 @@
       "title": "animate Apricale",
       "action": "animate",
       "label": "",
-      "blocks": [
-        "apricale photo"
-      ],
+      "block": "apricale photo",
       "continue": "yes"
     },
     {
@@ -191,9 +183,7 @@
       "title": "position Noli",
       "action": "animate",
       "label": "",
-      "blocks": [
-        "noli photo"
-      ],
+      "block": "noli photo",
       "continue": "no"
     },
     {
@@ -234,9 +224,7 @@
       "title": "animate Noli",
       "action": "animate",
       "label": "",
-      "blocks": [
-        "noli photo"
-      ],
+      "block": "noli photo",
       "continue": "yes"
     },
     {
