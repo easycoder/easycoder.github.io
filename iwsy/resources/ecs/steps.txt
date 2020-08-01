@@ -343,6 +343,7 @@ SetupArrays:
     set the elements of DeleteStep to N
     set the elements of TitleInput to N
     set the elements of LabelInput to N
+    set the elements of BlockInput to N
     set the elements of DurationInput to N
     set the elements of URLInput to N
     set the elements of ChainSelect to N
