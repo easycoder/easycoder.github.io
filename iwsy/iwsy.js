@@ -508,17 +508,9 @@ const IWSY = (playerElement, scriptObject) => {
 	// Animate blocks
 	const animate = step => {
 		let continueFlag = true;
-		for (const name of step.blocks)
-		{
-			for (const block of script.blocks) {
-				if (block.defaults.name === name) {
-					for (const vfx of block.vfx) {
-						continueFlag = step.continue === `yes`;
-						startVFX(step, vfx);
-					}
-					break;
-				}
-			}
+		for (const vfx of step.block.vfx) {
+			continueFlag = step.continue === `yes`;
+			startVFX(step, vfx);
 		}
 		if (script.runMode === `manual`) {
 			enterManualMode(step);
