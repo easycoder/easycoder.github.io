@@ -62,7 +62,7 @@ Restart:
     create Title in Row
     set the style of Title to
     	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center;margin-bottom:0.5em`
-    set the content of Title to `Content Items`
+    set the content of Title to `VFX Items`
     create Cell in Row
     set the style of Cell to `width:1.4em;text-align:center`
     create Link in Cell
