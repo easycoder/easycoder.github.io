@@ -524,17 +524,31 @@ const IWSY = (playerElement, scriptObject) => {
 		}
 	};
 
-	// Run a pan-zoom
+	// Run a pan-zoom (for testing animations)
 	const panzoom = arg => {
 		player.innerText = ``;
 		const vfx = JSON.parse(arg);
 		vfx.container = player;
+		vfx.startsize = 100;
+		vfx.startxoff = 0;
+		vfx.startyoff = 0;
+		let url;
+		if (vfx.url[0] === `=`) {
+			const name = vfx.url.slice(1);
+			for (const vfx2 of script.vfx) {
+				if (name === vfx2.name) {
+					url = vfx2.url;
+					break;
+				}
+			}
+		} else {
+			url = vfx.url;
+		}
 		const image = new Image();
 		vfx.image = image;
-		image.src = spec.url;
-		// image.style.display = `none`;
+		image.src = url;
 		image.addEventListener(`load`, () => {
-			initImage(spec);
+			initImage(vfx);
 			requestAnimationFrame(timestamp => {
 				animatePanzoom(timestamp, vfx);
 			});
