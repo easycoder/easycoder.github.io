@@ -53,6 +53,7 @@ Start:
         end
     	if SectionSelector is `All`
         begin
+        	put empty into Section
     		put Presentation into Content
             go to SS2
         end
@@ -89,9 +90,8 @@ Start:
     set the text of SaveButton to `Save`
     on click SaveButton
     begin
-    print `Save`
     	if Section set property Section of Presentation to Script
-        print Script
+        else put Script into Presentation
     	put Script into LastSaved
         json format Presentation
     end
