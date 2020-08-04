@@ -2,8 +2,9 @@
 
 	script VFX
     
-    import div Panel and variable Presentation
+    import div Container and variable Presentation
     
+    div Panel
     div Editor
     div Title
     div Table
@@ -56,9 +57,11 @@ Restart:
 	put property `vfx` of Presentation into Items
     if Items is empty set Items to array
 
-	clear Panel
+	clear Container
+    create Panel in Container
+    set the style of Panel to `width:100%;height:100%;display:flex;flex-direction:column`
     create Row in Panel
-    set the style of Row to `display:flex`
+    set the style of Row to `height:2em;display:flex`
     create Title in Row
     set the style of Title to
     	`flex:1;font-size:110%;font-weight:bold;background:lightgray;text-align:center;margin-bottom:0.5em`
@@ -69,6 +72,7 @@ Restart:
     create AddItem in Link
     set the style of AddItem to `width:1em;margin-top:0.1em`
     set attribute `src` of AddItem to `/resources/icon/plus.png`
+    set attribute `title` of AddItem to `Add VFX item`
     on click AddItem
     begin
         set Item to object
@@ -98,7 +102,7 @@ Restart:
         set the elements of EndYOffsetInput to NumItems
     end
     create Table in Panel
-    set the style of Table to `width:100%`
+    set the style of Table to `flex:1;width:100%;overflow-y:scroll`
     put 0 into N
     while N is less than NumItems
     begin
@@ -114,7 +118,7 @@ Restart:
         create Cell in Row
         set the style of Cell to `width:100%;display:flex`
         create EditButton in Cell
-        set the style of EditButton to `flex:1`
+        set the style of EditButton to `height:2em;flex:1`
         set the text of EditButton to ItemName
         if N is 0
         begin
@@ -133,7 +137,7 @@ Restart:
         set the style of DeleteItem to `width:1em;margin:0.2em 0 0 0.2em`
         set attribute `src` of DeleteItem to `/resources/icon/stop.png`
         create Editor in Row
-        set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none`
+        set the style of Editor to `margin:0.5em;border:1px solid black;padding:0.2em;display:none;flex-direction:column`
     	add 1 to N
     end
     on click EditButton
@@ -169,7 +173,7 @@ Restart:
         index Editor to SelectedItem
 		if style `display` of Editor is `none`
         begin
-            set style `display` of Editor to `block`
+            set style `display` of Editor to `flex`
         	set style `background-color` of EditButton to `lightgray`
             put element SelectedItem of Items into Item
 ReloadEditor:
@@ -229,7 +233,6 @@ ReloadEditor:
                 create DurationInput in Row
                 set the style of DurationInput to `flex:1`
                 put property `duration` of Item into Value
-!                if Value is empty put 1 into Value
                 set the text of DurationInput to Value
                 
             	create Row in Editor
@@ -263,7 +266,7 @@ ReloadEditor:
                 set the text of EndYOffsetInput to Value
             end
             create Row in Editor
-            set the style of Row to `display:flex;margin-top:0.5em`
+            set the style of Row to `height:2em;display:flex;margin-top:0.5em`
             create SaveButton in Row
             set the style of SaveButton to `flex:1;margin-right:0.2em`
             set the text of SaveButton to `Save`
