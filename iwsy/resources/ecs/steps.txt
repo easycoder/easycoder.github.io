@@ -344,6 +344,7 @@ SetupArrays:
     set the elements of LabelInput to N
     set the elements of DurationInput to N
     set the elements of URLInput to N
+    set the elements of TargetInput to N
     set the elements of ChainSelect to N
     set the elements of DisplaySelect to N
     set the elements of ContinueSelect to N
@@ -742,6 +743,7 @@ EditGoto:
     set the style of TD to `width:6em`
     set the content of TD to `Target:`
     create TD in TR
+    index TargetInput to SelectedStep
     create TargetInput in TD
     set the style of TargetInput to `width:100%`
     set the content of TargetInput to property `target` of CurrentStep
@@ -1123,7 +1125,7 @@ SaveCurrentStep:
             set property `blocks` of CurrentStep to Blocks
         end
     	index DurationInput to SelectedStep
-    	set property `duration` of CurrentStep to the text of DurationInput
+    	set property `duration` of CurrentStep to DurationInput
         index ContinueSelect to SelectedStep
         set property `continue` of CurrentStep to ContinueSelect
     end
@@ -1136,7 +1138,7 @@ SaveCurrentStep:
             set property `blocks` of CurrentStep to Blocks
         end
     	index DurationInput to SelectedStep
-    	set property `duration` of CurrentStep to the text of DurationInput
+    	set property `duration` of CurrentStep to DurationInput
         index ContinueSelect to SelectedStep
         set property `continue` of CurrentStep to ContinueSelect
     end
@@ -1151,7 +1153,7 @@ SaveCurrentStep:
         set property `block` of CurrentStep to BlockSelect
         set property `target` of CurrentStep to TargetSelect
     	index DurationInput to SelectedStep
-    	set property `duration` of CurrentStep to the text of DurationInput
+    	set property `duration` of CurrentStep to DurationInput
         index ContinueSelect to SelectedStep
         set property `continue` of CurrentStep to ContinueSelect
     end
@@ -1160,19 +1162,19 @@ SaveCurrentStep:
     	set property `block` of CurrentStep to BlockSelect
         set property `target` of CurrentStep to TargetSelect
     	index DurationInput to SelectedStep
-    	set property `duration` of CurrentStep to the text of DurationInput
+    	set property `duration` of CurrentStep to DurationInput
         index ContinueSelect to SelectedStep
         set property `continue` of CurrentStep to ContinueSelect
     end
 	else if Action is `pause`
     begin
     	index DurationInput to SelectedStep
-    	set property `duration` of CurrentStep to the text of DurationInput
+    	set property `duration` of CurrentStep to DurationInput
     end
 	else if Action is `goto`
     begin
-    	put property `target` of CurrentStep into Target
-        if Target is empty set property `target` of CurrentStep to `******`
+    	index TargetInput to SelectedStep
+    	set property `target` of CurrentStep to TargetInput
     end
 	else if Action is `load`
     begin
