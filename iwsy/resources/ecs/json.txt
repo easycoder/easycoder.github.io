@@ -49,6 +49,7 @@ Start:
             if confirm `Content has changed. Do you want to save it?`
             begin
                 if Section set property Section of Presentation to Script
+                else put Script into Presentation
             end
         end
     	if SectionSelector is `All`
