@@ -326,7 +326,7 @@ const IWSY = (playerElement, scriptObject) => {
 			}
 			if (!vfx.continueFlag) {
 				if (script.runMode === `manual`) {
-					enterManualMode(step);
+					enterManualMode(vfx.step);
 				} else {
 					vfx.step.next();
 				}
@@ -360,6 +360,7 @@ const IWSY = (playerElement, scriptObject) => {
 					block.element.style.display = `none`;
 				}
 			}
+			step.next();
 		} else {
 			for (const block of stepBlocks)
 			{
@@ -494,9 +495,17 @@ const IWSY = (playerElement, scriptObject) => {
 					}
 				};
 				delete(vfx.start);
-				requestAnimationFrame(timestamp => {
-					animatePanzoom(timestamp, vfx);
-				});
+				if (script.speed === `scan`) {
+					vfx.image.style.width = `${vfx.w2}px`;
+					vfx.image.style.height = `${vfx.h2}px`;
+					vfx.image.style.left = `${vfx.xoff2}px`;
+					vfx.image.style.top = `${vfx.yoff2}px`;
+					step.next();
+				} else {
+					requestAnimationFrame(timestamp => {
+						animatePanzoom(timestamp, vfx);
+					});
+				}
 				break;
 			}
 		} 
@@ -505,7 +514,7 @@ const IWSY = (playerElement, scriptObject) => {
 		}
 	};
 
-	// Animate blocks
+	// Animate a block
 	const animate = step => {
 		let continueFlag = true;
 		for (const block of script.blocks) {
