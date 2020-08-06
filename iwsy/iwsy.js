@@ -149,6 +149,8 @@ const IWSY = (playerElement, scriptObject) => {
 
 	// Set the content of one or more blocks
 	const setcontent = step => {
+		const imagesToLoad = [];
+		const imagesLoading = [];
 		let continueFlag = true;
 		for (const item of step.blocks)
 		{
@@ -165,7 +167,6 @@ const IWSY = (playerElement, scriptObject) => {
 							const converted = converter.makeHtml(text.content.split(`%0a`).join(`\n`));
 							const tag = converted.match(/data-slide="([\w-_.]*)"/);
 							if (tag) {
-								const imagesLoading = [];
 								for (const vfx of script.vfx) {
 									if (vfx.name === tag[1]) {
 										vfx.container = block.textPanel;
@@ -192,25 +193,12 @@ const IWSY = (playerElement, scriptObject) => {
 													break;
 												}
 											} else {
+												vfx.block = block;
 												block.vfx.push(vfx);
 												continueFlag = false;
 												block.textPanel.innerHTML = converted;
-												const image = new Image();
-												vfx.image = image;
-												image.id = vfx.name;
-												image.src = vfx.url;
-												image.addEventListener(`load`, () => {
-													initImage(vfx);
-													const index = imagesLoading.indexOf(image);
-													if (index > -1) {
-														imagesLoading.splice(index, 1);
-													}
-													if (imagesLoading.length === 0) {
-														step.next();
-													}
-												});
-												imagesLoading.push(image);
-												block.textPanel.appendChild(image);
+												imagesToLoad.push(vfx);
+												imagesLoading.push(vfx);
 											}
 											break;
 										}
@@ -227,6 +215,26 @@ const IWSY = (playerElement, scriptObject) => {
 					break;
 				}
 			}
+		}
+		for (const vfx of imagesToLoad) {
+			const image = new Image();
+			vfx.image = image;
+			image.vfx = vfx;
+			image.id = vfx.name;
+			image.src = vfx.url;
+			image.addEventListener(`load`, (event) => {
+				const image = event.target;
+				const vfx = image.vfx;
+				initImage(vfx);
+				const index = imagesLoading.indexOf(vfx);
+				if (index > -1) {
+					imagesLoading.splice(index, 1);
+				}
+				if (imagesLoading.length === 0) {
+					step.next();
+				}
+			});
+			vfx.block.textPanel.appendChild(image);
 		}
 		if (continueFlag) {
 			step.next();
@@ -468,9 +476,13 @@ const IWSY = (playerElement, scriptObject) => {
 			image.style.height = `${vfx.h2}px`;
 			image.style.left = `${vfx.xoff2}px`;
 			image.style.top = `${vfx.yoff2}px`;
-			if (vfx.then) {
-				vfx.then();
-			}
+			// if (!vfx.continueFlag) {
+			// 	if (script.runMode === `manual`) {
+			// 		enterManualMode(vfx.step);
+			// 	} else {
+			// 		vfx.step.next();
+			// 	}
+			// }
 		}
 	};
 
@@ -485,15 +497,6 @@ const IWSY = (playerElement, scriptObject) => {
 					step.vfx = [];
 				}
 				step.vfx.push(item);
-				vfx.then = () => {
-					const index = step.vfx.indexOf(item);
-					if (index > -1) {
-						step.vfx.splice(index, 1);
-					}
-					if (step.vfx.length === 0 && step.continue !== `yes`) {
-						step.next();
-					}
-				};
 				delete(vfx.start);
 				if (script.speed === `scan`) {
 					vfx.image.style.width = `${vfx.w2}px`;
@@ -502,6 +505,7 @@ const IWSY = (playerElement, scriptObject) => {
 					vfx.image.style.top = `${vfx.yoff2}px`;
 					step.next();
 				} else {
+					vfx.step = step;
 					requestAnimationFrame(timestamp => {
 						animatePanzoom(timestamp, vfx);
 					});
@@ -516,21 +520,24 @@ const IWSY = (playerElement, scriptObject) => {
 
 	// Animate a block
 	const animate = step => {
-		let continueFlag = true;
+		// let continueFlag = true;
 		for (const block of script.blocks) {
 			if (block.defaults.name === step.block) {
 				for (const vfx of block.vfx) {
-					continueFlag = step.continue === `yes`;
+					// continueFlag = step.continue === `yes`;
 					startVFX(step, vfx);
 				}
 				break;
 			}
 		}
-		if (script.runMode === `manual`) {
-			enterManualMode(step);
-		} else if (continueFlag) {
-			step.next();
-		}
+		// if (script.runMode === `manual`) {
+		// 	enterManualMode(step);
+		// } else if (continueFlag) {
+		// 	step.next();
+		// }
+		
+		// An animation is not a transition, so move on immediately
+		step.next();
 	};
 
 	// Run a pan-zoom (for testing animations)
@@ -1139,8 +1146,8 @@ const IWSY = (playerElement, scriptObject) => {
 				script.labels[step.label] = index;
 			}
 			if (index < script.steps.length - 1) {
-				const nextStep = script.steps[step.index + 1];
 				step.next = () => {
+					const nextStep = script.steps[step.index + 1];
 					if (script.scanFinished) {
 						script.scanFinished = false;
 					} else {
@@ -1355,7 +1362,7 @@ const IWSY = (playerElement, scriptObject) => {
 	const run = (mode, startMode, then) => {
 		try {
 			player.innerHTML = ``;
-			homeScript = JSON.parse(JSON.stringify(script));
+			// homeScript = JSON.parse(JSON.stringify(script));
 			afterRun = then;
 			initScript();
 			if (mode === `fullscreen`) {
