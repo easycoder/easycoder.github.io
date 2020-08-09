@@ -244,10 +244,10 @@ const IWSY = (playerElement, scriptObject) => {
 	// Set the visibility of a block
 	const setVisibility = (block, showHide) => {
 		if (showHide) {
-			// block.element.style.opacity = `1.0`;
+			block.element.style.opacity = `1.0`;
 			block.element.style.display = `block`;
 		} else {
-			// block.element.style.opacity = `0.0`;
+			block.element.style.opacity = `0.0`;
 			block.element.style.display = `none`;
 		}
 	};
@@ -535,7 +535,7 @@ const IWSY = (playerElement, scriptObject) => {
 		// } else if (continueFlag) {
 		// 	step.next();
 		// }
-		
+
 		// An animation is not a transition, so move on immediately
 		step.next();
 	};
@@ -934,10 +934,10 @@ const IWSY = (playerElement, scriptObject) => {
 
 	// Go to a specified label
 	const goto = step => {
-		const target = script.labels[step.target];
-		if (typeof target !== `undefined`) {
-			script.scanTarget = target;
-			scan();
+		const index = script.labels[step.target];
+		if (typeof index !== `undefined`) {
+			nextStep = script.steps[index];
+			doStep(nextStep);
 		} else {
 			throw Error(`Unknown label '${step.target}`);
 		}
