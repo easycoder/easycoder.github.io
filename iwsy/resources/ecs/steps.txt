@@ -2,8 +2,9 @@
 
 	script Steps
     
-    import div Panel and variable Presentation
+    import div Container and variable Presentation
     
+    div Panel
     div StepsPanel
     div BlockTable
     div BlockRow
@@ -98,6 +99,9 @@
     get IsHome from storage as `.ishome`
     get CDN from storage as `.cdn`
 
+	clear Container
+    create Panel in Container
+    set the style of Panel to `width:100%;height:100%;display:flex;flex-direction:column`
     create StepsPanel in Panel
 	set the style of StepsPanel to `flex:1;overflow-y:scroll`
     
