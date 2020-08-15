@@ -167,40 +167,40 @@ const IWSY = (playerElement, scriptObject) => {
 							const converted = converter.makeHtml(text.content.split(`%0a`).join(`\n`));
 							const tag = converted.match(/data-slide="([\w-_.]*)"/);
 							if (tag) {
-								for (const vfx of script.vfx) {
-									if (vfx.name === tag[1]) {
-										vfx.container = block.textPanel;
-										if (vfx.url) {
-											if (vfx.url[0] === `=`) {
-												const lastVFX = vfx.url.slice(1);
-												for (const index in block.vfx) {
-													const vfx2 = block.vfx[index];
-													if (vfx2.name === lastVFX) {
-														vfx.image = vfx2.image;
-														initImage(vfx);
-														vfx.startsize = vfx2.endsize;
-														vfx.startxoff = vfx2.endxoff;
-														vfx.startyoff = vfx2.endyoff;
-														vfx.w = vfx2.w2;
-														vfx.h = vfx2.h2;
-														vfx.xoff = vfx2.xoff2;
-														vfx.yoff = vfx2.yoff2;
-														if (!vfx.image) {
-															throw new Error(`Unknown vfx ${lastVFX}`);
-														}
-														block.vfx[index] = vfx;
-													}
+								for (const sVFX of script.vfx) {
+									if (sVFX.name === tag[1]) {
+										const vfx = {
+											block,
+											container: block.textPanel,
+											name: sVFX.name,
+											type: sVFX.type,
+											aspect: sVFX.aspect,
+											url: sVFX.url,
+											duration: sVFX.duration,
+											startsize: 100,
+											startxoff: 0,
+											startyoff: 0,
+											endsize: sVFX.endsize,
+											endxoff: sVFX.endxoff,
+											endyoff: sVFX.endyoff
+										};
+										block.vfx.push(vfx);
+										continueFlag = false;
+										block.textPanel.innerHTML = converted;
+										imagesToLoad.push(vfx);
+										imagesLoading.push(vfx);
+										
+										if (vfx.url[0] === `=`) {
+											const lastVFX = vfx.url.slice(1);
+											for (pVFX of script.vfx) {
+												if (pVFX.name === lastVFX) {
+													vfx.url = pVFX.url;
+													vfx.startsize = pVFX.endsize;
+													vfx.startxoff = pVFX.endxoff;
+													vfx.startyoff = pVFX.endyoff;
 													break;
 												}
-											} else {
-												vfx.block = block;
-												block.vfx.push(vfx);
-												continueFlag = false;
-												block.textPanel.innerHTML = converted;
-												imagesToLoad.push(vfx);
-												imagesLoading.push(vfx);
 											}
-											break;
 										}
 										break;
 									}
@@ -464,6 +464,7 @@ const IWSY = (playerElement, scriptObject) => {
 		const duration = vfx.duration * 1000;
 		if (elapsed < duration) {
 			const ratio =  0.5 - Math.cos(Math.PI * elapsed / duration) / 2;
+			// console.log(ratio);
 			image.style.width = `${vfx.w + (vfx.w2 - vfx.w) * ratio}px`;
 			image.style.height = `${vfx.h + (vfx.h2 - vfx.h) * ratio}px`;
 			image.style.left = `${vfx.xoff + (vfx.xoff2 - vfx.xoff) * ratio}px`;
@@ -476,66 +477,51 @@ const IWSY = (playerElement, scriptObject) => {
 			image.style.height = `${vfx.h2}px`;
 			image.style.left = `${vfx.xoff2}px`;
 			image.style.top = `${vfx.yoff2}px`;
-			// if (!vfx.continueFlag) {
-			// 	if (script.runMode === `manual`) {
-			// 		enterManualMode(vfx.step);
-			// 	} else {
-			// 		vfx.step.next();
-			// 	}
-			// }
-		}
-	};
-
-	// This is where the vfx animations are started
-	const startVFX = (step, vfx) => {
-		const vfxElement = vfx.container;
-		vfxElement.style.position = `relative`;
-		vfxElement.style.display = `inline-block`;
-		for (const item of script.vfx) {
-			if (item.name === vfx.name) {
-				if (!Array.isArray(step.vfx)) {
-					step.vfx = [];
-				}
-				step.vfx.push(item);
-				delete(vfx.start);
-				if (script.speed === `scan`) {
-					vfx.image.style.width = `${vfx.w2}px`;
-					vfx.image.style.height = `${vfx.h2}px`;
-					vfx.image.style.left = `${vfx.xoff2}px`;
-					vfx.image.style.top = `${vfx.yoff2}px`;
-					step.next();
-				} else {
-					vfx.step = step;
-					requestAnimationFrame(timestamp => {
-						animatePanzoom(timestamp, vfx);
-					});
-				}
-				break;
+			// Remove the vfx now we've done with it
+			const index = vfx.block.vfx.indexOf(vfx);
+			if (index > -1) {
+				vfx.block.vfx.splice(index, 1);
 			}
-		} 
-		if (step.vfx.length === 0) {
-			step.next();
 		}
 	};
 
 	// Animate a block
 	const animate = step => {
-		// let continueFlag = true;
 		for (const block of script.blocks) {
 			if (block.defaults.name === step.block) {
 				for (const vfx of block.vfx) {
-					// continueFlag = step.continue === `yes`;
-					startVFX(step, vfx);
+					console.log(`   VFX ${vfx.name}`);
+					const vfxElement = vfx.container;
+					vfxElement.style.position = `relative`;
+					vfxElement.style.display = `inline-block`;
+					for (const item of script.vfx) {
+						if (item.name === vfx.name) {
+							if (!Array.isArray(step.vfx)) {
+								step.vfx = [];
+							}
+							step.vfx.push(item);
+							delete(vfx.start);
+							if (script.speed === `scan`) {
+								vfx.image.style.width = `${vfx.w2}px`;
+								vfx.image.style.height = `${vfx.h2}px`;
+								vfx.image.style.left = `${vfx.xoff2}px`;
+								vfx.image.style.top = `${vfx.yoff2}px`;
+							} else {
+								vfx.step = step;
+								requestAnimationFrame(timestamp => {
+									animatePanzoom(timestamp, vfx);
+								});
+							}
+							break;
+						}
+					} 
+					if (step.vfx.length === 0) {
+						step.next();
+					}
 				}
 				break;
 			}
 		}
-		// if (script.runMode === `manual`) {
-		// 	enterManualMode(step);
-		// } else if (continueFlag) {
-		// 	step.next();
-		// }
-
 		// An animation is not a transition, so move on immediately
 		step.next();
 	};
@@ -554,6 +540,9 @@ const IWSY = (playerElement, scriptObject) => {
 			for (const vfx2 of script.vfx) {
 				if (name === vfx2.name) {
 					url = vfx2.url;
+					vfx.startsize = vfx2.endsize;
+					vfx.startxoff = vfx2.endxoff;
+					vfx.startyoff = vfx2.endyoff;
 					break;
 				}
 			}
