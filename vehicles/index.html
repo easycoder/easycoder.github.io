@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <body>
+
+    <pre id="easycoder-rest" style="display:none">/vehicles/rest.php</pre>
+    <pre id="easycoder-script" style="display:none">
+
+      script Launcher
+      variable Script
+      require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/showdown.js?v=200413`
+      rest get Script from `/resources/ecs/vehicles.txt?v=` cat now
+      run Script
+
+    </pre>
+
+    <script src="https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io@dev/dist/easycoder.js?v=2.6.2"></script>
+    <!--script src="dist/easycoder.js"></script-->
+
+  </body>
+</html>

@@ -1,0 +1,15 @@
+## Bodywork
+
+When you enter this section you'll see a sketch of a vehicle, flattened out so you can see all aspects (except for underneath). Scroll the screen up as far as it will go:
+~img:bodywork2.jpg:center 50%~
+Below the graphic is a row of items; first a text box where you type the nature of the damage, then a 3-level (yellow/orange/red) severity indicator, then a pointing finger and finally a green plus sign.
+
+Imagine we have discovered a scratch on the left-hand front corner, just in front of the wheel. Type something appropriate in the box, such as `Deep` `scratch`, choose the level of severity - in this case probably orange - and tap the finger icon, which will turn into a red cross. Make sure the front corner of the vehicle is visible (you may need to drag the screen down) then tap where the damage is. An orange circle with a blue outline will appear:
+~img:bodywork3.jpg:center 50%~
+If the circle has not appeared in the right place, tap the red cross to remove it. The cross turns back into a pointing finger so you can repeat the placement operation. Once you are satisfied everything is good, tap the green cross and the item will be added at the bottom of the screen:
+~img:bodywork4.jpg:center 50%~
+You can add as many items as you like. The web app will remember them for the next time you use it. Let's add a couple more; one minor and the other major (requiring attention).
+~img:bodywork5.jpg:center 50%~
+Note that each item is numbered in the list and on the diagram. You can reorder items by tapping the green arrows and you can delete any item by tapping the red cross at the end of its row.
+
+~tid:Contents:Contents~

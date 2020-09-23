@@ -1,0 +1,17 @@
+## Customising the check list
+
+This app provides a list of checks to be performed. The list comes preloaded with the items most likely to be needed but these can be customised if you wish. Click the gear icon to return to the Settings. This is what the first section looks like:
+
+~img:customising.jpg:center 50%~
+
+This section contains 5 items. If you prefer them to be in a different order to that shown, any one of them can be moved up one row by tapping the green arrow. If you don't want an item at all you can delete it by tapping the red cross.
+
+To add a new item, type its name into the box and tap the green plus sign.
+
+If you scroll the page up, at the bottom is a box in which you type the email address to send completed tests.
+
+After all your changes are complete, tap Save then Close. If you want to abandon your changes, tap Close without first tapping Save.
+
+~tid:SelectVehicle:Next: Selecting a vehicle~
+
+~tid:Contents:Contents~
