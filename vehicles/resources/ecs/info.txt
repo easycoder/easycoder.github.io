@@ -1,0 +1,776 @@
+!   Info main script
+
+    script Info
+    
+    div Body
+    div Container
+    div Content
+    div TitleDiv
+    div ButtonBar
+    div TopicText
+    div ImageDiv
+    img TopImage
+    img MidImage
+    img BottomImage
+    img HomeButton
+    img BackButton
+    img ForwardButton
+    img CloseButton
+    img Image
+    a Link
+    select Select
+    option Option
+    callback DecoratorCallback
+    variable Mobile
+    variable CDN
+    variable Stories
+    variable Themes
+    variable Theme
+    variable Layout
+    variable BorderL
+    variable BorderT
+    variable BorderR
+    variable BorderB
+    variable BorderLeft
+    variable BorderTop
+    variable BorderRight
+    variable BorderBottom
+    variable AspectW
+    variable AspectH
+    variable SID
+    variable TID
+    variable CurrentSID
+    variable CurrentTID
+    variable Record
+    variable C
+    variable N
+    variable M
+    variable P
+    variable Margin
+    variable WindowWidth
+    variable WindowHeight
+    variable Width
+    variable Height
+    variable ButtonSize
+    variable Title
+    variable Payload
+    variable Function
+    variable Data
+    variable Display
+    variable Attributes
+    variable Source
+    variable Class
+    variable Classes
+    variable Options
+    variable List
+    variable LinkCount
+    variable SelectCount
+    variable ImageCount
+    variable Value
+    variable DataID
+    variable Prefix
+    variable Topic
+    variable Item
+    variable Stack
+    variable StackPointer
+    variable FontScale
+    variable FontSize
+    
+    put `https://cdn.jsdelivr.net/gh/easycoder/storyteller` into CDN
+    on message go to Start
+    set ready
+    stop
+
+Start:
+	history push
+    on close
+    begin
+      remove element Body
+      exit
+    end
+    
+    clear Mobile
+    if mobile
+    begin
+    	if portrait set Mobile
+    end
+    
+    put `/info/` into Stories
+    
+    gosub to GetStyles
+    
+    create Body in body
+    if Mobile
+    begin
+    	create Container in Body
+        set style `margin` of Container to `0.5em`
+    end
+    else
+    begin
+    	set the style of Body to `overflow:hidden;width:98%;height:100%`
+    	create Container in Body
+        set the style of Container to `position:relative;height:100%;padding-right:0.5em`
+	    create MidImage in Container
+	    create TopImage in Container
+	    create BottomImage in Container
+    	on window resize gosub to SetStyles
+    end
+    
+    create Content in Container
+    set style `position` of Content to `absolute`
+    if Mobile
+    begin
+        create ButtonBar in Content
+        create TitleDiv in Content
+    end
+    else
+    begin
+        create TitleDiv in Content
+        create ButtonBar in Content
+    end
+    create TopicText in Content
+
+    rest get Title from Stories cat `title.txt?v=` cat now
+    set the title to Title
+    put `home` into SID
+    put `content` into TID
+
+    gosub to SetupTheme
+    gosub to CreateButtons
+    gosub to SetStyles
+    
+	load showdown
+  	on DecoratorCallback go to Decorate
+    
+    put 0 into StackPointer
+
+!	View a record, given its Subject and Topic ids.
+ViewRecord:
+	if not Mobile scroll TopicText to 0
+    rest get Record from Stories cat SID cat `/content.txt?v=` cat now
+    or begin
+    	put `home` into SID
+        put `content` into TID
+        continue
+    end
+
+! 	Add this topic to the stack
+    put SID cat `/` cat TID into Stack
+    if StackPointer is greater than 0 set style `display` of BackButton to `inline-block`
+
+!	Get the content
+    set the style of TitleDiv to `text-align:center;font-size:1.6em;font-weight:bold`
+    if Mobile set style `margin-top` of TitleDiv to `0.5em`
+    rest get Title from Stories cat SID cat `/title.txt?v=` cat now
+    if Title is empty
+    	put SID into Title
+        continue
+    end
+    set the content of TitleDiv to Title
+
+    rest get Topic from Stories cat SID cat `/` cat TID cat `.txt?v=` cat now
+    or begin
+    	put `content` into TID
+        rest get Topic from Stories cat SID cat `/` cat TID cat `.txt?v=` cat now
+        continue
+    end
+    
+!	Remember where we are
+    put SID into storage as `id`
+    put TID into storage as `tid`
+    put SID into CurrentSID
+    put TID into CurrentTID
+
+    if Mobile set the style of TopicText to `padding:0.5em`
+    else set the style of TopicText to 
+    	`width:100%;height:calc(100% - 6em);background:none;overflow-y: auto`
+            cat `;padding-right:1em`
+
+!	Handle the links created by the showdown extension
+    put 0 into LinkCount
+    put 0 into ImageCount
+    put 0 into SelectCount
+    set the content of TopicText to showdown decode Topic with DecoratorCallback
+
+!	Process links
+    set the elements of Link to LinkCount
+    put 0 into N
+    while N is less than LinkCount
+    begin
+        index Link to N
+        attach Link to `ec-link-` cat N
+        add 1 to N
+    end
+    on click Link
+    begin
+        put attribute `data-id` of Link into DataID
+        if DataID is `theme`
+        begin
+        	rest get Themes from `https://cdn.jsdelivr.net/gh/easycoder/storyteller`
+                cat `/themes/themes.txt?v=` cat now
+            json split Themes on newline into Themes
+            put `Here are the available themes:` cat newline into Item
+            put 0 into N
+            while N is less than the json count of Themes
+            begin
+            	if N is not 0 put Item cat `, ` into Item
+            	put Item cat element N of Themes into Item
+            	add 1 to N
+            end
+            put Item cat newline cat newline cat `You are currently using the '` cat Theme cat `' theme.` into Item
+            put Item cat newline cat `Please type the name of the theme you want to use:` into Item
+            put prompt Item into Item
+            if Item is not empty
+            begin
+            	put Item into Theme
+                put Theme into storage as `theme`
+                gosub to SetupTheme
+            end
+        end
+        else
+        begin
+          	put the position of `-` in DataID into N
+            if N is greater than 0
+            begin
+              put left N of DataID into Prefix
+              if Prefix is `S`
+              begin
+                  put from 2 of DataID into SID
+                  put `content` into TID
+                  go to ViewAnotherRecord
+              end
+              else if Prefix is `T`
+              begin
+                  put from 2 of DataID into TID
+                  go to ViewAnotherRecord
+              end
+              else if Prefix is `ST`
+              begin
+                  put from 3 of DataID into TID
+                  put the position of `/` in TID into N
+                  if N is greater than 0
+                  begin
+                      put left N of TID into SID
+                      add 1 to N
+                      put from N of TID into TID
+                      go to ViewAnotherRecord
+                  end
+              end
+          end
+      	end
+    end
+
+!	Process images
+    set the elements of ImageDiv to ImageCount
+    set the elements of Image to ImageCount
+    put 0 into N
+    while N is less than ImageCount
+    begin
+        index ImageDiv to N
+        index Image to N
+        attach ImageDiv to `ec-imagediv-` cat N
+        attach Image to `ec-image-` cat N
+        add 1 to N
+    end
+
+!	Process selectors
+    set the elements of Select to SelectCount
+    put 0 into N
+    while N is less than SelectCount
+    begin
+    	index Select to N
+    	attach Select to `ec-select-` cat N
+        put attribute `data-options` of Select into Options
+		json split Options on `|` into List
+        put 0 into M
+        while M is less than the json count of List
+        begin
+            create Option in Select
+        	put element M of List into Value
+            put Value into Display
+            put the position of `:` in Value into P
+            if P is not -1
+            begin
+            	put left P of Value into Value
+                add 1 to P
+                put from P of Display into Display
+            end
+            set attribute `data-st` of Option to left 2 of Value
+            put from 2 of Value into Value
+            put Display into Attributes
+            put the position of `!` in Display into P
+            if P is -1 put empty into Attributes
+            else
+            begin
+            	put left P of Display into Display
+                add 1 to P
+                put from P of Attributes into Attributes
+            end
+            set the content of Option to Display
+            if Attributes is not empty set the attributes of Option to Attributes
+            set attribute `value` of Option to Value
+        	add 1 to M
+        end
+    	add 1 to N
+    end
+    on change Select
+    begin
+        get Option from Select
+        put attribute `data-st` of Option into Function
+        put attribute `value` of Option into Value
+        if Function is `S-`
+        begin
+	        put Value into SID
+	        put `content` into TID
+	        go to ViewAnotherRecord
+        end
+        else if Function is `T-`
+        begin
+	        put Value into TID
+	        go to ViewAnotherRecord
+        end
+        else if Function is `ST-`
+        begin
+	        put Value into TID
+            put the position of `/` in TID into N
+            if N is greater than 0
+            begin
+	            put left N of TID into SID
+	            add 1 to N
+	            put from N of TID into TID
+		        go to ViewAnotherRecord
+            end
+        end
+    end
+    scroll to 0
+ 	stop
+
+!	Set up the theme
+SetupTheme:
+	get Theme from storage as `theme`
+    if Theme is empty rest get Theme from Stories cat `theme.txt`
+    if left 1 of Theme is `/` put from 1 of Theme into Theme
+    rest get Layout from CDN cat `/themes/` cat Theme cat `/theme.json?v=` cat now
+    or begin
+    	put empty into storage as `theme`
+    	rest get Theme from Stories cat  `theme.txt`
+        if left 1 of Theme is `/` put from 1 of Theme into Theme
+    	rest get Layout from CDN cat `/themes/` cat Theme cat `/theme.json?v=` cat now
+    end
+    put property `aspect-w` of Layout into AspectW
+    put property `aspect-h` of Layout into AspectH
+    put property `border-l` of Layout into BorderL
+    put property `border-r` of Layout into BorderR
+    put property `border-t` of Layout into BorderT
+    put property `border-b` of Layout into BorderB
+    put property `font-scale` of Layout into FontScale
+    if not Mobile
+    begin
+	    set attribute `src` of MidImage to CDN cat `/themes/` cat Theme cat `/mid.jpg`
+	    set attribute `src` of TopImage to CDN cat `/themes/` cat Theme cat `/top.jpg`
+	    set attribute `src` of BottomImage to CDN cat `/themes/` cat Theme cat `/bottom.jpg`
+    end
+	return
+
+!	Create the buttons at the top of the panel
+CreateButtons:
+    set style `position` of ButtonBar to `relative`
+    if Mobile
+    begin
+    	set style `padding` of ButtonBar to `0.25em`
+        set style `background` of ButtonBar to `#eee`
+    end
+    else
+    begin
+    	set style `margin` of ButtonBar to `0 1em 0.5em 1em`
+    end
+	create HomeButton in ButtonBar
+    set attribute `src` of HomeButton to `resources/icons/home.png`
+    on click HomeButton
+    begin
+        put `home` into SID
+        put `content` into TID
+        go to ViewAnotherRecord
+    end
+
+	create BackButton in ButtonBar
+    set style `display` of BackButton to `none`
+    set attribute `src` of BackButton to `resources/icons/arrow-back.png`
+    on click BackButton
+    begin
+        put the elements of Stack into N
+        take 1 from N
+        take 1 from StackPointer
+        index Stack to StackPointer
+        put the position of `/` in Stack into N
+        if N is -1 stop
+        put left N of Stack into SID
+        add 1 to N
+        put from N of Stack into TID
+        if StackPointer is 0 set style `display` of BackButton to `none`
+        set style `display` of ForwardButton to `inline-block`
+        go to ViewRecord
+    end
+
+	create ForwardButton in ButtonBar
+    set style `display` of ForwardButton to `none`
+    set attribute `src` of ForwardButton to `resources/icons/arrow-forward.png`
+    on click ForwardButton
+    begin
+        put the elements of Stack into N
+        take 1 from N
+        if N is StackPointer stop
+        add 1 to StackPointer
+        if StackPointer is N set style `display` of ForwardButton to `none`
+        set style `display` of BackButton to `inline-block`
+        index Stack to StackPointer
+        put the position of `/` in Stack into N
+        if N is -1 stop
+        put left N of Stack into SID
+        add 1 to N
+        put from N of Stack into TID
+        go to ViewRecord
+    end
+
+	create CloseButton in ButtonBar
+    set attribute `src` of CloseButton to `resources/icons/cross.png`
+    on click CloseButton history pop
+	return
+
+!	View another record, given the Subject and Topic ids
+ViewAnotherRecord:
+	if SID is not CurrentSID go to VAR2
+    if TID is not CurrentTID go to VAR2
+    stop
+VAR2:
+    add 1 to StackPointer
+    add 1 to StackPointer giving N
+    set the elements of Stack to N
+    index Stack to StackPointer
+    set style `display` of ForwardButton to `none`
+    go to ViewRecord 
+
+!	Responsive design: Compute the size and position of all the screen elements
+SetStyles:
+    put the width of window into WindowWidth
+    put the height of window into WindowHeight
+    
+!	Choose an optimum width based on the window height
+	put WindowHeight into Height
+	multiply Height by AspectW giving Width
+    divide Width by AspectH
+
+!	Make sure the window is wide enough
+    take Width from WindowWidth giving Margin
+    divide Margin by 2
+    if Margin is less than 0
+    begin
+    	put 0 into Margin
+        put WindowWidth into Width
+    end
+    
+!	Style the Container
+    set style `left` of Container to Margin cat `px`
+    set style `top` of Container to 0
+	set style `width` of Container to Width cat `px`
+    set style `height` of Container to Height cat `px`
+    
+!	Style the background images
+	if not Mobile
+	begin
+	    set the style of MidImage to `position:absolute;left:0;top:0;width:` cat Width
+	    	cat `px;height:` cat `calc(` cat Height cat `px - 2vh)`
+	    set the style of TopImage to `position:absolute;left:0;top:0;width:` cat Width cat `px`
+	    set the style of BottomImage to `position:absolute;left:0;bottom:2vh;width:` cat Width cat `px`
+    end
+
+!	Calculate the borders
+	if Mobile
+    begin
+    	put 0 into BorderLeft
+    	put 0 into BorderRight
+    	put 0 into BorderTop
+    	put 0 into BorderBottom
+    end
+    else
+    begin
+	    multiply Width by BorderL giving BorderLeft
+	    multiply Width by BorderR giving BorderRight
+	    divide BorderLeft by 100
+	    divide BorderRight by 100
+	    take BorderLeft from Width
+	    take BorderRight from Width
+
+	    multiply Height by BorderT giving BorderTop
+	    multiply Height by BorderB giving BorderBottom
+	    divide BorderTop by 100
+	    divide BorderBottom by 100
+		take BorderTop from Height
+	    take BorderBottom from Height
+    end
+
+    divide Width by 20 giving ButtonSize
+    
+!	Style the buttons
+    if Mobile multiply ButtonSize by 2
+    set style `position` of HomeButton to `absolute`
+    set style `left` of HomeButton to `0.25em`
+    set style `top` of HomeButton to `0.25em`
+    set style `width` of HomeButton to ButtonSize cat `px`
+    set style `height` of HomeButton to ButtonSize cat `px`
+
+    set style `height` of ButtonBar to ButtonSize cat `px`
+
+	multiply ButtonSize by 3 giving M
+    divide M by 2
+    put M into N
+    set style `position` of BackButton to `absolute`
+    set style `left` of BackButton to `calc(` cat N cat `px + 0.25em)`
+    set style `top` of BackButton to `0.25em`
+    set style `width` of BackButton to ButtonSize cat `px`
+    set style `height` of BackButton to ButtonSize cat `px`
+
+	add M to N
+    set style `position` of ForwardButton to `absolute`
+    set style `left` of ForwardButton to `calc(` cat N cat `px + 0.25em)`
+    set style `top` of ForwardButton to `0.25em`
+    set style `width` of ForwardButton to ButtonSize cat `px`
+    set style `height` of ForwardButton to ButtonSize cat `px`
+
+    set style `position` of CloseButton to `absolute`
+    set style `right` of CloseButton to `0.25em`
+    set style `top` of CloseButton to `0.25em`
+    set style `width` of CloseButton to ButtonSize cat `px`
+    set style `height` of CloseButton to ButtonSize cat `px`
+
+!	Style the content
+    set style `left` of Content to BorderLeft cat `px`
+    set style `top` of Content to BorderTop cat `px`
+    set style `width` of Content to Width cat `px'
+    set style `height` of Content to Height cat `px'
+
+!	Compute the font size
+    divide Height by FontScale giving FontSize
+    if Mobile
+    begin
+        multiply FontSize by 5
+        divide FontSize by 4
+        set style `line-height` of Container to `140%`
+    end
+    set style `font-size` of Container to FontSize cat `px`
+    return
+
+!------------------------------------------------------------------------------
+!	This is the Showndown extension.
+
+!	Decorate is called for every occurrence of ~...~ in the topic data
+Decorate:
+    put the payload of DecoratorCallback into Payload
+    put the position of `:` in Payload into N
+    if N is -1
+    begin
+    	if Payload is `clear` gosub to ProcessClear
+    end
+    else
+    begin
+        put left N of Payload into Function
+        add 1 to N
+        put from N of Payload into Data
+        if Function is `sid` gosub to ProcessSID
+        else if Function is `tid` gosub to ProcessTID
+        else if Function is `stid` gosub to ProcessSTID
+        else if Function is `img` gosub to ProcessImage
+        else if Function is `select` gosub to ProcessSelect
+        else if Function is `space` gosub to ProcessSpace
+        else if Function is `comment` gosub to ProcessComment
+        else if Function is `theme` gosub to ProcessTheme
+    end
+    set the payload of DecoratorCallback to Payload
+    stop
+
+!	Process a request for a new subject
+ProcessSID:
+	put Data into Display
+    put the position of `:` in Data into N
+    if N is not -1
+    begin
+	    put left N of Data into Data
+	    add 1 to N
+	    put from N of Display into Display
+    end
+    put `<a href="#" id="ec-link-` cat LinkCount cat `" class="button"`
+    	cat ` data-id="S-` cat Data cat `">` cat Display cat `</a>` into Payload
+    add 1 to LinkCount
+    return
+
+!	Process a request for a new topic
+ProcessTID:
+	put Data into Display
+    put the position of `:` in Data into N
+    if N is not -1
+    begin
+	    put left N of Data into Data
+	    add 1 to N
+	    put from N of Display into Display
+    end
+    put `<a href="#" id="ec-link-` cat LinkCount cat `" class="button"`
+    	cat `" data-id="T-` cat Data cat `">` cat Display cat `</a>` into Payload
+    add 1 to LinkCount
+    return
+
+!	Process a request for a new subject and topic
+ProcessSTID:
+	put Data into Display
+    put the position of `:` in Data into N
+    if N is not -1
+    begin
+	    put left N of Data into Data
+	    add 1 to N
+	    put from N of Display into Display
+    end
+    put `<a href="#" id="ec-link-` cat LinkCount cat `" class="button"`
+    	cat `" data-id="ST-` cat Data cat `">` cat Display cat `</a>` into Payload
+    add 1 to LinkCount
+    return
+
+!	Process an image, including positioning and class information
+ProcessImage:
+	put empty into Options
+	put the position of `/` in Data into N
+    if N is -1 put SID into Source
+    else
+    begin
+    	put left N of Data into Source
+        add 1 to N
+        put from N of Data into Data
+    end
+    put the position of `:` in Data into N
+    put empty into Class
+    if N is not -1 
+    begin
+        put Source cat `/images/` cat left N of Data into Source
+        add 1 to N
+        if Data is not empty
+        begin
+        	if Class is not empty put Class cat ` ` into Class 
+        	put Class cat from N of Data into Class
+        end
+        put the position of `!` in Class into N
+        if N is not -1
+        begin
+        	put Class into Options
+            put left N of Class into Class
+            add 1 to N
+            put from N of Options into Options
+        end
+    end
+    json split Class on ` ` into Classes
+    put empty into Class
+    put 0 into N
+    while N is less than the json count of Classes
+    begin
+    	put element N of Classes into C
+        if C is `border` begin end
+        else if C is `left` begin end
+        else if C is `right` begin end
+        else if C is `center` begin end
+        else if C is `clear` begin end
+        else if C is `10%` put `pc10` into C
+        else if C is `25%` put `pc25` into C
+        else if C is `33%` put `pc33` into C
+        else if C is `50%` put `pc50` into C
+        else if C is `90%` put `pc90` into C
+        else if C is `100%` put `pc100` into C
+        else
+        begin
+        	alert `Unknown style ` cat C
+            return
+        end
+        if Class is not empty put Class cat ` ` into Class
+        put Class cat C into Class
+    	add 1 to N
+    end
+    put `<div id="ec-imagediv-` cat ImageCount into Payload
+    if Class is not empty put Payload cat `" class="` cat Class into Payload
+    put from 1 of Stories into Value
+    put Payload cat `">` cat `<img id="ec-image-` cat ImageCount cat `" src="` cat Value cat Source
+        cat `" data-options="` cat Options cat `" style="width:100%" ></div>` into Payload
+    add 1 to ImageCount
+    return
+
+!	Process a 'clear'
+ProcessClear:
+    put `<div style="height:1px;clear:both"></div>` into Payload
+    return
+
+!	Process a 'select'
+ProcessSelect:
+    put `<select id="ec-select-` cat SelectCount cat `"`
+    	cat ` data-options="` cat Data cat `"`
+    	cat `></select>` into Payload
+    add 1 to SelectCount
+    return
+
+!	Process a space
+ProcessSpace:
+	if Mobile put `<br>` into Payload
+    else
+    begin
+		put empty into Payload
+		put the value of Data into M
+	    put 0 into N
+	    while N is less than M
+	    begin
+	    	put Payload cat `&nbsp;` into Payload
+	        add 1 to N
+	    end
+    end
+    return
+
+!	Process a 'comment'
+ProcessComment:
+    put empty into Payload
+    return
+
+!	Process a 'theme'
+ProcessTheme:
+	put Data into Display
+    put the position of `:` in Data into N
+    if N is not -1
+    begin
+	    put left N of Data into Data
+	    add 1 to N
+	    put from N of Display into Display
+    end
+    put `<a href="#" id="ec-link-` cat LinkCount cat `" class="button"`
+    	cat `" data-id="theme">` cat Display cat `</a>` into Payload
+    add 1 to LinkCount
+    return
+
+!   Put all the styles needed into the head
+GetStyles:
+!   Set the font size of all selectors
+    set style `select` to `{font-size:1em}`
+!   Force its owner to sit below all previous content
+    set style `.clear` to `{clear:both}`
+!   Image border and padding
+    set style `.border` to `{padding:2px;border:1px solid black}`
+!   Float left with a margin all round
+    set style `.left` to `{float:left;margin:0.5em}`
+!   Float right with a margin all round
+    set style `.right` to `{float:right;margin:0.5em}`
+!   Put the item in the centre of the page
+    set style `.center` to `{margin:0 auto}`
+!   Set the item width to 10% of the page width
+    set style `.pc10` to `{width:10%}`
+!   Set the item width to 25% of the page width
+    set style `.pc25` to `{width:25%}`
+!   Set the item width to 33% of the page width
+    set style `.pc33` to `{width:33%}`
+!   Set the item width to 50% of the page width
+    set style `.pc50` to `{width:50%}`
+!   Set the item width to 90% of the page width
+    set style `.pc90` to `{width:90%}`
+!   Set the item width to 100% of the page width
+    set style `.pc100` to `{width:100%}`
+    return

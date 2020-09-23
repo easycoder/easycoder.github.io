@@ -1,0 +1,27 @@
+## Selecting a vehicle on the Home screen
+
+When you tap the Home screen you will see a list of all the vehicles in your fleet. In this example there's only one:
+~img:selectvehicle.jpg:center 50%~
+Choose a vehicle from the list and you will go to the main data entry screen:
+~img:dataentry.jpg:center 50%~
+At the top and bottom are buttons labeled Save, Send and Close:
+
+**Save** saves all of your editing. The next time you visit the page for this vehicle, all the data values you changed will be presented the same as they are now.
+
+**Send** sends the result of your vehicle check by email. When you tap it, your default email client is called to present a new message preloaded with the results of your checks.
+
+**Close** returns you to the Home screen.
+
+In between the 2 rows of buttons there are 3 sections:
+
+**General Checks** deals with most of the standard vehicle checks, such as oil level, lighting and the condition of mirrors.
+
+**Tyres** deals with tyre tread depths and pressures.
+
+**Bodywork** is where you record any damage to the vehicle.
+
+Tap each of these section headers to open it up or to close it again.
+
+~tid:GeneralChecks:Next: General checks~
+
+~tid:Contents:Contents~

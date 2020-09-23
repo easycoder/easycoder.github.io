@@ -1,0 +1,19 @@
+## Adding some vehicles
+
+When the web app is run for the first time it won't know anything about your vehicles, so the first thing is to add them. Tap the gear icon in the top left of the screen to go to the Settings screen, the top part of which looks like this:
+~img:setup1.jpg:center 50%~
+The first thing to do is to add some vehicles. In the box under the red text, type the registration number of a vehicle in your fleet:
+~img:setup2.jpg:center 50%~
+Now tap the green plus sign and the vehicle will be added:
+~img:setup3.jpg:center 50%~
+To add some information about the vehicle, tap its registration number:
+~img:setup4.jpg:center 50%~
+Type a description and the front/rear tyre pressures appropriate for the vehicle:
+~img:setup5.jpg:center 50%~
+Then tap the Save button (or another vehicle registration button) to close the editing box.
+
+Repeat the procedure for the other vehicles in your fleet, then tap the Close button to return to the home screen. Or you can use your browser's Back button.
+
+~tid:Customising:Next: Customising the check list~
+
+~tid:Contents:Contents~

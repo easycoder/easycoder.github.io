@@ -1,0 +1,469 @@
+!   Vehicle checks
+
+    script VehicleChecks
+    
+    div Body
+    div Underlay
+    div TapToSelect
+    div PhotoBy
+    div LastDate
+    div Part
+    div Div
+    h1 Title
+    h3 Subtitle
+    hr HR
+    table Table
+    tr TR
+    td TD
+    select VehicleList
+    option Option
+    img Gear
+    img Info
+    img Select
+    button PartButton
+    button Save
+    button Send
+    button Close
+    input Note
+    module SettingsModule
+    module InfoModule
+    module ChecksModule
+    module TyresModule
+    module BodyworkModule
+    variable Mobile
+    variable RefData
+    variable PartOpen
+    variable Vehicles
+    variable Vehicle
+    variable CurrentVehicle
+    variable Reg
+    variable Description
+    variable N
+    variable U
+    variable D
+    variable Sections
+    variable NSections
+    variable Group
+    variable Checks
+    variable Total
+    variable Tyres
+    variable Item
+    variable Values
+    variable Format
+    variable Message
+    variable Script
+    variable Static
+    variable Width
+    variable Height
+    variable Temp
+    variable Date
+    variable PARTS
+    
+!    alert `This web app is under construction. Some features are missing or may not work.`
+    
+    put 3 into PARTS
+    
+    clear Mobile
+    if mobile
+    begin
+        if portrait set Mobile
+    end
+
+!	Test if site is on a static host
+    put empty into Script
+    clear Static
+    rest get Temp from `_list/resources/ecs`
+    or begin
+    	print `Static site`
+        set Static
+        go to L2
+    end
+L2:
+!	Get the reference data. Static sites use local storage.
+	if Static
+    begin
+		get RefData from storage as `refdata`
+    	if RefData is empty
+    	begin
+			rest get RefData from `/resources/json/refdata.json?v=` cat now
+            or
+            begin
+            	set RefData to object
+                continue
+            end
+        	put RefData into storage as `refdata`
+    	end
+    end
+    else
+    begin
+        rest get RefData from `/resources/json/refdata.json?v=` cat now
+        or
+        begin
+        	set RefData to object
+        	continue
+        end
+        put RefData into storage as `refdata`
+    end
+
+!	Version number checks to keep the database up to date
+	rest get Script from `/resources/ecs/refdata.txt?v=` cat now
+    run Script with RefData and Static
+    
+    rest get Script from `/resources/ecs/checks.txt?v=` cat now
+    run Script with Vehicle and Part and Group and Sections and Checks and Note as ChecksModule
+    
+    rest get Script from `/resources/ecs/tyres.txt?v=` cat now
+    run Script with Vehicle and Part and Tyres as TyresModule
+    
+    rest get Script from `/resources/ecs/bodywork.txt?v=` cat now
+    run Script with Vehicle and Part as BodyworkModule
+
+    create Body
+    if Mobile set style `background` of body to `lightgray`
+    else set style `background` of Body to `lightgray`
+Restart:
+    put property `vehicles` of RefData into Vehicles
+    put property `sections` of RefData into Sections
+    put the json count of Sections into NSections
+    set the elements of Group to NSections
+    put 0 into Total
+    put 0 into N
+    while N is less than NSections
+    begin
+    	index Group to N
+    	put property `group` cat N of RefData into Group
+        add the json count of Group to Total
+        add 1 to N
+    end
+    set the elements of Note to Total
+    set the elements of Checks to Total
+
+	clear Body
+    create Underlay in Body
+    set the style of Underlay to `width:100%;height:100%;text-align:center;position:relative`
+    create TapToSelect in Underlay
+    set the style of TapToSelect to
+    	`width:100%;height:2em;font-size:2em;position:absolute;bottom:0;left:0;color:white`
+    set the content of TapToSelect to `Tap to select vehicle`
+    create PhotoBy in Underlay
+    set the style of PhotoBy to
+    	`width:100%;height:1em;font-size:0.8em;position:absolute;bottom:1em;left:0;color:#ccc`
+    set the content of PhotoBy to `Photo by Obi Onyeador`
+	create Select in Underlay
+    set the style of Select to `width:100%;height:100%`
+    set attribute `src` of Select to `resources/img/cars.jpg`
+    if the json count of Vehicles is 0
+    begin
+    	on click Select
+        begin
+        	alert `You have as yet no vehicles in your fleet so I will take you to the Settings screen.`
+            go to DoSettings
+        end
+    end
+    else
+    begin
+        create VehicleList in Underlay
+        set the style of VehicleList to `width:100%;height:100%;opacity:0.01;position:absolute;top:0;left:0`
+        create Option in VehicleList
+        set the attributes of Option to `selected disabled hidden`
+        put 0 into N
+        while N is less than the json count of Vehicles
+        begin
+            put element N of Vehicles into Vehicle
+            put property `reg` of Vehicle into Reg
+            put property `description` of Vehicle into Description
+            create Option in VehicleList
+            set the content of Option to Reg
+            set attribute `data-reg` of Option to Description
+            add 1 to N
+        end
+        on change VehicleList
+        begin
+            put the selected index of VehicleList into CurrentVehicle
+            take 1 from CurrentVehicle
+            put element CurrentVehicle of Vehicles into Vehicle
+            go to Main
+        end
+    end
+    create Gear in Underlay
+    set the style of Gear to `position:absolute;top:1%;left:1%;width:10%`
+    set attribute `src` of Gear to `resources/icons/gear.png`
+    on click Gear go to DoSettings
+    create Info in Underlay
+    set the style of Info to `position:absolute;top:1%;right:1%;width:10%`
+    set attribute `src` of Info to `resources/icons/info.png`
+    on click Info go to DoInfo
+    if Mobile
+    begin
+        set style `width` of Gear to `20%`
+        set style `width` of Info to `20%`
+    end
+
+    if not Mobile
+    begin
+        put the height of Body into Height
+        multiply Height by 9 giving Width
+        divide Width by 16
+        set style `width` of Body to Width cat `px`
+        set style `margin` of Body to `0 auto`
+    end
+    
+    get Item from storage as `alreadyrun`
+    put `yes` into storage as `alreadyrun`
+    stop
+
+!	Show the form for the selected vehicle
+Main:
+	clear Body
+    create Title in Body
+    set the style of Title to `text-align:center`
+    set the content of Title to property `reg` of Vehicle
+    create Subtitle in Body
+    set the style of Subtitle to `text-align:center`
+    set the content of Subtitle to property `description` of Vehicle
+    get Date from storage as `lastdate`
+    create LastDate in Body
+    set the style of LastDate to `text-align:center`
+    set the content of LastDate to `Last checked: ` cat Date
+
+    set the elements of Save to 2
+    set the elements of Send to 2
+    set the elements of Close to 2
+    
+    put 0 into N
+    gosub to DoButtons
+    
+    set the elements of Part to PARTS
+    set the elements of PartButton to PARTS
+    put 0 into N
+    while N is less than PARTS
+    begin
+    	index PartButton to N
+        create PartButton in Body
+    	set the style of PartButton to
+        	`font-size:120%;width:100%;font-weight:bold;margin-bottom:0.5em`
+        if N is 0 set the text of PartButton to `General Checks`
+        else if N is 1 set the text of PartButton to `Tyres`
+        else if N is 2 set the text of PartButton to `Bodywork`
+
+        index Part to N
+        create Part in Body
+        set the style of Part to `display:none`
+        
+        put -1 into PartOpen
+    	add 1 to N
+    end
+    on click PartButton
+    begin
+        put the index of PartButton into N
+    	if PartOpen is not -1
+        begin
+        	index Part to PartOpen
+            set style `display` of Part to `none`
+            if PartOpen is N
+            begin
+            	put -1 into PartOpen
+                stop
+            end
+        end
+        put N into PartOpen
+        index Part to PartOpen
+        set style `display` of Part to `block`
+        if N is 2 send `show` to BodyworkModule
+    end
+
+	send to ChecksModule
+    send to TyresModule
+    send to BodyworkModule
+    
+    put 1 into N
+    gosub to DoButtons
+    
+    create Div in Body
+    set style `clear` of Div to `both`
+    
+    on click Save go to DoSave
+    on click Send go to DoSend
+    on click Close go to Restart
+	stop
+
+DoButtons:
+    index Save to N
+    create Table in Body
+    set the style of Table to `width:100%`
+    create TR in Table
+    create TD in TR
+    set the style of TD to `width:33%`
+    create Save in TD
+    set the style of Save to `float:left;width:100%;margin-bottom:0.5em`
+    set the text of Save to `Save`
+    
+    index Send to N
+    create TD in TR
+    set the style of TD to `width:34%`
+    create Send in TD
+    set the style of Send to `float:left;width:100%;margin-bottom:0.5em`
+    set the text of Send to `Send`
+    
+    index Close to N
+    create TD in TR
+    set the style of TD to `width:33%`
+    create Close in TD
+    set the style of Close to `float:right;width:100%;margin-bottom:0.5em`
+    set the text of Close to `Close`
+	return
+
+DoSeparator:
+	create TR in Table
+    create TD in TR
+	create HR in TD
+    create TD in TR
+	create HR in TD
+    return
+    
+DoSettings:
+    history set
+    on restore
+    begin
+        put RefData into storage as `refdata`
+    	close SettingsModule
+        set style `display` of Body to `block`
+        go to Restart
+    end
+    if SettingsModule is not running
+    begin
+		rest get Script from `/resources/ecs/settings.txt?v=` cat now
+      	run Script with RefData and Static and Mobile and Height as SettingsModule
+    end
+    set style `display` of Body to `none`
+    send to SettingsModule
+	stop
+
+DoSave:
+    put Vehicles into Temp
+    set Vehicles to array
+    put 0 into N
+    while N is less than the json count of Temp
+    begin
+    	if N is CurrentVehicle append Vehicle to Vehicles
+        else append element N of Temp to Vehicles
+    	add 1 to N
+    end
+    set property `vehicles` of RefData to Vehicles
+    set property `tyres` of Vehicle to Tyres
+    json format RefData
+    put RefData into storage as `refdata`
+    if not Static rest post RefData to `_save/resources/json/refdata.json`
+	stop
+
+DoSend:
+	put property `reg` of Vehicle into Message
+    set Format to object
+    set property `mode` of Format to `date`
+    set property `locale` of Format to `en-EN`
+    set Item to object
+    set property `year` of Item to `numeric`
+    set property `month` of Item to `long`
+    set property `day` of Item to `numeric`
+    set property `options` of Format to Item
+
+	put now into N
+    put N format Format into Date
+    set property `date` of Vehicle to Date
+    put Date into storage as `lastdate`
+    put Message cat `: ` cat Date into Message
+
+    set Values to array
+    put 0 into N
+    while N is less than Total
+    begin
+        index Checks to N
+        set Item to object
+        set property `name` of Item to property `name` of Checks
+        set property `result` of Item to property `check` of Checks
+        append Item to Values
+        add 1 to N
+    end
+
+    put Message cat newline cat newline cat `Items not checked or not applicable:` into Message
+    put 0 into N
+    while N is less than Total
+    begin
+    	put element N of Values into Item
+        index Checks to N
+        if property `check` of Checks is `unchecked`
+        	put Message cat newline cat property `name` of Checks into Message
+        add 1 to N
+    end
+
+    put Message cat newline cat newline cat `Faults and warnings:` into Message
+    put 0 into N
+    while N is less than Total
+    begin
+    	put element N of Values into Item
+        index Checks to N
+        index Note to N
+        if property `check` of Checks is `warning`
+        begin
+        	put Message cat newline cat property `name` of Checks into Message
+            put Message cat `: ` cat Note into Message
+        end
+        add 1 to N
+    end
+
+    put Message cat newline cat newline cat `Tyre depth and pressure:` into Message
+    put property `NSF:D` of Tyres into N
+    divide N by 10 giving U
+    put N modulo 10 into D
+    put Message cat newline cat `NSF: ` cat U cat `.` cat D into Message
+    put Message cat `mm, ` cat property `NSF:P` of Tyres into Message
+    put Message cat `psi (` cat property `front` of Vehicle into Message
+    put Message cat `)` into Message
+    put property `OSF:D` of Tyres into N
+    divide N by 10 giving U
+    put N modulo 10 into D
+    put Message cat newline cat `OSF: ` cat U cat `.` cat D into Message
+    put Message cat `mm, ` cat property `OSF:P` of Tyres into Message
+    put Message cat `psi (` cat property `front` of Vehicle into Message
+    put Message cat `)` into Message
+    put property `NSR:D` of Tyres into N
+    divide N by 10 giving U
+    put N modulo 10 into D
+    put Message cat newline cat `NSR: ` cat U cat `.` cat D into Message
+    put Message cat `mm, ` cat property `NSR:P` of Tyres into Message
+    put Message cat `psi (` cat property `rear` of Vehicle into Message
+    put Message cat `)` into Message
+    put property `OSR:D` of Tyres into N
+    divide N by 10 giving U
+    put N modulo 10 into D
+    put Message cat newline cat `OSR: ` cat U cat `.` cat D into Message
+    put Message cat `mm, ` cat property `OSR:P` of Tyres into Message
+    put Message cat `psi (` cat property `rear` of Vehicle into Message
+    put Message cat `)` cat newline cat newline into Message
+    put Message cat `---------------------------------------------` cat newline into Message
+    put Message cat `JSON data for this vehicle:` cat newline cat newline into Message
+    json format Vehicle
+    put Message cat Vehicle into Message
+
+	if property `email` of RefData mail to property `email` of RefData
+    subject property `reg` of Vehicle cat `: ` cat Date
+    message Message
+	stop
+
+DoInfo:
+    history set
+    on restore
+    begin
+        put RefData into storage as `refdata`
+    	close InfoModule
+        set style `display` of Body to `block`
+        go to Restart
+    end
+    if InfoModule is not running
+    begin
+		rest get Script from `/resources/ecs/info.txt?v=` cat now
+      	run Script with RefData and Static and Mobile and Height as InfoModule
+    end
+    set style `display` of Body to `none`
+    send to InfoModule
+    stop

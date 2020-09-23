@@ -1,0 +1,218 @@
+!   Tyres
+    
+    import variable Vehicle
+    	and div Part
+        and variable Tyres
+
+    script Tyres
+    
+    table Table
+    tr TR
+    td TD
+    hr HR
+    span Depth
+    span Pressure
+    span Label
+    button UpD
+    button DownD
+    button UpP
+    button DownP
+    variable TyreName
+    variable Item
+    variable N
+    variable U
+    variable D
+    
+    on message go to DoTyres
+    set ready
+    stop
+
+DoTyres:
+	put property `tyres` of Vehicle into Item
+    if not Item
+    begin
+        set Tyres to object
+        set property `NSF:D` of Tyres to 20
+        set property `OSF:D` of Tyres to 20
+        set property `NSR:D` of Tyres to 20
+        set property `OSR:D` of Tyres to 20
+        set property `NSF:P` of Tyres to property `front` of Vehicle
+        set property `OSF:P` of Tyres to property `front` of Vehicle
+        set property `NSR:P` of Tyres to property `rear` of Vehicle
+        set property `OSR:P` of Tyres to property `rear` of Vehicle
+    end
+    else put property `tyres` of Vehicle into Tyres
+
+	set the elements of TyreName to 4
+    set the elements of Depth to 4
+    set the elements of UpD to 4
+    set the elements of DownD to 4
+    set the elements of Pressure to 4
+    set the elements of UpP to 4
+    set the elements of DownP to 4
+
+	index Part to 1
+	gosub to DoTyreDepths
+    gosub to DoSeparator
+    gosub to DoTyrePressures
+    gosub to DoSeparator
+
+    stop
+
+DoTyreDepths:
+    create Table in Part
+    set the style of Table to `width:100%`
+    index TyreName to 0
+    index Depth to 0
+    index UpD to 0
+    index DownD to 0
+    put `NSF` into TyreName
+    gosub to DoTyreDepth
+    index TyreName to 1
+    index Depth to 1
+    index UpD to 1
+    index DownD to 1
+    put `OSF` into TyreName
+    gosub to DoTyreDepth
+    index TyreName to 2
+    index Depth to 2
+    index UpD to 2
+    index DownD to 2
+    put `NSR` into TyreName
+    gosub to DoTyreDepth
+    index TyreName to 3
+    index Depth to 3
+    index UpD to 3
+    index DownD to 3
+    put `OSR` into TyreName
+    gosub to DoTyreDepth
+    return
+
+DoTyreDepth:
+	create TR in Table
+    set style `height` of TR to `3em`
+    create TD in TR
+    create Label in TD
+    set the content of Label to TyreName cat ` depth: `
+    put property TyreName cat `:D` of Tyres into N
+    create Depth in TD
+    divide N by 10 giving U
+    put N modulo 10 into D
+    set the content of Depth to `` cat U cat `.` cat D cat `mm`
+    create TD in TR
+    set the style of TD to `width:7em;text-align:center`
+    create UpD in TD
+    set style `margin-left` of UpD to `1em`
+    set style `width` of UpD to `3em`
+    set the text of UpD to `+`
+    on click UpD
+    begin
+    	index TyreName to the index of UpD
+    	index Depth to the index of UpD
+    	put property TyreName cat `:D` of Tyres into N
+        add 1 to N
+        set property TyreName cat `:D` of Tyres to N
+        divide N by 10 giving U
+        put N modulo 10 into D
+        set the content of Depth to `` cat U cat `.` cat D cat `mm`
+    end
+    create DownD in TD
+    set style `margin-left` of DownD to `1em`
+    set style `width` of DownD to `3em`
+    set the text of DownD to `-`
+    on click DownD
+    begin
+    	index TyreName to the index of DownD
+    	index Depth to the index of DownD
+    	put property TyreName cat `:D` of Tyres into N
+        if N is greater than 0 take 1 from N
+        set property TyreName cat `:D` of Tyres to N
+        divide N by 10 giving U
+        put N modulo 10 into D
+        set the content of Depth to `` cat U cat `.` cat D cat `mm`
+    end
+	return
+
+DoTyrePressures:
+    create Table in Part
+    set the style of Table to `width:100%`
+    index TyreName to 0
+    index Pressure to 0
+    index UpP to 0
+    index DownP to 0
+    put `NSF` into TyreName
+    put TyreName cat ` pressure (` cat property `front` of Vehicle into Item
+    put Item cat `): ` into Item
+    gosub to DoTyrePressure
+    index TyreName to 1
+    index Pressure to 1
+    index UpP to 1
+    index DownP to 1
+    put `OSF` into TyreName
+    put TyreName cat ` pressure (` cat property `front` of Vehicle into Item
+    put Item cat `): ` into Item
+    gosub to DoTyrePressure
+    index TyreName to 2
+    index Pressure to 2
+    index UpP to 2
+    index DownP to 2
+    put `NSR` into TyreName
+    put TyreName cat ` pressure (` cat property `rear` of Vehicle into Item
+    put Item cat `): ` into Item
+    gosub to DoTyrePressure
+    index TyreName to 3
+    index Pressure to 3
+    index UpP to 3
+    index DownP to 3
+    put `OSR` into TyreName
+    put TyreName cat ` pressure (` cat property `rear` of Vehicle into Item
+    put Item cat `): ` into Item
+    gosub to DoTyrePressure
+    return
+
+DoTyrePressure:
+	create TR in Table
+    set style `height` of TR to `3em`
+    create TD in TR
+    create Label in TD
+    set the content of Label to Item
+    put property TyreName cat `:P` of Tyres into N
+    create Pressure in TD
+    set the content of Pressure to `` cat N cat `psi`
+    create TD in TR
+    set the style of TD to `width:7em;text-align:center`
+    create UpP in TD
+    set style `margin-left` of UpP to `1em`
+    set style `width` of UpP to `3em`
+    set the text of UpP to `+`
+    on click UpP
+    begin
+    	index TyreName to the index of UpP
+    	index Pressure to the index of UpP
+    	put property TyreName cat `:P` of Tyres into N
+        add 1 to N
+        set property TyreName cat `:P` of Tyres to N
+    	set the content of Pressure to `` cat N cat `psi`
+    end
+    create DownP in TD
+    set style `margin-left` of DownP to `1em`
+    set style `width` of DownP to `3em`
+    set the text of DownP to `-`
+    on click DownP
+    begin
+    	index TyreName to the index of DownP
+    	index Pressure to the index of DownP
+    	put property TyreName cat `:P` of Tyres into N
+        if N is greater than 0 take 1 from N
+        set property TyreName cat `:P` of Tyres to N
+    	set the content of Pressure to `` cat N cat `psi`
+    end
+	return
+
+DoSeparator:
+	create TR in Table
+    create TD in TR
+	create HR in TD
+    create TD in TR
+	create HR in TD
+    return

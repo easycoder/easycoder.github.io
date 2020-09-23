@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "sections": [
+    "Engine Bay",
+    "Lights",
+    "Driving",
+    "Glass"
+  ],
+  "group0": [
+    "Oil level",
+    "Coolant",
+    "Brake fluid",
+    "Windscreen wash"
+  ],
+  "group1": [
+    "Sidelights",
+    "Headlights - Dip",
+    "Headlights - Main",
+    "Stop lamps",
+    "Fog lamp - Front",
+    "Fog lamp - Rear",
+    "Numberplate lamp",
+    "Interior light",
+    "Indicators",
+    "Hazard warning"
+  ],
+  "group2": [
+    "Footbrake",
+    "Parking brake",
+    "Steering",
+    "Windscreen wipers",
+    "Horn",
+    "Warning lights",
+    "Switches"
+  ],
+  "group3": [
+    "Windscreen",
+    "Side glass",
+    "Rear screen",
+    "Mirrors"
+  ],
+  "vehicles": [
+    {
+      "reg": "CU67 ABC",
+      "description": "Test vehicle",
+      "front": 0,
+      "rear": 0,
+      "damage": [
+        {
+          "description": "Smashed rear lamp",
+          "severity": 2,
+          "left": 722,
+          "top": 813
+        },
+        {
+          "description": "Small scratch on rear door",
+          "severity": 0,
+          "left": 835,
+          "top": 622
+        },
+        {
+          "description": "Deep scratch on pillar",
+          "severity": 1,
+          "left": 346,
+          "top": 414
+        },
+        {
+          "description": 1,
+          "severity": 1,
+          "left": 321,
+          "top": 740
+        },
+        {
+          "description": 2,
+          "severity": 1,
+          "left": 609,
+          "top": 422
+        },
+        {
+          "description": 3,
+          "severity": 0,
+          "left": 172,
+          "top": 517
+        },
+        {
+          "description": 4,
+          "severity": 0,
+          "left": 359,
+          "top": 134
+        },
+        {
+          "description": 5,
+          "severity": 0,
+          "left": 829,
+          "top": 346
+        },
+        {
+          "description": 6,
+          "severity": 0,
+          "left": 160,
+          "top": 202
+        },
+        {
+          "description": 7,
+          "severity": 0,
+          "left": 560,
+          "top": 171
+        },
+        {
+          "description": 8,
+          "severity": 1,
+          "left": 382,
+          "top": 905
+        }
+      ],
+      "tyres": {
+        "NSF:D": 20,
+        "OSF:D": 20,
+        "NSR:D": 20,
+        "OSR:D": 20,
+        "NSF:P": 0,
+        "OSF:P": 0,
+        "NSR:P": 0,
+        "OSR:P": 0
+      }
+    }
+  ],
+  "email": "gt@pobox.com"
+}
