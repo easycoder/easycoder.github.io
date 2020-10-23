@@ -8070,7 +8070,7 @@ const EasyCoder_Compiler = {
 		const pc = this.program.length;
 		// First check for a label
 		if (keyword.endsWith(`:`)) {
-			console.log(`Label: ${keyword}`);
+			// console.log(`Label: ${keyword}`);
 			const name = keyword.substring(0, keyword.length - 1);
 			if (this.symbols[name]) {
 				throw new Error(`Duplicate symbol: '${name}'`);
