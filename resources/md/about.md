@@ -26,7 +26,6 @@ The main features of ~ec~ are as follows:
 
 ~ec~ is easy to learn. Elsewhere in these pages you'll find sample code and complete websites with source code. You can also try writing your own scripts with the help of an online tutorial such as our coding playground, the /CODEX/.
 
-Coding services
 ~ec~ scripts are easy to read by most people who have an understanding of what is being done. They are experts in their domain and the script does its best to match that domain. Even so, there are some who don't want to do programming in any way yet would still like to enjoy the results of it. For you we offer a consultancy service. If you would like your pages enhanced in some specific way and are thinking maybe ~ec~ could do it, you can ask a question by joining our /SLACK/. We'll be pleased to discuss your needs in complete privacy and without obligation.
 
 ---
