@@ -4,7 +4,7 @@ const IWSY = (playerElement, scriptObject) => {
 	let player = playerElement;
 	let script = scriptObject;
 	let homeScript = script;
-	let thePath = ``;
+	let thePath = `resources/scripts`;
 	let afterRun;
 	let plugins;
 	let timeouts = [];
