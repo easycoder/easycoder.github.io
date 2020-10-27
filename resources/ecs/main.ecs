@@ -118,7 +118,7 @@ BuildPage:
 	rest get Script from `/resources/ecs/life.ecs`
 	run Script with ShowdownModule as LifeModule
 	rest get Script from `/resources/ecs/technical.ecs`
-!	run Script with ShowdownModule as TechnicalModule
+	run Script with ShowdownModule as TechnicalModule
 
 	alias CurrentModule to HomeModule
 	send to HomeModule
@@ -220,13 +220,11 @@ BuildPage:
 	set the text of TechnicalButton to `Technical Overview`
 	on click TechnicalButton
 	begin
-        stop
-!		location `/technical.html`
 		gosub to DeselectAllButtons
 		set style `background` of TechnicalButton to `darkgray`
 		send `pause` to CurrentModule
 		alias CurrentModule to TechnicalModule
-		send to ContactModule
+		send to TechnicalModule
 	end
 
 	create ButtonItem in ButtonList
@@ -280,4 +278,5 @@ DeselectAllButtons:
     set style `background` of AboutButton to ``
     set style `background` of PhilosophyButton to ``
     set style `background` of ContactButton to ``
+    set style `background` of TechnicalButton to ``
     return
