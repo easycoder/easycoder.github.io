@@ -18,7 +18,7 @@ At ~ec~ we take issue with this claim, for the following reasons:
 
 ## Structure and benefits of ~ec~ ##
 
-~ec~ operates without HTML or JavaScript. There's no virtual DOM; instead the language operates directly on the page. The package has its own compiler and runtime, which both run in the browser. Scripts are plain text files that are compiled on demand. This is very quick; the compiler will process about 20 lines of script per millisecond on an average laptop and take only a little longer on a smartphone. Scripts tend to be fairly small, generally well under 1000 lines long, and are compiled on the fly when needed. Page load times are usually under 2 seconds, depending on how much is needed in the initial page and how much can be deferred until after the page has rendered.
+~ec~ can operate without HTML, CSS or JavaScript. There's no virtual DOM; instead the language operates directly on the page. The package has its own compiler and runtime, which both run in the browser. Scripts are plain text files that are compiled on demand. This is very quick; the compiler will process about 20 lines of script per millisecond on an average laptop and take only a little longer on a smartphone. Scripts tend to be fairly small, generally well under 1000 lines long, and are compiled on the fly when needed. Page load times are usually under 2 seconds, depending on how much is needed in the initial page and how much can be deferred until after the page has rendered.
 
 ~ec~ scripts describe functionality as seen by a user of the system. Aside from the DOM there are no structural features in the language. This may be a disadvantage for some types of project but ~ec~ is not intended to be a "one size fits all" solution; it's designed to be quick, effective and accessible by casual programmers.
 
@@ -28,6 +28,6 @@ At ~ec~ we take issue with this claim, for the following reasons:
 
 ~ec~ is highly customizable. If the supplied functionality is insufficient, a plugin module can be written to provide missing features or to make existing ones run faster. Plugin programming is straightforward; it comprises code to handle the additional syntax and to wrap the algorithms used at runtime. Google Maps is a good example; it has a simple API that is well suited to being implemented as an ~ec~ plugin, and the source JavaScript of the plugin, comprising compiler and runtime, is only 560 lines long.
 
-~ec~ does not use any third-party libraries for its core code, so its behavior can be relied upon not to change as a rsult of updates to such libraries. Some of our plugins make use of code from CDN libraries so we cannot offer any guarantees in that respect, but all the ~ec~ files are available as Open Source here on GitHub.
+~ec~ does not use any third-party libraries for its core code, so its behavior can be relied upon not to change as a result of updates to such libraries. Some of our plugins make use of code from CDN libraries so we cannot offer any guarantees in that respect, but all the ~ec~ files are available as Open Source here on GitHub.
 
 A website bult with ~ec~ can be maintained by any competent programmer without needing high-level skills in specific languages or frameworks. This lowers the overall cost of ownership and helps extend the useful life span of the product.
