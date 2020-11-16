@@ -1,3 +1,7 @@
+Source code of the 'Setting up' page
+
+Below the line is the page source as typed by the site author.
+-----------------------------------------------------------------------------------------------------------
 Links: ~select:-:Select a subject!selected disabled hidden|S-Structure:The structure of a Storyteller website|S-Markdown:Using Markdown|S-Images:Handling images~~space:3~Next: ~sid:Structure:Website structure~
 
 # How to set up a Storyteller website
@@ -58,7 +62,7 @@ Once you have chosen your name your website will be live and can be seen by anyo
 </html>
 ```
 <hr>
-Now carefully follow these steps:
+That's the file that will run when your site is loaded; apart from the name of the stories folder it's the same for all StoryTeller websites. What follows next is all the stuff that makes your own site distictive. Carefully follow these steps:
 
  1. Click the `Edit` button for `index.html`.
  
