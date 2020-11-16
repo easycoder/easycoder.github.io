@@ -32,7 +32,7 @@ Storyteller is a tool for building static websites using Markdown instead of HTM
 
 To use Storyteller all you need is to copy a short `index.html` file to your server and provide the topics your visitors will read. This is all covered by the documentation on the [Storyteller website](https://easycoder.github.io/examples/storyteller).
 
-The author has used Storyteller to create his own [personal memoirs](graham-trott.netlify.app) webapp.
+The author has used Storyteller to create his own [personal memoirs](https://graham-trott.netlify.app) webapp.
 
 Storyteller is written in ~ec~; its source code is in the [Storyteller repository](https://github.com/easycoder/storyteller).
 
