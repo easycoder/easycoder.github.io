@@ -1,7 +1,3 @@
-Source code of the 'Setting up' page
-
-Below the line is the page source as typed by the site author.
------------------------------------------------------------------------------------------------------------
 Links: ~select:-:Select a subject!selected disabled hidden|S-Structure:The structure of a Storyteller website|S-Markdown:Using Markdown|S-Images:Handling images~~space:3~Next: ~sid:Structure:Website structure~
 
 # How to set up a Storyteller website
@@ -10,7 +6,7 @@ There are two ways to use Storyteller:
 
  1. Open a Neocities account and build your site using the instructions below.
  
- 1. Download Storyteller files from the [Storyteller repository](https://github.com/easycoder/storyteller) and copy them to your server. This is the option for advanced users.
+ 1. Download Storyteller files from the [repository](https://github.com/easycoder/easycoder.github.io/tree/master/storyteller) and copy them to your server. This is the option for people who have direct access to their own websites.
 
 ## Setting up using Neocities
 
@@ -30,19 +26,18 @@ Once you have chosen your name your website will be live and can be seen by anyo
  
  1. Click `Dashboard` on the left of the button bar to return to the file listing screen.
 <hr>
-
 ```
 <html>
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/storyteller/storyteller.js'></script>
   </head>
 
   <body>
 
-    <pre id="storyteller-branch">master</pre>
+    <pre id="storyteller-branch" style="display:none">master</pre>
+    <pre id="storyteller-stories" style="display:none">(Name-of-my-stories-folder)</pre>
     <pre id="easycoder-script" style="display:none">
 
       script Boot
@@ -51,20 +46,31 @@ Once you have chosen your name your website will be live and can be seen by anyo
       variable Script
       attach Branch to `storyteller-branch`
       put the content of Branch into B
-      rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/storyteller@` cat B cat `/storyteller.txt`
+      require js `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io@` cat B cat `/dist/plugins/showdown.js?v=200413`
+      rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/storyteller@` cat B cat `/storyteller.txt?v=200413`
       run Script
 
     </pre>
+
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?v=200413'></script>
 
   </body>
 </html>
 ```
 <hr>
-Now carefully follow these steps:
+That's the file that will run when your site is loaded; apart from the name of the stories folder it's the same for all StoryTeller websites. What follows next is all the stuff that makes your own site distictive. Carefully follow these steps:
 
- 1. Click the `New Folder` button and type the name `stories`. 
+ 1. Click the `Edit` button for `index.html`.
  
- 1. Click its name (`stories`) to go into the folder.
+ 1. Find the text `(Name-of-my-stories-folder)` and replace it (the text and the 2 brackets) with a name you will use for your stories folder. The name can be anything you like (but no spaces, please) so make it appropriate. For example, if you are writing about holidays you could call it `MyHolidays`.
+ 
+ 1. Click `Save`.
+ 
+ 1. Back out of the editor to the Dashboard.
+ 
+ 1. Click the `New Folder` button and type the name you just gave for your stories. This folder is where you will keep all your story files.
+ 
+ 1. Click its name to go into your stories folder.
  
  1. Click `New File` and type the name `title.txt`. Click `Create`.
  
@@ -123,4 +129,4 @@ You can do all your editing in Neocities using their built-in editor or you can 
 
 ~sid:Images:Handling images~
 
-[Click here to see the source code for this page(/stories/GetStoryteller/source.txt)
+[Click here to see the source code for this page](/storyteller/GetStoryteller/source.txt)

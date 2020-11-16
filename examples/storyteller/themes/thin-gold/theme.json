@@ -1,0 +1,10 @@
+{
+    "style":"bordered",
+    "aspect-w":4,
+    "aspect-h":3,
+    "border-l":3,
+    "border-t":4,
+    "border-r":4,
+    "border-b":6,
+    "font-scale":40
+}
