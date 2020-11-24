@@ -1376,6 +1376,9 @@ const EasyCoder_Browser = {
 				const pickRecord = program.getSymbolRecord(command.symbol);
 				document.pickRecord = pickRecord;
 				pickRecord.element.forEach(function (element, index) {
+					if (!element) {
+						return;
+					}
 					document.pickIndex = index;
 					element.pickIndex = index;
 					// Set up the mouse down and up listeners
