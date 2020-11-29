@@ -6,7 +6,7 @@ The following websites were all built entirely in EasyCoder script:
  - [Yorkshirewoman](https://yorkshirewoman.uk)
  - [Here on the map](https://hereonthemap.com)
  - [Rembrandt.ie](https://rembrandt.ie)
- - [Storyteller](https://storyteller20.neocities.org)
+ - [Storyteller](https://storyteller-ec.netlify.app)
  - [I Wanna Show You](https://iwannashowyou.com)
  - [Vehicle Checks](https://vehiclecheck.netlify.app)
 
