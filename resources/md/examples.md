@@ -30,7 +30,7 @@ The User Capture can be run as an independent web page; see [User Capture](https
 
 Storyteller is a tool for building static websites using Markdown instead of HTML. Markdown is much easier to learn and is very suited to pages that comprise a single column of text, with headings, images and links to other pages. Storyteller adds some custom tags to the standard MarkDown set, to give better control over the way pages are rendered. The structure of the site is one of subjects that contain topics; each subject is a folder and each topic is a single text file written in Markdown. All the images used by the subject and its topics are placed in a folder inside that subject folder.
 
-To use Storyteller all you need is to copy a short `index.html` file to your server and provide the topics your visitors will read. This is all covered by the documentation on the [Storyteller website](https://easycoder.github.io/examples/storyteller).
+To use Storyteller all you need is to copy a short `index.html` file to your server and provide the topics your visitors will read. This is all covered by the documentation on the [Storyteller website](https://storyteller-ec.netlify.app).
 
 The author has used Storyteller to create his own [personal memoirs](https://graham-trott.netlify.app) webapp.
 
