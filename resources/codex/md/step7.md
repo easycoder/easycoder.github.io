@@ -25,10 +25,11 @@ In this script I've added some comment lines to help you see where things are be
 
 At line 11 we request 3 elements for the ~code:Button~ array. These will be addressed as index 0, 1 and 2. Then we have a loop that repeats 3 times, incrementing the counter ~code:N~ each time. We 'index' the button to the value of ~code:N~ so the array presents each of the elements in turn, and we do all the things that are the same for all the buttons. These are:
 
-The width and height.
-A margin on each side that keeps them apart.
-The border radius. Buttons are rectangular by default; this gives them rounded corners. By using the value 50% we make the button a circle or an ellipse, depending if the width and height are the same.
+- The width and height.
+- A margin on each side that keeps them apart.
+- The border radius. Buttons are rectangular by default; this gives them rounded corners. By using the value 50% we make the button a circle or an ellipse, depending if the width and height are the same.
 Setting the display value to ~code:inline-block~ keeps all the buttons on a single line. (You're right; that not at all obvious, is it?)
+
 The buttons start off invisible (but still occupying space).
 
 Now we have to set the background color, which is different for each button so we test the value of ~code:N~ to see which color to use. CSS has 140 named colors, plus you can use combinations of red, green, blue and transparency to make a total of 4,294,967,296 distinct colors to choose from.
