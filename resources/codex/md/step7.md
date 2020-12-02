@@ -11,7 +11,7 @@ When you have similar things being done to a number of different objects your co
 
 One good way to avoid this is to use arrays. An array is a variable that has multiple values. Like a pigeon-hole letterbox system, where the boxes are all the same but have different contents.
 
-In most programming languages, arrays use brackets to indicate what's going on. So, to access the third element of the variable ~code:data~ you would see
+In most programming languages, arrays use brackets to indicate what's going on. So, to access the third element of the array variable ~code:data~ you would see
 
 ~code:data[3]~
 
