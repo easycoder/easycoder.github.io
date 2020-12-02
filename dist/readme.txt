@@ -54,6 +54,12 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.5 02-dec 2020 =
+* Fix a bug in the code to detect module running
+
+= 2.7.4 24-nov 2020 =
+* Fix pick/drag bug
+
 = 2.7.3 29-jun 2020 =
 * Mostly to do with adding the iwsy module
 

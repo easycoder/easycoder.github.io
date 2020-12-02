@@ -3081,6 +3081,9 @@ const EasyCoder_Core = {
 				let moduleRecord = program.getSymbolRecord(condition.name);
 				if (typeof moduleRecord.program !== `undefined`) {
 					let p = EasyCoder.scripts[moduleRecord.program];
+					if (!p) {
+						return !condition.sense;
+					}
 					return condition.sense ? p.running : !p.running;
 				}
 				return !condition.sense;
