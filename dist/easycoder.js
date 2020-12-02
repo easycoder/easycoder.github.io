@@ -3081,6 +3081,9 @@ const EasyCoder_Core = {
 				let moduleRecord = program.getSymbolRecord(condition.name);
 				if (typeof moduleRecord.program !== `undefined`) {
 					let p = EasyCoder.scripts[moduleRecord.program];
+					if (!p) {
+						return !condition.sense;
+					}
 					return condition.sense ? p.running : !p.running;
 				}
 				return !condition.sense;
@@ -8508,7 +8511,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.7.4`;
+EasyCoder.version = `2.7.5`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
