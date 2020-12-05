@@ -32,7 +32,9 @@ The upper half of the file is the _HEAD_ of the document. In here is a call to l
 
 The lower half of the file is the _BODY_ of the document, which contains everything your users are going to see. This example, being as simple as you can get, has a single element, a `<div>` element inside which is the 1-line script that displays the popup message you just saw. ~ec~ scripts look a lot like English, and like human languages they use very few symbols. It's very easy to learn the basics and whatever you write always goes inside the `<div>` element we see here.
 
-Now open `index.html` into your editor. This is the file we'll be using for this short demo. Replace the existing `<body>...</body>` section with the following:
+## Next Steps
+
+Now I'll show you a slightly more complex example, that displays some text which when clicked pops up a message. We'll start with the previous example and make the necessary changes to it. Open `index.html` into your editor and replace the existing `<body>...</body>` section with the following:
 
 /1/
 Load the page into your browser and check the text appears. Note that only text that's outside of any angle braces will appear; the rest is all HTML tags. In this case there's a single ~code:&lt;div&gt;~ (division) that contains our text; it also has an identifier string that we'll use shortly.
