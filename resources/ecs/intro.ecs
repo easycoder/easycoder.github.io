@@ -36,11 +36,11 @@
 
 Start:
 	send Script to Showdown
-	attach RunCodex to `codex`
-	on click RunCodex
-	begin
-		send `hide` to parent
-		rest get Codex from `/resources/ecs/codex.ecs`
-		run Codex
-	end
+!	attach RunCodex to `codex`
+!	on click RunCodex
+!	begin
+!		send `hide` to parent
+!		rest get Codex from `/resources/ecs/codex.ecs`
+!		run Codex
+!	end
 	stop
