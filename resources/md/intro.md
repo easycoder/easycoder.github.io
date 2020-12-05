@@ -57,4 +57,4 @@ The final line just tells ~ec~ to stop and wait for something to happen.
 
 Save the page again and refresh your browser tab. Click the text and you should get the popup alert. Voila! Your ~ec~ script is running!
 
-Now you've got this far, the best place to learn more is our ~codex~; a tutorial and programmer's playground where you can write and test scripts, that includes a full reference manual for the ~ec~ programming language.
+Now you've got this far, the best place to learn more is our **codex**; a tutorial and programmer's playground where you can write and test scripts, that includes a full reference manual for the ~ec~ programming language. Click the link inthe menu panel.
