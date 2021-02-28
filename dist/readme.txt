@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.6 23-feb 2021 =
+* Fix security vulnerability. Thanks to Brett Caldwell, buckshotbrett@gmail.com
+
 = 2.7.5 02-dec 2020 =
 * Fix a bug in the code to detect module running
 

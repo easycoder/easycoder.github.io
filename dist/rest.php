@@ -246,6 +246,7 @@
 										// Endpoint: {site root}/wp-content/plugins/easycoder/rest.php/_thumb
 										header("Content-Type: application/json");
 										$value = stripslashes(file_get_contents("php://input"));
+										$value = str_replace( array("&", "|", ";"), '', $value);
 										$json = json_decode($value);
 										$source = "../../../$resources/" . str_replace('~', '/', $json->source);
 										$dest = "../../../$resources/" . str_replace('~', '/', $json->dest);
