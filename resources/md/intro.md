@@ -11,7 +11,7 @@ Once you have edit access to an empty server directory, create an `index.html` f
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src='https://cdn.jsdelivr.net/gh
-/easycoder/easycoder.github.io@master/easycoder/easycoder.js'></script>
+/easycoder/easycoder.github.io/easycoder/easycoder.js'></script>
   </head>
 
   <body>
