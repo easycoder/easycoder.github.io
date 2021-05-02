@@ -43,10 +43,8 @@
 !  set attribute `id` of Tracer to `easycoder-tracer`
 
 	create Body
-	if mobile
-		set the style of Body to `width:100vw`
-	else
-		set the style of Body to `width:100vw;max-width:1200px;margin:0 auto`
+	if mobile set the style of Body to `width:100vw`
+	else set the style of Body to `width:100vw;max-width:1200px;margin:0 auto`
 	
 	on message
 	begin
@@ -72,7 +70,8 @@ BuildPage:
 		set the style of Header to `margin:0 2em;text-align:center`
 	
 	create Banner in Header
-	if not mobile set the style of Banner to `width:50%;margin:0 auto`
+	if mobile set the style of Banner to `width:100%`
+	else set the style of Banner to `width:50%;margin:0 auto`
 	set attribute `src` of Banner to `resources/img/banner.png`
 	
 	create Rule in Body
