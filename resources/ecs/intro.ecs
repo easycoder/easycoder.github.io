@@ -11,6 +11,7 @@
 	variable Item
 	variable N
 	
+	scroll to 0
 	rest get Script from `/resources/md/intro.md`
 	replace `/WP/` with `<a href="#">this page</a>` in Script
 	put 1 into N
