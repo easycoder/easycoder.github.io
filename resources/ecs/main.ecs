@@ -44,7 +44,10 @@
 
 	create Body
 	if mobile
+	begin
 		set the style of Body to `width:100%`
+		alert `mobile`
+	end
 	else
 		set the style of Body to `width:100%;max-width:1200px;margin:0 auto`
 	
