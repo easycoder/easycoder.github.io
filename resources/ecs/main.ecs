@@ -44,7 +44,7 @@
 
 	create Body
 	if mobile
-		set the style of Body to `width:300px`
+		set the style of Body to `width:100vw`
 	else
 		set the style of Body to `width:100vw;max-width:1200px;margin:0 auto`
 	
