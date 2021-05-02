@@ -44,9 +44,9 @@
 
 	create Body
 	if mobile
-		set the style of Body to `width:100vw`
+		set the style of Body to `width:300px`
 	else
-		set the style of Body to `width:100%;max-width:1200px;margin:0 auto`
+		set the style of Body to `width:100vw;max-width:1200px;margin:0 auto`
 	
 	on message
 	begin
