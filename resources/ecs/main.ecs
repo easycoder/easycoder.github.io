@@ -43,8 +43,8 @@
 !  set attribute `id` of Tracer to `easycoder-tracer`
 
 	create Body
-	if mobile set the style of Body to `width:100vw`
-	else set the style of Body to `width:100vw;max-width:1200px;margin:0 auto`
+	if mobile set the style of Body to `width:calc(100vw - 1em);margin:0 auto`
+	else set the style of Body to `width:calc(100vw - 1em);max-width:1200px;margin:0 auto`
 	
 	on message
 	begin
