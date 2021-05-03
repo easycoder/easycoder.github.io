@@ -1,5 +1,5 @@
 # Introduction #
-So you've built yourself a website and you'd like to add some interactivity. For this you need a program - otherwise known as a script - and some element on your page to make interactive. You may have been told that JavaScript is your only option and you may have already tried it and found it rather intimidating; if so, here's a simpler alternative. (Note for WordPress users: a plugin is available for ~ec~; just search for it by name. It also has [its own website](https://easycoder.software)).
+So you've built yourself a website and you'd like to add some interactivity. For this you need a program - otherwise known as a script - and some element on your page to make interactive. You may have been told that JavaScript is your only option and you may have already tried it and found it rather intimidating; if so, here's a simpler alternative. (Note for WordPress users: most of this manual is relevant to your needs too, but please see the **WordPress** page in the menu panel).
 
 To help you get started, let's do something super simple. I'm assuming you already have access to your own hosting plan or are able to borrow some space on a friend's site. If you haven't yet built any kind of working web page - from the level of Hello, World upwards - I recommend you get familiar with that first; it's rather outside the scope of these instructions.
 

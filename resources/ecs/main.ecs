@@ -21,6 +21,7 @@
 	button ContactButton
 	button CodexButton
     button TechnicalButton
+    button WordPressButton
 	hr Rule
 	a ShowNotes
 	module ShowdownModule
@@ -32,6 +33,7 @@
 	module ContactModule
 	module LifeModule
 	module TechnicalModule
+	module WordPressModule
 	module CurrentModule
 	variable Script
 	variable ButtonStyle
@@ -118,6 +120,8 @@ BuildPage:
 	run Script with ShowdownModule as LifeModule
 	rest get Script from `/resources/ecs/technical.ecs`
 	run Script with ShowdownModule as TechnicalModule
+	rest get Script from `/resources/ecs/wordpress.ecs`
+	run Script with ShowdownModule as WordPressModule
 
 	alias CurrentModule to HomeModule
 	send to HomeModule
@@ -224,6 +228,20 @@ BuildPage:
 		send `pause` to CurrentModule
 		alias CurrentModule to TechnicalModule
 		send to TechnicalModule
+	end
+
+	create ButtonItem in ButtonList
+	create WordPressButton in ButtonItem
+	set the style of WordPressButton to ButtonStyle
+	set style `margin-top` of WordPressButton to `0.25em`
+	set the text of WordPressButton to `Technical Overview`
+	on click WordPressButton
+	begin
+		gosub to DeselectAllButtons
+		set style `background` of WordPressButton to `darkgray`
+		send `pause` to CurrentModule
+		alias CurrentModule to WordPressModule
+		send to WordPressModule
 	end
 
 	create ButtonItem in ButtonList
