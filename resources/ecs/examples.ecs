@@ -18,6 +18,7 @@
     button ShowLife
     button ShowLifeDoc
     div Status
+    a HowItWorks
     variable Content
     variable Script
     variable Message
@@ -35,6 +36,12 @@
         if Message is `restore` send `show` to parent
         else if Message is `pause` begin end
         else go to Start
+    end
+
+    attach HowItWorks to `how-it-works`
+    on click HowItWorks
+    begin
+        alert `How it works`
     end
     
     attach Status to `ec-status`

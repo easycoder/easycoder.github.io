@@ -10,6 +10,10 @@ The following websites were all built entirely in EasyCoder script:
  - [I Wanna Show You](https://iwannashowyou.com)
  - [Vehicle Checks](https://vehiclecheck.netlify.app)
 
+## This website
+
+The ~ec~ website is driven by a script, with text provided as custom Markdown files. These 2 components work closely together and it's not immediately obvious where to start when trying to understand how it's done. <a href="#" id="how-it-works">Here's a page</a> that explains the process.
+
 ## Dice roller /SHOW-DICEROLLER/
 
 This simple demo shows two dice with a random choice of faces. Click either dice to select a new pair of value. A simple animation mimics the rolling of the dice.

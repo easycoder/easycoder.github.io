@@ -4,7 +4,7 @@
 
 **_EasyCoder_** has [its own website](https://easycoder.github.io) here on GitHub. Here you will find examples, tutorials and a programmer's playground where you can quickly create interactive apps.
 
-## Here are the main benefits of **_EasyCoder_**
+## The main benefits of **_EasyCoder_**
 
  1. It's quick to write browser applications in **_EasyCoder_**. Website development is faster and sites are more reliable because they are more compact and easier to read.
  1. **_EasyCoder_** scripts are smaller than the corresponding JavaScript and are easy to read by most people, not just by programmers. This matters later on when maintenance is needed and the original programmer may no longer be available.
