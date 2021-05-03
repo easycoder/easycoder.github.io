@@ -26,4 +26,4 @@ attach Anchor to `my-anchor-div`
 </div>
 ```
 
-The variable Anchor now becomes the container in which your entire ~ec~ script lives and you can do anything you like with it. For example, go to the _Mexican Wave_ example in the codex, copy its code and paste this into your page, using `Anchor` as its parent container. When you load the page the animation runs - it's as simple as that.
+The variable Anchor now becomes the container in which your entire ~ec~ script lives and you can do anything you like with it. For example, go to the _Mexican Wave_ example in the codex, copy its code and paste this into your page inside the `easycoder-script` tag. You'll need to change the line `create Container` to `attach Container to &#96my-anchor-div&#96`. When you load the page the animation runs - it's as simple as that.
