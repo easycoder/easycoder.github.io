@@ -6,6 +6,7 @@
     
     button ShowMeButton
     button CodexButton
+    module CodexModule
     variable Script
     variable Item
     variable Codex
@@ -53,13 +54,13 @@ Start:
     attach CodexButton to `about-codex`
     on click CodexButton
     begin
-        if module Codex is not running
+        if CodexModule is not running
         begin
     	    require js `dist/plugins/codemirror.js`
         	rest get Codex from `/resources/ecs/codex.ecs`
         	send `hide` to parent
-        	run Codex
+        	run CodexModule
         end
-        send `start` to Codex
+        send `start` to CodexModule
     end
     stop

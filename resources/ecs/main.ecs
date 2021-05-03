@@ -277,7 +277,7 @@ DoNotes:
     if Arg is empty stop
 
 RunCodex:
-	if module CodexModule is not running
+	if CodexModule is not running
 	begin
 		require js `dist/plugins/codemirror.js`
 		require js `dist/plugins/float.js`
