@@ -328,10 +328,10 @@ L2:
     end
 	on click Exit
     begin
-		stop DocManModule
-    	remove element Body
-        send `restore` to parent
-        history set url `.`
+!		stop DocManModule
+!    	remove element Body
+!        send `restore` to parent
+!        history set url `.`
 !        exit
         set style `display` of Body to `none`
     end
