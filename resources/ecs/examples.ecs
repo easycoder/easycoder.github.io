@@ -90,11 +90,7 @@ Start:
     on click ShowLifeDoc send `life` to parent
 
     attach HowItWorks to `how-it-works`
-    on click HowItWorks
-    begin
-        alert `How it works`
-        send `howitworks` to parent
-    end
+    on click HowItWorks send `howitworks` to parent
     
     stop
 

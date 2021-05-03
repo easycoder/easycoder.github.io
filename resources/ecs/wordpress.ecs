@@ -9,13 +9,7 @@
     
     rest get Script from `/resources/md/wordpress.md`
 
-    on message
-    begin
-    	put the message into Message
-        if Message is `restore` send `show` to parent
-        else if Message is `pause` begin end
-        else go to Start
-    end
+    on message go to Start
     
     set ready
     stop
