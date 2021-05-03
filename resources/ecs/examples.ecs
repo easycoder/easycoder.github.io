@@ -38,12 +38,6 @@
         else go to Start
     end
 
-    attach HowItWorks to `how-it-works`
-    on click HowItWorks
-    begin
-        alert `How it works`
-    end
-    
     attach Status to `ec-status`
     set ready
     stop
@@ -95,6 +89,12 @@ Start:
     attach ShowLifeDoc to `show-lifedoc`
     on click ShowLifeDoc send `life` to parent
 
+    attach HowItWorks to `how-it-works`
+    on click HowItWorks
+    begin
+        alert `How it works`
+    end
+    
     stop
 
 InitDiceRoller:
