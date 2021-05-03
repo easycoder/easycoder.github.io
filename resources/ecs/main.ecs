@@ -34,6 +34,7 @@
 	module LifeModule
 	module TechnicalModule
 	module WordPressModule
+	module HowItWorksModule
 	module CurrentModule
 	variable Script
 	variable ButtonStyle
@@ -62,6 +63,7 @@
 			send `resume` to CurrentModule
 		end
 		else if Message is `life` go to ShowLife
+		else if Message is `howitworks` go to ShowHowItWorks
 	end
     
 BuildPage:
@@ -122,6 +124,8 @@ BuildPage:
 	run Script with ShowdownModule as TechnicalModule
 	rest get Script from `/resources/ecs/wordpress.ecs`
 	run Script with ShowdownModule as WordPressModule
+	rest get Script from `/resources/ecs/howitworks.ecs`
+	run Script with ShowdownModule as HowItWorksModule
 
 	alias CurrentModule to HomeModule
 	send to HomeModule
@@ -286,6 +290,13 @@ ShowLife:
     send `pause` to CurrentModule
     alias CurrentModule to LifeModule
     send to LifeModule
+    stop
+
+ShowHowItWorks:
+    gosub to DeselectAllButtons
+    send `pause` to CurrentModule
+    alias CurrentModule to HowItWorksModule
+    send to HowItWorksModule
     stop
 
 DeselectAllButtons:

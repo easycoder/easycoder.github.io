@@ -93,6 +93,7 @@ Start:
     on click HowItWorks
     begin
         alert `How it works`
+        send `howitworks` to parent
     end
     
     stop
