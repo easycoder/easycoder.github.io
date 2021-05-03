@@ -334,11 +334,13 @@ L2:
 !        history set url `.`
 !        exit
         set style `display` of Body to `none`
+        alert `Exit`
     end
     
     on message
     begin
     	put the message into Message
+        alert Message
     	if Message is `start`
         begin
             set style `display` of Body to `block`
