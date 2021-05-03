@@ -1,4 +1,4 @@
-# About EasyCoder #
+# About EasyCoder
 
 Most websites are quite easy to describe in English, yet programmers write their code in JavaScript, which looks nothing like English and which for anyone other than an expert is very hard to follow. So we created ~ec~, a language that looks a lot like English and lets you code much the same way you describe your site. It's a productivity tool you can use to build parts of websites or even entire websites.
 
@@ -12,7 +12,7 @@ By contrast, the 'script' containing ~ec~ commands goes into a special element i
 
 If you'd like to know more we recommend you start with our /CODEX/, a combined tutorial, prorammer's playground and reference manual. Or you can browse the site links /SIDEBAR/.
 
-## Features ##
+## Features
 
 The main features of ~ec~ are as follows:
 
@@ -28,9 +28,11 @@ The main features of ~ec~ are as follows:
 
 ~ec~ scripts are easy to read by most people who have an understanding of what is being done. They are experts in their domain and the script does its best to match that domain. Even so, there are some who don't want to do programming in any way yet would still like to enjoy the results of it. For you we offer a consultancy service. If you would like your pages enhanced in some specific way and are thinking maybe ~ec~ could do it, you can ask a question by joining our /SLACK/. We'll be pleased to discuss your needs in complete privacy and without obligation.
 
----
-**Note:** This static website is designed to provide a legacy alternative to the main ~ec~ site ([https://easycoder.software](https://easycoder.software)) in the event of the latter not being available or becoming unsupported.
 
-### The author ###
+### The author
 
 My name is Graham Trott. I've been writing easy-to-use high-level compilers for 30 years or so amd using them for a range of real-world projects. Since at the time of writing I'm now over 70 years old, ~ec~ will be the last in the line. This website, hosted by GitHub, is the public-facing side of the [EasyCoder repository](https://github.com/easycoder), where you will find all the source code, example programs and much more. The website will probably outlive me by some margin so I can't guarantee I'll be around to provide help, though you're welcome to try me at gtanyware@gmail.com.
+
+## Call for help - Open Source project
+
+As I am now well into retirement I would be more than happy to hand over this entire project to someone else, who would then be free to take it in any direction they see fit, with no strings attached. If you are interested, pop me an email at the address above.
