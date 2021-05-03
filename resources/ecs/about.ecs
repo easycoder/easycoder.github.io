@@ -57,9 +57,9 @@ Start:
         if CodexModule is not running
         begin
     	    require js `dist/plugins/codemirror.js`
-        	rest get Codex from `/resources/ecs/codex.ecs`
+        	rest get Script from `/resources/ecs/codex.ecs`
         	send `hide` to parent
-        	run CodexModule
+        	run Script as CodexModule
         end
         send `start` to CodexModule
     end
