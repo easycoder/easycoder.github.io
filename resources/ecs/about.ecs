@@ -55,7 +55,7 @@ Start:
     begin
     alert `Codex`
 	    require js `dist/plugins/codemirror.js`
-    	rest get Codex from `/resources/ecs/codex`
+    	rest get Codex from `/resources/ecs/codex.ecs`
     	send `hide` to parent
     	run Codex
     end
