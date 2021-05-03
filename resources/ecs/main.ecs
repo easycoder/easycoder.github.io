@@ -274,8 +274,7 @@ DoNotes:
 
   	json parse url the location as Args
     put property `arg` of Args into Arg
-    if Arg is not empty go to RunCodex
-	stop
+    if Arg is empty stop
 
 RunCodex:
 	if module CodexModule is not running
@@ -287,7 +286,7 @@ RunCodex:
 		set style `display` of Body to `none`
 		run Script as CodexModule
 	end
-	set `start` to CodexModule
+	send `start` to CodexModule
     stop
 
 ShowLife:
