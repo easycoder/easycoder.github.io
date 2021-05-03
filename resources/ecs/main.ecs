@@ -277,12 +277,16 @@ DoNotes:
 	stop
 
 RunCodex:
-	require js `dist/plugins/codemirror.js`
-	require js `dist/plugins/float.js`
-	rest get Script from `/resources/ecs/codex.ecs`
-	send `pause` to CurrentModule
-	set style `display` of Body to `none`
-	run Script
+	if module CodexModule is not running
+	begin
+		require js `dist/plugins/codemirror.js`
+		require js `dist/plugins/float.js`
+		rest get Script from `/resources/ecs/codex.ecs`
+		send `pause` to CurrentModule
+		set style `display` of Body to `none`
+		run Script as CodexModule
+	end
+	set `start` to CodexModule
     stop
 
 ShowLife:

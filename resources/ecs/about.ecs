@@ -53,7 +53,7 @@ Start:
     attach CodexButton to `about-codex`
     on click CodexButton
     begin
-        if Codex is not running
+        if module Codex is not running
         begin
     	    require js `dist/plugins/codemirror.js`
         	rest get Codex from `/resources/ecs/codex.ecs`
