@@ -28,7 +28,7 @@ Once you have edit access to an empty server directory, create an `index.html` f
 
 If all is well, when you type the URL of the page into your browser the message **Hello, world!** should appear in a popup message window.
 
-The upper half of the file is the _HEAD_ of the document. In here is a call to load the ~ec~ JavaScript engine that we'll be using instead of regular JavaScript. It's called from a _Content Delivery Network_ that takes files from the main source-code repository for ~ec~. Don't worry if this is all a bit too technical; it's not necessary to understand in order to use it.
+The upper half of the file is the _HEAD_ of the document. In here is a call to load the ~ec~ JavaScript engine that we'll be using instead of regular JavaScript. It's called from a _Content Delivery Network_ that takes files from the  ~ec~ source-code repository. Don't worry if this is all a bit too technical; it's not necessary to understand in order to use it.
 
 The lower half of the file is the _BODY_ of the document, which contains everything your users are going to see. This example, being as simple as you can get, has a single element, a `<div>` element inside which is the 1-line script that displays the popup message you just saw. ~ec~ scripts look a lot like English, and like human languages they use very few symbols. It's very easy to learn the basics and whatever you write always goes inside the `<div>` element we see here.
 

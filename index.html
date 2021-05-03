@@ -18,13 +18,45 @@
 	<div id="developer-notes" style="display:none">
 		<hr />
 		<h2 id="ec-body">Developer Notes</h2>
-		<p>My name is Graham Trott and I&#8217;m the author of EasyCoder. I&#8217;m writing this in January 2020 and I&#8217;m currently 71 years old.</p>
-		<p>If you are reading this it&#8217;s for one of a couple of reasons. You may be curious to see what the page source code looks like, or you may want to build something similar, perhaps long after I&#8217;m no longer available.</p>
-		<p>Almost all software becomes harder and harder to read the more time passes since it was written. After a few years, even the original author will have some difficulty in figuring out what was done, and anyone coming new to a project will have major trouble in all but the simplest of cases. So these notes are intended to provide a starting point.</p>
-		<p>EasyCoder is a custom high-level scripting language that is itself written in JavaScript. So you can say quite correctly that any site using it is powered by JavaScript. At the time of writing it&#8217;s de rigeur to use a framework such as Angular or React, but after a few years these will become obsolete as newer technologies arrive. In any case, frameworks are not designed to make it easy to pick up a project; they&#8217;re intended to benefit developers who are writing new code. As such they are an implicit admission that the language itself (JavaScript) is not up to the job and requires extra features not provided by its authors.</p>
-		<p>My preference is to use a better language, one that is designed to do the job without requiring a host of bolt-on extras. Since none were available I wrote my own and it&#8217;s called EasyCoder. I won&#8217;t provide a step-by-step tutorial (I have to leave you some work to do!) but just point you to where you can get the information you need.</p>
-		<p>EasyCoder has/had its own website at <a href="https://easycoder.software">https://easycoder.software</a>, but this will only continue to exist as long as someone goes on paying the hosting fees. Once I&#8217;m no longer around they may well stop. For this and other reasons I created this static website on GitHub carrying a tutorial on the language and a complete programmers&#8217; reference manual. This will continue without any intervention from me. The repository is at <a href="https://github.com/easycoder">https://github.com/easycoder</a>, and in the &#8220;codex&#8221; folder you&#8217;ll find all the files plus a zipped archive. It should be possible to place this on a server and run it up. Inside the Codex is a table of contents with a number of articles about building websites with EasyCoder. One of these explains the mechanism used here, where the home page contains just a boot script which loads the main script(s) that do all the work. With the help of the debugger in your browser you should be able to get familiar with the architecture, though in most cases all you will need is to know the script commands themselves, all of which are documented in the Codex.</p>
-		<p>And that&#8217;s all I have to say. I hope to be around for a few years yet, so do contact me if you would like to know anything. After that it&#8217;ll be out of my hands.</p>
+		<p>My name is Graham Trott and I&#8217;m the author of EasyCoder. I&#8217;m writing this in
+			January 2020 and I&#8217;m currently 71 years old.</p>
+		<p>If you are reading this it&#8217;s for one of a couple of reasons.
+			You may be curious to see what the page source code looks like,
+			or you may want to build something similar, perhaps long after I&#8217;m no longer available.</p>
+		<p>Almost all software becomes harder and harder to read the more time passes since it was written.
+			After a few years, even the original author will have some difficulty in figuring out
+			what was done, and anyone coming new to a project will have major trouble
+			in all but the simplest of cases. So these notes are intended to provide a starting point.</p>
+		<p>EasyCoder is a custom high-level scripting language that is itself written in JavaScript.
+			So you can say quite correctly that any site using it is powered by JavaScript.
+			At the time of writing it&#8217;s de rigeur to use a framework such as Angular or React,
+			but after a few years these will become obsolete as newer technologies arrive.
+			In any case, frameworks are not designed to make it easy to pick up a project;
+			they&#8217;re intended to benefit developers who are writing new code.
+			As such they are an implicit admission that the language itself (JavaScript)
+			is not up to the job and requires extra features not provided by its authors.</p>
+		<p>My preference is to use a better language, one that is designed to do the job
+			without requiring a host of bolt-on extras. Since none were available I wrote my own
+			and it&#8217;s called EasyCoder. I won&#8217;t provide a step-by-step tutorial
+			(I have to leave you some work to do!) but just point you to where you can get
+			the information you need.</p>
+		<p>The EasyCoder source code repository is at
+			<a href="https://github.com/easycoder">https://github.com/easycoder</a>.
+			It should be possible to place this on a server and run it up.
+			Inside the Codex is a table of contents with a number of articles
+			about building websites with EasyCoder. One of these explains the mechanism used here,
+			where the home page contains just a boot script which loads the main script(s)
+			that do all the work. With the help of the debugger in your browser you should be able
+			to get familiar with the architecture, though in most cases all you will need is to know
+			the script commands themselves, all of which are documented in the Codex.</p>
+		<p>To create your own EasyCoder website, use the top part of this file as a template.
+			EasyCoder itself is brought in from CDN; the only local resource apart from a stylesheet
+			is the script itself, which is embedded in a &lt;pre&gt;...&lt;/pre&gt; tag as shown above.
+			In this particular case the script is just a boot that calls in a much larger script,
+			but if you prefer you can dispense with that mechanism and put everything into index.html.
+		</p>
+		<p>And that&#8217;s all I have to say. I hope to be around for a few years yet,
+			so do contact me if you would like to know anything. After that it&#8217;ll be out of my hands.</p>
 	</div>
 </body>
 </html>
