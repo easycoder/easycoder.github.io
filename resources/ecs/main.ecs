@@ -307,4 +307,5 @@ DeselectAllButtons:
     set style `background` of PhilosophyButton to ``
     set style `background` of ContactButton to ``
     set style `background` of TechnicalButton to ``
+    set style `background` of WordpressButton to ``
     return
