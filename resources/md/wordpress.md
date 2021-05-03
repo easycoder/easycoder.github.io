@@ -26,9 +26,9 @@ Then create your ~ec~ script in its own &lt;div&gt;, adding a suitable variable:
 
 ```
 <div id="easycoder-script">
-&nbsp;&nbsp;&nbsp;div Anchor
-&nbsp;&nbsp;&nbsp;...
-&nbsp;&nbsp;&nbsp;attach Anchor to `my-anchor-div`
+   div Anchor
+   ...
+   attach Anchor to `my-anchor-div`
 </div>
 ```
 
