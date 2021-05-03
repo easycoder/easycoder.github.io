@@ -1,6 +1,6 @@
 ## The simple yet powerful alternative to JavaScript ##
 
-~ec~ is a comprehensive, easy-to-use scripting language that looks a lot like English. It lets you build interactive websites or add interactivity to your existing website.
+~ec~ is a comprehensive, easy-to-use scripting language that looks a lot like English. It lets you build interactive websites or add interactivity to your existing website. For example, this entire website is built with EasyCoder scripts and Markdown text, with no HTML or JavaScript used beyond the index.html file.
 
 ### What sort of things does it do? ###
 
