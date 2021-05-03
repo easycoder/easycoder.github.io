@@ -234,7 +234,7 @@ BuildPage:
 	create WordPressButton in ButtonItem
 	set the style of WordPressButton to ButtonStyle
 	set style `margin-top` of WordPressButton to `0.25em`
-	set the text of WordPressButton to `Technical Overview`
+	set the text of WordPressButton to `WordPress`
 	on click WordPressButton
 	begin
 		gosub to DeselectAllButtons
