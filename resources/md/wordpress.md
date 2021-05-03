@@ -4,11 +4,17 @@ WordPress, which powers over a third of the world's websites, is a huge and thri
 
 In virtually all cases it's quite easy to explain in plain English what it is you want your site to do. In general it will be to react to a user action (or other event) by altering what is shown on screen. So what could be more natural than to take that same English description and run it as actual code?
 
-That's what ~ec~ is all about. It's a programming language that looks like English, and its scripts can be embedded in any web page. It's a quick solution for people who want to add a little bit of interactivity to their page, or to get a bit more control over its content.
+That's what ~ec~ is all about. It's a programming language that looks like English, and its scripts can be embedded in any web page. It's a quick solution for people who want to add a little bit - or even a lot - of interactivity to their page, or to get more control over its content.
 
 Most of the information in this website is relevant to WordPress, but part of it isn't needed because the WordPress environment is special. Rather than you having to create a HEAD and a BODY for every page, all you do is focus on the content. WordPress does the rest.
 
-So to use ~ec~ in Wordpress, first add the ~ec~ plugin, which will call in the ~ec~ JavaScript engine when your page loads. Almost everything else is done as described elsewhere in these pages. You will need to create a special &lt;div&gt; to hold the EasyCoder script, and if it is to operate on some element of your page this will need its own id, so occasionally you'll have to drop into text editing mode.
+So to use ~ec~ in Wordpress, first add code to the page HEAD to call in ~ec~. We recommend installing the WordPress _Header and Footer Scripts_  plugin (or an equivalent), and use it to add the following header:
+
+```
+<script src='https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js?ver=2.7.6'></script>
+```
+
+which will call in the ~ec~ JavaScript engine when your page loads. Almost everything else is done as described elsewhere in these pages. You will need to create a special &lt;div&gt; to hold the EasyCoder script, and if it is to operate on some element of your page this will need its own id, so occasionally you'll have to drop into text editing mode.
 
 A good place to start is by creating a blank Page and adding an empty &lt;div&gt; to it, such as
 
@@ -16,13 +22,13 @@ A good place to start is by creating a blank Page and adding an empty &lt;div&gt
 <div id="my-anchor-div"></div>
 ```
 
-Then create your ~ec~ script, adding to it a suitable variable:
+Then create your ~ec~ script in its own &lt;div&gt;, adding a suitable variable:
 
 ```
 <div id="easycoder-script">
-div Anchor
-...
-attach Anchor to `my-anchor-div`
+&nbsp;&nbsp;&nbsp;div Anchor
+&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;&nbsp;attach Anchor to `my-anchor-div`
 </div>
 ```
 
