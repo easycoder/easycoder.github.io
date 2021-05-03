@@ -10,8 +10,8 @@ Let's start with one of the simplest possible cases, where the user clicks the ~
 
 Interactions between the ~ec~ and ~code:Showdown~ scripts occur in 2 ways:
 
- 1 ~code:Markdown~/~code:Showdown~ can include HTML sections according to your needs. If a hyperlink element with an id is placed in a ~code:.md~ script, ~ec~ can attach one of its own variables to the hyperlink and detect when it is clicked.
+1. ~code:Markdown~/~code:Showdown~ can include HTML sections according to your needs. If a hyperlink element with an id is placed in a ~code:.md~ script, ~ec~ can attach one of its own variables to the hyperlink and detect when it is clicked.
 
- 1 In the same way, any element with an id can have its content altered at will by ~ec~. This allows the page to change dynamically under script control.
+1. In the same way, any element with an id can have its content altered at will by ~ec~. This allows the page to change dynamically under script control.
 
- There's a fair amount of detail that I've glossed over by picking the simplest example, but this should at least provide an indication of where to start gaining an understanding of the code.
+There's a fair amount of detail that I've glossed over by picking the simplest example, but this should at least provide an indication of where to start gaining an understanding of the code.
