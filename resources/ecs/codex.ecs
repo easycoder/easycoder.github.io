@@ -328,23 +328,23 @@ L2:
     end
 	on click Exit
     begin
-!		stop DocManModule
-!    	remove element Body
-!        send `restore` to parent
-!        history set url `.`
-!        exit
-        set style `display` of Body to `none`
-        alert `Exit`
+		stop DocManModule
+    	remove element Body
+        send `restore` to parent
+        history set url `.`
+        exit
+!        set style `display` of Body to `none`
+!        alert `Exit`
     end
     
     on message
     begin
     	put the message into Message
         alert Message
-    	if Message is `start`
-        begin
-            set style `display` of Body to `block`
-        end
+!    	if Message is `start`
+!        begin
+!            set style `display` of Body to `block`
+!        end
     	if Message is `next` go to StepForward
         if Message is `tutorial`
         begin
