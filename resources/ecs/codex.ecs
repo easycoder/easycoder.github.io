@@ -332,16 +332,21 @@ L2:
     	remove element Body
         send `restore` to parent
         history set url `.`
-        exit
+!        exit
+        set style `display` of Body to `none`
     end
     
     on message
     begin
     	put the message into Message
+    	if Message is `start`
+        begin
+            set style `display` of Body to `block`
+        end
     	if Message is `next` go to StepForward
         if Message is `tutorial`
         begin
-		    	set style `display` of ReferencePanel to `none`
+		    set style `display` of ReferencePanel to `none`
 	        set style `display` of HelpPanel to `block`
 	        set style `display` of HelpButtons to `block`
 	        put empty into storage as `.ref`

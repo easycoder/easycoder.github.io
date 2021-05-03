@@ -53,10 +53,13 @@ Start:
     attach CodexButton to `about-codex`
     on click CodexButton
     begin
-    alert `Codex`
-	    require js `dist/plugins/codemirror.js`
-    	rest get Codex from `/resources/ecs/codex.ecs`
-    	send `hide` to parent
-    	run Codex
+        if Codex is not running
+        begin
+    	    require js `dist/plugins/codemirror.js`
+        	rest get Codex from `/resources/ecs/codex.ecs`
+        	send `hide` to parent
+        	run Codex
+        end
+        send `start` to Codex
     end
     stop
