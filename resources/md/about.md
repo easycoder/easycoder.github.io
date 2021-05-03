@@ -10,7 +10,7 @@ In some cases this might be all you need; something simple that happens in respo
 
 By contrast, the 'script' containing ~ec~ commands goes into a special element in your HTML and it's ready for use as soon as the page loads. No complicated compilers, linkers, loaders or other tools are needed; you just write what you want then refresh the page to see it in action.
 
-If you'd like to know more we recommend you start with our /CODEX/, a combined tutorial, prorammer's playground and reference manual. Or you can browse the site links /SIDEBAR/.
+If you'd like to know more we recommend you start with our `Codex`, a combined tutorial, prorammer's playground and reference manual. You can browse the site links /SIDEBAR/.
 
 ## Features
 

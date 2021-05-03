@@ -5,11 +5,9 @@
     import module Showdown
     
     button ShowMeButton
-    button CodexButton
     module CodexModule
     variable Script
     variable Item
-    variable Codex
     variable ShowMe
     variable Message
     
@@ -25,7 +23,6 @@
     rest get Item from `/resources/fragment/about/0.txt`
     replace `/0/` with `<span style="font-family:mono;color:darkred">` cat Item cat `</span>` in Script
     replace `/SHOWME/` with `<button style="margin-left:3em" id="showme">Show Me</button>` in Script
-	replace `/CODEX/` with `<a href="#" id="about-codex">EasyCoder Codex</a>` in Script
     replace `/SLACK/` with `<a href="https://easycoder-software.slack.com">Slack workspace</a>` in Script
 
     on message
@@ -50,17 +47,5 @@ Start:
     	if ShowMe set style `background` of ShowMeButton to ``
         else set style `background` of ShowMeButton to `pink`
         toggle ShowMe
-    end
-    attach CodexButton to `about-codex`
-    on click CodexButton
-    begin
-        if CodexModule is not running
-        begin
-    	    require js `dist/plugins/codemirror.js`
-        	rest get Script from `/resources/ecs/codex.ecs`
-        	send `hide` to parent
-        	run Script as CodexModule
-        end
-        send `start` to CodexModule
     end
     stop
