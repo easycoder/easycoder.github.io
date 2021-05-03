@@ -36,6 +36,7 @@
 	module WordPressModule
 	module HowItWorksModule
 	module CurrentModule
+	module CodexModule
 	variable Script
 	variable ButtonStyle
 	variable Message
