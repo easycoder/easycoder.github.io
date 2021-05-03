@@ -340,7 +340,7 @@ L2:
     on message
     begin
     	put the message into Message
-        alert Message
+!        alert Message
 !    	if Message is `start`
 !        begin
 !            set style `display` of Body to `block`
