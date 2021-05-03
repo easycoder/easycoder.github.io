@@ -32,10 +32,10 @@ Then create your ~ec~ script in its own &lt;div&gt;, adding a suitable variable:
 </div>
 ```
 
-The variable Anchor now becomes the container in which your entire ~ec~ script lives and you can do anything you like with it. For example, go to the _Mexican Wave_ example in the codex, copy its code and paste this into your page inside the `easycoder-script` tag. You'll need to change the line `create Container` to
+The variable `Anchor` now becomes the container in which your entire ~ec~ script lives and you can do anything you like with it. For example, go to the _Mexican Wave_ example in the codex, copy its code and paste this into your page inside the `easycoder-script` tag. You'll need to change the line `create Container` to
 
 ```
 attach Container to `my-anchor-div`
 ```
 
-When you load the page the animation runs - it's as simple as that.
+When you load the page the animation runs - it's as simple as that. There's no need to learn how to use a complicated IDE or build tools; just write code and save it. Your changes are visible immediately.
