@@ -4,9 +4,10 @@
 
 **_EasyCoder_** has [its own website](https://easycoder.github.io) here on GitHub. Here you will find examples, tutorials and a programmer's playground where you can quickly create interactive apps.
 
-## The main benefits of **_EasyCoder_**
+## The key features of **_EasyCoder_**
 
  1. It's quick to write browser applications in **_EasyCoder_**. Website development is faster and sites are more reliable because they are more compact and easier to read.
+ 1. **_EasyCoder_** requires no build environment. It compiles plain-text scripts in the browser and runs them immediately. Compilation is usually in the low tens of millseconds, even on a smartphone.
  1. **_EasyCoder_** scripts are smaller than the corresponding JavaScript and are easy to read by most people, not just by programmers. This matters later on when maintenance is needed and the original programmer may no longer be available.
  1. **_EasyCoder_** is well suited to the construction of single-page web designs of unlimited size. The memory space occupied by JavaScript remains roughly the same no matter how many scripts and data you load and unload using REST. There is no memory or performance hit as the size of the project grows, because unused modules remain on the server, ready for use, instead of taking up permanent browser space.
  1. The language itself is a subset of plain English, with commands to do things that are complex to do in JavaScript such as handling REST dialogs, custom GUI elements and vector graphics. These features are implemented as plug-in JavaScript modules that leave you to focus on the user logic of your website or app.

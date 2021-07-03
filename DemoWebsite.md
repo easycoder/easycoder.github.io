@@ -1,6 +1,6 @@
 ### Here On The Map - a demo website ###
 
-[Here On The Map](https://hereonthemap.com) is a website that shows off the capabilities of **_EasyCoder_**. It is a 100% scripted website; single-page and driven from the browser. All of its scripts are included in this repository, in the "scripts" folder.
+[Here On The Map](https://hereonthemap.com) is a website that shows off the capabilities of **_EasyCoder_**. Although built using the WordPress framework it's a 100% scripted website; single-page and driven from the browser. All of its scripts are included in this repository, in the "scripts" folder.
 
 The purpose of Here On The Map is to demonstrate that website coding need not be complex. In fact, for the majority of websites you don't need to learn JavaScript, let alone any of the over-complicated frameworks that have become de _rigeur_ for anyone wanting to show off their programming skills, but which generally leave a website in an un-maintainable state.
 
