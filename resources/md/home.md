@@ -6,6 +6,8 @@
 
 - ~ec~ can do most of the things JavaScript can do, either when used to enhance (bring interactivity to) an existing page or as the driving script for an entire website. The main difference is that ~ec~ uses _language_ to  describe things in terms people understand naturally, whereas JavaScript and its many frameworks focus on _structure_ and are more suited to professional programmers who are able to cope better with the complexity involved.
 
+- ~ec~ requires no build environment. It compiles plain-text scripts in the browser and runs them immediately. Compilation is usually in the low tens of millseconds, even on a smartphone.
+
 - Many websites consist of a long single page that have to be scrolled to get to the details, but it can be hard to know where anything is and there's usually no effective organization. With a few lines of script such a page can be divided into sections that can be hidden and revealed one at a time like a slide deck.
 
 - If you have a number of items on a page you could show which the user has already looked at by drawing an outline round each one, changing the background color or overlaying a tick in one corner.
