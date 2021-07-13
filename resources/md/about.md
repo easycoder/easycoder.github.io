@@ -28,14 +28,13 @@ The main features of ~ec~ are as follows:
 
 ~ec~ scripts are easy to read by most people who have an understanding of what is being done. They are experts in their domain and the script does its best to match that domain. Even so, there are some who don't want to do programming in any way yet would still like to enjoy the results of it. For you we offer a consultancy service. If you would like your pages enhanced in some specific way and are thinking maybe ~ec~ could do it, you can ask a question by joining our /SLACK/. We'll be pleased to discuss your needs in complete privacy and without obligation.
 
-
 ### The author
 
 My name is Graham Trott. I've been writing easy-to-use high-level compilers for 30 years or so amd using them for a range of real-world projects. Since at the time of writing I'm now over 70 years old, ~ec~ will be the last in the line. This website, hosted by GitHub, is the public-facing side of the [EasyCoder repository](https://github.com/easycoder), where you will find all the source code, example programs and much more. The website will probably outlive me by some margin so I can't guarantee I'll be around to provide help, though you're welcome to try me at gtanyware@gmail.com.
 
-In 2000 I got interested in how and where to host my memoirs so they won't be lost after I'm no longer around. Maybe I'm presuming a lot to believe anyone would want to read them, but historians often find these things useful, plus if I don't do it nobody else will. So I wrote a toolkit for buuilding static websites and called it Storyteller. It written entirely using ~ec~ (of course) and you'll find its home page [here](https://storyteller-framework.netlify.app/).
+In 2000 I got interested in how and where to host my memoirs so they won't be lost after I'm no longer around. Maybe I'm presuming a lot to believe anyone would want to read them, but historians often find these things useful, plus if I don't do it nobody else will. For anyone interested they are [here](https://graham-trott-memoirs.netlify.app/).
 
-As for the memoirs themselves, you'll find the home page [here](https://graham-trott-memoirs.netlify.app/).
+To make it super-simple to construct a large static multi-page document such as this, I wrote a toolkit I call Storyteller. It written entirely using ~ec~ (of course) and you'll find its home page [here](https://storyteller-framework.netlify.app/).
 
 ## Call for help - Open Source project
 
