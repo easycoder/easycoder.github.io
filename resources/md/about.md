@@ -33,6 +33,10 @@ The main features of ~ec~ are as follows:
 
 My name is Graham Trott. I've been writing easy-to-use high-level compilers for 30 years or so amd using them for a range of real-world projects. Since at the time of writing I'm now over 70 years old, ~ec~ will be the last in the line. This website, hosted by GitHub, is the public-facing side of the [EasyCoder repository](https://github.com/easycoder), where you will find all the source code, example programs and much more. The website will probably outlive me by some margin so I can't guarantee I'll be around to provide help, though you're welcome to try me at gtanyware@gmail.com.
 
+In 2000 I got interested in how and where to host my memoirs so they won't be lost after I'm no longer around. Maybe I'm presuming a lot to believe anyone would want to read them, but historians often find these things useful, plus if I don't do it nobody else will. So I wrote a toolkit for buuilding static websites and called it Storyteller. It written entirely using ~ec~ (of course) and you'll find its home page [here](https://storyteller-framework.netlify.app/).
+
+As for the memoirs themselves, you'll find the home page [here](https://graham-trott-memoirs.netlify.app/).
+
 ## Call for help - Open Source project
 
 As I am now well into retirement I would be more than happy to hand over this entire project to someone else, who would then be free to take it in any direction they see fit, with no strings attached. If you are interested, pop me an email at the address above.
