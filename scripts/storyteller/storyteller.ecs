@@ -10,7 +10,6 @@
     div TopicText
     div ImageDiv
     div Mask
-    pre Branch
     pre Resources
     img BigPic
     img TopImage
@@ -29,6 +28,8 @@
     variable CDNPath
     variable Args
     variable Arg
+    variable Mode
+    variable NClicks
     variable Stories
     variable Themes
     variable Theme
@@ -92,10 +93,7 @@
     	if portrait set Mobile
     end
     
-!    attach Branch to `storyteller-branch`
-!    put the content of Branch into Value
-!    put `https://cdn.jsdelivr.net/gh/easycoder/storyteller@` cat Value into CDNPath
-    put `https://cdn.jsdelivr.net/gh/easycoder/storyteller@master` into CDNPath
+    put `https://cdn.jsdelivr.net/gh/easycoder/storyteller` into CDNPath
     
     attach Resources to `storyteller-stories`
     put the content of Resources into Stories
@@ -123,6 +121,7 @@
     
     create Content in Container
     set style `position` of Content to `absolute`
+    set style `height` of Content to `100vh`
     if Mobile
     begin
         create ButtonBar in Content
@@ -134,6 +133,27 @@
         create ButtonBar in Content
     end
     create TopicText in Content
+
+! Detect a triple click on the title
+    get Mode from storage as `mode`
+    put 0 into NClicks
+    on click TitleDiv
+    begin
+        add 1 to NClicks
+        if NClicks is 1
+        begin
+            if Mode is `admin`
+            begin
+                put empty into Mode
+                put 0 into NClicks
+            end
+        end
+        else if NClicks is 3
+        begin
+            put `admin` into Mode
+            put 0 into NClicks
+        end
+    end
 
   	json parse url the location as Args
     put property `arg` of Args into Arg
@@ -190,7 +210,6 @@
 
 !	View a record, given its Subject and Topic ids.
 ViewRecord:
-	if not Mobile scroll TopicText to 0
     rest get Record from Stories cat SID cat `/content.txt?v=` cat now
     or begin
     	put `home` into SID
@@ -405,12 +424,18 @@ ViewRecord:
             end
         end
     end
+
+    wait 20 ticks
+    if Mode is `admin` alert `Scroll`
+    if Mobile scroll to 0 else scroll TopicText to 0
+!    scroll TopicText to 0 ! This doesn't work on mobile
+
  	stop
 
 !	Set up the theme
 SetupTheme:
 	get Theme from storage as `theme`
-    if Theme is empty rest get Theme from Stories cat  `theme.txt`
+    if Theme is empty rest get Theme from Stories cat  `theme.txt?v=` cat now
     if left 1 of Theme is `/` 
     begin
         put from 1 of Theme into Theme
@@ -436,11 +461,16 @@ SetupTheme:
     put property `border-t` of Layout into BorderT
     put property `border-b` of Layout into BorderB
     put property `font-scale` of Layout into FontScale
-    if not Mobile
+    if Mobile
     begin
-	    set attribute `src` of MidImage to CDNPath cat `/themes/` cat Theme cat `/mid.jpg`
-	    set attribute `src` of TopImage to CDNPath cat `/themes/` cat Theme cat `/top.jpg`
-	    set attribute `src` of BottomImage to CDNPath cat `/themes/` cat Theme cat `/bottom.jpg`
+        multiply FontScale by 3
+        divide FontScale by 2
+    end
+    else
+    begin
+	    set attribute `src` of MidImage to Path cat `/themes/` cat Theme cat `/mid.jpg`
+	    set attribute `src` of TopImage to Path cat `/themes/` cat Theme cat `/top.jpg`
+	    set attribute `src` of BottomImage to Path cat `/themes/` cat Theme cat `/bottom.jpg`
     end
 	return
 
@@ -512,7 +542,6 @@ CreateButtons:
         put `content` into TID
         go to ViewAnotherRecord
     end
-
 	return
 
 !	View another record, given the Subject and Topic ids
@@ -730,8 +759,10 @@ ProcessImage:
         add 1 to N
         if Data is not empty
         begin
-        	if Class is not empty put Class cat ` ` into Class 
-        	put Class cat from N of Data into Class
+! Redundant code removed, 27/7/21
+!        	if Class is not empty put Class cat ` ` into Class 
+!        	put Class cat from N of Data into Class
+        	put from N of Data into Class
         end
         put the position of `!` in Class into N
         if N is not -1
