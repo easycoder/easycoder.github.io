@@ -67,7 +67,7 @@ const EasyCoder_Value = {
 
 	compile: compiler => {
 		const token = compiler.getToken();
-		const item = EasyCoder_Value.getItem(compiler);
+		let item = EasyCoder_Value.getItem(compiler);
 		if (!item) {
 			throw new Error(`Undefined value: '${token}'`);
 		}
@@ -80,7 +80,11 @@ const EasyCoder_Value = {
 			};
 			while (compiler.tokenIs(`cat`)) {
 				compiler.next();
-				value.parts.push(compiler.value.getItem(compiler));
+                item = EasyCoder_Value.getItem(compiler);
+                if (!item) {
+                    throw new Error(`Undefined value: '${token}'`);
+                }
+				value.parts.push(item);
 			}
 			return value;
 		}
