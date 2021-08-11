@@ -1,0 +1,138 @@
+# Keyword handlers
+
+Here we come to the heart of the compiler. When the compiler starts to evaluate a command, the first word will be a command verb or a special word such as `if` or `while`. The compiler tries each of the available domains in turn until one reports it is able to handle that keyword. This is done by a call to a function inside the domain handler. The one for the "core" package looks like this:
+```
+	getHandler: (name) => {
+		switch (name) {
+		case `add`:
+			return EasyCoder_Core.Add;
+		case `alias`:
+			return EasyCoder_Core.Alias;
+		case `append`:
+			return EasyCoder_Core.Append;
+		case `begin`:
+			return EasyCoder_Core.Begin;
+        ...
+		case `variable`:
+			return EasyCoder_Core.Variable;
+		case `wait`:
+			return EasyCoder_Core.Wait;
+		case `while`:
+			return EasyCoder_Core.While;
+		default:
+			return null;
+		}
+	},
+```
+Each of the keywords has its own handler function within this JavaScript module, whose name is `EasyCoder_Core`. If the token is named in the list, the function returns the handler; otherwise it returns null. The compiler will then try the remaining unvisited domains to see if there's another one able to handle the same keyword. This may seem strange at first, but some keywords can be found in several packages. A good example is `create`, which can create a DOM object, a Google Map or a custom object specific to a particular real-world problem domain.
+
+Perhaps the most important command is `stop`, which causes the current thread of execution to stop. In a browser environment, new threads are started every time an event is handled; I'll get to this later. There's also the possibility of setting up multiple threads that take turns to do a bit of processing before handing over to another thread. This is covered in the page on ~tid:Multitasking~.
+
+There's also likely to be an `exit` command, which not only stops the current thread but terminates the entire program instance, which ideally should clean itself up and remove itself from the browser. You should choose what action should happen if execution reaches the end of a script without either `stop` or `exit` being found. The `exit` command is unlikely to be used by the mai program running in a browser as the page would stop operating, but if you've called in other scripts it's sometimes useful to be able to terminate them.
+
+Let's continue by examining how to process an `add` command. Here's the handler:
+```
+	Add: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			// Get the (first) value
+			let value1;
+			try {
+				value1 = compiler.getValue();
+			} catch (err) {
+				return false;
+			}
+			if (compiler.tokenIs(`to`)) {
+				compiler.next();
+				// Check if a value holder is next
+				if (compiler.isSymbol()) {
+					const symbol = compiler.getSymbol();
+					const variable = compiler.getCommandAt(symbol.pc);
+					if (variable.isVHolder) {
+						if (compiler.peek() === `giving`) {
+							// This variable must be treated as a second value
+							const value2 = compiler.getValue();
+							compiler.next();
+							const target = compiler.getToken();
+							compiler.next();
+							compiler.addCommand({
+								domain: `core`,
+								keyword: `add`,
+								lino,
+								value1,
+								value2,
+								target
+							});
+						} else {
+							// Here the variable is the target.
+							const target = compiler.getToken();
+							compiler.next();
+							compiler.addCommand({
+								domain: `core`,
+								keyword: `add`,
+								lino,
+								value1,
+								target
+							});
+						}
+						return true;
+					}
+					compiler.warning(`core 'add': Expected value holder`);
+				} else {
+					// Here we have 2 values so 'giving' must come next
+					const value2 = compiler.getValue();
+					if (compiler.tokenIs(`giving`)) {
+						compiler.next();
+						const target = compiler.getToken();
+						compiler.next();
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `add`,
+							lino,
+							value1,
+							value2,
+							target
+						});
+						return true;
+					}
+					compiler.warning(`core 'add'': Expected "giving"`);
+				}
+			}
+			return false;
+		},
+
+		// runtime
+
+		run: program => {
+            // I'll describe this later
+		}
+	},
+
+```
+Please note that this code is quite elderly and could benefit from some optimization.
+
+The `Add` handler comprises two functions: `compile(compiler)` and `run(program)`. We'll talk about the second of these later in this book. The `compile(compiler)` function first calls `compiler.getLino()` to request the current line number, which will be needed in order to report errors in a friendly way. Then it moves the token pointer along the token stream using `compiler.next()`.
+
+The next token should be a value of some kind, so we call `compiler.getValue()` to get a specification for it. If this fails we throw an error, but if it succeeds we check the next token is `to`. Remember that the source syntax is either
+```
+add X to Y
+```
+or
+```
+add X to Y giving Z
+```
+So we move over the `to`. If what follows is a symbol (variable) then the command could be either of the two forms, but if it's not then the command can only be of the second kind because the first kind requires the second item to be a variable.
+
+So we call `compiler.isSymbol()`. If this returns `true` we then call `compiler.getSymbol()` to retrieve its record from the symbol table. This is an object, one of whose fields contains the program counter value for the variable declaration. We then retrieve the full variable spec using `compiler.getCommandAt(pc)`. Inside here is a field `isVHolder`. If this is not `true` it's an error as the variable isn't one that can hold a value.
+
+At this point we use `compile.peek()` to see what comes next without advancing the token pointer. We're looking for `giving` as the signal that it's the second kind of `add` command. If so, we'll be adding the contents of the current variable to the first value we scanned, so we call `compiler.getValue()` to evaluate it. Then we move to the next token. This is assumed to be the name of the variable into which the result must be placed. (The code above doesn't check this is a value holder but perhaps it should do.) Finally we construct a command object, populating it with everything we've found, and return this to the compiler.
+
+If `giving` wasn't found then `value2` isn't needed and a slightly different version of the command is returned.
+
+For the case where the second item was not a variable, `giving` must be present and the final item must be a variable. Based on my description above it should be quite easy to follow the logic. Note how a warning can be issued instead of throwing an error. This is because another domain may have a similar syntax but differ in some detail. The warning is optional but may help in displaying diagnostics. The function returns `false` if compilation didn't succeeed but nothing was found that could definitely be classed as an error.
+
+In the above I've glossed over `compiler.getValue()`. We'll be covering it later but in the meantime I'll describe some more keyword handler examples. Or you can go ~tid:Values:directly to it now~.
+
+~tid:If:The `if` handler~

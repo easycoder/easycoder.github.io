@@ -1,0 +1,46 @@
+# Domains
+For maximum flexibility your language is divided into _domains_; groups of commands that all pertain to a particular area of the language. There's a _core_ domain, which handles commands that will be present in any language; arithmetic, string handling, conditional statements and so on. In the _**EasyCoder**_ repository there's a version of the language written in Python to run on the command line. This has just a _core_ domain. The JavaScript version, on the other hand, has domains for the browser (basically DOM features), for communication with servers via REST, for JSON processing and several more.
+
+Your compiler will know about the domains that are included in the standard package. The structure allows you to add extra domains at runtime so that scripts requiring their features can be compiled and run. This gives virtually unlimited flexibility to your language. Domain processing modules are just JavaScript files usually kept in a "plugins" folder.
+
+## Other compiler functions
+The remaining functions in the main compiler module manage the overall process of scanning and compiling the incoming token stream. They start by extracting a token then handing it to each of the domain processors in turn until one of them is able to process it. When this happens the domain will return a program command object with a number of standard fields such as
+
+`domain` - the name of the domain
+
+`keyword` - the keyword token
+
+`lino` - the line number in the original scripts
+
+As well as these the domain will have added other fields specific to the command as it has been evaluated. Be mindful at all times that no runtime values are involved here; everything is a _specification_ of how to run the command, extract values from its parameters and so on.
+
+One of the most important features of this system is the way it tries domains in turn to see which one can handle the syntax provided. Here's the function that does this:
+```
+    compileToken: function() {
+        // Try each domain in turn until one can handle the command
+        const token = this.getToken();
+        if (!token) {
+            return;
+        }
+        // console.log(`Compile ${token}`);
+        this.mark();
+        for (const domainName of Object.keys(this.domain)) {
+            // console.log(`Try domain ${domainName} for token ${token}`);
+            const domain = this.domain[domainName];
+            if (domain) {
+                const handler = domain.getHandler(token);
+                if (handler) {
+                    if (handler.compile(this)) {
+                        return;
+                    }
+                }
+            }
+            this.rewind();
+        }
+        console.log(`No handler found`);
+        throw new Error(`I don't understand '${token}...'`);
+    },
+```
+The function iterates the names of the domains, calling `getHandler()` on each one. If the domain is able to process the keyword it returns a handler function, which the compiler then calls to compile the token. This permits several domains to handle different variants of the same keyword. As soon as one of them returns `true` the function can return, knowing that the domain will have posted its compiled code into the program list. Note the way that `mark()` and `rewind()` are used to back up and try the same token with a different domain. If all of them fail it's an error and compilation stops.
+
+~tid:Variables:Compiling variables~

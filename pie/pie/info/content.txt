@@ -1,0 +1,9 @@
+## About this website
+
+This website is built using Storyteller, a system for organizing text files written in an extended Markdown format. The system is fully documented at [its own website](https://storyteller-framework.netlify.app/).
+
+### Customising this website
+
+You may like to experiment with an alternative _theme_; that is, the border style of the page. Storyteller offers a small choice of different themes and you can choose from those currently available by clicking ~theme:here~.
+
+Email enquires can be made to [the author of the system](mailto:gtanyware@gmail.com).

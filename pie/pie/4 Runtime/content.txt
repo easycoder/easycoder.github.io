@@ -1,0 +1,44 @@
+# The runtime engine
+
+Once compilation is complete, its output is a _program_; a list of commands. The job of the runtime engine is to take these commands in linear order or as directed otherwise and perform the duties each one encapsulates. You could regard the commands as an assembly language for a rather special kind of processor.
+
+The runtime engine starts by pushing onto a runtime queue the offset (the program counter) at which to start execution. If the queue was not empty, nothing else happens as the queue already contains one or more threads of execution handling previous run requests.
+
+Once an execution thread stops, by reaching a `stop` or `wait` command, the queue is popped and the next run request starts. If this is well-behaved it too will stop or wait at some point and allow another thread to start. This behaviour creates an illusion of multi-tasking.
+
+In a system where multiple scripts may running at the same time, each one can have its own program and its own queue or you may set up a gloabl queue where each entry comprises a program and its program counter.
+
+Each command contains a `domain` property. This identifies which plugin domain should handle the command. Here's the core of the runtime engine in its simplest form:
+```
+    while (queue.length > 0) {
+        program.pc = queue.shift();
+        while (program.pc) {
+            const domain = program[program.pc].domain;
+            const handler = program.domain[domain];
+            if (!handler) {
+                program.runtimeError(program[program.pc].lino, `Unknown domain '${domain}'`);
+                break;
+            }
+            program.pc = handler.run(program);
+        }
+    }
+```
+Each runtime handler returns the index of the command that should follow it, or zero if there's nothing more to do. Commands continue to be executed until zero is returned.
+
+In the above, `program.domain` is the same list of domains as used by the compiler. The program is initialised with this and other properties at the time it is created.
+
+## Other runtime features
+
+Because execution always passes through the loop shown above as each command is executed, we have scope to add some more features.
+
+### Program runaway
+
+We've all done it; we've set up a program loop and forgotten to increment the loop counter inside the loop. The computer instantly becomes unresponsive and starts to overheat as it races around chasing its own tail. To guard against this you can exploit the fact that execution here is under your control. There are at least 2 options. The simplest is to count the number of commands that have been executed since the thread started, and if this reaches a suitably large number then throw an error. A slightly more complicated option is to get a system timestamp when the thread starts and check the elapsed time on each command. This might require an unacceptable system overhead so maybe do it on every 1000 commands or something similar.
+
+### Trace and debug
+
+If you add a `trace` command you can arrange for the program to stop at each command and post information about itself into a special on-screen `<div>`, then permit the user to interact with the tracer to single-step, do further inspection of variables or resume execution. This can be a very valuable tool during development. You still have the browser debugger abvailable to show you what's happening to your JavaScript, but the tracer operates with knowledge of variable names that aren't easy to find in the low-level debugger.
+
+Trace/debug is implemented in _**EasyCoder**_. The code is all in the `Runtime.js` file and there's a page in the [Codex](https://easycoder.github.io?s=step10) describing the tracer and how to use it.
+
+~sid:5 Plugins:Plugins~

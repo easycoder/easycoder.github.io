@@ -1,0 +1,68 @@
+# The compiler
+
+>_Spoiler alert: If you were hoping for a tutorial on the "correct" way to build a compiler, you may be disappointed. This book is about building a computer language that resembles English, and because this is an unconventional thing to do, the compiler is also unconventional. In spite of that, however, it manages to be very flexible and to achieve sufficiently high performance that in practice it will never be seen doing its work._
+ 
+## Interpreters and compilers
+
+Before embarking on the design of a compiler it's probably best to settle what it should do. In the old days the main choice was between an _interpreter_ and a _compiler_. The first of these takes instructions directly from the source text, works out what they mean and performs the desired functions one at a time according to the program flow. This avoids the need to wait for the entire program to compile (something that used to take rather a long time) but has several disadvantages. Firstly, no error checking is done before the program runs. Secondly, if instructions are repeated (in _for_ loops for example) they are re-interpreted each time. This will usually make the language slow. Thirdly, flow control statements such as _if_, _while_ or _for_ require the progam to choose a path that depends on the outcome of a test. A simple interpreter has no knowledge of where execution should resume, other than by scanning the entire program to find out. This is extremely time-consuming.
+
+The second choice used to be a compiler, which examines the entire program and converts it into the machine-level code needed for the processor to execute it. The program will run far more quickly but you have to wait for compilation to complete before it starts. Once the compiled code is running you have no control over it, unlike with an interpreter which is still managing things as the program runs.
+
+That was the old days. Today the choices are far more nuanced. Interpreters can "learn as they go" so although the program may start slowly it will pick up speed as the interpreter re-uses parts of the code, having left information that will help it the next time it encounters the same code.
+
+Another big change is that compilers don't have to generate "machine code" specific to any given processor architecture. Many compilers, most notably Java, generate code for a hypothetical machine that rarely exists as an actual computing device. A separate run-time engine then "pretends to be" that device and runs the code on whatever hardware it's installed on. The runtime engine is in effect an interpreter, but the code it's running is optimized for speed and efficiency. This approach gives us the best of both worlds.
+
+The compiler I will describe here will generate code that can easily be interpreted and run in a browser.
+
+## Compiler strategy
+
+Books on compiler design generally describe a standard series of steps such as _lexical_, _syntax_ and _semantic analysis_, _code generation_ and _optimization_. The compiler examines the entire program to build an internal representation of if, then traverses the structure to generate and optimize the code. We're not going to do any of that. Not because it's wrong - it certainly isn't - but because it's not the only way. The technique I'll be describing here is based on observation of how human beings process language, particularly foreign language. As far as I know there are no other books on this techinique.
+
+Imagine you encounter some instructions written in some language other than English. Let's say you have a very basic understanding of the language but are in no way fluent, and that you have a dictionary to hand. How do you approach the task?
+
+I'll use an example. Suppose the language is Italian and the first instruction looks like this:
+
+_apri la terza porta a sinistra_
+
+which translates as
+
+_open the third door on the left_
+
+Now I can't guarantee that all minds approach a problem the same way, but this how mine does it:
+
+The first word is _apri_. I look this up in the dictionary and discover it means _open_ (as a command verb). So I deduce that what follows must be something that needs to be opened. The next word is _la_ (_the_) which I will treat as syntactic noise that doesn't affect the overall meaning. Then comes _terza_ (_third_). I realize this isn't a thing at all; it's an ordinal number. So the thing that needs to be opened is the third of something. Save that information and move on to _porta_ (_door_). Yes, this makes sense; it's the third door.
+
+At this point there are potentially several possibilities. Perhaps there's nothing at all, in which case I'll need to make some kind of assumption about which door to open. Perhaps it's telling me _how_ to open the door, with a adjective like _quickly_ or _slowly_? Nope, it's none of them.  It's actually _a_ (_on the_). This is another bit of syntactic noise, but it gives me a good clue as to what to expect, that is, either _right_ or _left_. When I take the next token it's confirmed.
+
+There are several points along the way where more than one possibility branches off from where I am. The technique I'm using tries each of these possibilities in turn until one is found that meets expectations, then I move on. If none of my expectations are met I may have taken a wrong turning earlier, so I back up to that point and try another path. Eventually I either find a complete match for the whole instruction or I conclude that it's nonsense - an error.
+
+And this is essence is how our compiler will do its job; by working its way along a command, trying all the possibilities at each step, backing up and retrying when none match and declaring success or failure at the end. This may sound terribly inefficient but actually it's not. There are a number of advantages to the strategy. One is it needs only a single pass through the source code. Another is it creates code for the hypothetical target machine as it goes. And thirdly is it's very easy to follow and to enhance as new syntax needs to be added.
+
+However, all of the above assumes the program is presented to the compiler as a series of tokens. So we'll have to do a little work on the source script before we can give it to the compiler. This is the job of the _tokenizer_. But before we look at that, here's a note about how to choose good function names.
+
+## Function naming
+
+When you add a JavaScript file to your web page you are adding all its global constants, variables and functions. It's important to name these in such as way that they're not likely to clash with names chosen for other JS modules that might also be added to the page. The best strategy is to keep to a minimum the number of distinct global names and to prefix each one with a unique identifier such as the name of your project. For example, _**EasyCoder**_ comprises a number of source files each of which contains a single function with the name `EasyCoder_`_something_. Here is the start of the main compiler module:
+```
+const EasyCoder_Compiler = {
+
+	name: `EasyCoder_Compiler`,
+
+	getTokens: function() {
+		return this.tokens;
+	},
+
+	warning: function(message) {
+		this.addWarning(message);
+	},
+
+	unrecognisedSymbol: function(item) {
+		this.addWarning(`Unrecognised symbol '${item}'`);
+	},
+	... many more functions ...
+};
+```
+Other modules that require access to compiler functions are always handed a reference to an instance of `EasyCoder_Compiler`.
+
+~tid:Tokenizer:The tokenizer~
+

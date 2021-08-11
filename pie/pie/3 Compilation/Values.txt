@@ -1,0 +1,129 @@
+# Value handlers
+
+In your new language, a _value_ is a single integer, boolean or string quantity. (By single, I mean that map coordinates specifying a given location are not a value; they're a pair of values.) The language has a number of variable types that can be treated as having values according this definition. It also permits the inclusion of variable types that hold other data types such as coordinates or floating-point quantities. To keep things simple I'll ignore these in the following discussion.
+
+A value is a specification of what must be done to retrieve the quantity represented by that value. The distinction is important; the specification is fixed and has a meaning at compile time as well as runtime, but it can only be applied at runtime to retrieve the quantity it represents. A good example might be a value that represents the current timestamp - the number of seconds elapsed since January 1st 1970. This obviously increases every second so its value at compile time is not very useful.
+
+Each specification has a number of properties; how many depends on the type of the value. Here are some of those found in the _**EasyCoder**_ language; your own language may well have its own set depending on your concept of what it means for something to have a value.
+
+`domain` - the current compilation unit. The language permits plug-in extensions to handle unlimited variations in syntax; each plugin deals with a set of commands for a particular domain such as general programming, the DOM, JSON handling, REST, Google Maps etc. This property identifies where the runtime engine should look in order to find a runtime handler for the given value. The domain may be omitted where the value is intrinsic to the core of the compiler.
+
+`type` - the type of this value. Examples are
+
+`constant`, which denotes a numeric or string value. This is an intrinsic type.
+
+`left`, which returns a specified number of characters from a string. This comes from the core package, dealing with general-purpose programming.
+
+`screenWidth`, which returns the screen screen width. This is a browser DOM value.
+
+`latitude`, which might return a floating-point value or a string representation of one. This might be found in a Maps plugin.
+
+A value object may have no properties other than `type` itself - an example being `screenWidth` - or it may have several; some fixed and others evaluated at runtime. Ordinary numeric/string values have a flag to say which data type is being held in the variable and the actual content itself.
+
+When building your own language you may decide to follow the structure of _**EasyCoder**_ or to go for something completely different.
+
+Many variable types - see ~tid:Variables~ - hold an array of values which are then used in numeric or string calculations. Value obects themselves are not visible as script entities but they are key to how the language processes its scripts.
+
+## Processing values
+
+In _**EasyCoder**_, the core compiler has a Values module that processes values that apply generally, such as `true`, `false`, numbers and string constants. It also handles the `cat` operator for string catenation. Here's how it deals with `true`:
+
+```
+		if (token === `true`) {
+			compiler.next();
+			return {
+				type: `boolean`,
+				content: true
+			};
+		}
+```
+
+If the value presented is not `true`, `false`, a numeric constant or a string the compiler calls the domains in turn, where `compiler.domain` holds a list of doman names:
+
+```
+		const index = compiler.getIndex();
+		for (const name of Object.keys(compiler.domain)) {
+			compiler.rewindTo(index);
+			const handler = compiler.domain[name];
+			const code = handler.value.compile(compiler);
+			if (code) {
+				return code;
+			}
+		}
+		return null;
+```
+
+If `null` is returned, signifying a failure to compile, it doesn't automatically imply an error has occurred; the compiler might be checking to see if the script is actually a value or if it needs to look for something else. When implementing your compiler always be mindful of the possibility of a strange-looking syntax being something perfectly legal and handled by another domain.
+
+Here's the first part of the `value.compile` function in _**EasyCoder**_'s `core` domain:
+
+```
+		compile: compiler => {
+			if (compiler.isSymbol()) {
+				const name = compiler.getToken();
+				const symbolRecord = compiler.getSymbolRecord();
+				switch (symbolRecord.keyword) {
+				case `module`:
+					compiler.next();
+					return {
+						domain: `core`,
+						type: `module`,
+						name
+					};
+				case `variable`:
+					const type = compiler.nextToken();
+					if ([`format`, `modulo`].includes(type)) {
+						const value = compiler.getNextValue();
+						return {
+							domain: `core`,
+							type,
+							name,
+							value
+						};
+					}
+					return {
+						domain: `core`,
+						type: `symbol`,
+						name
+					};
+				}
+				return null;
+			}
+
+			var token = compiler.getToken();
+			if (token === `true`) {
+				compiler.next();
+				return {
+					domain: `core`,
+					type: `boolean`,
+					content: true
+				};
+			}
+			if (token === `false`) {
+				compiler.next();
+				return {
+					domain: `core`,
+					type: `boolean`,
+					content: false
+				};
+			}
+			if (token === `random`) {
+				compiler.next();
+				const range = compiler.getValue();
+				return {
+					domain: `core`,
+					type: `random`,
+					range
+				};
+			}
+```
+It starts by checking if the current token is a symbol. The `core` domain only has 2 variable types - `module` and `variable`. The first of these has a value being the name of the module; the second either has the value of its content or it might be one of
+```
+<variable> format <format string>
+<variable> modulo <number>
+```
+In both these cases, the final item is itself a value so the compiler evaluates it recursively.
+
+If the token isn't a variable the compiler starts checking through all the other possibilities known for this domain. I only show the first three, `true`, `false` and `random`; you can see the rest by examining the `Core.js` file in the _**EasyCoder**_ repository or by studying the Programmers Reference for the [_**EasyCoder**_ Codex](https://easycoder.github.io/?s=step0) (Click the yellow book icon).
+
+~tid:Conditions:Condition handlers~

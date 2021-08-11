@@ -1,0 +1,51 @@
+# Commands
+
+In this book I don't want to be prescriptive about what commands should be implemented. This is a book about building your own language so it's not up to me to specify details. I will show examples that demonstrate how to use some of the variables listed in the last page. You may choose to follow my syntax or you may prefer to do something completely different. This is entirely up to you - it's your own language you're creating.
+
+The primary core variable type(s) hold numeric, string or boolean values, either as distinct variable types or as a single type that can hold any of those kinds of data. On the ~tid:Example code~ page are examples of how you might choose to implement arithmetic operations.
+
+To set up a numeric variable you can use a syntax such as
+```
+put 12345 into Count
+```
+
+String operations are also quite straightforward. To assign a string value, use
+```
+put `This is a string` into Title
+```
+To append to an existing string you can use the _add_ keyword, but your compiler will need to check if it's being asked to do an arithmetic or a string operation, which may not be easy if your variables can hold either type. So it's probably better to use `append`:
+```
+append `Some more text` to MyText
+```
+If you are building a composite string this can be a little cumbersome, so I recommend implementing a `cat` (catenate) operator in your value processor (see the relevant page). Here's a sample usage based on an array variable `Numbers` and a `print` command that outputs to the browser console:
+```
+index Numbers to N
+print `The value of element ` cat N cat ` of Numbers is ` cat Numbers
+```
+All languages need a selection of conditional commands, the minimum being `if` and `while`. Because this language will probably lack any advanced structuring you'll also need the infamous `goto` command. To avoid repetition you'll most likely want `gosub` and `return` (or their equivalents). If you're feeling really adventurous you might include a `with` clause in your `gosub` so you can pass in private variables, but it could get rather complex as you'll need some way of identiying them at the entry point of a subroutine.
+
+When you're programming browser-based apps you'll almost certainly want concurrent processing at some point. JavaScript itself is single-threaded but there are ways to implement concurrency (or at least something that looks and feels like it) in your scripts. All I'll say here is that with this capability you can implement commands like `wait` to pause execution for a given time, `fork` to run different parts of your script concurrently with another, and `run` to load and concurrently run different script modules. There's a whole chapter of this book devoted to the subject.
+
+Another thing you'll almost certainly want at some point is a set of REST commands so you can GET data from your own or remote websites and POST data back again.
+
+## DOM commands
+A large number of commands in the browser domain will be those dealing with the Document Object Model. This is where the language is likely to be most frequently used; as a replacement for JavaScript when aspects of a web page need to be tweaked.
+
+Each of the DOM variables such as `<div>` will be designed to handle actions on a corresponding entity in the DOM. So first you need to connect the two, for example using an _attach_ keyword:
+```
+attach Screen to `id_screen`
+```
+This assumes that in your page there is a `<div>` with an id of `id_screen`. Your runtime JavaScript looks for this id and "attaches" its owner to the script variable. You can now perform operations on the variable; the runtime instantly and faithfully mirrors changes on the `<div>` itself. Your language will have to recognise all the commands that are valid for this variable type, so you might decide to implement a `set` command to do the hard work, with constructs like
+```
+set the background of Screen to `yellow`
+```
+which is a lot easier for non-programmers to read and remember than its JS equivalent.
+
+As well as attaching to existing objects you will probably want to create new ones using an existing object as a parent. Here's a typical syntax:
+```
+create LeftPanel in Screen
+```
+
+With a full set of `create` syntax you can build an entire DOM using just script and hang it on any element in your web page. This is great for portability; you have a script that will run anywhere.
+
+~sid:3 Compilation:The compiler~

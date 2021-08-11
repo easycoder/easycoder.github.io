@@ -1,0 +1,70 @@
+# If
+
+The second example is a handler for the `if` statement; a vital part of any language. The full spec is this:
+
+```
+    if <condition> then <command> else <command>
+```
+where the `else` clause may or may not be present. Here's the current _**EasyCoder**_ code for the `if` handler:
+```
+	If: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			const condition = compiler.condition.compile(compiler);
+			const pc = compiler.getPc();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `if`,
+				lino,
+				condition
+			});
+			// Get the 'then' code
+			compiler.compileOne();
+			if (!compiler.getToken()) {
+				compiler.getCommandAt(pc).else = compiler.getPc();
+				return true;
+			}
+			if (compiler.tokenIs(`else`)) {
+				const goto = compiler.getPc();
+				// Add a 'goto' to skip the 'else'
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `goto`,
+					lino,
+					goto: 0
+				});
+				// Fixup the link to the 'else' branch
+				compiler.getCommandAt(pc).else = compiler.getPc();
+				// Process the 'else' branch
+				compiler.next();
+				// Add the 'else' branch
+				compiler.compileOne(true);
+				// Fixup the 'goto'
+				compiler.getCommandAt(goto).goto = compiler.getPc();
+			} else {
+				// We're at the next command
+				compiler.getCommandAt(pc).else = compiler.getPc();
+			}
+			return true;
+		},
+
+		run: program => {
+			// To be covered later
+        {
+	},
+```
+It starts the same way as for all handlers, by obtaining the current line number. Then it calls the _condition compiler_ to process the condition. As with `compiler.getValue()` I'll cover this in a later section of this book. The value returned is an object describing how to evaluate the condition at runtime.
+
+Next we get the current PC value and save it. Then we create a command object and append it to the program using `compiler.addCommand(command)`.
+
+Now we call `compiler.compileOne()` to compile the 'then' code - a single command. This might be just that - a single command - or it might be a block of commands. In _**EasyCoder**_ the latter is done with `begin...end` pairs. Between `begin` and `end` there can be any number of commands, including more `begin...end`s. Many readers will immediately spot recursion happening here, and this is the reason why the entire compiler is run from an _instance_ of itself, allowing other instances to be created without any risk of them interfering with each other. By calling every compiler function as `compiler.xxx()` we preserve the environment for each compilation thread. The previous compiler instance remains 'parked' while `compiler.compileOne()` runs.
+
+Having processed the 'then' code we check if we're at the end of the script. If there's more we check for `else`. If this is not present, all that remains is to set up things so that if the test fails the program resumes past the 'then' command(s). So we use `compiler.getCommandAt(pc)` to retrieve the command we saved earlier, and we add to it an `else` property giving the program counter value we're at now. So when the test passes we go through the 'then' block but when it fails we jump to the following command.
+
+When there's an `else` it's a bit more complicated.The first thing is to add a `goto` command to the program. It's value is unimportant as we'll be updating it. Then we post an `else` property into the `if` command as described in the previous paragraph. Then we call `compiler.compileOne()` as before to process the `else` command or block, then finally put the current program counter into the saved `goto` command. The result is that if the test passes we execute the 'then' block', which finishes with a jump to the first command past the `else` block. If the test fails we go directly to the `else` block then fall into the following code.
+
+The `while` command operates in a similar way, so rather than spell it out here I'll leave the reader to examine the _**EasyCoder**_ source or simply work it out as an exercise.
+
+~tid:Multitasking:Goto, Gosub and Multitasking~

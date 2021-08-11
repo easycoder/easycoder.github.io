@@ -1,0 +1,131 @@
+# Goto, Gosub and Multitasking
+
+This is where I confirm the worst suspicions of most self-respecting programmers, that this can only be a 'toy' language, because it has a `goto`. I am unrepentant. Human communication is full of `go to page 96` and similar instructions and they work perfectly well. Early computing languages like FORTRAN and BASIC used GOTO freely and the world didn't end. Yes, I understand that it can lead to poorly structured programming, but the lack of it also has its drawbacks; notably some very complex and clumsy loops with `break` and `continue` doing the job of a simple GOTO but being far harder for non-professionals to read. The kind of problems our new language is designed to address are ones that can be expressed in English, so GOTO has its rightful place.
+
+OK, that was something of a rant, so let's move on. If we have a GOTO we need to identify where it should go to. This can be done with a _label_; a standard symbol with a colon after it. Here's some psuedocode:
+```
+    if X is greater than 3 go to Skip
+    do this
+    do this too
+    go to NextCommand
+Skip:
+    do something else
+NextCommand:
+    carry on
+```
+Now I realize this example could plainly be done using a standard `if` statement with an `else` clause, but that's not always the case. Here I'm just suggesting a syntax.
+
+Here's the code to compile a `go` command:
+```
+	Go: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			if (compiler.nextTokenIs(`to`)) {
+				compiler.next();
+			}
+			const label = compiler.getToken();
+			compiler.next();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `go`,
+				lino,
+				label
+			});
+			return true;
+		},
+
+		run: program => {
+			// To be explained later
+		}
+	},
+```
+The first part of the code gets the line number as usual, then checks if `go` is followed by an optional `to`. You might also arrange for `goto` (without a space) to call the same compiler function. Next it gets the next token, which is assumed to be the name of a label, and returns a command object with the relevant information.
+
+## Subroutines
+Here's another legacy from good old BASIC. In those days subroutines were there to allow the same code to be called from several different places, avoiding repetition. Today we have _functions_, which as as different to subroutines as the Taj Mahal is to a house brick. Unfortunately, it's rather hard to devise a syntax for functions that can be easily understood when read out loud, but it's quite easy to do for a subroutine. So let's keep things simple.
+
+The simplest form of a subroutines is just a section of code terminated with a `return` command. You can enter it at any point above that as there's nothing special happening in the way it would for a modern function. No parameters, no local variables. To call the subroutine we use a `gosub` command. This is identical to `go` except for the name of the keyword.
+
+## Multitasking
+JavaScript is a single-threaded programming language, which means it can only do one thing at a time, but your custom language can be built in such as way as to 'appear' to be able to multi-task.
+
+The first step to achieving this is to implement a timer. In _**EasyCoder**_ this is called `wait` and here's its keyword handler:
+```
+	Wait: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			const value = compiler.getValue(compiler);
+			const scale = compiler.getToken();
+			let multiplier = 1000;
+			switch (scale) {
+			case `milli`:
+			case `millis`:
+				compiler.next();
+				multiplier = 1;
+				break;
+			case `tick`:
+			case `ticks`:
+				compiler.next();
+				multiplier = 10;
+				break;
+			case `second`:
+			case `seconds`:
+				compiler.next();
+				multiplier = 1000;
+				break;
+			case `minute`:
+			case `minutes`:
+				compiler.next();
+				multiplier = 60000;
+				break;
+			}
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `wait`,
+				lino,
+				value,
+				multiplier
+			});
+			return true;
+		},
+
+		run: program => {
+            // To be explained later
+		}
+	},
+```
+Compilation of `wait` is pretty simple. The syntax is
+```
+wait <value> millis/ticks/seconds/minutes
+```
+where <value> is the number of units to wait for, which might be any of the four options shown. Note that the syntax also allows for `1 second` instead of `1 seconds`, and so on. The command returned has the value and the multiplier separate because the first of these is a value object. You can also see that if no option is given the command defaults to seconds.
+
+With `wait` inside a `while` loop there are long periods of time when the script is paused, which gives us the opportunity to run other commands at the same time. Of course, it's not really at the same time, but things happen so quickly they appear to us that they are running concurrently.
+
+Multitasking can be started using the `fork` command, and in a browser environment it happens as a result of user actions such as clicking a screen element. As long as you take care not to let more than one thread modify the same variable you don't need to think about what's actually happening.
+
+Here's a simple script that demonstrates multitasking and the `fork` command:
+```
+    fork to Loop2
+    while true
+    begin
+        wait 3 seconds
+        print `fizz`
+    end
+Loop2:
+    while true
+    begin
+        wait 10 seconds
+        print `buzz`
+    end
+```
+There are two loops, each one of which waits for a length of time then prints a message to the console. The `fork` command starts the second loop, but instead of waiting for that to finish as `gosub` would do, it then goes into the first loop. Each time a loop hits its `wait` command the other loop gets a chance to run. The result on the console is a series of _fizz_ and _buzz_ lines, the one appearing more frequently than the other.
+
+The `fork` handler is identical to `go` and `gosub` except for the name of the keyword.
+
+As noted, `go`, `gosub` and `fork` are all compiled identically. The differences come in the runtime, which we'll come to later in the book.
+
+~tid:DOM:DOM commands~

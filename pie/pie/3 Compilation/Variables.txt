@@ -1,0 +1,61 @@
+# Compiling variables
+
+Variables are a special kind of entity and require a special kind of entry in the program list. Each _domain_ (see ~tid:Compiler:the compiler~) handles its own types of variables but in the program list they all look much the same. In _**EasyCoder**_ the _compileVariable()_ function looks like this:
+```
+	compileVariable: function(domain, keyword, isVHolder = false, extra = null) {
+		this.next();
+		const lino = this.getLino();
+		const item = this.getTokens()[this.getIndex()];
+		if (this.symbols[item.token]) {
+			throw new Error(`Duplicate variable name '${item.token}'`);
+		}
+		const pc = this.getPc();
+		this.next();
+		this.addSymbol(item.token, pc);
+		const command = {
+			domain,
+			keyword,
+			lino,
+			isSymbol: true,
+			used: false,
+			isVHolder,
+			name: item.token,
+			elements: 1,
+			index: 0,
+			value: [{}],
+			element: [],
+			extra
+		};
+		this.addCommand(command);
+		return command;
+	},
+```
+It starts by checking for a duplicate token name, then adds an entry to the symbol table, giving it the index of the variable in the program list. Then it creates a command record and requests for it to be added at that position. The fields are as follows:
+
+`domain` - the name of the domain.
+
+`keyword` - the keyword token.
+
+`lino` - the line number in the original script.
+
+`isSymbol` - a boolean value that confirms this command contains a symbol.
+
+`used` - a boolan value that starts `false` and is changed to `true` as soon as the compiler comes across a command that assigns it a value. This allows a post-compilation check to be made for unused variables. Note that simply reading a variable does not set the flag (this would defeat the purpose of identifying it as unused). Unused variables are a frequent source of errors when you come to run your program.
+
+`isVHolder` - tells the compiler that this variable is able to hold a numeric or a string value. Many variable types do not so this permits another compilation check to be made that a script is not attempting to assign a value to them.
+
+`name` - the name of the variable.
+
+`elements` - the number of elements held in the variable. All variables are arrays and initially have just a single element.
+
+`index` - the current index into the variable's array.
+
+`value` - a list of values held by the array (if it's a value holder). Note that the array elements are not constants; they are JavaScript objects that specify how to obtain the value. For example, if your script calls for the time of day there's little point in evaluating it at compile time when it might not be needed until minutes or even hours later. Using a specification defers evaluation until runtime.
+
+`element` - an array of elements, used for DOM element variables.
+
+`extra` - an unspecified extra object. This is used by the _browser_ plugin to signify that the variable is a DOM object. Other domains may use it for something else entirely.
+
+Your language may have more or less fields than this, according to its requirements.
+
+~tid:Handlers:Keyword handlers~

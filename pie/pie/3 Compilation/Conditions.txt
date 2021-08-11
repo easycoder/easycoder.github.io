@@ -1,0 +1,57 @@
+# Condition handlers
+
+A _condition_ is an expression that returns `true` or `false`. In addition to the pure boolean value `false`, `null` and the number zero both equate to `false`; any other numeric value is classed as `true` in a condition.
+
+Conditions are used in `if` and `while` commands:
+```
+if N is less than 10 ...
+while Counter is greater than 0 ...
+while Text is not empty ...
+```
+The conditions in the above are
+```
+N is less than 10
+Counter is greater than 0
+Text is not empty
+```
+respectively.
+
+Compiling a condition is simpler than compiling a ~tid:Values:value~. There's a condition evaluator at the heart of the compiler; here's the complete module for _**EasyCoder**_, which calls each domain in turn to attempt compilation until one succeeds:
+```
+const EasyCoder_Condition = {
+
+	name: `EasyCoder_Condition`,
+
+	compile: (compiler) => {
+		// See if any of the domains can handle it
+		compiler.mark();
+		for (const domainName of Object.keys(compiler.domain)) {
+			// console.log(`Try domain '${domainName}' for condition`);
+			const domain = compiler.domain[domainName];
+			const code = domain.condition.compile(compiler);
+			if (code) {
+				return code;
+			}
+			compiler.rewind();
+		}
+	},
+
+	// runtime
+
+	test: (program, condition) => {
+		const handler = program.domain[condition.domain];
+		return handler.condition.test(program, condition);
+	}
+};
+```
+As before, `compiler.domain` holds a list of domain names; the code calls each one in turn until it finds one that can handle the code being presented.
+
+The condition evaluator in the `core` plugin deals with simple numeric and string comparisons; in essence, any time we are comparing one value with another. All 3 of the above are in that category. The values themselves may require a visit to a plug-in domain to compile them but the comparison is done in the core evaluator.
+
+Other plug-in modules may have special comparisons. For example, the browser plugin for _**EasyCoder**_ has a handler for the syntax
+```
+if element ThisDiv contains the pick position ...
+```
+which requires the runtime to look at the bounding rectangle of `ThisDiv` and check if a click or tap has occurred within it. The flexibility of the system lies in the way conditions can be delegated to plugin domains without the main compiler knowing anything about the tests being performed.
+
+~sid:4 Runtime:The runtime engine~
