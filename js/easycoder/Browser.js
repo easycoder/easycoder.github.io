@@ -2174,8 +2174,6 @@ const EasyCoder_Browser = {
 				switch (targetRecord.keyword) {
 				case `text`:
 				case `textarea`:
-					target.value = value;
-					break;
 				case `input`:
 					target.value = value;
 					break;

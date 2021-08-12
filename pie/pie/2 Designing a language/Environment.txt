@@ -6,7 +6,7 @@ Rather than beat about the bush I'll come straight to the point. The techniques 
 
 The other decision concerns where the code is to run. If the compiler is coded in Python, the applications you build are basically restricted to running on a PC of some kind. I'm personally doubtful of the value of this, especially as Python is itself already a fairly high-level language and you'd get more bang from your buck by just learning that.
 
-Some might prefer to code in C++ or Java. Many compilers are written in C++ so there's something to be said for that, though if you want to distrbute your efforts you'll have to do versions for Windows, for Mac and for Linux.
+Some might prefer to code in C++ or Java. Many compilers are written in C++ so there's something to be said for that, though if you want to distribute your efforts you'll have to do versions for Windows, for Mac and for Linux.
 
 There are many, many other alternatives but the one that stands out is JavaScript, because it runs in every browser on the planet. Many people, most notably Chromebook owners, rarely venture outside the browser. Your apps can reside on a webserver and be available simply by typing a URL. Add to this a superb graphics environment and the case is unanswerable.
 

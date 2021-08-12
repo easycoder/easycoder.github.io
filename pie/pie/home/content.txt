@@ -1,26 +1,26 @@
 # Programming In English
 
-This book describes how to build a versatile computer language whose scripts look like a series of step-by-step English commands similar to cookery recipes, navigation instructions or car maintenance manuals. The language will be English stripped to the minimum; terse but understandable by anyone familiar with the problem domain. The environment will be that of a web browser and the language will be a replacement for JavaScript, permitting scripts to be embedded in any web page then compiled and run on the fly as the page loads.
+This book describes how to build a versatile computer language whose scripts look like a series of step-by-step English commands similar to cookery recipes, navigation instructions or car maintenance manuals. The syntax will be English stripped to the minimum; terse but understandable by anyone familiar with the problem domain. The environment will be that of a web browser and the language will be a comprehensive, capable and easy to use replacement for JavaScript, permitting scripts to be embedded in any web page then compiled and run on the fly as the page loads.
 
 Programming is about communication; specifically about getting computers to do things. I'm assuming that you, my reader, are a programmer and that among your circle of friends and aquaintances there are others with whom you share specialized skills you've worked long and hard to gain.
 
 You'll also know a lot of other people who aren't programmers, most of whom find your interests and skills baffling or even frightening. For them, computers are just tools to be used, preferably without the need to understand how they work any more than most of us know about what happens under the hood of a car, or indeed anywhere outside own own areas of speciality.
 
-Just as non-programmers find it hard to understand how programmers think, we often fail to fully appreciate the complexities of the world outside the computer, for which we build software systems. Better understanding makes for better, more reliable software, and communication is the key to understanding.
+Just as non-programmers find it hard to understand how programmers think, we often fail to fully appreciate the complexities of the world outside the computer, for which we build software systems. We have a regrettable tendency to disregard advice from users of a system because we all too often assume we know better than those users. Better understanding makes for better, more reliable software, and better communication is the key to better understanding.
 
 ## What is programming?
 
-Computers are literal devices. They blindly follow the instructions given, without stopping to question if you really meant what you said. A programmer is someone who has the skill to create sets of instructions that are unambiguous, so the computer will do exactly what is intended. In order for this to happen, instructions are written in a computer _language_; a formal syntax that's understood by a computer and more importantly by the programmers tasked with ensuring the right things are done. Many computer languages have been invented, most of which are much more similar to each other than any of them are to human languages. But just as human language develops specialized dialects to suit the needs of a particular group, whether it be chemists, lawyers or footballers, new computer languages can always be created to provide a better match to problem domains of one kind or another.
+Computers are literal devices. They blindly follow the instructions given, without stopping to question if you really meant what you said. A programmer is someone who has the skill to create sets of instructions that are unambiguous, so the computer will do exactly what is intended. In order for this to happen, instructions are written in a computer _language_; a formal syntax that's understood by a computer and more importantly by the programmers tasked with ensuring the right things are done. Many computer languages have been invented, most of which are much more similar to each other than any of them are to human languages. And just as human language develops specialized dialects to suit the needs of a particular group, whether it be chemists, lawyers or footballers, new computer languages are always being created to provide a better match to problem domains of one kind or another.
 
 ## Why is programming so difficult?
  
-Most computer languages are less than half a century old. Programming started by devising symbolic code that offered a human-readable alternative to coding in the hard-to-remember numbers required by the computing devices themselves. As time went by, more and more layers of abstraction were added, but in most cases they retained a fundamental characteristic, being more or less a system of mathematical symbols and expressions.
+Most if not all of our current computer languages are less than half a century old. Programming started by devising symbolic code that offered a human-readable alternative to coding in the hard-to-remember numbers required by the computing devices themselves. As time went by, more and more layers of abstraction were added, but in most cases they retained a fundamental characteristic, being more or less a system of mathematical symbols and expressions.
  
 Take a few lines of any computer program written in C/C++, Java, Python or JavaScript, and try to read it out loud. It's almost impossible to do it in such a way that another human being - even another programmer - can make sense of what you are saying. The only sensible way to communicate computer code to another person is in writing. And this is one reason why non-programmers find programming so difficult. We learn to speak before we learn to read; most of us can "hear" written text when we see it and many people sub-vocalize to help them process the meaning, without even being aware of it. For them, coding feels unnatural; something to be left to those strange geeks.
  
-It's all a matter of motivation. As programmers, you and I may be happy to live in a silent world of cryptic formulae and text, but the majority of people aren't built like that and for them it's a complete turn-off. It's not that they _can't_ become programmers; they just don't have any motivation for doing so. In fact, nearly everybody is a programmer, quite capable of handling cooking recipies or step by step car maintenance instructions that resemble simple computer programs. The human species developed complex societies long before we invented computer language. Lawyers and engineers have the mental discipline to organise facts in a coherent manner so that the outcome of an action can be safely predicted, but for some reason, when it comes to computers we suddenly feel the need to invent a whole new way of expressing things that's competely alien to our natural ways of thinking. Small wonder there's a shortage of good programmers.
+It's all a matter of motivation. As programmers, you and I may be happy to live in a silent world of cryptic formulae and text, but the majority of people aren't built like that and for them it's a complete turn-off. It's not that they _can't_ become programmers; they just don't have any motivation for doing so. In fact, nearly everybody is a programmer, quite capable of handling cooking recipies or step by step car maintenance instructions that resemble simple computer programs. The human species developed complex societies long before we invented computer language. There were programmes long before there was programming. Lawyers and engineers have the mental discipline to organise facts in a coherent manner so that the outcome of an action can be safely predicted, but for some reason, when it comes to computers we assume it's necessary to use a way of expressing things that's competely alien to our natural modes of thinking. Small wonder there's a shortage of good programmers.
  
-It gets worse. Computer software is structurally complex, requiring a huge amount of training and experience to understand how a large program works or even where it begins. As a result, maintenance is often a time bomb waiting to blow up large systems. By the time a few years have passed, the original designers of a software system are long gone and maintenance is often left in the hands of people who are inadequately trained or for whom this is only one of many other responsibilities. Lacking the insights posessed by the original design team they inevitably make mistakes, causing invisible damage to the whole edifice. Slowly but surely the system begins to decay, with every attempt to fix it creating further problems. In the end, to avoid catastrophic failure the system will have to be replaced, often well before its originally projected lifetime.
+It gets worse. Computer software is structurally complex, requiring a huge amount of training and experience to understand how a large program works or even where it begins. As a result, maintenance is often a time bomb waiting to blow up big systems. By the time a few years have passed, the original designers of a software system are long gone and maintenance is often left in the hands of people who are inadequately trained or for whom this is only one of many other responsibilities. Lacking the insights posessed by the original design team they inevitably make mistakes, causing invisible damage to the whole edifice. Slowly but surely the system begins to decay, with every attempt to fix it creating further problems. In the end, to avoid catastrophic failure the system will have to be replaced, often well before its originally projected lifetime.
  
 For centuries we have built complex and robust human societies without the need for computers or software. Language had a huge, vital part to play in this; without it we'd still be living in caves.
  
@@ -42,6 +42,8 @@ Of course, it's possible this book may inspire you to take the existing **_EasyC
 And finally, before getting started, **_EasyCoder_** has its own website at [https://easycoder.github.io](https://easycoder.github.io). One of the links on the home page is to the _Codex_, a combination of tutorial, reference manual and coding playground where users can create and run scripts. Readers of this book can get a feel for the kind of language being described, as well as appreciating its ability to handle a very wide range of varied tasks. It is my hope that this may inspire the creation of languages far more capable than my own.
 
 This book can be read in a linear fashion; at the bottom of each page is a link to the next. Alternatively, you can choose any page from the table of contents below.
+
+I'm assuming you have some experience with JavaScript and ES6. You don't need to be an expert but complete beginners will find it a little hard going in places as I expect you to be able to read sections of code without my having to spell out everything line by line. When I started the _**EasyCoder**_ project my level of JS knowledge was pretty low (and it shows in places).
 
 ~sid:2 Designing a language:Designing a language~
 
@@ -67,7 +69,7 @@ This book can be read in a linear fashion; at the bottom of each page is a link 
 
 > ~stid:3 Compilation/Variables:Compiling variables~
 
-> ~stid:3 Compilation/Handlers:Keyword handlers~
+> ~stid:3 Compilation/Keywords:Keyword handlers~
 
 > ~stid:3 Compilation/If:The `if` handler~
 
@@ -81,4 +83,8 @@ This book can be read in a linear fashion; at the bottom of each page is a link 
 
 ~sid:4 Runtime:The runtime engine~
 
-~sid:5 Plugins:Creating plugin modules~
+~sid:5 Plugins~
+
+~stid:5 Plugins/Handling plugins:Handling plugins~
+
+~stid:5 Plugins/Export and import:Export and import~

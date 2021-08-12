@@ -1,0 +1,135 @@
+# Running DOM commands
+
+Browser commands tend to be more complex than the simple ones we've just seen, with the notable exception of variable declarations, which just return the address of the next command.
+
+Here's the browser `create` command. It's a simplified copy of the code in _**EasyCoder**_:
+```
+    run: (program) => {
+        const command = program[program.pc];
+        const targetRecord = program.getSymbolRecord(command.name);
+        let parent;
+        if (command.parent === `body`) {
+            parent = document.body;
+        } else {
+            const p = program;
+            const parentRecord = p.getSymbolRecord(command.parent);
+            parent = parentRecord.element[parentRecord.index];
+        }
+        targetRecord.element[targetRecord.index] = document.createElement(targetRecord.keyword);
+        targetRecord.element[targetRecord.index].id =
+            `ec-${targetRecord.name}-${targetRecord.index}-${EasyCoder.elementId++}`;
+        if (targetRecord.keyword === `a`) {
+            targetRecord.element[targetRecord.index].setAttribute(`href`, `#`);
+        }
+        parent.appendChild(targetRecord.element[targetRecord.index]);
+        return command.pc + 1;
+    }
+```
+As before, first we get the command, then the symbol table record for the target variable (for example a `<div>`).
+
+When we create a DOM object we can make it a direct child of the page BODY or of another DOM element. In the latter case, the parent will have been specified in the script, so we can get its record, and from that the actual DOM element (which will only exist if the parent has also been `create`d or has been `attach`ed to a suitable element in the document).
+
+Now we create a new element, giving it the type, e.g. `dom`. We must give it an ID that is guaranteed to be unique; I choose to use a 3-part name comprising the variable name, its array index and a global serial number that increments for every DOM element. This combination ID is very useful when using the browser debugger as it becomes quite clear how any element relates to the script. So a typical ID looks like
+```
+MyDiv-0-392
+```
+A special action is needed for hyperlinks; these must have an attribute set so they don't respond to clicks except via script commands (more of this later). And finally we append the new element to its parent.
+
+### `on click`
+
+This is the runtime code for the following command:
+```
+on click <DOM variable> <do something>
+```
+
+This is one of the most complex parts of DOM handling. Here's a simplified version of the code extracted from the _**EasyCoder**_ handler:
+```
+    targetRecord = program.getSymbolRecord(command.symbol);
+    targetRecord.element.forEach(function (target, index) {
+        if (target) {
+            target.targetRecord = targetRecord;
+            target.targetIndex = index;
+            target.targetPc = command.pc + 2;
+            target.onclick = function (event) {
+                event.stopPropagation();
+                EasyCoder_Browser.clickData = {
+                    target,
+                    clientX: event.clientX,
+                    clientY: event.clientY
+                };
+                if (program.length > 0) {
+                    const eventTarget = event.target;
+                    if (eventTarget.type != `radio`) {
+                        eventTarget.blur();
+                    }
+                    if (typeof eventTarget.targetRecord !== `undefined`) {
+                        eventTarget.targetRecord.index = eventTarget.targetIndex;
+                        setTimeout(function () {
+                            program.run(eventTarget.targetPc);
+                        }, 1);
+                    }
+                }
+                return false;
+            };
+        }
+    });
+```
+In _**EasyCoder**_ it's common to create an array of DOM variables that respond identically to a mouse click, avoiding the need to set up a handler for each array element. So the code sets up listeners for each of the array elements.
+
+Three items of information need to be retrieved when a mouse click occurs, so these are added to the DOM element as properties. Bear in mind that at the point this code runs there hasn't yet been a mouse click; we're just setting up for when they do happen.
+
+Next we set up the `onclick` listener. The content of this is what will handle the actual click. We set up a global record to record the target element and the click location; this is needed for drag and drop operations. We 'blur' everything except radio buttons (to remove the focus), then we set the index of the DOM variable to the one that was clicked, allowing the `<do something>` code to know which element it's dealing with.
+
+Finally, we request a new execution thread for the actions resulting from the click. It's best to do this after a short pause, otherwise the display doesn't have time to update before the actions start to take effect.
+
+This code is not guaranteed to be optimal. Slight changes tend to have unforseen effects. All I can say is that it works pretty reliably and saves a massive amount of effort compared with having to do it in JavaScript each time.
+
+## CSS
+
+You have a choice of assigning CSS classes to DOM elements or of assigning specific style values. If you want to do the former you'll need something along the lines of:
+```
+    symbol = program.getSymbolRecord(command.symbolName);
+    target = symbol.element[symbol.index];
+    if (!target) {
+        targetId = program.getValue(symbol.value[symbol.index]);
+        target = document.getElementById(targetId);
+    }
+    program.getValue(command.value).split(` `).forEach(function(item) {
+        target.classList.remove(item);
+        target.classList.add(item);
+    });
+
+```
+This gets the symbol record for the element, either directly from the symbol record or by using its saved ID and requesting it from the DOM. Then it splits the list of classes provided, removes each one from the target's class list and replaces it.
+
+The alternative is to set styles directly:
+```
+    symbol = program.getSymbolRecord(command.symbolName);
+    target = symbol.element[symbol.index];
+    if (!target) {
+        const symbolElement = symbol.value[symbol.index];
+        if (!symbolElement.type) {
+            program.runtimeError(command.lino,
+                `Variable '${symbol.name}' is not attached to a DOM element.`);
+            return 0;
+        }
+        targetId = program.getValue(symbolElement);
+        target = document.getElementById(targetId);
+    }
+    const styleValue = program.getValue(command.styleValue);
+    if (!symbol.element[symbol.index]) {
+        program.runtimeError(command.lino, `Variable '${symbol.name}' has no DOM element.`);
+        return 0;
+    }
+    switch (command.type) {
+    case `setStyle`:
+        target.style[command.styleName.content] = styleValue;
+        break;
+    case `setStyles`:
+        target.style.cssText = styleValue;
+        break;
+    }
+```
+This one presents an alternative way of getting the target element. It then either replaces all the styles on that element or just one of them, depending on what it finds in `command.type`.
+
+~sid:5 Plugins:Plugins~

@@ -1,4 +1,233 @@
-# Plugins
+# Plugins and child scripts
 
-## An example plugin
+Plugins are JavaScript files containing domain handler code in a fixed format. The best way of illustrating this format is to write a plugin for a hypothetical domain. Let's assume your problem domain is that of logistics, and that one of your custom variable types is a `box`, which has features that make it useful when packing items for transport. The `box` has dimensions and weight so we need to be able to create a box, set up its properties and return information when requested. Here's a simple script that exercises all the features:
+```
+    box Box52
+    
+    create Box52
+        width 60
+        depth 40
+        height 40
+        weight 20
+    
+    print the volume of Box52
+    if Box52 is heavy print `Heavy: ` cat the weight of Box 52
+    stop
+```
+Here's the complete plugin in a form that's compatible with _**EasyCoder**_. To adapt it for you own language you probably need to do no more than globally change _**EasyCoder**_ into the name of your project. The filname is `box.js`.
+```
+const EasyCoder_Box = {
 
+	name: `EasyCoder_Box`,
+
+	BOX: {
+
+		compile: compiler => {
+			compiler.compileVariable(`box`, `box`);
+			return true;
+		},
+
+		run: program => {
+			return program[program.pc].pc + 1;
+		}
+	},
+
+	Create: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol())
+			{
+				const symbolRecord = compiler.getSymbolRecord();
+				const keyword = symbolRecord.keyword;
+				if (keyword === `box`) {
+                    let width;
+                    let depth;
+                    let height;
+                    let weight;
+                    compiler.next();
+                    while (true)
+                    {
+                        switch (compiler.getToken()) {
+                        case `width`:
+                            width = compiler.getNextValue();
+                            break;
+                        case `depth`:
+                            depth = compiler.getNextValue();
+                            break;
+                        case `height`:
+                            height = compiler.getNextValue();
+                            break;
+                        case `weight`:
+                            weight = compiler.getNextValue();
+                            break;
+                        default:
+                            compiler.addCommand({
+                                domain: `box`,
+                                keyword: `create`,
+                                name: symbolRecord.name,
+                                lino,
+                                width,
+                                depth,
+                                height,
+                                weight
+                            });
+                            return true;
+                        }
+                    }
+                 }
+			}
+			return false;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			const width = program.getValue(command.width);
+			const depth = program.getValue(command.depth);
+			const height = program.getValue(command.height);
+			const weight = program.getValue(command.weight);
+			const box = program.getSymbolRecord(command.name);
+			box.value[box.index] = {
+                width,
+                depth,
+                height,
+                weight
+			};
+			return command.pc + 1;
+		}
+	},
+
+	// Values
+	value: {
+
+		compile: compiler => {
+            compiler.skip(`the`);
+            const type = compiler.getToken();
+            if ([`width`, `depth`, `height`, `weight`, `volume`].includes(type)) {
+                compiler.next();
+                compiler.skip(`of`);
+                const name = compiler.getToken();
+                compiler.next();
+                return {
+                    domain: `box`,
+                    name,
+                    type
+                };
+            };
+            return null;
+		},
+
+		get: (program, value) => {
+            const symbolRecord = program.getSymbolRecord(value.name);
+            const record = symbolRecord.value[symbolRecord.index];
+            let content;
+            switch (value.type) {
+                case `width`:
+                    content = record.width;
+                    break;
+                case `depth`:
+                    content = record.depth;
+                    break;
+                case `height`:
+                    content = record.height;
+                    break;
+                case `weight`:
+                    content = record.weight;
+                    break;
+                case `volume`:
+                    content = record.width * record.depth * record.height / 100 / 100 / 100;
+                    break;
+            }
+            return {
+                type: `constant`,
+                numeric: true,
+                content
+            };
+			return value;
+		}
+	},
+
+	// Conditions
+	condition: {
+
+		compile: compiler => {
+            if (compiler.isSymbol()) {
+				const symbolRecord = compiler.getSymbolRecord();
+				if (symbolRecord.keyword === `box`) {
+					if (compiler.nextTokenIs(`is`)) {
+						let sense = true;
+						if (compiler.nextTokenIs(`not`)) {
+							compiler.next();
+							sense = false;
+						}
+						if (compiler.tokenIs(`heavy`)) {
+							compiler.next();
+							return {
+								domain: `box`,
+								type: `heavy`,
+								name: symbolRecord.name,
+								sense
+							}
+						}
+					}
+					return null;
+				}
+            }
+		},
+
+		test: (program, condition) => {
+            if (condition.type === `heavy`) {
+                const record = program.getSymbolRecord(condition.name);
+                const heavy = (record.value[record.index].weight >= 25);
+                return condition.sense ? heavy : !heavy;
+            }
+            return false;
+        }
+    },
+
+	// Dispatcher
+	getHandler: name => {
+		switch (name) {
+		case `box`:
+			return EasyCoder_Box.BOX;
+		case `create`:
+			return EasyCoder_Box.Create;
+		default:
+			return false;
+		}
+	},
+
+	run: program => {
+		const command = program[program.pc];
+		const handler = EasyCoder_Box.getHandler(command.keyword);
+		if (!handler) {
+			program.runtimeError(command.lino, `Unknown keyword '${command.keyword}' in 'box' package`);
+		}
+		return handler.run(program);
+	}
+};
+
+// eslint-disable-next-line no-unused-vars
+EasyCoder.domain.box = EasyCoder_Box;
+```
+At the start is a property giving the name of the module. This is for the convenience of the programmer; it may help to locate the code during debugging.
+
+Next there are handler objects for the 2 keywords implemented in this domain; `box` and `create`. Each of these contains 2 functions; `compile(compiler)` and `run(program)`.
+
+The `box` command is a variable declaration and is implemented in a standard way.
+
+The `create` command accepts the syntax shown in the example at the top of this section, where the item is first named and then followed by a set of attributes, which can be given in any order. The function returns an object with all these items.
+
+At runtime, the command is read from the program array and the various items are extracted. An object is built to contain the current values of the items and is written to the variable.
+
+Next we have the value handler object. This contains the compiler function `compile(compiler)` and the runtime function `get(program, value)`. Between them they provide the means to access any of the properties of the box variable, plus the volume, which is computed on the fly at runtime.
+
+After this is the condition handler object. This contains the compiler function `compile(compiler)` and the runtime function `test(program, condition)`. Between then they implement a single test, which returns `true` if the box weight exceeds a fixed value. Note that the core condition handler will already have checked for `not`, which if given will negate the test, as in `if Box52 is not heavy ...`
+
+Now we come to the `getHandler(name)`, the dispatcher function, which returns the handler object for any given keyword in this domain (or null if an unknown keyword is given).
+
+This is followed by the runtime function that is called by the main runtime to execute the command at the current program counter.
+
+Finally, the module posts itself into the list of domains held by the main program module, allowing the compiler to include it in searches for a suitable handler for any given keyword.
+
+~tid:Handling plugins~

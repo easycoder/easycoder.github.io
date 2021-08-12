@@ -1,12 +1,12 @@
 # The tokenizer
 
-The tokenizer reads the entire script and converts if to a list of tokens. Since we're dealing with a variant of English, these tokens are words delimited by spaces or newlines. We'll decide to ignore the difference as for as possible and allow scripts to be written on one line or over several lines, according to the whim of the programmer.
+The tokenizer reads the entire script and converts it to a list of tokens. Since we're dealing with a variant of English, these tokens are words delimited by spaces or newlines. We'll decide to ignore the difference as far as possible and allow scripts to be written on one line or over several lines, according to the whim of the programmer.
 
 The tokenizer scans along the source script, character by character. First it looks for a non-space, then it moves forward until it sees a space. The characters it passed over become a _token_ that gets pushed into an array, with a couple of exceptions:
 
-The first exception is comments. These start with an exclamation mark and continue to the end of a line. A comment can be the only thing on a line or it can be placed after a program instruction. So when the scanner sees an exclamation mark it removes everything from and including it to the end of the line.
+The first exception is comments. These start with an exclamation mark and continue to the end of a line. A comment might be the only thing on a line or it might be placed after a program instruction. So when the scanner sees an exclamation mark it removes everything from and including it to the end of the line.
 
-The second exception is quoted strings, which may themselves contain spaces. Quoted strings start and end with a backtick (&#96;) and they're not allowed to continue from one line to the next. So when the tokenizer sees a backtick it reads ahead until it sees a matching backtick, then the entire string (minus its backticks) is pushed to the list.
+The second exception is quoted strings, which may themselves contain spaces. Quoted strings start and end with a backtick (&#96;) and they're not allowed to continue from one line to the next. So when the tokenizer sees a backtick it reads ahead until it sees a matching backtick, then the entire string (minus its backticks) is pushed to the token array.
 
 At the end of the scanning pass we have an array of tokens. However, there's a little more to do to make the programmer's life easier. If an error occurs it's polite to report it, showing where it happened in the original script. Rather than just push plain tokens onto our list we also push the index of the token in the list and the line number of the original script it came from. The latter is easy to  get simply by counting newlines while scanning. We also build a second array, comprising the line number and the text of each line. This will let our error reporter show the line at which the error occurred and maybe a few lines leading up to it.
 

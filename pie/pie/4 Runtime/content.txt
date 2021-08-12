@@ -2,13 +2,13 @@
 
 Once compilation is complete, its output is a _program_; a list of commands. The job of the runtime engine is to take these commands in linear order or as directed otherwise and perform the duties each one encapsulates. You could regard the commands as an assembly language for a rather special kind of processor.
 
-The runtime engine starts by pushing onto a runtime queue the offset (the program counter) at which to start execution. If the queue was not empty, nothing else happens as the queue already contains one or more threads of execution handling previous run requests.
+The runtime engine starts by pushing onto a runtime queue the offset (the program counter) at which to start execution. If the queue was not empty, nothing else happens as the queue already contains one or more threads of execution, handling previous run requests.
 
 Once an execution thread stops, by reaching a `stop` or `wait` command, the queue is popped and the next run request starts. If this is well-behaved it too will stop or wait at some point and allow another thread to start. This behaviour creates an illusion of multi-tasking.
 
-In a system where multiple scripts may running at the same time, each one can have its own program and its own queue or you may set up a gloabl queue where each entry comprises a program and its program counter.
+In a system where multiple scripts may run at the same time, you can arrange for each one to have its own program and its own queue or you may set up a global queue where each entry comprises a program and its program counter.
 
-Each command contains a `domain` property. This identifies which plugin domain should handle the command. Here's the core of the runtime engine in its simplest form:
+Each command contains a `domain` property that identifies which plugin domain should handle the command. Here's the core of the runtime engine in its simplest form:
 ```
     while (queue.length > 0) {
         program.pc = queue.shift();
@@ -41,4 +41,4 @@ If you add a `trace` command you can arrange for the program to stop at each com
 
 Trace/debug is implemented in _**EasyCoder**_. The code is all in the `Runtime.js` file and there's a page in the [Codex](https://easycoder.github.io?s=step10) describing the tracer and how to use it.
 
-~sid:5 Plugins:Plugins~
+~tid:Handlers:Runtime handlers~

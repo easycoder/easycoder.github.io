@@ -45,6 +45,6 @@ multiply C by B
 divide B by A giving C
 divide C by B
 ```
-Note how I've shown multiply and divide having the two values in the opposite order to add and subtract. This of course regards B as a "primary" value and A as something being used to modify it, which might not always be the case, but it serves to point out how the new language can follow English quite closely.
+Note how I've shown multiply and divide having the two values in the opposite order to add and subtract. The way I've presented it treats B as a "primary" value and A as something being used to modify it, which might not always be the case, but it serves to point out how the new language can follow English quite closely.
 
 ~tid:Variables~

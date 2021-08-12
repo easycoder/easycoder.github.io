@@ -1,6 +1,6 @@
 # Compiling variables
 
-Variables are a special kind of entity and require a special kind of entry in the program list. Each _domain_ (see ~tid:Compiler:the compiler~) handles its own types of variables but in the program list they all look much the same. In _**EasyCoder**_ the _compileVariable()_ function looks like this:
+Variables are a special kind of entity and require a special kind of entry in the program list. Each _domain_ (see ~tid:Domains:Domains~) handles its own types of variables but in the program list they all look much the same. In _**EasyCoder**_ the `compileVariable()` function looks like this:
 ```
 	compileVariable: function(domain, keyword, isVHolder = false, extra = null) {
 		this.next();
@@ -42,7 +42,7 @@ It starts by checking for a duplicate token name, then adds an entry to the symb
 
 `used` - a boolan value that starts `false` and is changed to `true` as soon as the compiler comes across a command that assigns it a value. This allows a post-compilation check to be made for unused variables. Note that simply reading a variable does not set the flag (this would defeat the purpose of identifying it as unused). Unused variables are a frequent source of errors when you come to run your program.
 
-`isVHolder` - tells the compiler that this variable is able to hold a numeric or a string value. Many variable types do not so this permits another compilation check to be made that a script is not attempting to assign a value to them.
+`isVHolder` - tells the compiler that this variable is able to hold a numeric or a string value. Many variable types do not so this permits another compilation check to be made that a script is not attempting to assign a value to one of them.
 
 `name` - the name of the variable.
 
@@ -56,6 +56,6 @@ It starts by checking for a duplicate token name, then adds an entry to the symb
 
 `extra` - an unspecified extra object. This is used by the _browser_ plugin to signify that the variable is a DOM object. Other domains may use it for something else entirely.
 
-Your language may have more or less fields than this, according to its requirements.
+Your language may have more or fewer fields than this, according to its requirements.
 
-~tid:Handlers:Keyword handlers~
+~tid:Keywords:Keyword handlers~

@@ -1,8 +1,6 @@
-# Keywords
+# The compiler
 
-In our custom language, every program statement starts with an English command verb such as `put`, `get`, `open`, `close`, `print` etc., plus a handful of other words like `if` and `while`. All of these words we call _keywords_ and each one of them has its own section of code in the compiler to handle it.
-
-Most of the main compiler module is a collection of functions to do things that will be needed by the keyword processors. I'll show the ones implemented in _**EasyCoder**_; your language may need more or less of them.
+Most of the main compiler module is a collection of functions to do things that will be needed by the ~tid:Keywords:keyword handlers~. I'll show the ones implemented in _**EasyCoder**_; your language may need more or less of them.
 
 The _**EasyCoder**_ compiler module looks like this:
 ```

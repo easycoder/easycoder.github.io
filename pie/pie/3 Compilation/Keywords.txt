@@ -1,6 +1,10 @@
 # Keyword handlers
 
-Here we come to the heart of the compiler. When the compiler starts to evaluate a command, the first word will be a command verb or a special word such as `if` or `while`. The compiler tries each of the available domains in turn until one reports it is able to handle that keyword. This is done by a call to a function inside the domain handler. The one for the "core" package looks like this:
+Here we come to the heart of the compiler.
+
+In our custom language, every program statement starts with an English command verb such as `put`, `get`, `open`, `close`, `print` etc., plus a handful of other words like `if` and `while`. All of these words we call _keywords_ and each one of them has its own section of code in the compiler to handle it. These _handlers_ are distributed among the various domain modules that contribute to the language.
+
+When the compiler starts to evaluate a command, the first word will be a command verb or a special word such as `if` or `while`. The compiler tries each of the available domains in turn until one reports it is able to handle that keyword. This is done by a call to a function inside the domain handler. The one for the "core" package looks like this:
 ```
 	getHandler: (name) => {
 		switch (name) {
@@ -30,7 +34,7 @@ Perhaps the most important command is `stop`, which causes the current thread of
 
 There's also likely to be an `exit` command, which not only stops the current thread but terminates the entire program instance, which ideally should clean itself up and remove itself from the browser. You should choose what action should happen if execution reaches the end of a script without either `stop` or `exit` being found. The `exit` command is unlikely to be used by the mai program running in a browser as the page would stop operating, but if you've called in other scripts it's sometimes useful to be able to terminate them.
 
-Let's continue by examining how to process an `add` command. Here's the handler:
+Let's continue by examining how to process an `add` command. Here's the handler referenced in the fragment above:
 ```
 	Add: {
 

@@ -16,7 +16,7 @@ The compiler I will describe here will generate code that can easily be interpre
 
 ## Compiler strategy
 
-Books on compiler design generally describe a standard series of steps such as _lexical_, _syntax_ and _semantic analysis_, _code generation_ and _optimization_. The compiler examines the entire program to build an internal representation of if, then traverses the structure to generate and optimize the code. We're not going to do any of that. Not because it's wrong - it certainly isn't - but because it's not the only way. The technique I'll be describing here is based on observation of how human beings process language, particularly foreign language. As far as I know there are no other books on this techinique.
+Books on compiler design generally describe a standard series of steps such as _lexical_, _syntax_ and _semantic analysis_, _code generation_ and _optimization_. The compiler examines the entire program to build an internal representation of if, then traverses the structure to generate and optimize the code. We're not going to do any of that. Not because it's wrong - it certainly isn't - but because it's not the only way. The technique I'll be describing here is based on observation of how human beings process language, particularly foreign language. I have yet to find any other books describing this techinique.
 
 Imagine you encounter some instructions written in some language other than English. Let's say you have a very basic understanding of the language but are in no way fluent, and that you have a dictionary to hand. How do you approach the task?
 
@@ -32,7 +32,7 @@ Now I can't guarantee that all minds approach a problem the same way, but this h
 
 The first word is _apri_. I look this up in the dictionary and discover it means _open_ (as a command verb). So I deduce that what follows must be something that needs to be opened. The next word is _la_ (_the_) which I will treat as syntactic noise that doesn't affect the overall meaning. Then comes _terza_ (_third_). I realize this isn't a thing at all; it's an ordinal number. So the thing that needs to be opened is the third of something. Save that information and move on to _porta_ (_door_). Yes, this makes sense; it's the third door.
 
-At this point there are potentially several possibilities. Perhaps there's nothing at all, in which case I'll need to make some kind of assumption about which door to open. Perhaps it's telling me _how_ to open the door, with a adjective like _quickly_ or _slowly_? Nope, it's none of them.  It's actually _a_ (_on the_). This is another bit of syntactic noise, but it gives me a good clue as to what to expect, that is, either _right_ or _left_. When I take the next token it's confirmed.
+At this point there are potentially several possibilities. Perhaps there's nothing at all, in which case I'll need to make some kind of assumption about which door to open. Perhaps it's telling me _how_ to open the door, with an adjective like _quickly_ or _slowly_? Nope, it's none of them.  It's actually _a_ (_on the_). This is another bit of syntactic noise, but it gives me a good clue as to what to expect, that is, either _right_ or _left_. When I take the next token it's confirmed.
 
 There are several points along the way where more than one possibility branches off from where I am. The technique I'm using tries each of these possibilities in turn until one is found that meets expectations, then I move on. If none of my expectations are met I may have taken a wrong turning earlier, so I back up to that point and try another path. Eventually I either find a complete match for the whole instruction or I conclude that it's nonsense - an error.
 
@@ -42,7 +42,7 @@ However, all of the above assumes the program is presented to the compiler as a 
 
 ## Function naming
 
-When you add a JavaScript file to your web page you are adding all its global constants, variables and functions. It's important to name these in such as way that they're not likely to clash with names chosen for other JS modules that might also be added to the page. The best strategy is to keep to a minimum the number of distinct global names and to prefix each one with a unique identifier such as the name of your project. For example, _**EasyCoder**_ comprises a number of source files each of which contains a single function with the name `EasyCoder_`_something_. Here is the start of the main compiler module:
+When you add a JavaScript file to your web page you are adding all its global constants, variables and functions. It's important to name these in such as way that they're not likely to clash with names chosen for other JS modules that might also be added to the page. The best strategy is to keep to a minimum the number of distinct global names and to prefix each one with a unique identifier such as the name of your project. For example, _**EasyCoder**_ comprises a number of source files each of which contains a single object with the name `EasyCoder_`_something_. Here is the start of the main compiler module:
 ```
 const EasyCoder_Compiler = {
 
