@@ -37,7 +37,7 @@ For this we need 2 keywords: `require` and `run`, plus a `module` variable type 
 		}
 	},
 ```
-Note that the final `return 0` causes program execution to halt while the load is happening. The `program.run(command.pc + 1)` in the callback function resumes execution once the load has completed.
+Note that the final `return 0` causes program execution to halt while the load is happening, and `program.run(command.pc + 1)` in the callback function resumes execution once the load has completed.
 
 The `program.require()` function used by `run(program)` looks like this:
 ```
