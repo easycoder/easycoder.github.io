@@ -2,7 +2,7 @@
 
 This is a fairly complex part of the language but well worth implementing as it gives a huge amount of power to the programmer.
 
-In order to compile a script, all of the domain handlers for the keywords it contains must already be present. A script can't request a plugin for its own code because by then the compiler is already running, and to add a new domain would mean suspending compilation while the new domain is loading. Not impossible, perhaps, but I'm assuming this is not implemented. So instead we use a 2-stage bootstrap where the extra domain(s) are called in by a boot script which then loads the main script, compiles and runs it.
+In order to compile a script, all of the domain handlers for the keywords it contains must already be present. A script can't request a plugin for its own code because by then the compiler is already running, and to add a new domain would mean suspending compilation while the new domain is loading. Not impossible, perhaps, but I'm assuming this is not implemented. So instead we use a 2-stage bootstrap where the extra domain(s) are called in by a boot script which loads the main script, compiles and runs it.
 
 For this we need 2 keywords: `require` and `run`, plus a `module` variable type in the core language module. The first looks like this:
 ```
