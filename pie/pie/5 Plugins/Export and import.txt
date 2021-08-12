@@ -19,7 +19,7 @@ The code to specify a list of exports looks like this:
         }
     }
 ```
-It may seem odd to label the array `imports[]` but that's exactly what they will be when received by the child script Here we're specify what they are in the parent's space. It's simply a matter of listing the variable names. Here's an example:
+It may seem odd to label the array `imports[]` but that's exactly what they will be when received by the child script Here we specify what they are in the parent's space; simply a matter of listing the variable names. For example:
 ```
     run Calculator with Opcode and Arg1 and Arg2
 ```
@@ -27,7 +27,7 @@ On the receiving side, the child script would start with something like this:
 ```
     import variable Opcode and variable Arg1 and variable Arg2
 ```
-The first thing to say is that the names of the variable don't have to match what they were called in the parent script, but ther types must match, as must the number of shared variables. Here's the code to handle importing:
+The first thing to say is that the names of the variable don't have to match what they were called in the parent script, but their types must match, as must the number of shared variables. Here's the code to handle importing:
 ```
 	Import: {
 
