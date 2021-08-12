@@ -2,9 +2,7 @@
 
 Once compilation is complete, its output is a _program_; a list of commands. The job of the runtime engine is to take these commands in linear order or as directed otherwise and perform the duties each one encapsulates. You could regard the commands as an assembly language for a rather special kind of processor.
 
-The runtime engine starts by pushing onto a runtime queue the offset (the program counter) at which to start execution. If the queue was not empty, nothing else happens as the queue already contains one or more threads of execution, handling previous run requests.
-
-Once an execution thread stops, by reaching a `stop` or `wait` command, the queue is popped and the next run request starts. If this is well-behaved it too will stop or wait at some point and allow another thread to start. This behaviour creates an illusion of multi-tasking.
+The runtime engine pushes the starting program counter onto the end of the queue of threads waiting to run. Once an execution thread stops, by reaching a `stop` or `wait` command, the queue is popped and the next run request starts. If this is well-behaved it too will stop or wait at some point and allow another thread to start. This behaviour creates an illusion of multi-tasking.
 
 In a system where multiple scripts may run at the same time, you can arrange for each one to have its own program and its own queue or you may set up a global queue where each entry comprises a program and its program counter.
 
@@ -39,6 +37,6 @@ We've all done it; we've set up a program loop and forgotten to increment the lo
 
 If you add a `trace` command you can arrange for the program to stop at each command and post information about itself into a special on-screen `<div>`, then permit the user to interact with the tracer to single-step, do further inspection of variables or resume execution. This can be a very valuable tool during development. You still have the browser debugger abvailable to show you what's happening to your JavaScript, but the tracer operates with knowledge of variable names that aren't easy to find in the low-level debugger.
 
-Trace/debug is implemented in _**EasyCoder**_. The code is all in the `Runtime.js` file and there's a page in the [Codex](https://easycoder.github.io?s=step10) describing the tracer and how to use it.
+Trace/debug is implemented in _**EasyCoder**_. The code is all in the `Run.js` file and there's a page in the [Codex](https://easycoder.github.io?s=step10) describing the tracer and how to use it.
 
 ~tid:Handlers:Runtime handlers~

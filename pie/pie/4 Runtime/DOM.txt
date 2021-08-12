@@ -33,7 +33,7 @@ Now we create a new element, giving it the type, e.g. `dom`. We must give it an 
 ```
 MyDiv-0-392
 ```
-A special action is needed for hyperlinks; these must have an attribute set so they don't respond to clicks except via script commands (more of this later). And finally we append the new element to its parent.
+A special action is needed for hyperlinks; these must have an attribute set so they don't respond to clicks except via script commands. And finally we append the new element to its parent.
 
 ### `on click`
 
@@ -86,7 +86,7 @@ This code is not guaranteed to be optimal. Slight changes tend to have unforseen
 
 ## CSS
 
-You have a choice of assigning CSS classes to DOM elements or of assigning specific style values. If you want to do the former you'll need something along the lines of:
+You have a choice of assigning CSS classes to DOM elements or of assigning specific style values. If you want to do the former you'll need something along the lines of `set the class of <variable> to <list of classes>`. Here's the runtime code:
 ```
     symbol = program.getSymbolRecord(command.symbolName);
     target = symbol.element[symbol.index];
@@ -102,7 +102,13 @@ You have a choice of assigning CSS classes to DOM elements or of assigning speci
 ```
 This gets the symbol record for the element, either directly from the symbol record or by using its saved ID and requesting it from the DOM. Then it splits the list of classes provided, removes each one from the target's class list and replaces it.
 
-The alternative is to set styles directly:
+The alternative is to set styles directly with commands such as these:
+```
+set style `text-align` of body to `center`
+set style `width` of NameInput to `15em`
+set the styles of TextPanel to `flex:2;font-weight:bold;margin-top:1em`
+```
+and here's the runtime code:
 ```
     symbol = program.getSymbolRecord(command.symbolName);
     target = symbol.element[symbol.index];

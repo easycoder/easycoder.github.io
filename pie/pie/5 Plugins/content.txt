@@ -14,7 +14,7 @@ Plugins are JavaScript files containing domain handler code in a fixed format. T
     if Box52 is heavy print `Heavy: ` cat the weight of Box 52
     stop
 ```
-Here's the complete plugin in a form that's compatible with _**EasyCoder**_. To adapt it for you own language you probably need to do no more than globally change _**EasyCoder**_ into the name of your project. The filname is `box.js`.
+Here's the complete plugin in a form that's compatible with _**EasyCoder**_. To adapt it for your own language you probably need to do no more than globally change _**EasyCoder**_ into the name of your project. The filname is `box.js`.
 ```
 const EasyCoder_Box = {
 
