@@ -83,7 +83,7 @@ I'm assuming you have some experience with JavaScript and ES6. You don't need to
 
 ~sid:4 Runtime:The runtime engine~
 
-~sid:5 Plugins~
+~sid:5 Plugins:Plugins~
 
 ~stid:5 Plugins/Handling plugins:Handling plugins~
 
