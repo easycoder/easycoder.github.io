@@ -128,4 +128,4 @@ The `fork` handler is identical to `go` and `gosub` except for the name of the k
 
 As noted, `go`, `gosub` and `fork` are all compiled identically. The differences come in the runtime, which we'll come to later in the book.
 
-~tid:DOM:DOM commands~
+~pn:3 Compilation/If:The `if` handler:3 Compilation/DOM:Domain Object Model commands~

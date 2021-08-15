@@ -43,4 +43,4 @@ One of the most important features of this system is the way it tries domains in
 ```
 The function iterates the names of the domains, calling `getHandler()` on each one. If the domain is able to process the keyword it returns a handler function, which the compiler then calls to compile the token. This permits several domains to handle different variants of the same keyword. As soon as one of them returns `true` the function can return, knowing that the domain will have posted its compiled code into the program list. Note the way that `mark()` and `rewind()` are used to back up and try the same token with a different domain. If all of them fail it's an error and compilation stops.
 
-~tid:Variables:Compiling variables~
+~pn:3 Compilation/Compiler:Building a compiler:3 Compilation/Variables:Compiling variables~

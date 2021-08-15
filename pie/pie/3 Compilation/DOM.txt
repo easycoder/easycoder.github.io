@@ -1,4 +1,4 @@
-# DOM commands
+# Domain Object Model commands
 
 In _**EasyCoder**_, all the commands that operate on the Document Object Model are to be found in the _browser_ module. Here's its `getHandler(name)` function:
 ```
@@ -145,6 +145,6 @@ Here's the handler for a `div` variable:
 ```
 Most of the work is done by `compiler.compileVariable(domain, keyword, isVHolder, extra)`, which is described on the ~tid:Variables~ page.
 
-The remaining functions are not themselves DOM objects but have roles that work with the DOM and with other browser features. Some are simple, like `enable` and `disable` but some are quite lengthy and repetitive, with many different variants of syntax to handle. If you've been following things this far there's little need to work laboriously through an example here; better to study the code in the _**EasyCoder**_ repository
+The remaining functions are not themselves DOM objects but have roles that work with the DOM and with other browser features. Some are simple, like `enable` and `disable` but some are quite lengthy and repetitive, with many different variants of syntax to handle. If you've been following things this far there's little need to work laboriously through an example here; better to study the code in the _**EasyCoder**_ repository.
 
-~tid:Values:Value handlers~
+~pn:3 Compilation/Multitasking:Multitasking:3 Compilation/Values:Value handlers~

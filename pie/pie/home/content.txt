@@ -1,14 +1,22 @@
 # Programming In English
 
-This book describes how to build a versatile computer language whose scripts look like a series of step-by-step English commands similar to cookery recipes, navigation instructions or car maintenance manuals. The syntax will be English stripped to the minimum; terse but understandable by anyone familiar with the problem domain. The environment will be that of a web browser and the language will be a comprehensive, capable and easy to use replacement for JavaScript, permitting scripts to be embedded in any web page then compiled and run on the fly as the page loads.
+This book describes how to build a versatile computer language whose scripts look like a series of step-by-step English commands with a syntax similar to cookery recipes, navigation instructions or car maintenance manuals. The syntax will be English stripped to the minimum; terse but understandable by anyone familiar with the problem domain. The environment will be that of a web browser and the language will be a comprehensive, capable and easy to use replacement for JavaScript, permitting scripts to be embedded in any web page then compiled and run on the fly as the page loads. Here is a list of key requirements:
+
+ - English-like scripts embedded in a web page or loaded via REST
+ - Able to handle any functionality provided by JavaScript
+ - No build tools required
+ - Compact and expressive - low memory usage
+ - Fast compilation in the browser with no perceptible delays
+ - Good runtime performance
+ - Extendable with plugins
+
+## Background
 
 Programming is about communication; specifically about getting computers to do things. I'm assuming that you, my reader, are a programmer and that among your circle of friends and aquaintances there are others with whom you share specialized skills you've worked long and hard to gain.
 
 You'll also know a lot of other people who aren't programmers, most of whom find your interests and skills baffling or even frightening. For them, computers are just tools to be used, preferably without the need to understand how they work any more than most of us know about what happens under the hood of a car, or indeed anywhere outside own own areas of speciality.
 
 Just as non-programmers find it hard to understand how programmers think, we often fail to fully appreciate the complexities of the world outside the computer, for which we build software systems. We have a regrettable tendency to disregard advice from users of a system because we all too often assume we know better than those users. Better understanding makes for better, more reliable software, and better communication is the key to better understanding.
-
-## What is programming?
 
 Computers are literal devices. They blindly follow the instructions given, without stopping to question if you really meant what you said. A programmer is someone who has the skill to create sets of instructions that are unambiguous, so the computer will do exactly what is intended. In order for this to happen, instructions are written in a computer _language_; a formal syntax that's understood by a computer and more importantly by the programmers tasked with ensuring the right things are done. Many computer languages have been invented, most of which are much more similar to each other than any of them are to human languages. And just as human language develops specialized dialects to suit the needs of a particular group, whether it be chemists, lawyers or footballers, new computer languages are always being created to provide a better match to problem domains of one kind or another.
 
@@ -35,15 +43,19 @@ The rest of this book explains how to build a computer language that's powerful 
 
 The techniques described are not just theoretical; they're ones that I've used for over 20 years, starting in about 1998 with a Java-based compiler and runtime. In 2018 I decided to recreate the same thing using JavaScript, partly to gain experience in using the language and partly to build an environment that would make it easier to program web applications. Both aims were successful. The end result is called _**EasyCoder**_; its source code repository is hosted on GitHub at [https://github.com/easycoder](https://github.com/easycoder) and that's where most of the code excerpts in this book come from.
 
-For anyone interested, building a language along these lines isn't a huge job. It took me about 4 months (part time) to get the compiler and runtime up, then a year or two to gradually refine and enhance them. There's quite a lot of code but nothing massively complicated anywhere, so in terms of size it would make quite a reasonable student project, albeit a fairly off-beat one.
+For anyone interested, building a language along these lines isn't a huge job. It took me about 4 months (part time) to get the compiler and runtime up, then a year or two to gradually refine and enhance them. There's quite a lot of code but nothing massively complicated anywhere, so in terms of size it would make quite a reasonable student project, albeit a fairly unusual one. I found the whole exercise most beneficial in getting me proficient in understanding and using core JavaScript.
 
-Of course, it's possible this book may inspire you to take the existing **_EasyCoder_** system and customize it for your own purposes. You are most welcome to do this and use the book as a manual on how the system currently works.
+It's possible this book may inspire some to take the existing **_EasyCoder_** system and customize it for their own purposes. This is fine; you are most welcome to use the book as a manual on how the system currently works and to make whatever changes you like to improve it.
 
-And finally, before getting started, **_EasyCoder_** has its own website at [https://easycoder.github.io](https://easycoder.github.io), built entirely using _**EasyCoder**_ scripts, of course. One of the links on the home page is to the _Codex_, a combination of tutorial, reference manual and coding playground where users can create and run scripts. Readers of this book can get a feel for the kind of language being described, as well as appreciating its ability to handle a very wide range of varied tasks. It is my hope that this may inspire the creation of languages far more capable than my own.
+**_EasyCoder_** has its own website at [https://easycoder.github.io](https://easycoder.github.io) (built entirely using _**EasyCoder**_ scripts, of course). One of the links on the home page is to the _Codex_, a combination of tutorial, reference manual and coding playground where users can create and run scripts. Readers of this book can get a feel for the kind of language being described, as well as appreciating its ability to handle a very wide range of varied tasks. It is my hope that this may inspire the creation of languages far more capable than my own.
 
 This book can be read in a linear fashion; at the bottom of each page is a link to the next. Alternatively, you can choose any page from the table of contents below.
 
 I'm assuming you have some experience with JavaScript and ES6. You don't need to be an expert but complete beginners will find it a little hard going in places as I expect you to be able to read sections of code without my having to spell out everything line by line. When I started the _**EasyCoder**_ project my level of JS knowledge was pretty low, and it shows in places. I keep promising myself I'll do a major refactoring exercise but the time never seems to be available.
+
+~pn:::2 Designing a language:Designing a language~
+
+<hr>
 
 ~sid:2 Designing a language:Designing a language~
 
@@ -59,8 +71,6 @@ I'm assuming you have some experience with JavaScript and ES6. You don't need to
 
 ~sid:3 Compilation:Compiling scripts~
 
-> ~sid:3 Compilation:Building a compiler~
-
 > ~stid:3 Compilation/Tokenizer:The tokenizer~
 
 > ~stid:3 Compilation/Compiler:The compiler~
@@ -75,13 +85,17 @@ I'm assuming you have some experience with JavaScript and ES6. You don't need to
 
 > ~stid:3 Compilation/Multitasking:Goto, Gosub and Multitasking~
 
-> ~stid:3 Compilation/DOM:DOM commands~
+> ~stid:3 Compilation/DOM:Document Object Model commands~
 
 > ~stid:3 Compilation/Values:Value handlers~
 
 > ~stid:3 Compilation/Conditions:Condition handlers~
 
 ~sid:4 Runtime:The runtime engine~
+
+~sid:4 Runtime/Handlers:Runtime handlers~
+
+~sid:4 Runtime/DOM:Running DOM commands~
 
 ~sid:5 Plugins:Plugins~
 

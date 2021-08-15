@@ -126,4 +126,4 @@ In both these cases, the final item is itself a value so the compiler evaluates 
 
 If the token isn't a variable the compiler starts checking through all the other possibilities known for this domain. I only show the first three, `true`, `false` and `random`; you can see the rest by examining the `Core.js` file in the _**EasyCoder**_ repository or by studying the Programmers Reference for the [_**EasyCoder**_ Codex](https://easycoder.github.io/?s=step0) (Click the yellow book icon).
 
-~tid:Conditions:Condition handlers~
+~pn:3 Compilation/DOM:Domain Object Model commands:3 Compilation/Conditions:Condition handlers~

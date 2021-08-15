@@ -34,7 +34,7 @@ Some other things you're likely to want at some point (some more important than 
  - floating-point arithmetic
  - other specialized domain-related commands
 
-All of these can be handled by load-on-demand plugins (~sid:5 Plugins:See this section~) instead of rolling them into the main JS file~
+All of these can be handled by load-on-demand plugins (~sid:5 Plugins:See this section~) instead of rolling them into the main JS file.
 
 ## DOM commands
 A large number of commands in the browser domain will be those dealing with the Document Object Model. This is where the language is likely to be most frequently used; as a replacement for JavaScript when aspects of a web page need to be tweaked.
@@ -56,4 +56,4 @@ create LeftPanel in Screen
 
 With a full set of `create` syntax you can build an entire DOM using just script and hang it on any element in your web page. This is great for portability; you have a script that will run anywhere.
 
-~sid:3 Compilation:The compiler~
+~pn:2 Designing a language/Variables:Variables:3 Compilation:Compiling scripts~

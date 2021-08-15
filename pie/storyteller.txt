@@ -66,6 +66,7 @@
     variable Function
     variable Data
     variable Display
+    variable Stid
     variable Attributes
     variable Source
     variable Style
@@ -93,7 +94,7 @@
     	if portrait set Mobile
     end
     
-    put `https://cdn.jsdelivr.net/gh/easycoder/storyteller` into CDNPath
+    put `https://cdn.jsdelivr.net/gh/easycoder/storyteller@master` into CDNPath
     
     attach Resources to `storyteller-stories`
     put the content of Resources into Stories
@@ -668,7 +669,7 @@ SetStyles:
     return
 
 !------------------------------------------------------------------------------
-!	This is the Showndown extension.
+!	This manages the Showdown extension.
 
 !	Decorate is called for every occurrence of ~...~ in the topic data
 Decorate:
@@ -691,11 +692,13 @@ Decorate:
         else if Function is `space` gosub to ProcessSpace
         else if Function is `comment` gosub to ProcessComment
         else if Function is `theme` gosub to ProcessTheme
+        else if Function is `pn` gosub to ProcessPreviousNext
     end
     set the payload of DecoratorCallback to Payload
     stop
 
 !	Process a request for a new subject
+!   Syntax: ~sid:{sid}:{display text}~
 ProcessSID:
 	put Data into Display
     put the position of `:` in Data into N
@@ -711,6 +714,7 @@ ProcessSID:
     return
 
 !	Process a request for a new topic
+!   Syntax: ~tid:{tid}:{display text}~
 ProcessTID:
 	put Data into Display
     put the position of `:` in Data into N
@@ -726,6 +730,7 @@ ProcessTID:
     return
 
 !	Process a request for a new subject and topic
+!   Syntax: ~stid:{stid}:{display text}~
 ProcessSTID:
 	put Data into Display
     put the position of `:` in Data into N
@@ -741,6 +746,7 @@ ProcessSTID:
     return
 
 !	Process an image, including positioning and class information
+!   Syntax: ~img:{url}:{styles}!{options}~
 ProcessImage:
 	put empty into Options
 	put the position of `/` in Data into N
@@ -830,6 +836,7 @@ ProcessImage:
     return
 
 !	Process a 'clear'
+!   Syntax: ~clear~
 ProcessClear:
     put `<div style="height:1px;clear:both"></div>` into Payload
     return
@@ -842,7 +849,8 @@ ProcessSelect:
     add 1 to SelectCount
     return
 
-!	Process a space
+!	Process a space (add a non-breaking space)
+!   Syntax: ~space~
 ProcessSpace:
 	if Mobile put `<br>` into Payload
     else
@@ -858,24 +866,112 @@ ProcessSpace:
     end
     return
 
-!	Process a 'comment'
+!	Process a 'comment' (TODO)
+!   Syntax: ~comment~
 ProcessComment:
     put empty into Payload
     return
 
 !	Process a 'theme'
+!   Syntax: ~theme:{theme name}>~
 ProcessTheme:
 	put Data into Display
     put the position of `:` in Data into N
     if N is not -1
     begin
-	    put left N of Data into Data
+!	    put left N of Data into Data
 	    add 1 to N
 	    put from N of Display into Display
     end
     put `<a href="#" id="ec-link-` cat LinkCount cat `" class="button"`
     	cat `" data-id="theme">` cat Display cat `</a>` into Payload
     add 1 to LinkCount
+    return
+
+!	Process a Previous ... Next
+!   Syntax: ~pn:{previous stid}:{display text}:{next stid}:{display text}~
+ProcessPreviousNext:
+    put empty into Payload
+    divide ButtonSize by 2 giving S
+    put the position of `:` in Data into N
+    if N is not -1
+    begin
+        ! Get the stid
+        put left N of Data into Stid
+        add 1 to N
+        put from N of Data into Data
+        ! Check if there's a Next
+        put the position of `:` in Data into M
+        if M is -1
+        begin
+            put the length of Data into M
+            put Data into Display
+        end
+        else
+        begin
+            put left M of Data into Display
+            add 1 to M
+        end
+        put from M of Data into Data
+        ! Do the Prev link
+        if Stid is not empty
+        begin
+            put the position of `/` in Stid into P
+            if P is  -1
+                put `<a href="#" id="ec-link-` cat LinkCount
+                    cat `" class="button" style="float:left"`
+                    cat ` data-id="S-` cat Stid cat `">`
+                    cat `<img src="` cat CDNPath cat `/icons/arrow-previous.png"`
+                    cat ` style="width:` cat S cat `px;margin-right:1em">`
+                    cat Display cat `</a>` into Payload
+            else
+                put `<a href="#" id="ec-link-` cat LinkCount
+                    cat `" class="button" style="float:left"`
+                    cat ` data-id="ST-` cat Stid cat `">`
+                    cat `<img src="` cat CDNPath cat `/icons/arrow-previous.png"`
+                    cat ` style="width:` cat S cat `px;margin-right:1em">`
+                    cat Display cat `</a>` into Payload
+            add 1 to LinkCount
+        end
+        ! Now the Next link
+        put empty into Stid
+        if Data is not empty
+        begin
+            put 0 into N
+            put the position of `:` in Data into N
+            if N is not -1
+            begin
+                ! Get the stid
+                put left N of Data into Stid
+                add 1 to N
+                put from N of Data into Display
+            end
+            else
+            begin
+                put Data into Stid
+                put Data into Display
+            end
+            if Stid is not empty
+            begin
+                put the position of `/` in Stid into P
+                if P is  -1
+                    put Payload cat  `<a href="#" id="ec-link-` cat LinkCount
+                        cat `" class="button" style="float:right"`
+                        cat ` data-id="S-` cat Stid cat `">` cat Display
+                        cat `<img src="` cat CDNPath cat `/icons/arrow-next.png" style="width:` cat S cat `px;margin-left:1em">`
+                        cat `</a>` into Payload
+                else
+                    put Payload cat `<a href="#" id="ec-link-`
+                        cat LinkCount cat `" class="button" style="float:right"`
+                        cat ` data-id="ST-` cat Stid cat `">` cat Display
+                        cat `<img src="` cat CDNPath cat `/icons/arrow-next.png" style="width:` cat S cat `px;margin-left:1em">`
+                        cat `</a>` into Payload
+                add 1 to LinkCount
+            end
+        end
+    end
+    put Payload cat `<div style="clear:both;height:1"></div>` into Payload
+
     return
 
 !   Put some styles into the head

@@ -1,4 +1,4 @@
-# The compiler
+# Building a compiler
 
 Most of the main compiler module is a collection of functions to do things that will be needed by the ~tid:Keywords:keyword handlers~. I'll show the ones implemented in _**EasyCoder**_; your language may need more or less of them.
 
@@ -96,4 +96,4 @@ A keyword processor consists mainly of calls to these functions as it works its 
 
 The rest of the main compiler module comprises functions to manage progress along the token list. Before describing these I'll introduce the concept of _domains_.
 
-~tid:Domains~
+~pn:3 Compilation/Tokenizer:The tokenizer:3 Compilation/Domains:Domains~

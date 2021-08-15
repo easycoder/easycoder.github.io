@@ -67,4 +67,4 @@ When there's an `else` it's a bit more complicated.The first thing is to add a `
 
 The `while` command operates in a similar way, so rather than spell it out here I'll leave the reader to examine the _**EasyCoder**_ source or simply work it out as an exercise.
 
-~tid:Multitasking:Goto, Gosub and Multitasking~
+~pn:3 Compilation/Keywords:Keywords:3 Compilation/Multitasking:Goto, Gosub and Multitasking~

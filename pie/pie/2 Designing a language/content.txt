@@ -24,4 +24,4 @@ To help with clarity it's useful to capitalize certain words. English is probabl
 
 Computer languages generally use camel case, which does indeed improve readability, but then start all names with lower-case, contrary to usage in human languages. To keep closer to the latter I'll suggest using an initial capital letter on all variable names. It won't actually be a requirement but it makes statements much more readable. The initial word of every statement will start with a lower-case letter otherwise it could be confused with a variable having the same name. It also helps when you build a color-coded editor, to have all the variables stand out in their own color.
 
-~tid:Environment:The coding environment~
+~pn:home:Programming in English:2 Designing a language/Environment:The coding environment~

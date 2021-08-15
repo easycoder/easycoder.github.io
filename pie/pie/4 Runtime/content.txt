@@ -39,4 +39,4 @@ If you add a `trace` command you can arrange for the program to stop at each com
 
 Trace/debug is implemented in _**EasyCoder**_. The code is all in the `Run.js` file and there's a page in the [Codex](https://easycoder.github.io?s=step10) describing the tracer and how to use it.
 
-~tid:Handlers:Runtime handlers~
+~pn:3 Compilation/Conditions:Condition handlers:4 Runtime/Handlers:Runtime handlers~

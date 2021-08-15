@@ -1,33 +1,15 @@
-# Plugins and child scripts
-
-Plugins are JavaScript files containing domain handler code in a fixed format. The best way of illustrating this format is to write a plugin for a hypothetical domain. Let's assume your problem domain is that of logistics, and that one of your custom variable types is a `box`, which has features that make it useful when packing items for transport. The `box` has dimensions and weight so we need to be able to create a box, set up its properties and return information when requested. Here's a simple script that exercises all the features:
-```
-    box Box52
-    
-    create Box52
-        width 60
-        depth 40
-        height 40
-        weight 20
-    
-    print the volume of Box52
-    if Box52 is heavy print `Heavy: ` cat the weight of Box 52
-    stop
-```
-Here's the complete plugin in a form that's compatible with _**EasyCoder**_. To adapt it for your own language you probably need to do no more than globally change _**EasyCoder**_ into the name of your project. The filname is `box.js`.
-```
 const EasyCoder_Box = {
 
 	name: `EasyCoder_Box`,
 
 	BOX: {
 
-		compile: compiler => {
+		compile: (compiler) => {
 			compiler.compileVariable(`box`, `box`);
 			return true;
 		},
 
-		run: program => {
+		run: (program) => {
 			return program[program.pc].pc + 1;
 		}
 	},
@@ -100,7 +82,7 @@ const EasyCoder_Box = {
 	// Values
 	value: {
 
-		compile: compiler => {
+		compile: (compiler) => {
             compiler.skip(`the`);
             const type = compiler.getToken();
             if ([`width`, `depth`, `height`, `weight`, `volume`].includes(type)) {
@@ -150,7 +132,7 @@ const EasyCoder_Box = {
 	// Conditions
 	condition: {
 
-		compile: compiler => {
+		compile: (compiler) => {
             if (compiler.isSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
 				if (symbolRecord.keyword === `box`) {
@@ -186,7 +168,7 @@ const EasyCoder_Box = {
     },
 
 	// Dispatcher
-	getHandler: name => {
+	getHandler: (name) => {
 		switch (name) {
 		case `box`:
 			return EasyCoder_Box.BOX;
@@ -209,25 +191,3 @@ const EasyCoder_Box = {
 
 // eslint-disable-next-line no-unused-vars
 EasyCoder.domain.box = EasyCoder_Box;
-```
-At the start is a property giving the name of the module. This is for the convenience of the programmer; it may help to locate the code during debugging.
-
-Next there are handler objects for the 2 keywords implemented in this domain; `box` and `create`. Each of these contains 2 functions; `compile(compiler)` and `run(program)`.
-
-The `box` command is a variable declaration and is implemented in a standard way.
-
-The `create` command accepts the syntax shown in the example at the top of this section, where the item is first named and then followed by a set of attributes, which can be given in any order. The function returns an object with all these items.
-
-At runtime, the command is read from the program array and the various items are extracted. An object is built to contain the current values of the 3 properties and is written to the variable.
-
-Next we have the value handler object. This contains the compiler function `compile(compiler)` and the runtime function `get(program, value)`. Between them they provide the means to access any of the properties of the box variable, plus the volume, which is computed on the fly at runtime.
-
-After this is the condition handler object. This contains the compiler function `compile(compiler)` and the runtime function `test(program, condition)`. Between then they implement a single test, which returns `true` if the box weight exceeds a fixed value. Note that the core condition handler will already have checked for `not`, which if given will negate the test, as in `if Box52 is not heavy ...`
-
-Now we come to the `getHandler(name)`, the dispatcher function, which returns the handler object for any given keyword in this domain (or null if an unknown keyword is given).
-
-This is followed by the runtime function that is called by the main runtime to execute the command at the current program counter.
-
-Finally, the module posts itself into the list of domains held by the main program module, allowing the compiler to include it in searches for a suitable handler for any given keyword.
-
-~pn:4 Runtime/DOM:Running DOM commands:5 Plugins/Handling plugins:Handling plugins~

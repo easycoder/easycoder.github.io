@@ -36,4 +36,4 @@ The first command sets up the array, the second one points to a specific element
 
 When the runtime encounters the command `set the elements of` it will either expand or contract the array, depending if the requested number is greater or smaller than the current size. So although on expansion no data will be lost, on contraction the higher-indexed elements will be.
 
-~tid:Commands~
+~pn:2 Designing a language/Example code:Example code:2 Designing a language/Commands:Commands~

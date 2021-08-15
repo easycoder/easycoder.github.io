@@ -1,4 +1,4 @@
-# The compiler
+# Compiling scripts
 
 >_Spoiler alert: If you were hoping for a tutorial on the "correct" way to build a compiler, you may be disappointed. This book is about building a computer language that resembles English, and because this is an unconventional thing to do, the compiler is also unconventional. In spite of that, however, it manages to be very flexible and to achieve sufficiently high performance that in practice it will never be seen doing its work._
  
@@ -64,5 +64,5 @@ const EasyCoder_Compiler = {
 ```
 Other modules that require access to compiler functions are always handed a reference to an instance of `EasyCoder_Compiler`.
 
-~tid:Tokenizer:The tokenizer~
+~pn:2 Designing a language/Commands:Commands:3 Compilation/Tokenizer:The tokenizer~
 

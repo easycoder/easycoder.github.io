@@ -58,4 +58,4 @@ It starts by checking for a duplicate token name, then adds an entry to the symb
 
 Your language may have more or fewer fields than this, according to its requirements.
 
-~tid:Keywords:Keyword handlers~
+~pn:3 Compilation/Compiler:Domains:3 Compilation/Keywords:Keyword handlers~

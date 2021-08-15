@@ -14,7 +14,7 @@
       variable Script
       require js `https://easycoder.github.io/dist/plugins/showdown.js?v=` cat now
 
-      rest get Script from `https://easycoder.github.io/scripts/storyteller/storyteller.ecs?v=` cat now
+      rest get Script from `https://cdn.jsdelivr.net/gh/easycoder/storyteller@master/storyteller.txt?v=` cat now
 !      rest get Script from `/storyteller.txt?` cat now
       run Script
 

@@ -1,0 +1,13 @@
+!   Box Test
+
+    box Box52
+    
+    create Box52
+        width 60
+        depth 40
+        height 40
+        weight 25
+    
+    print the volume of Box52
+    if Box52 is heavy print `Heavy: ` cat the weight of Box52
+    stop

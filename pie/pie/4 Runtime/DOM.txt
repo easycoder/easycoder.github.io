@@ -138,4 +138,4 @@ and here's the runtime code:
 ```
 This one presents an alternative way of getting the target element. It then either replaces all the styles on that element or just one of them, depending on what it finds in `command.type`.
 
-~sid:5 Plugins:Plugins~
+~pn:4 Runtime/Handlers:Runtime handlers:5 Plugins:Plugins~
