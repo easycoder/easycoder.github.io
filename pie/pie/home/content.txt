@@ -108,3 +108,5 @@ Photo by <a href="https://unsplash.com/@cookiethepom?utm_source=unsplash&utm_med
 > ~stid:5 Plugins/Handling plugins:Handling plugins~
 
 > ~stid:5 Plugins/Export and import:Export and import~
+
+> ~stid:5 home/Conclusion:Conclusion~
