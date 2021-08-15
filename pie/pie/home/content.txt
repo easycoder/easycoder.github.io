@@ -8,7 +8,7 @@ This book describes how to build a versatile computer language whose scripts loo
  - Able to handle any functionality provided by JavaScript
  - No build tools required
  - Compact and expressive - low memory usage
- - Fast compilation in the browser with no perceptible delays
+ - Direct compilation in the browser with no perceptible delays
  - Good runtime performance
  - Extendable with plugins
 
