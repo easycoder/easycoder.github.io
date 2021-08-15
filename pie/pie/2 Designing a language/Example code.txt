@@ -6,7 +6,7 @@ Before I launch into a description of the actual arithmetic functions I'll first
 
 ## Constants, values and variables
 
-A _constant_ is an entity whose value is fixed for all time, such as 14, 3996 or "Kg". Some computer languages let you give a name to a constant (these are called _manifest constants_); this helps if you use the same constant in many places and later want to give it a different value; it saves having to hunt down every occurrence.
+A _constant_ is an entity whose value is fixed for all time, such as 14, 3996, "37.02" or "Kg". Some computer languages let you give a name to a constant (these are called _manifest constants_); this helps if you use the same constant in many places and later want to give it a different value; it saves having to hunt down every occurrence.
 
 A _value_ is any entity that can be used as part of a calculation or other language command. It might be a constant as defined above, it might be the contents of a variable as defined next, or it might be something else that is only valid at the point you actually use it, such as the time of day or the size of a file. To cope with all this variation we'll implement a "value" as a _specification_ of how to obtain the actual numeric, boolean or textual value to use in the command.
 

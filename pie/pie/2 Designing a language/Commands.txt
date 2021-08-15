@@ -13,7 +13,7 @@ String operations are also quite straightforward. To assign a string value, use
 ```
 put `This is a string` into Title
 ```
-To append to an existing string you can use the _add_ keyword, but your compiler will need to check if it's being asked to do an arithmetic or a string operation, which may not be easy if your variables can hold either type. So it's probably better to use `append`:
+To append to an existing string you can use the `add` keyword, but your compiler will need to check if it's being asked to do an arithmetic or a string operation, which may not be easy if your variables can hold either type. So it's probably better to use `append`:
 ```
 append `Some more text` to MyText
 ```
@@ -28,7 +28,7 @@ When you're programming browser-based apps you'll almost certainly want concurre
 
 Some other things you're likely to want at some point (some more important than others):
  - a set of REST commands so you can GET data from your own or remote websites and POST data back again
- - commands for handling JSON data; creating JSON objects adding and removing items from them etc.
+ - commands for handling JSON data; creating JSON objects, adding and removing items from them etc.
  - commands for handling forms
  - a Google Maps module
  - floating-point arithmetic

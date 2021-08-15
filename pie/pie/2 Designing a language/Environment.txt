@@ -8,7 +8,7 @@ The other decision concerns where the code is to run. If your compiler is coded 
 
 Some might prefer to code in C++ or Java. Many compilers are written in C++ so there's something to be said for that, though if you want to distribute your efforts you'll have to do versions for Windows, for Mac and for Linux.
 
-There are many, many other alternatives but the one that stands out is JavaScript, because it runs in every browser on the planet. Many people, most notably Chromebook owners, rarely venture outside the browser. Your apps can reside on a webserver and be available simply by typing a URL. Add to this a superb graphics environment and the case is unanswerable.
+There are many, many other alternatives but JavaScript stands out because it runs in every browser on the planet. Many people, most notably Chromebook owners, rarely venture outside the browser. Your apps can reside on a webserver and be available simply by typing a URL. Add to this a superb graphics environment and the case is unanswerable.
 
 In this book I will assume the browser is the environment and JavaScript is what we'll use to write the new language. JavaScript, as noted above, is incredibly powerful and is well up to the job of being an "assembly language" in which to code higher-level software.
 

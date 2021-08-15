@@ -1,0 +1,8 @@
+# Conclusion
+
+This is the end of the book. I hope that you have found it both interesting and useful. Feedback is welcome; you can email the author at [gtanyware@gmail.com](mailto:gtanyware@gmail.com). If you go ahead and create your own language using some of the techniques decribed, or if you decide to adapt _**EasyCoder**_ for your own purposes, I will be delighted to hear how you get on.
+
+Graham Trott    
+Leeds, UK, August 2021
+
+~pn:5 Plugins/Handling plugins:Handling plugins~

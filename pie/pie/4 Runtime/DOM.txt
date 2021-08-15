@@ -29,7 +29,7 @@ As before, first we get the command, then the symbol table record for the target
 
 When we create a DOM object we can make it a direct child of the page BODY or of another DOM element. In the latter case, the parent will have been specified in the script, so we can get its record, and from that the actual DOM element (which will only exist if the parent has also been `create`d or has been `attach`ed to a suitable element in the document).
 
-Now we create a new element, giving it the type, e.g. `dom`. We must give it an ID that is guaranteed to be unique; I choose to use a 3-part name comprising the variable name, its array index and a global serial number that increments for every DOM element. This combination ID is very useful when using the browser debugger as it becomes quite clear how any element relates to the script. So a typical ID looks like
+Now we create a new element, giving it the type, e.g. `div`. We must give it an ID that is guaranteed to be unique; I choose to use a 3-part name comprising the variable name, its array index and a global serial number that increments for every DOM element created. This combination ID is very useful when using the browser debugger as it becomes quite clear how any element relates to the script. So a typical ID looks like
 ```
 MyDiv-0-392
 ```
@@ -78,7 +78,7 @@ In _**EasyCoder**_ it's common to create an array of DOM variables that respond 
 
 Three items of information need to be retrieved when a mouse click occurs, so these are added to the DOM element as properties. Bear in mind that at the point this code runs there hasn't yet been a mouse click; we're just setting up for when they do happen.
 
-Next we set up the `onclick` listener. The content of this is what will handle the actual click. We set up a global record to record the target element and the click location; this is needed for drag and drop operations. We 'blur' everything except radio buttons (to remove the focus), then we set the index of the DOM variable to the one that was clicked, allowing the `<do something>` code to know which element it's dealing with.
+Next we set up the `onclick` listener. The content of this is what will handle the actual click. We set up the global record `clickData` to record the target element and the click location; this is needed for drag and drop operations. We 'blur' everything except radio buttons (to remove the focus), then we set the index of the DOM variable to the one that was clicked, allowing the `<do something>` code to know which element it's dealing with.
 
 Finally, we request a new execution thread for the actions resulting from the click. It's best to do this after a short pause, otherwise the display doesn't have time to update before the actions start to take effect.
 

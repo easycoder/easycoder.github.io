@@ -40,7 +40,7 @@ It starts by checking for a duplicate token name, then adds an entry to the symb
 
 `isSymbol` - a boolean value that confirms this command contains a symbol.
 
-`used` - a boolan value that starts `false` and is changed to `true` as soon as the compiler comes across a command that assigns it a value. This allows a post-compilation check to be made for unused variables. Note that simply reading a variable does not set the flag (this would defeat the purpose of identifying it as unused). Unused variables are a frequent source of errors when you come to run your program.
+`used` - a boolean value that starts `false` and is changed to `true` as soon as the compiler comes across a command that assigns it a value. This allows a post-compilation check to be made for unused variables. Note that writing to a variable does not set the flag as this does not count as using it. Unused variables are a frequent source of errors when you come to run your program.
 
 `isVHolder` - tells the compiler that this variable is able to hold a numeric or a string value. Many variable types do not so this permits another compilation check to be made that a script is not attempting to assign a value to one of them.
 

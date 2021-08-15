@@ -145,6 +145,36 @@ Here's the handler for a `div` variable:
 ```
 Most of the work is done by `compiler.compileVariable(domain, keyword, isVHolder, extra)`, which is described on the ~tid:Variables~ page.
 
-The remaining functions are not themselves DOM objects but have roles that work with the DOM and with other browser features. Some are simple, like `enable` and `disable` but some are quite lengthy and repetitive, with many different variants of syntax to handle. If you've been following things this far there's little need to work laboriously through an example here; better to study the code in the _**EasyCoder**_ repository.
+The remaining functions are not themselves DOM objects but have roles that work with the DOM and with other browser features. Some are simple, like `enable` and `disable` but some are quite lengthy and repetitive, with many different variants of syntax to handle. I'll just give a single example here:
+```
+    } else if (token === `class`) {
+        if (compiler.nextTokenIs(`of`)) {
+            if (compiler.nextIsSymbol()) {
+                const symbol = compiler.getSymbolRecord();
+                if (symbol.extra === `dom`) {
+                    if (compiler.nextTokenIs(`to`)) {
+                        const value = compiler.getNextValue();
+                        compiler.addCommand({
+                            domain: `browser`,
+                            keyword: `set`,
+                            lino,
+                            type: `setClass`,
+                            symbolName: symbol.name,
+                            value
+                        });
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+```
+This fragment is for the command
+```
+    set the class of <DOM variable> to <class>
+```
+The compiler has already recognized `set` to get to this function, skipped over `the` and is now running down a list of all the things that might follow. (In some cases a `switch` might work better than a chained `if`.) Having seen `class` it checks that `of` follows then picks up the symbol name, gets its record from the symbol table and checks it's a valid DOM variable. Then it moves over `to` and gets the value that follows. Finally it builds a command object , posts it into the program array and returns `true`.
+
+Most of the DOM commands compile in much the same way so I won't work laboriously through the entire domain module, which is in the _**EasyCoder**_ repository as `Browser.js`.
 
 ~pn:3 Compilation/Multitasking:Multitasking:3 Compilation/Values:Value handlers~

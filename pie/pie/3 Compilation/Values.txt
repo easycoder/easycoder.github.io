@@ -1,8 +1,8 @@
 # Value handlers
 
-In your new language, a _value_ is a single integer, boolean or string quantity. (By single, I mean that map coordinates specifying a given location are not a value; they're a pair of values.) The language has a number of variable types that can be treated as having values according this definition. It also permits the inclusion of variable types that hold other data types such as coordinates or floating-point quantities. To keep things simple I'll ignore these in the following discussion.
+In your new language, a _value_ is a single integer, boolean, string or object. (By single, I mean that map coordinates specifying a given location are not a value unless they are held as the object `{latitude, longitude}`.) The language has a number of variable types that can be treated as having simple numeric or string values, but it also permits the inclusion of variable types that hold data types such as coordinates (as just shown) or floating-point quantities. To keep things simple I'll ignore these in the following discussion.
 
-A value is a specification of what must be done to retrieve the quantity represented by that value. The distinction is important; the specification is fixed and has a meaning at compile time as well as runtime, but it can only be applied at runtime to retrieve the quantity it represents. A good example might be a value that represents the current timestamp - the number of seconds elapsed since January 1st 1970. This obviously increases every second so its value at compile time is not very useful.
+A value is a _specification_ of what must be done to retrieve the quantity represented by that value. The distinction is important; the specification is fixed and has a meaning at compile time as well as runtime, but it can only be applied at runtime to retrieve the quantity it represents. A good example might be a value that represents the current timestamp - the number of seconds elapsed since January 1st 1970. This obviously increases every second so its value at compile time is not very useful.
 
 Each specification has a number of properties; how many depends on the type of the value. Here are some of those found in the _**EasyCoder**_ language; your own language may well have its own set depending on your concept of what it means for something to have a value.
 
@@ -10,15 +10,15 @@ Each specification has a number of properties; how many depends on the type of t
 
 `type` - the type of this value. Examples are
 
-`constant`, which denotes a numeric or string value. This is an intrinsic type.
+> `constant`, which denotes a numeric or string value. This is an intrinsic type.
 
-`left`, which returns a specified number of characters from a string. This comes from the core package, dealing with general-purpose programming.
+> `left`, which returns a specified number of characters from a string. This comes from the core package, dealing with general-purpose programming.
 
-`screenWidth`, which returns the screen screen width. This is a browser DOM value.
+> `screenWidth`, which returns the screen screen width. This is a browser DOM value.
 
-`latitude`, which might return a floating-point value or a string representation of one. This might be found in a Maps plugin.
+> `latitude`, which might return a floating-point value or a string representation of one. This might be found in a Maps plugin.
 
-A value object may have no properties other than `type` itself - an example being `screenWidth` - or it may have several; some fixed and others evaluated at runtime. Ordinary numeric/string values have a flag to say which data type is being held in the variable and the actual content itself.
+A value object might have no properties other than `type` itself - an example being `screenWidth` - or it could have several; some fixed and others evaluated at runtime. Ordinary numeric/string values have a flag to say which data type is being held in the variable and the actual content itself.
 
 When building your own language you may decide to follow the structure of _**EasyCoder**_ or to go for something completely different.
 
@@ -58,64 +58,65 @@ If `null` is returned, signifying a failure to compile, it doesn't automatically
 Here's the first part of the `value.compile` function in _**EasyCoder**_'s `core` domain:
 
 ```
-		compile: compiler => {
-			if (compiler.isSymbol()) {
-				const name = compiler.getToken();
-				const symbolRecord = compiler.getSymbolRecord();
-				switch (symbolRecord.keyword) {
-				case `module`:
-					compiler.next();
-					return {
-						domain: `core`,
-						type: `module`,
-						name
-					};
-				case `variable`:
-					const type = compiler.nextToken();
-					if ([`format`, `modulo`].includes(type)) {
-						const value = compiler.getNextValue();
-						return {
-							domain: `core`,
-							type,
-							name,
-							value
-						};
-					}
-					return {
-						domain: `core`,
-						type: `symbol`,
-						name
-					};
-				}
-				return null;
-			}
+    compile: compiler => {
+        if (compiler.isSymbol()) {
+            const name = compiler.getToken();
+            const symbolRecord = compiler.getSymbolRecord();
+            switch (symbolRecord.keyword) {
+            case `module`:
+                compiler.next();
+                return {
+                    domain: `core`,
+                    type: `module`,
+                    name
+                };
+            case `variable`:
+                const type = compiler.nextToken();
+                if ([`format`, `modulo`].includes(type)) {
+                    const value = compiler.getNextValue();
+                    return {
+                        domain: `core`,
+                        type,
+                        name,
+                        value
+                    };
+                }
+                return {
+                    domain: `core`,
+                    type: `symbol`,
+                    name
+                };
+            }
+            return null;
+        }
 
-			var token = compiler.getToken();
-			if (token === `true`) {
-				compiler.next();
-				return {
-					domain: `core`,
-					type: `boolean`,
-					content: true
-				};
-			}
-			if (token === `false`) {
-				compiler.next();
-				return {
-					domain: `core`,
-					type: `boolean`,
-					content: false
-				};
-			}
-			if (token === `random`) {
-				compiler.next();
-				const range = compiler.getValue();
-				return {
-					domain: `core`,
-					type: `random`,
-					range
-				};
-			}
+        var token = compiler.getToken();
+        if (token === `true`) {
+            compiler.next();
+            return {
+                domain: `core`,
+                type: `boolean`,
+                content: true
+            };
+        }
+        if (token === `false`) {
+            compiler.next();
+            return {
+                domain: `core`,
+                type: `boolean`,
+                content: false
+            };
+        }
+        if (token === `random`) {
+            compiler.next();
+            const range = compiler.getValue();
+            return {
+                domain: `core`,
+                type: `random`,
+                range
+            };
+        }
+        ...
 ```
 It starts by checking if the current token is a symbol. The `core` domain only has 2 variable types - `module` and `variable`. The first of these has a value being the name of the module; the second either has the value of its content or it might be one of
 ```

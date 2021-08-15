@@ -27,7 +27,7 @@ On the receiving side, the child script would start with something like this:
 ```
     import variable Opcode and variable Arg1 and variable Arg2
 ```
-The names of the variable don't have to match what they were called in the parent script, but their types must match, as must the number of shared variables. Here's the code to handle importing:
+The names of the variables don't have to match what they were called in the parent script, but their types must match, as must the number of shared variables. Here's the code to handle importing:
 ```
 	Import: {
 
@@ -77,4 +77,4 @@ This iterates the imports. For each one, we get its record from the symbol table
 
 Next we pull out the record for the variable as `newRecord` and add information from the exported variable. The important thing is to ensure the two records keep in step with each other and there are a couple of different strategies to ensure this. One is to share the actual content of the parent and child; the other is to synchronize every time the variable is read or altered. When I translated this code from Java back in 2018 I was still new to JavaScript and I couldn't figure if sharing was even possible, so I went for the second strategy. You should not assume that _**EasyCoder**_ does it the best way; the code has been subsequently governed by the rule "If it ain't broke, don't fix it".
 
-~pn:5 Plugins/Handling plugins:Handling plugins~
+~pn:5 Plugins/Handling plugins:Handling plugins:home/Conclusion:Conclusion~

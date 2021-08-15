@@ -35,7 +35,7 @@ We've all done it; we've set up a program loop and forgotten to increment the lo
 
 ### Trace and debug
 
-If you add a `trace` command you can arrange for the program to stop at each command and post information about itself into a special on-screen `<div>`, then permit the user to interact with the tracer to single-step, do further inspection of variables or resume execution. This can be a very valuable tool during development. You still have the browser debugger abvailable to show you what's happening to your JavaScript, but the tracer operates with knowledge of variable names that aren't easy to find in the low-level debugger.
+If you add a `trace` command you can arrange for the program to stop at each command and post information about itself into a special on-screen `<div>`, then permit the user to interact with the tracer to single-step, do further inspection of variables or resume execution. This can be a very valuable tool during development. You still have the browser debugger available to show you what's happening to your JavaScript, but the tracer operates with knowledge of variable names that aren't easy to find in the low-level debugger.
 
 Trace/debug is implemented in _**EasyCoder**_. The code is all in the `Run.js` file and there's a page in the [Codex](https://easycoder.github.io?s=step10) describing the tracer and how to use it.
 

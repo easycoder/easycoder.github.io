@@ -92,7 +92,7 @@ Looking at each of the functions in turn:
 
 `rewindTo(index)` restores the current index to a specified value.
 
-A keyword processor consists mainly of calls to these functions as it works its way along the token list After a while you will become very familiar with using many of them. The operation of your compiler should be very easy to follow and new functionality is easy to add.
+A keyword processor consists mainly of calls to these functions as it works its way along the token list. After a while you will become very familiar with using many of them. The operation of your compiler should be very easy to follow and new functionality is easy to add.
 
 The rest of the main compiler module comprises functions to manage progress along the token list. Before describing these I'll introduce the concept of _domains_.
 

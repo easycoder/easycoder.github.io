@@ -43,9 +43,9 @@ Here's the code to compile a `go` command:
 The first part of the code gets the line number as usual, then checks if `go` is followed by an optional `to`. You might also arrange for `goto` (without a space) to call the same compiler function. Next it gets the next token, which is assumed to be the name of a label, and returns a command object with the relevant information.
 
 ## Subroutines
-Here's another legacy from good old BASIC. In those days subroutines were there to allow the same code to be called from several different places, avoiding repetition. Today we have _functions_, which as as different to subroutines as the Taj Mahal is to a house brick. Unfortunately, it's rather hard to devise a syntax for functions that can be easily understood when read out loud, but it's quite easy to do for a subroutine. So let's keep things simple.
+Here's another legacy from good old BASIC. In those days subroutines were there to allow the same code to be called from several different places, avoiding repetition. Today we have _functions_, which are as different to subroutines as the Taj Mahal is to a house brick. Unfortunately, it's rather hard to devise a syntax for functions that can be easily understood when read out loud, but it's quite easy to do for a subroutine. So let's keep things simple.
 
-The simplest form of a subroutines is just a section of code terminated with a `return` command. You can enter it at any point above that as there's nothing special happening in the way it would for a modern function. No parameters, no local variables. To call the subroutine we use a `gosub` command. This is identical to `go` except for the name of the keyword.
+The simplest form of a subroutine is just a section of code terminated with a `return` command. You can enter it at any point above that as there's nothing special happening in the way it would for a modern function. No parameters, no local variables. To call the subroutine we use a `gosub` command. The compiler part of this is identical to `go` except for the name of the keyword.
 
 ## Multitasking
 JavaScript is a single-threaded programming language, which means it can only do one thing at a time, but your custom language can be built in such as way as to 'appear' to be able to multi-task.
@@ -122,10 +122,10 @@ Loop2:
         print `buzz`
     end
 ```
-There are two loops, each one of which waits for a length of time then prints a message to the console. The `fork` command starts the second loop, but instead of waiting for that to finish as `gosub` would do, it then goes into the first loop. Each time a loop hits its `wait` command the other loop gets a chance to run. The result on the console is a series of _fizz_ and _buzz_ lines, the one appearing more frequently than the other.
+There are two loops, each one of which waits for a length of time then prints a message to the console. The `fork` command starts the second loop, but instead of waiting for that to finish as `gosub` would do, it then goes into the first loop. Each time a loop hits its `wait` command the other loop gets a chance to run. The result on the console is a series of _fizz_ and _buzz_ lines, the one appearing more frequently than the other. (If you try this in the _**EasyCoder**_ Codex or on your own web page you'll need to open a browser console window to see the output.)
 
 The `fork` handler is identical to `go` and `gosub` except for the name of the keyword.
 
-As noted, `go`, `gosub` and `fork` are all compiled identically. The differences come in the runtime, which we'll come to later in the book.
+As noted, `go`, `gosub` and `fork` are all compile identically. The differences come in the runtime, which we'll come to later in the book.
 
 ~pn:3 Compilation/If:The `if` handler:3 Compilation/DOM:Domain Object Model commands~

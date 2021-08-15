@@ -6,13 +6,13 @@
 
 Before embarking on the design of a compiler it's probably best to settle what it should do. In the old days the main choice was between an _interpreter_ and a _compiler_. The first of these takes instructions directly from the source text, works out what they mean and performs the desired functions one at a time according to the program flow. This avoids the need to wait for the entire program to compile (something that used to take rather a long time) but has several disadvantages. Firstly, no error checking is done before the program runs. Secondly, if instructions are repeated (in _for_ loops for example) they are re-interpreted each time. This will usually make the language slow. Thirdly, flow control statements such as _if_, _while_ or _for_ require the progam to choose a path that depends on the outcome of a test. A simple interpreter has no knowledge of where execution should resume, other than by scanning the entire program to find out. This is extremely time-consuming.
 
-The second choice used to be a compiler, which examines the entire program and converts it into the machine-level code needed for the processor to execute it. The program will run far more quickly but you have to wait for compilation to complete before it starts. Once the compiled code is running you have no control over it, unlike with an interpreter which is still managing things as the program runs.
+The second choice used to be a compiler, which examines the entire program and converts it into the machine-level code needed for the processor to execute it. The program will run far more quickly but you have to wait for compilation to complete before it starts and the compiler is usually a completely separate program. It's rare to see a compiler that runs inside the browser. Once the compiled code is loaded and running you have no control over it, unlike with an interpreter which is still managing things as the program runs.
 
 That was the old days. Today the choices are far more nuanced. Interpreters can "learn as they go" so although the program may start slowly it will pick up speed as the interpreter re-uses parts of the code, having left information that will help it the next time it encounters the same code.
 
 Another big change is that compilers don't have to generate "machine code" specific to any given processor architecture. Many compilers, most notably Java, generate code for a hypothetical machine that rarely exists as an actual computing device. A separate run-time engine then "pretends to be" that device and runs the code on whatever hardware it's installed on. The runtime engine is in effect an interpreter, but the code it's running is optimized for speed and efficiency. This approach gives us the best of both worlds.
 
-The compiler I will describe here will generate code that can easily be interpreted and run in a browser.
+The compiler I will describe here will run in the browser itself and generate code that will run instantly in the same browser using a runtime interpreter.
 
 ## Compiler strategy
 
@@ -38,7 +38,7 @@ There are several points along the way where more than one possibility branches 
 
 And this is essence is how our compiler will do its job; by working its way along a command, trying all the possibilities at each step, backing up and retrying when none match and declaring success or failure at the end. This may sound terribly inefficient but actually it's not. There are a number of advantages to the strategy. One is it needs only a single pass through the source code. Another is it creates code for the hypothetical target machine as it goes. And thirdly is it's very easy to follow and to enhance as new syntax needs to be added.
 
-However, all of the above assumes the program is presented to the compiler as a series of tokens. So we'll have to do a little work on the source script before we can give it to the compiler. This is the job of the _tokenizer_. But before we look at that, here's a note about how to choose good function names.
+All of the above assumes the program is presented to the compiler as a series of tokens. So we'll have to do a little work on the source script before we can give it to the compiler. This is the job of the _tokenizer_. But before we look at that, here's a note about how to choose good function names.
 
 ## Function naming
 

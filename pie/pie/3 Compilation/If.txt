@@ -3,7 +3,7 @@
 The second example is a handler for the `if` statement; a vital part of any language. The full spec is this:
 
 ```
-    if <condition> then <command> else <command>
+    if <condition> then <command> [else <command>]
 ```
 where the `else` clause may or may not be present. Here's the current _**EasyCoder**_ code for the `if` handler:
 ```
