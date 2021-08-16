@@ -22,6 +22,7 @@
 	button CodexButton
     button TechnicalButton
     button WordPressButton
+    button PieButton
 	hr Rule
 	a ShowNotes
 	module ShowdownModule
@@ -33,8 +34,9 @@
 	module ContactModule
 	module LifeModule
 	module TechnicalModule
-	module WordPressModule
 	module HowItWorksModule
+	module WordPressModule
+	module PieModule
 	module CurrentModule
 	module CodexModule
 	variable Script
@@ -123,10 +125,12 @@ BuildPage:
 	run Script with ShowdownModule as LifeModule
 	rest get Script from `/resources/ecs/technical.ecs`
 	run Script with ShowdownModule as TechnicalModule
-	rest get Script from `/resources/ecs/wordpress.ecs`
-	run Script with ShowdownModule as WordPressModule
 	rest get Script from `/resources/ecs/howitworks.ecs`
 	run Script with ShowdownModule as HowItWorksModule
+	rest get Script from `/resources/ecs/wordpress.ecs`
+	run Script with ShowdownModule as WordPressModule
+	rest get Script from `/resources/ecs/pie.ecs`
+	run Script with ShowdownModule as PieModule
 
 	alias CurrentModule to HomeModule
 	send to HomeModule
@@ -247,6 +251,20 @@ BuildPage:
 		send `pause` to CurrentModule
 		alias CurrentModule to WordPressModule
 		send to WordPressModule
+	end
+
+	create ButtonItem in ButtonList
+	create PieButton in ButtonItem
+	set the style of PieButton to ButtonStyle
+	set style `margin-top` of PieButton to `0.25em`
+	set the text of PieButton to `Programming in English`
+	on click PieButton
+	begin
+		gosub to DeselectAllButtons
+		set style `background` of PieButton to `darkgray`
+		send `pause` to CurrentModule
+		alias CurrentModule to PieModule
+		send to PieModule
 	end
 
 	create ButtonItem in ButtonList
