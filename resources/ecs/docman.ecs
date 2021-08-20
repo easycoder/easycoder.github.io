@@ -591,7 +591,9 @@ NewPackage:
     end
   end
   put `{"commands":{},"values":{},"conditions":{}}` into Record
-  rest post Record to `_save/doc~` cat PackageName cat `.json`
+  set encoding to `base64`
+  rest post encode Record to `_save/doc~` cat PackageName cat `.json`
+  set encoding to `ec`
   json add PackageName to Packages
   put empty into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
   go to Restart
@@ -643,10 +645,8 @@ SaveKeyword:
   if Keyword is empty return
   put empty into Value
   put the text of SyntaxInput into Item
-!  replace newline with `0x0a` in Item
   set property `syntax` of Value to encode Item
   put the text of DescriptionInput into Item
-!  replace newline with `0x0a` in Item
   set property `description` of Value to encode Item
   put the text of ExamplesInput into Item
 !  replace newline with `0x0a` in Item
@@ -657,7 +657,7 @@ SaveKeyword:
 
 SavePackage:
   gosub to SaveKeyword
-  put encode Package into Package
+!  put encode Package into Package
   set the text of Status to `Saving package "` cat PackageName cat `"...`
   set encoding to `base64`
   rest post encode Package to `_save/doc~` cat PackageName cat `.json`

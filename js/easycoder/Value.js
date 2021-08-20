@@ -173,9 +173,12 @@ const EasyCoder_Value = {
 	encode: (value, encoding) => {
 		if (value) {
 			switch (encoding) {
+			default:
 			case `ec`:
 				return value.replace(/\n/g, `~lf~`)
-					.replace(/\r/g, `~cr~`)
+					.replace(/%0a/g, `~lf~`)
+					.replace(/\n/g, `~cr~`)
+					.replace(/%0d/g, `~cr~`)
 					.replace(/"/g, `~dq~`)
 					.replace(/'/g, `~sq~`)
 					.replace(/\\/g, `~bs~`);
@@ -185,8 +188,6 @@ const EasyCoder_Value = {
 				return btoa(value);
 			case `sanitize`:
 				return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
-			default:
-				return value;
 			}
 		}
 		return value;
@@ -195,9 +196,10 @@ const EasyCoder_Value = {
 	decode: (value, encoding) => {
 		if (value) {
 			switch (encoding) {
+			default:
 			case `ec`:
 				return value.replace(/%0a/g, `\n`)
-					.replace(/~lf`/g, `\n`)
+					.replace(/~lf~/g, `\n`)
 					.replace(/%0d/g, `\r`)
 					.replace(/~cr~/g, `\n`)
 					.replace(/~dq~/g, `"`)
@@ -208,8 +210,6 @@ const EasyCoder_Value = {
 				return decoded.replace(/\+/g, ` `);
 			case `base64`:
 				return atob(value);
-			default:
-				return value;
 			}
 		}
 		return value;
