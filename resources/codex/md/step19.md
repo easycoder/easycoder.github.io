@@ -1,6 +1,6 @@
 # Pan and Zoom #
 
-When TV programmes show a series of images they often apply something called the "Ken Burns" Effect. This causes each image to slowly pan and/or zoom before dissolving into the next, giving a sense of movement. The effect was extensively used by the American documentarian after whom it was named.
+When TV programmes show a series of images they often apply something called the "Ken Burns" Effect (named after the American documentary maker who pioneered the technique). This causes each image to slowly pan and/or zoom before dissolving into the next, giving a sense of movement. The effect was extensively used by the American documentarian after whom it was named.
 
 In this tutorial step we'll just deal with the pan and zoom; the dissolve can wait till later.
 
