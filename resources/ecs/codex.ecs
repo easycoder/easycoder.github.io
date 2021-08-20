@@ -333,22 +333,15 @@ L2:
         send `restore` to parent
         history set url `.`
         exit
-!        set style `display` of Body to `none`
-!        alert `Exit`
     end
     
     on message
     begin
     	put the message into Message
-!        alert Message
-!    	if Message is `start`
-!        begin
-!            set style `display` of Body to `block`
-!        end
     	if Message is `next` go to StepForward
         if Message is `tutorial`
         begin
-		    set style `display` of ReferencePanel to `none`
+		    	set style `display` of ReferencePanel to `none`
 	        set style `display` of HelpPanel to `block`
 	        set style `display` of HelpButtons to `block`
 	        put empty into storage as `.ref`
@@ -790,6 +783,7 @@ SHP3:
        		`border:1px solid black;border-radius:0.5em;padding:0.3em;background:lightgray;text-decoration:none`
 	    on click Copy
 	    begin
+debug step
         	gosub to StopTestModule
         	put `code` into View
             if Mobile gosub to SetView
@@ -952,12 +946,13 @@ DoRunStop:
     	set style `display` of HelpOuter to `none`
         set style `display` of RunPanel to `block`
 	end
-    
+
     set attribute `src` of RunStop to `resources/icon/runstop.png`
     set attribute `title` of RunStop to `Stop`
     set Running
     wait 10 ticks
-    
+
+dummy
     run Script with RunPanel as TestModule nowait then
     begin
         clear Running

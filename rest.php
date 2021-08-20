@@ -174,7 +174,7 @@
                     $dir = substr($path, 0, $p);
                     mkdir($dir, 0777, true);
                     header("Content-Type: application/text");
-                    $content = stripslashes(file_get_contents("php://input"));
+                    $content = base64_decode(stripslashes(file_get_contents("php://input")));
                     $p = strrpos($path, '.');
                     $root = substr($path, 0, $p);
                     $ext = substr($path, $p);
@@ -536,4 +536,5 @@
         fwrite($fp, "$date: $message\n");
         fclose($fp);
     }
+
 ?>

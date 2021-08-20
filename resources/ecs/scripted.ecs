@@ -37,6 +37,7 @@
   variable Item
   
   rest path `rest.php`
+  set encoding to `base64`
 
   set the title to `Script Editor`
 
@@ -57,7 +58,6 @@
   set the text of Delete to `Delete`
   create Status in Buttons
   set the style of Status to `position:absolute;float:right;padding-left:2em;color:green`
-  debug step
 
   create ScriptName in Container
   set the style of ScriptName to `display:flex;margin:0.5em 0`
@@ -119,7 +119,7 @@
     put the content of ContentEditor into Content
     if Content is not Current
     begin
-      rest post Content to `_save/ecs~` cat Name
+      rest post encode Content to `_save/ecs~` cat Name
       put Content into Current
       set the content of Status to `Script '` cat Name cat `' saved`
       fork to ResetStatus

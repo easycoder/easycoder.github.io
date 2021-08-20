@@ -72,6 +72,8 @@
   variable N
   variable P
   
+  rest path `rest.php`
+  
   create Tracer in Parent
   set attribute `id` of Tracer to `easycoder-tracer`
   create Container in Parent
@@ -655,9 +657,11 @@ SaveKeyword:
 
 SavePackage:
   gosub to SaveKeyword
-!  put encode Package into Package
+  put encode Package into Package
   set the text of Status to `Saving package "` cat PackageName cat `"...`
-  rest post Package to `_save/doc~` cat PackageName cat `.json`
+  set encoding to `base64`
+  rest post encode Package to `_save/doc~` cat PackageName cat `.json`
+  set encoding to `ec`
   set the text of Status to `Package "` cat PackageName cat `" saved`
   wait 3
   set the text of Status to ``
