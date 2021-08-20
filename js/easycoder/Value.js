@@ -174,8 +174,8 @@ const EasyCoder_Value = {
 		if (value) {
 			switch (encoding) {
 			case `ec`:
-				return value.replace(/\n/g, `%0a`)
-					.replace(/\r/g, `%0d`)
+				return value.replace(/\n/g, `~lf~`)
+					.replace(/\r/g, `~cr~`)
 					.replace(/"/g, `~dq~`)
 					.replace(/'/g, `~sq~`)
 					.replace(/\\/g, `~bs~`);
@@ -197,7 +197,9 @@ const EasyCoder_Value = {
 			switch (encoding) {
 			case `ec`:
 				return value.replace(/%0a/g, `\n`)
+					.replace(/~lf`/g, `\n`)
 					.replace(/%0d/g, `\r`)
+					.replace(/~cr~/g, `\n`)
 					.replace(/~dq~/g, `"`)
 					.replace(/~sq~/g, `'`)
 					.replace(/~bs~/g, `\\`);
