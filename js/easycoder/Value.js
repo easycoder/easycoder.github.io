@@ -181,6 +181,8 @@ const EasyCoder_Value = {
 					.replace(/\\/g, `~bs~`);
 			case `url`:
 				return encodeURIComponent(value.replace(/\s/g, `+`));
+			case `base64`:
+				return btoa(value);
 			case `sanitize`:
 				return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
 			default:
@@ -202,6 +204,8 @@ const EasyCoder_Value = {
 			case `url`:
 				const decoded = decodeURIComponent(value);
 				return decoded.replace(/\+/g, ` `);
+			case `base64`:
+				return atob(value);
 			default:
 				return value;
 			}

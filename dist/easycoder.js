@@ -5272,8 +5272,6 @@ const EasyCoder_Browser = {
 				switch (targetRecord.keyword) {
 				case `text`:
 				case `textarea`:
-					target.value = value;
-					break;
 				case `input`:
 					target.value = value;
 					break;
@@ -7475,7 +7473,7 @@ const EasyCoder_Value = {
 
 	compile: compiler => {
 		const token = compiler.getToken();
-		const item = EasyCoder_Value.getItem(compiler);
+		let item = EasyCoder_Value.getItem(compiler);
 		if (!item) {
 			throw new Error(`Undefined value: '${token}'`);
 		}
@@ -7488,7 +7486,11 @@ const EasyCoder_Value = {
 			};
 			while (compiler.tokenIs(`cat`)) {
 				compiler.next();
-				value.parts.push(compiler.value.getItem(compiler));
+                item = EasyCoder_Value.getItem(compiler);
+                if (!item) {
+                    throw new Error(`Undefined value: '${token}'`);
+                }
+				value.parts.push(item);
 			}
 			return value;
 		}
@@ -7585,6 +7587,8 @@ const EasyCoder_Value = {
 					.replace(/\\/g, `~bs~`);
 			case `url`:
 				return encodeURIComponent(value.replace(/\s/g, `+`));
+			case `base64`:
+				return btoa(value);
 			case `sanitize`:
 				return value.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``);
 			default:
@@ -7606,6 +7610,8 @@ const EasyCoder_Value = {
 			case `url`:
 				const decoded = decodeURIComponent(value);
 				return decoded.replace(/\+/g, ` `);
+			case `base64`:
+				return atob(value);
 			default:
 				return value;
 			}
@@ -8511,7 +8517,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.7.6`;
+EasyCoder.version = `2.7.7`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 

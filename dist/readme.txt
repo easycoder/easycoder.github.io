@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.7 20-aug 2021 =
+* Add encode/decode for Base64
+
 = 2.7.6 23-feb 2021 =
 * Fix security vulnerability. Thanks to Brett Caldwell, buckshotbrett@gmail.com
 
