@@ -34,7 +34,7 @@
     create Link in Buttons
     create Left in Link
     set style `width` of Left to `60px`
-    set attribute `src` of Left to `resources/icon/left.png`
+    set attribute `src` of Left to `/resources/icon/left.png`
     on click Left go to DoLeft
     put 0 into N
     while N is less than ImageCount
@@ -45,7 +45,7 @@
         set style `width` of Thumb to `60px`
         set style `border` of Thumb to `1px solid white`
         if N is not 0 set style `margin-left` of Thumb to `10px`
-        set attribute `src` of Thumb to `resources/img/imageswitcher/thumbs/img` cat N cat `.jpg`
+        set attribute `src` of Thumb to `/resources/img/imageswitcher/thumbs/img` cat N cat `.jpg`
     	add 1 to N
     end
     on click Thumb go to DoThumb
@@ -60,7 +60,7 @@
     	index Image to N
         create Image in Container
         set the style of Image to `width:100%;display:none`
-        set attribute `src` of Image to `resources/img/imageswitcher/img` cat N cat `.jpg`
+        set attribute `src` of Image to `/resources/img/imageswitcher/img` cat N cat `.jpg`
     	add 1 to N
     end
     put 0 into N
