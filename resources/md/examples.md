@@ -40,7 +40,7 @@ The author has used Storyteller to create his own [personal memoirs](https://gra
 
 Storyteller is written in ~ec~; its source code is in the [Storyteller repository](https://github.com/easycoder/storyteller).
 
-## I Wanna Show You (IWSY)
+## I Wanna Show You (IWSY) (under development)
 
 IWSY is a web app for building slideshows and presentations that can be embedded in any web page or run from the IWSY app in the same way as from PowerPoint. The emphasis is less on providing elaborate static slides and more in manipulating text and images to provide an experience midway between a PowerPoint presentation and a video. Text can be panned, zoomed and color-changed and images can have a "Ken Burns" effect, so it's possible to create a show where the screen is never quite static but still offers the user the option to step through manually.
 
