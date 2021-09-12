@@ -4,10 +4,10 @@ The following websites were all built entirely in EasyCoder script:
 
  - This site: [EasyCoder](https://easycoder.github.io)
  - [Yorkshirewoman](https://yorkshirewoman.uk)
- - [Here on the map](https://hereonthemap.com)
+ - [Here on the map](https://hotm.easycoder.software)
  - [Rembrandt.ie](https://rembrandt.ie)
  - [Storyteller](https://storyteller-framework.netlify.app)
- - [I Wanna Show You](https://iwannashowyou.com)
+ - [I Wanna Show You](https://iwsy.easycoder.software)
  - [Vehicle Checks](https://vehiclecheck.netlify.app)
 
 ## This website
@@ -46,7 +46,7 @@ IWSY is a web app for building slideshows and presentations that can be embedded
 
 IWSY presentations are JSON files that are created edited in the IWSY editor and then run by the presentation engine, a single JavaScript file.
 
-See the [IWSY website](https://iwannashowyou.com); the source is in the [EasyCoder repository](https://easycoder.github.io) in the `iwsy` directory.
+See the [IWSY website](https://iwsy.easycoder.software); the source is in the [EasyCoder repository](https://easycoder.github.io) in the `iwsy` directory.
 
 ## The Game of Life /SHOW-LIFE/
 
