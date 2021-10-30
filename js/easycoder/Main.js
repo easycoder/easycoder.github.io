@@ -151,7 +151,7 @@ const EasyCoder = {
 	require: function(type, src, cb) {
 		let prefix = ``;
 		if (src[0] == `/`) {
-			prefix = window.location + `/`;
+			prefix = window.location.origin + `/`;
 		}
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {

@@ -54,6 +54,9 @@ For tutorials and a programmers' reference see our [EasyCoder Software Codex](ht
 
 == Changelog ==
 
+= 2.7.8 30-oct 2021 =
+* Retry 'attach' up to 1 second
+
 = 2.7.7 20-aug 2021 =
 * Add encode/decode for Base64
 

@@ -3222,23 +3222,9 @@ const EasyCoder_Browser = {
 				element = document.body;
 			} else {
 				content = program.value.evaluate(program, command.cssId).content;
-				element = document.getElementById(content);
-			}
-			if (!element) {
-				if (command.onError) {
-					program.run(command.onError);
-				} else {
-					program.runtimeError(command.lino, `No such element: '${content}'`);
-				}
+				EasyCoder_Browser.Attach.getElementById(program, command, content, 100);
 				return 0;
 			}
-			const target = program.getSymbolRecord(command.symbol);
-			target.element[target.index] = element;
-			target.value[target.index] = {
-				type: `constant`,
-				numeric: false,
-				content
-			};
 			if (command.type === `popup`) {
 				// Register a popup
 				program.popups.push(element.id);
@@ -3250,7 +3236,37 @@ const EasyCoder_Browser = {
 				};
 			}
 			return command.pc + 1;
-		}
+		},
+
+		getElementById: (program, command, id, retries) => {
+            element = document.getElementById(id);
+            if (element) {
+				if (program.run) {
+					const target = program.getSymbolRecord(command.symbol);
+					target.element[target.index] = element;
+					target.value[target.index] = {
+						type: `constant`,
+						numeric: false,
+						id
+					};
+					program.run(command.pc + 1);
+				}
+            } else {
+                if (retries > 0) {
+                    setTimeout(function() {
+                        EasyCoder_Browser.Attach.getElementById(program, command, id, --retries);
+                    }, 10);
+                } else {
+					if (!element) {
+						if (command.onError) {
+							program.run(command.onError);
+						} else {
+							program.runtimeError(command.lino, `No such element: '${id}'`);
+						}
+					}
+				}
+            }
+        }
 	},
 
 	Audioclip: {
@@ -8290,7 +8306,7 @@ const EasyCoder = {
 	require: function(type, src, cb) {
 		let prefix = ``;
 		if (src[0] == `/`) {
-			prefix = window.location + `/`;
+			prefix = window.location.origin + `/`;
 		}
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
@@ -8519,7 +8535,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.7.7`;
+EasyCoder.version = `2.7.8`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
