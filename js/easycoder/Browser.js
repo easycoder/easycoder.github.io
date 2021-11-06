@@ -121,6 +121,7 @@ const EasyCoder_Browser = {
 			let content = null;
 			let element = null;
 			if (command.cssId === `body`) {
+				const target = program.getSymbolRecord(command.symbol);
 				target.element[target.index] = document.body;
 				target.value[target.index] = {
 					type: `constant`,
