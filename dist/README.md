@@ -5,5 +5,3 @@ Here are 2 small REST servers written in Python and PHP, which both perform the 
 These REST servers give your browser scripts read and write access to files on your own website and to remote servers if CORS has been set up.
 
 The files `easycoder.php`, `ec-rest.txt` and `readme.txt` are for WordPress installations.
-
-The `plugins` folder holds a variety of plugins, some documented better than others.

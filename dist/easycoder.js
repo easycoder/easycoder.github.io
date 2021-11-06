@@ -3219,7 +3219,12 @@ const EasyCoder_Browser = {
 			let content = null;
 			let element = null;
 			if (command.cssId === `body`) {
-				element = document.body;
+				target.element[target.index] = document.body;
+				target.value[target.index] = {
+					type: `constant`,
+					numeric: false,
+					content
+				};
 			} else {
 				content = program.value.evaluate(program, command.cssId).content;
 				EasyCoder_Browser.Attach.getElementById(program, command, content, 100);

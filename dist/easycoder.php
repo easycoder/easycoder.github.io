@@ -16,7 +16,7 @@
   add_action('wp_enqueue_scripts', 'easycoder_enqueue_script', 2);
   function easycoder_enqueue_script() {  
     wp_enqueue_script('easycoder_script',
-      'https://easycoder.netlify.app/dist/easycoder.js', array(), '2.7.8');
+      'https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/easycoder.js', array(), '2.7.8');
   }
   
   // Set up default plugin and REST scripts
