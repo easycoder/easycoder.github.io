@@ -1666,7 +1666,6 @@ const EasyCoder_Core = {
 				const symbol = program.getSymbolRecord(command.symbol);
 				const oldCount = symbol.elements;
 				symbol.elements = program.getValue(command.value);
-				symbol.index = 0;
 				if (symbol.elements > oldCount) {
 					for (var n = oldCount; n < symbol.elements; n++) {
 						symbol.value.push({});
@@ -1675,6 +1674,9 @@ const EasyCoder_Core = {
 				} else {
 					symbol.value = symbol.value.slice(0, symbol.elements);
 					symbol.element = symbol.element.slice(0, symbol.elements);
+				}
+				if (symbol.index >= symbol.elements) {
+					symbol.index = symbol.elements - 1;
 				}
 				break;
 			case `setElement`:
