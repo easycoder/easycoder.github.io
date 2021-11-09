@@ -3003,8 +3003,7 @@ const EasyCoder_Core = {
 							value1
 						};
 					case `greater`:
-						compiler.next();
-						if (compiler.tokenIs(`than`)) {
+						if (compiler.nextTokenIs(`than`)) {
 							compiler.next();
 							const value2 = compiler.getValue();
 							return {
@@ -3017,8 +3016,7 @@ const EasyCoder_Core = {
 						}
 						return null;
 					case `less`:
-						compiler.next();
-						if (compiler.tokenIs(`than`)) {
+						if (compiler.nextTokenIs(`than`)) {
 							compiler.next();
 							const value2 = compiler.getValue();
 							return {
@@ -3028,6 +3026,26 @@ const EasyCoder_Core = {
 								value2,
 								negate
 							};
+						}
+						return null;
+					case `an`:
+						switch (compiler.nextToken()) {
+							case `array`:
+								compiler.next();
+								return {
+									domain: `core`,
+									type: `array`,
+									value1
+								};
+								break;
+							case `object`:
+								compiler.next();
+								return {
+									domain: `core`,
+									type: `object`,
+									value1
+								};
+								break;
 						}
 						return null;
 					default:
@@ -3077,6 +3095,12 @@ const EasyCoder_Core = {
 			case `less`:
 				comparison = program.compare(program, condition.value1, condition.value2);
 				return condition.negate ? comparison >= 0 : comparison < 0;
+			case `array`:
+				test = Array.isArray(condition.value1);
+				return condition.negate ? !test : test;
+			case `object`:
+				test = typeof condition.value1 === `object`;
+				return condition.negate ? !test : test;
 			case `not`:
 				return !program.getValue(condition.value);
 			case `moduleRunning`:
