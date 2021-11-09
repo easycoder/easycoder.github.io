@@ -3096,10 +3096,10 @@ const EasyCoder_Core = {
 				comparison = program.compare(program, condition.value1, condition.value2);
 				return condition.negate ? comparison >= 0 : comparison < 0;
 			case `array`:
-				const isArray = program.getValue(condition.value1)[0] = `[`;
+				const isArray = program.getValue(condition.value1)[0] === `[`;
 				return condition.negate ? !isArray : isArray;
 			case `object`:
-				const isObject = program.getValue(condition.value1)[0] = `{`;
+				const isObject = program.getValue(condition.value1)[0] === `{`;
 				return condition.negate ? !isObject : isObject;
 			case `not`:
 				return !program.getValue(condition.value);
