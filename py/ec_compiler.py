@@ -73,11 +73,12 @@ class Compiler:
 		return self.program.code[pc]
 
 	def isSymbol(self):
+		token=self.getToken()
 		try:
-			self.symbols[self.getToken()]
-			return True
+			self.symbols[token]
 		except:
 			return False
+		return True
 
 	def nextIsSymbol(self):
 		self.next()
@@ -109,21 +110,19 @@ class Compiler:
 		return self.compileSymbol(command, self.nextToken(), valueHolder)
 
 	def compileSymbol(self, command, name, valueHolder):
-		try:
-			self.symbols[name]
+		if hasattr(self.symbols, name):
 			raise Error(f'Duplicate symbol name "{name}"')
-		except:
-			self.symbols[name] = self.getPC()
-			command['isSymbol'] = True
-			command['used'] = False
-			command['valueHolder'] = valueHolder
-			command['name'] = name
-			command['elements'] = 1
-			command['index'] = 0
-			command['value'] = [None]
-			command['debug'] = False
-			self.addCommand(command)
-			return True
+		self.symbols[name] = self.getPC()
+		command['isSymbol'] = True
+		command['used'] = False
+		command['valueHolder'] = valueHolder
+		command['name'] = name
+		command['elements'] = 1
+		command['index'] = 0
+		command['value'] = [None]
+		command['debug'] = False
+		self.addCommand(command)
+		return True
 
 	# Compile the current token
 	def compileToken(self):
@@ -144,9 +143,10 @@ class Compiler:
 			except Exception as err:
 				self.warning(f'No handler found for "{token}" in domain "{domain.getName()}"')
 				self.rewind()
-		raise Error(f'I can\'t compile "{token}"')
+		lino = self.tokens[self.index].lino
+		raise Error(f'Line {lino + 1}: I can\'t compile "{self.script.lines[self.tokens[self.index].lino]}"')
 
-	# Compile a single command
+	# Compile a single command%
 	def compileOne(self):
 		keyword = self.getToken()
 		if not keyword:

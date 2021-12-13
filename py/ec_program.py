@@ -31,8 +31,6 @@ class Program:
 		self.domainList = {}
 		for domain in self.domains:
 			self.domainList[domain.getName()] = domain
-		
-
 		self.queue = deque()
 
 		startCompile = time.time()
@@ -75,9 +73,7 @@ class Program:
 		
 		valType = value['type']
 		result = {}
-		if valType == 'boolean' or valType == 'numeric':
-			result = value
-		elif valType == 'text':
+		if valType in ['boolean', 'numeric', 'text', 'json']:
 			result = value
 		elif valType == 'cat':
 			content = ''
@@ -115,7 +111,7 @@ class Program:
 		if result:
 			return result
 
-		raise Error(f'{self.code[self.pc]["lino"]}: Can\'t decode value: {value}')
+		raise Error(f'Line {self.code[self.pc]["lino"]+1}: I can\'t decode value: {value}')
 
 	def getValue(self, value):
 		return self.evaluate(value).content
@@ -125,29 +121,16 @@ class Program:
 		content = v['content']
 		if v['type'] == 'boolean':
 			return True if content else False
-		if v['type'] == 'numeric':
+		if v['type'] in ['numeric', 'text', 'json']:
 			return content
-		if len(content) > 0 and (content[0 : 1] == '{"' or content[0] == '['):
-			try:
-				parsed = json.loads(content)
-				return json.dumps(parsed, indent=2, separators=(',',':'))
-			except Exception as err:
-				raise Error(err)
-		return content
+		return ''
 	
 	def getSymbolValue(self, symbolRecord):
 		value = copy(symbolRecord['value'][symbolRecord['index']])
-		try:
-			if value['content'][0] in ['{', '[']:
-				value['content'] = json.loads(value['content'])
-		except:
-			pass
 		return value
 	
 	def putSymbolValue(self, symbolRecord, value):
 		content = value['content']
-		if content and not isinstance(content, int):
-			value['content'] = json.dumps(content)
 		symbolRecord['value'][symbolRecord['index']] = value
 	
 	def encode(self, value):

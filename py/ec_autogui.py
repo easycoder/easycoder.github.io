@@ -83,7 +83,7 @@ class Autogui(Handler):
 	#############################################################################
 	# Support functions
 
-	def dragMove(self,command, token):
+	def dragMove(self, command, token):
 		if token in [LEFT, RIGHT, UP, DOWN]:
 			command[VALUE] = self.nextValue()
 			multiplier = 1

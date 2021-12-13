@@ -10,7 +10,7 @@ class EasyCoder:
 
 	domainMap = {}
 	domainMap['core'] = Core
-	domainMap['autogui'] = Autogui
+#	domainMap['autogui'] = Autogui
 
 	if (len(sys.argv) > 1):
 		scriptName = sys.argv[1]

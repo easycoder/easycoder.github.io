@@ -33,7 +33,7 @@ This class contans compiler and runtime modules for core keywords, values and co
 
 Each extension package has the same structure and deals with its own vocabulary and syntax.
 
-The individual compiler functions make heavy use of the Compiler class to retrieve tokens and process them. When they successfully complete the compilation of any given language structure they return an 'intermediate code' object with some standard fields such as the name of the package (the 'domain') and the script line number, and other fields that relate to the specific keyword, value or condition. This object goes into the array that becomes the program to be run.
+The individual compiler functions make heavy use of the Compiler class to retrieve tokens and process them. When they successfully complete the compilation of any given language structure they return an 'intermediate code' object with some standard fields such as the name of the package (the 'domain'), the script line number, and other fields that relate to the specific keyword, value or condition. This object goes into the array that becomes the program to be run.
 
 At runtime the **Program** class starts at the beginning of the program array and looks in the first compiled object to find which package it belongs to and the name of the keyword. It then calls the appropriate `r_xxx()` function, which does whatever is necessary for that keyword and returns an updated program counter. This is then used to repeat the process and so on.
 

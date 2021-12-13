@@ -7220,6 +7220,16 @@ const EasyCoder_Rest = {
 					throw new Error(command.lino, `No URL present`);
 				}
 				let target = null;
+				const args = {};
+				while (compiler.tokenIs(`with`)) {
+					const argName = compiler.nextToken();
+					if (compiler.nextTokenIs(`as`)) {
+						const argValue = compiler.getNextValue();
+						args[argName] = argValue;
+					} else {
+						break;
+					}
+				}
 				if (compiler.tokenIs(`giving`)) {
 					if (compiler.nextIsSymbol()) {
 						const targetRecord = compiler.getSymbolRecord();
@@ -7239,6 +7249,7 @@ const EasyCoder_Rest = {
 					value,
 					url,
 					target,
+					args,
 					onError: compiler.getPc() + 2
 				});
 				onError = null;
@@ -7303,6 +7314,7 @@ const EasyCoder_Rest = {
 				return;
 			}
 			request.script = program.script;
+			request.program = program;
 			request.pc = program.pc;
 
 			request.onload = function () {
@@ -7336,10 +7348,10 @@ const EasyCoder_Rest = {
 			request.onerror = function () {
 				if (command.onError) {
 					program.errorMessage = this.responseText;
-					program.run(command.onError);
+					request.program.run(command.onError);
 				} else {
 					const error = this.responseText;
-					program.runtimeError(command.lino, error);
+					request.program.runtimeError(command.lino, error);
 				}
 			};
 
@@ -7353,6 +7365,10 @@ const EasyCoder_Rest = {
 				console.log(`POST to ${path}`);
 				//console.log(`value=${value}`);
 				request.setRequestHeader(`Content-type`, `application/json; charset=UTF-8`);
+				for (key of Object.keys(command.args)) {
+					const argval = request.program.getValue(command.args[key]);
+					request.setRequestHeader (key, argval);
+				}
 				request.send(value);
 				break;
 			}
