@@ -1,0 +1,55 @@
+!	RBR
+
+	file File
+	variable Path
+	variable Rooms
+	variable Room
+	variable RoomNumber
+	variable Spec
+	variable Sensor
+	variable Relays
+	variable Relay
+	variable Times
+	variable Value
+	variable Message
+	variable R
+	variable L
+
+	script RBR
+!	debug step
+
+	put `/home/graham/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/py` into Path
+
+	put the files of Path cat `/rooms` into Rooms
+	put 0 into RoomNumber
+	while RoomNumber is less than the count of Rooms
+	begin
+		put element RoomNumber of Rooms into Room
+		gosub to ProcessRoom
+		add 1 to RoomNumber
+	end
+	stop
+
+ProcessRoom:
+	open File Path cat `/rooms/` cat Room for reading
+	read Spec from File
+	close File
+	put property `sensor` of Spec into  Sensor
+	open File Path cat `/sensors/` cat Sensor cat `/value.txt` for reading
+	read Value from File
+	close File
+	put the length of Room into L
+	take 5 from L
+	put left L of Room into Message
+	print Message cat `: ` cat Value
+	put property `relays` of Spec into Relays
+	put 0 into R
+	while R is less than the count of Relays
+	begin
+		put element R of Relays into Relay
+		post to `http://192.168.1.120:5555/relay/` cat Relay cat `/on`
+		wait 5 seconds
+		post to `http://192.168.1.120:5555/relay/` cat Relay cat `/off`
+		add 1 to R
+	end
+	return
