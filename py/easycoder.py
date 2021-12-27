@@ -1,7 +1,8 @@
+#! /bin/python
+
 import sys
 from ec_program import Program
 from ec_core import Core
-from ec_autogui import Autogui
 
 class EasyCoder:
 
@@ -10,7 +11,6 @@ class EasyCoder:
 
 	domainMap = {}
 	domainMap['core'] = Core
-#	domainMap['autogui'] = Autogui
 
 	if (len(sys.argv) > 1):
 		scriptName = sys.argv[1]

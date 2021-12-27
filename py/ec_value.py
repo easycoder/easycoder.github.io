@@ -1,8 +1,9 @@
-from ec_classes import Error
+from ec_classes import FatalError
 
 class Value:
 
 	def __init__(self, compiler):
+		self.compiler = compiler
 		self.domains = compiler.domains
 		self.getToken = compiler.getToken
 		self.nextToken = compiler.nextToken
@@ -14,61 +15,63 @@ class Value:
 		if not token:
 			return None
 
+		value = {}
+			
 		if token == 'true':
-			self.nextToken()
-			value = {}
 			value['type'] = 'boolean'
 			value['content'] = True
 			return value
 
 		if token == 'false':
-			value = {}
 			value['type'] = 'boolean'
 			value['content'] = False
 			return value
 
 		# Check for a string constant
 		if token[0] == '`':
-			value = {}
-			value['type'] = 'text'
-			value['content'] = token[1 : len(token) - 1]
-			return value
+			if token[len(token) - 1] == '`':
+				value['type'] = 'text'
+				value['content'] = token[1 : len(token) - 1]
+				return value
+			FatalError(self.compiler, f'Unterminated string "{token}"')
+			return None
 
 		# Check for a numeric constant
 		if token.isnumeric():
 			val = eval(token)
 			if isinstance(val, int):
-				value = {}
-				value['type'] = 'numeric'
+				value['type'] = 'int'
 				value['content'] = val
 				return value
-			else:
-				raise Error(f'{token} is not an integer')
+			FatalError(self.compiler, f'{token} is not an integer')
 
 		# See if any of the domains can handle it
+		self.compiler.mark()
 		for domain in self.domains:
-			try:
-				return domain.compileValue()
-			except Exception as err:
-				raise Error(f'Cannot get value of "{token}": {err}')
-
+			item = domain.compileValue()
+			if item != None:
+				return item
+			self.compiler.rewind()
 		return None
 
 	def compileValue(self):
 		token = self.getToken()
 		item = self.getItem()
-		if not item:
-			raise Error(f'Undefined value: "{token}"')
+		if item == None:
+			FatalError(self.compiler, f'Cannot get the value of "{token}"')
+			return None
 
+		value = {}
 		if self.peek() == 'cat':
-			value = {}
 			value['type'] = 'cat'
 			value['numeric'] = False
 			value['parts'] = [item]
 			while self.peek() == 'cat':
 				self.nextToken()
 				self.nextToken()
-				value['parts'].append(self.getItem())
+				item = self.getItem()
+				if item != None:
+					value['parts'].append(item)
 		else:
 			value = item
 
@@ -76,4 +79,20 @@ class Value:
 		for domain in self.domains:
 			value = domain.modifyValue(value)
 
+		return value
+	
+	def compileConstant(self, token):
+		value = {}
+		if token.isnumeric():
+			val = eval(token)
+			if isinstance(val, int):
+				value['type'] = 'int'
+				value['content'] = val
+				return value
+			if isinstance(val, float):
+				value['type'] = 'float'
+				value['content'] = val
+				return value
+		value['type'] = 'text'
+		value['content'] = token
 		return value

@@ -7,6 +7,7 @@ class Handler:
 		self.peek = compiler.peek
 		self.getValue = compiler.getValue
 		self.nextValue = compiler.nextValue
+		self.getConstant = compiler.getConstant
 		self.getCondition = compiler.getCondition
 		self.nextCondition = compiler.nextCondition
 		self.tokenIs = compiler.tokenIs
@@ -42,7 +43,9 @@ class Handler:
 
 	# Get a compile handler (raises an Exception if none)
 	def keywordHandler(self, name):
-		return getattr(self, f'k_{name}')
+		if hasattr(self, f'k_{name}'):
+			return getattr(self, f'k_{name}')
+		return None
 
 	# Get a run handler
 	def runHandler(self, name):

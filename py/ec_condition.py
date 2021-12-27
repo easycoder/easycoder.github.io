@@ -1,5 +1,3 @@
-from ec_classes import Error
-
 class Condition:
 
 	def __init__(self, compiler):
@@ -15,11 +13,12 @@ class Condition:
 	def compileCondition(self):
 		self.mark()
 		for domain in self.domains:
-			code = domain.compileCondition()
-			if code:
-				code['domain'] = domain.getName()
-				return code
+			item = domain.compileCondition()
+			if item != None:
+				item['domain'] = domain.getName()
+				return item
 			self.rewind()
+			return None
 
 	def testCondition(self, condition):
 		handler = self.program.domainList[condition['domain']]

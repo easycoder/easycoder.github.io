@@ -1,5 +1,4 @@
 import pyautogui
-from ec_classes import Error
 from ec_handler import Handler
 
 AUTOGUI = 'autogui'

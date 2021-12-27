@@ -1,6 +1,11 @@
-class Error(Exception):
+class FatalError():
+	def __init__(self, compiler, message):
+		lino = compiler.tokens[compiler.index].lino + 1
+		print(f'Line {lino}: {message}')
+
+class RuntimeError:
 	def __init__(self, message):
-		Exception.__init__(self, message)
+		print(f'Runtime Error: {message}')
 
 class Script:
 	def __init__(self, source):

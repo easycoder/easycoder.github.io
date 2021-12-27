@@ -1,7 +1,7 @@
-import json, math, hashlib, threading, os, requests
+import json, math, hashlib, threading, os, requests, time
 from datetime import datetime
 from random import randrange
-from ec_classes import Error
+from ec_classes import FatalError, RuntimeError
 from ec_handler import Handler
 
 class Core(Handler):
@@ -53,16 +53,17 @@ class Core(Handler):
 			value2 = None
 		target = self.getVariable(command['target'])
 		if not target['valueHolder']:
-			raise self.variableDoesNotHoldAValueError(command['lino'], target['name'])
+			self.variableDoesNotHoldAValueError(target['name'])
+			return None
 		value = self.getSymbolValue(target)
 		if value == None:
 			value = {}
-			value['type'] = 'numeric'
+			value['type'] = 'int'
 		if value2:
 			value['content'] = self.getRuntimeValue(value2) + self.getRuntimeValue(value1)
 		else:
-			if value['type'] != 'numeric' and value['content'] != None:
-				raise self.nonNumericValueError(command['lino'])
+			if value['type'] != 'int' and value['content'] != None:
+				self.nonNumericValueError()
 			value['content'] = int(self.getRuntimeValue(value)) + int(self.getRuntimeValue(value1))
 		self.putSymbolValue(target, value)
 		return self.nextPC()
@@ -100,8 +101,7 @@ class Core(Handler):
 			cmd['lino'] = command['lino']
 			self.addCommand(cmd)
 		else:
-			self.compileFromHere(['end'])
-		return True
+			return self.compileFromHere(['end'])
 
 	def k_clear(self, command):
 		if self.nextIsSymbol():
@@ -183,16 +183,14 @@ class Core(Handler):
 					command['target'] = self.getToken()
 					self.add(command)
 					return True
-				else:
-					raise Error('Symbol expected')
+				FatalError(self.compiler, f'{self.code[self.pc].lino}: Symbol expected')
 			else:
 				# First value must be a variable
 				if command['value1']['type'] == 'symbol':
 					command['target'] = command['value1']['name']
 					self.add(command)
 					return True
-				else:
-					raise Error('First value must be a variable')
+				FatalError(self.compiler, f'{self.code[self.pc].lino}: First value must be a variable')
 		return False
 	
 	def r_divide(self, command):
@@ -203,16 +201,17 @@ class Core(Handler):
 			value2 = None
 		target = self.getVariable(command['target'])
 		if not target['valueHolder']:
-			raise self.variableDoesNotHoldAValueError(command['lino'], target['name'])
+			self.variableDoesNotHoldAValueError(target['name'])
+			return None
 		value = self.getSymbolValue(target)
 		if value == None:
 			value = {}
-			value['type'] = 'numeric'
+			value['type'] = 'int'
 		if value2:
 			value['content'] = int(self.getRuntimeValue(value1) / self.getRuntimeValue(value2))
 		else:
-			if value['type'] != 'numeric' and value['content'] != None:
-				raise self.nonNumericValueError(command['lino'])
+			if value['type'] != 'int' and value['content'] != None:
+				self.nonNumericValueError(self.compiler, command['lino'])
 			value['content'] = int(self.getRuntimeValue(value) / self.getRuntimeValue(value1))
 		self.putSymbolValue(target, value)
 		return self.nextPC()
@@ -257,9 +256,33 @@ class Core(Handler):
 		try:
 			label = self.symbols[label + ':']
 		except:
-			raise Error(f'There is no label "{label + ":"}"')
+			FatalError(self.compiler, f'There is no label "{label + ":"}"')
+			return None
 		self.run(label)
 		return next
+
+	def k_get(self, command):
+		self.add(command)
+		if self.nextIsSymbol():
+			symbolRecord = self.getSymbolRecord()
+			if symbolRecord['valueHolder']:
+				command['target'] = self.getToken()
+			else:
+				FatalError(self.compiler, f'Variable "{symbolRecord["name"]}" does not hold a value')
+		if self.nextIs('from'):
+			command['url'] = self.nextValue()
+			return True
+		return False
+	
+	def r_get(self, command):
+		url = self.getRuntimeValue(command['url'])
+		response = requests.get(url, auth = ('user', 'pass'))
+		symbolRecord = self.getVariable(command['target'])
+		value = {}
+		value['type'] = 'text'
+		value['content'] = response.text
+		self.putSymbolValue(symbolRecord, value)
+		return self.nextPC()
 
 	def k_gosub(self, command):
 		if self.peek() == 'to':
@@ -269,12 +292,13 @@ class Core(Handler):
 		return True
 
 	def r_gosub(self, command):
-		label = command['gosub']
-		try:
+		label = command['gosub'] + ':'
+		address = self.symbols[label]
+		if address != None:
 			self.stack.append(self.nextPC())
-			return self.symbols[label + ':']
-		except:
-			raise Error(f'There is no label "{label + ":"}"')
+			return address
+		FatalError(self.program.compiler, f'There is no label "{label + ":"}"')
+		return None
 	
 	def k_go(self, command):
 		if self.peek() == 'to':
@@ -288,11 +312,11 @@ class Core(Handler):
 		return True
 
 	def r_goto(self, command):
-		label = command['goto']
-		try:
-			return self.symbols[label + ':']
-		except:
-			raise Error(f'There is no label "{label + ":"}"')
+		label = f'{command["goto"]}:'
+		if self.symbols[label]:
+			return self.symbols[label]
+		FatalError(self.program.compiler, f'There is no label "{label}"')
+		return None
 
 	def r_gotoPC(self, command):
 		return command['goto']
@@ -382,16 +406,14 @@ class Core(Handler):
 					command['target'] = self.getToken()
 					self.add(command)
 					return True
-				else:
-					raise Error('Symbol expected')
+				FatalError(f'self.compiler, Symbol expected')
 			else:
 				# First value must be a variable
 				if command['value1']['type'] == 'symbol':
 					command['target'] = command['value1']['name']
 					self.add(command)
 					return True
-				else:
-					raise Error('First value must be a variable')
+				FatalError(f'self.compiler, First value must be a variable')
 		return False
 	
 	def r_multiply(self, command):
@@ -402,16 +424,18 @@ class Core(Handler):
 			value2 = None
 		target = self.getVariable(command['target'])
 		if not target['valueHolder']:
-			raise self.variableDoesNotHoldAValueError(command['lino'], target['name'])
+			self.variableDoesNotHoldAValueError(target['name'])
+			return None
 		value = self.getSymbolValue(target)
 		if value == None:
 			value = {}
-			value['type'] = 'numeric'
+			value['type'] = 'int'
 		if value2:
 			value['content'] = int(self.getRuntimeValue(value1) * self.getRuntimeValue(value2))
 		else:
-			if value['type'] != 'numeric' and value['content'] != None:
-				raise self.nonNumericValueError(command['lino'])
+			if value['type'] != 'int' and value['content'] != None:
+				self.nonNumericValueError()
+				return None
 			value['content'] = int(self.getRuntimeValue(value) * self.getRuntimeValue(value1))
 		self.putSymbolValue(target, value)
 		return self.nextPC()
@@ -430,53 +454,60 @@ class Core(Handler):
 					elif token == 'reading':
 						mode = 'r'
 					elif token == 'writing':
-						mode = 'w+'
+						mode = 'w'
 					else:
-						raise Error(f'Unknown file open mode {token}')
+						FatalError(f'self.compiler, Unknown file open mode {token}')
+						return False
 					command['mode'] = mode
 					self.add(command)
 					return True
+			else:
+				FatalError(self.compiler, f'Variable "{self.getToken()}" is not a file')
+		else:
+			self.warning(f'core.open: Variable "{self.getToken()}" not declared')
 		return False
 	
 	def r_open(self, command):
 		symbolRecord = self.getVariable(command['target'])
 		path = self.getRuntimeValue(command['path'])
-		symbolRecord['file'] = open(path, command['mode'])
-		return self.nextPC()
-
-	def k_print(self, command):
-		command['value'] = self.nextValue()
-		self.add(command)
-		return True
-	
-	def r_print(self, command):
-		value = self.getRuntimeValue(command['value'])
-		print(f'-> {value}')
-		return self.nextPC()
+		if command['mode'] == 'r' and os.path.exists(path) or command['mode'] != 'r':
+			symbolRecord['file'] = open(path, command['mode'])
+			return self.nextPC()
+		RuntimeError(f"File {path} does not exist")
+		return -1
 
 	def k_post(self, command):
 		self.add(command)
-		if self.tokenIs('to'):
-			command['value'] = self.getToken()
-			self.next()
+		if self.nextIs('to'):
+			command['value'] = self.getConstant('')
+			command['url'] = self.getValue()
 		else:
-			command['value'] = ''
+			command['value'] = self.getValue()
 			if self.nextIs('to'):
 				command['url'] = self.nextValue()
-		if self.tokenIs('with'):
-			command['data'] = self.nextValue()
-		else:
-			command['data'] = ''
 		self.add(command)
 		return True
 	
 	def r_post(self, command):
 		value = self.getRuntimeValue(command['value'])
 		url = self.getRuntimeValue(command['url'])
-		data = self.getRuntimeValue(command['data'])
-		response = requests.post(url, data)
-#		print(response)
+		response = requests.post(url, json=value)
 		return self.nextPC()
+
+	def k_print(self, command):
+		value = self.nextValue()
+		if value != None:
+			command['value'] = value
+			self.add(command)
+			return True
+		FatalError(self.program.compiler, 'I can\'t print this value')
+		return False
+	
+	def r_print(self, command):
+		value = self.getRuntimeValue(command['value'])
+		if value != None:
+			print(f'-> {value}')
+			return self.nextPC()
 
 	def k_put(self, command):
 		command['value'] = self.nextValue()
@@ -495,20 +526,20 @@ class Core(Handler):
 					self.add(command)
 					return True
 				else:
-					raise Error(f'Symbol {symbolRecord["name"]} is not a value holder')
-				self.warning(f'core:put: No such variable: "{self.getToken()}"')
+					FatalError(self.program.compiler, f'Symbol {symbolRecord["name"]} is not a value holder')
+			else:
+				FatalError(self.program.compiler, f'No such variable: "{self.getToken()}"')
 		return False
 	
 	def r_put(self, command):
 		value = self.evaluate(command['value'])
+		if value == None:
+			return -1
 		symbolRecord = self.getVariable(command['target'])
 		if not symbolRecord['valueHolder']:
-			raise Error(f'{symbolRecord["name"]} does not hold a value')
+			FatalError(self.program.compiler, f'{symbolRecord["name"]} does not hold a value')
+			return -1
 		self.putSymbolValue(symbolRecord, value)
-		# if (target.imported) {
-		# 	const exporterRecord = target.exporter.getSymbolRecord(target.exportedName);
-		# 	exporterRecord.value[exporterRecord.index] = value;
-		# }
 		return self.nextPC()
 	
 	def r_putDict(self, command):
@@ -524,7 +555,7 @@ class Core(Handler):
 			content = record['content']
 		if content is None:
 			content = {}
-		record['type'] = 'numeric' if isinstance(value, int) else 'text'
+		record['type'] = 'int' if isinstance(value, int) else 'text'
 		content[key] = value
 		record['content'] = content
 		self.putSymbolValue(symbolRecord, record)
@@ -558,7 +589,9 @@ class Core(Handler):
 		if file.mode == 'r':
 			value = {}
 			content = file.readline().strip() if line else file.read()
-			if content[0] in ['{', '[']:
+			if content == '':
+				value['type'] = 'text'
+			elif content[0] in ['{', '[']:
 				content = json.loads(content)
 				value['type'] = 'json'
 			else:
@@ -653,8 +686,6 @@ class Core(Handler):
 			content = val['content']
 			if content == '':
 				content = {}
-			else:
-				content = json.loads(content)
 			content[name] = value
 			val['content'] = content
 			self.putSymbolValue(target, val)
@@ -720,16 +751,18 @@ class Core(Handler):
 			value2 = None
 		target = self.getVariable(command['target'])
 		if not target['valueHolder']:
-			raise self.variableDoesNotHoldAValueError(command['lino'], target['name'])
+			self.variableDoesNotHoldAValueError(target['name'])
+			return None
 		value = self.getSymbolValue(target)
 		if value == None:
 			value = {}
-			value['type'] = 'numeric'
+			value['type'] = 'int'
 		if value2:
 			value['content'] = self.getRuntimeValue(value2) - self.getRuntimeValue(value1)
 		else:
-			if value['type'] != 'numeric' and value['content'] != None:
-				raise self.nonNumericValueError(command['lino'] + 1)
+			if value['type'] != 'int' and value['content'] != None:
+				self.nonNumericValueError()
+				return None
 			value['content'] = int(self.getRuntimeValue(value)) - int(self.getRuntimeValue(value1))
 		self.putSymbolValue(target, value)
 		return self.nextPC()
@@ -785,7 +818,11 @@ class Core(Handler):
 		return 0
 	
 	def k_while(self, command):
-		command['condition'] = self.nextCondition()
+		code = self.nextCondition()
+		if code == None:
+			return None
+		# token = self.getToken()
+		command['condition'] = code
 		test = self.getPC()
 		self.addCommand(command)
 		# Set up a goto for when the test fails
@@ -799,7 +836,8 @@ class Core(Handler):
 		self.addCommand(cmd)
 		# Do the body of the while
 		self.nextToken()
-		self.compileOne()
+		if self.compileOne() == False:
+			return False
 		# Repeat the test
 		cmd = {}
 		cmd['lino'] = command['lino']
@@ -841,7 +879,7 @@ class Core(Handler):
 		value = self.getRuntimeValue(command['value'])
 		fileRecord = self.getVariable(command['file'])
 		file = fileRecord['file']
-		if file.mode in ['w+', 'a+']:
+		if file.mode in ['w', 'w+', 'a+']:
 			file.write(value)
 			if command['line']:
 				file.write('\n')
@@ -853,7 +891,8 @@ class Core(Handler):
 	def incdec(self, command, mode):
 		symbolRecord = self.getVariable(command['target'])
 		if not symbolRecord['valueHolder']:
-			raise Error(f'{symbolRecord["name"]} does not hold a value')
+			FatalError(self.program.compiler, f'{symbolRecord["name"]} does not hold a value')
+			return None
 		value = self.getSymbolValue(symbolRecord)
 		if mode == '+':
 			value['content'] += 1
@@ -877,26 +916,9 @@ class Core(Handler):
 				return value
 
 			if keyword in ['variable', 'dictionary']:
-				# value['type'] = self.peek()
-				# if value['type'] in ['format', 'modulo']:
-				# 	self.nextToken()
-				# 	value['value'] = self.nextValue()
-				# 	return value
 				value['type'] = 'symbol'
 				return value
 			return None
-
-		if token == 'true':
-			self.nextToken()
-			value['type'] = 'boolean'
-			value['content'] = True
-			return value
-
-		if token == 'false':
-			self.nextToken()
-			value['type'] = 'boolean'
-			value['content'] = False
-			return value
 
 		value['type'] = token
 
@@ -915,7 +937,7 @@ class Core(Handler):
 		if token in ['now', 'today', 'newline', 'break', 'empty']:
 			return value
 			
-		if token in ['date', 'encode', 'decode', 'lowercase', 'hash']:
+		if token in ['date', 'encode', 'decode', 'stringify', 'lowercase', 'hash', 'float', 'int']:
 			value['value'] = self.nextValue()
 			return value
 		
@@ -958,6 +980,11 @@ class Core(Handler):
 					self.nextToken()
 					return value
 			return None
+		
+		if token == 'trim':
+			self.nextToken()
+			value['value'] = self.getValue()
+			return value
 
 		if self.getToken() == 'the':
 			self.nextToken()
@@ -1048,15 +1075,14 @@ class Core(Handler):
 			return value
 		
 		if token == 'timestamp':
-			if self.nextIs('of'):
+			value['format'] = None
+			if self.peek() == 'of':
+				self.nextToken()
 				value['datime'] = self.nextValue()
 				if self.peek() == 'format':
 					self.nextToken()
 					value['format'] = self.nextValue()
-				else:
-					value['format'] = None
-				return value
-			return None
+			return value
 
 		if token == 'files':
 			if self.nextIs('of'):
@@ -1094,7 +1120,7 @@ class Core(Handler):
 		angle = self.getRuntimeValue(v['angle'])
 		radius = self.getRuntimeValue(v['radius'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = round(math.cos(angle * 0.01745329) * radius)
 		return value
 	
@@ -1122,13 +1148,13 @@ class Core(Handler):
 		val = self.getSymbolValue(target)
 		content = val['content']
 		value = {}
-		value['type'] = 'numeric' if isinstance(content, int) else 'text'
+		value['type'] = 'int' if isinstance(content, int) else 'text'
 		value['content'] = content[index]
 		return value
 	
 	def v_elements(self, v):
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = self.getVariable(v['name'])['elements']
 		return value
 	
@@ -1136,7 +1162,7 @@ class Core(Handler):
 		variable = self.getVariable(v['name'])
 		content = variable['value'][variable['index']]['content']
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = len(content)
 		return value
 	
@@ -1150,6 +1176,13 @@ class Core(Handler):
 		value = {}
 		value['type'] = 'text'
 		value['content'] = self.program.encode(v['value']['content'])
+		return value
+
+	def v_stringify(self, v):
+		item = self.getRuntimeValue(v['value'])
+		value = {}
+		value['type'] = 'text'
+		value['content'] = json.dumps(item)
 		return value
 
 	def v_from(self, v):
@@ -1173,9 +1206,23 @@ class Core(Handler):
 		value['content'] = hashlib.sha256(hashval.encode('utf-8')).hexdigest()
 		return value
 
+	def v_float(self, v):
+		val = self.getRuntimeValue(v['value'])
+		value = {}
+		value['type'] = 'float'
+		value['content'] = float(val)
+		return value
+
+	def v_int(self, v):
+		val = self.getRuntimeValue(v['value'])
+		value = {}
+		value['type'] = 'int'
+		value['content'] = int(val)
+		return value
+
 	def v_index(self, v):
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = self.getVariable(v['name'])['index']
 		return value
 
@@ -1187,7 +1234,7 @@ class Core(Handler):
 		except:
 			index = -1
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = index
 		return value
 	
@@ -1202,7 +1249,7 @@ class Core(Handler):
 	def v_lengthOf(self, v):
 		content = self.getRuntimeValue(v['value'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = len(content)
 		return value
 
@@ -1216,7 +1263,7 @@ class Core(Handler):
 		val = self.getRuntimeValue(v['value'])
 		modval = self.getRuntimeValue(v['modval'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = val % modval
 		return value
 
@@ -1228,7 +1275,7 @@ class Core(Handler):
 
 	def v_now(self, v):
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = int(datetime.now().timestamp())*1000
 		return value
 
@@ -1237,7 +1284,7 @@ class Core(Handler):
 		haystack = self.getRuntimeValue(v['haystack'])
 		last = v['last']
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = haystack.rfind(needle) if last else haystack.find(needle)
 		return value
 
@@ -1247,7 +1294,7 @@ class Core(Handler):
 		target = self.getSymbolValue(target)
 		content = target['content']
 		if content == '':
-			content = '{}'
+			content = ''
 			content['name'] = '(anon)'
 		value = {}
 		value['type'] = 'text'
@@ -1257,7 +1304,7 @@ class Core(Handler):
 	def v_random(self, v):
 		range = self.getRuntimeValue(v['range'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = randrange(range)
 		return value
 	
@@ -1273,7 +1320,7 @@ class Core(Handler):
 		angle = self.getRuntimeValue(v['angle'])
 		radius = self.getRuntimeValue(v['radius'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = round(math.sin(angle * 0.01745329) * radius)
 		return value
 
@@ -1281,25 +1328,27 @@ class Core(Handler):
 		angle = self.getRuntimeValue(v['angle'])
 		radius = self.getRuntimeValue(v['radius'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = round(math.tan(angle * 0.01745329) * radius)
 		return value
 
 	def v_timestamp(self, v):
-		dt = self.getRuntimeValue(v['datime'])
+		value = {}
+		value['type'] = 'int'
 		fmt = v['format']
 		if fmt == None:
-			fmt = '%b %d %Y %H:%M:%S'
+			value['content'] = int(time.time() * 1000)
 		else:
 			fmt = self.getRuntimeValue(fmt)
-		value = {}
-		value['type'] = 'numeric'
-		value['content'] = int(datetime.strptime(dt, fmt).timestamp()*1000)
+			dt = self.getRuntimeValue(v['datime'])
+			spec = datetime.strptime(dt, fmt)
+			t = datetime.now().replace(hour=spec.hour, minute=spec.minute)
+			value['content'] = int(t.timestamp()*1000)
 		return value
 
 	def v_today(self, v):
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = int(datetime.combine(datetime.now().date(),datetime.min.time()).timestamp())*1000
 		return value
 
@@ -1319,7 +1368,7 @@ class Core(Handler):
 	def v_valueOf(self, v):
 		v = self.getRuntimeValue(v['value'])
 		value = {}
-		value['type'] = 'numeric'
+		value['type'] = 'int'
 		value['content'] = int(v)
 		return value
 	
@@ -1329,58 +1378,63 @@ class Core(Handler):
 		value['type'] = 'text'
 		value['content'] = os.listdir(v)
 		return value
+	
+	def v_trim(self, v):
+		v = self.getRuntimeValue(v['value'])
+		value = {}
+		value['type'] = 'text'
+		value['content'] = v.strip()
+		return value
 		
 	#############################################################################
 	# Compile a condition
 	def compileCondition(self):
 		condition = {}
-		if self.isSymbol():
-			symbolRecord = self.getSymbolRecord()
-			if symbolRecord['keyword'] == 'module':
-				if self.nextIs('is'):
-					condition['sense'] = True
-					if self.nextIs('not'):
-						self.nextToken()
-						condition['sense'] = False
-					if self.tokenIs('running'):
-						condition['type'] = 'moduleRunning'
-						condition['name'] = symbolRecord['name']
-						return condition
-				return None
 		if self.getToken() == 'not':
 			condition['type'] = 'not'
 			condition['value'] = self.nextValue()
 			return condition
-		try:
-			condition['value1'] = self.getValue()
+		if self.getToken() == 'file':
+			path = self.nextValue()
+			if self.peek() == 'exists':
+				condition['type'] = 'exists'
+				condition['path'] = path
+				self.nextToken()
+				return condition
+			return None
+		value = self.getValue()
+		if value == None:
+			return None
+		condition['value1'] = value
+		token = self.peek()
+		condition['type'] = token
+		if token == 'includes':
+			condition['value2'] = self.nextValue()
+			return condition
+		if token == 'is':
+			token = self.nextToken()
+			if self.peek() == 'not':
+				self.nextToken()
+				condition['negate'] = True
+			else:
+				condition['negate'] = False
 			token = self.nextToken()
 			condition['type'] = token
-			if token == 'includes':
-				condition['value2'] = self.nextValue()
+			if token in ['numeric', 'even', 'odd', 'boolean', 'empty']:
 				return condition
-			if token == 'is':
-				if self.peek() == 'not':
-					self.nextToken()
-					condition['negate'] = True
-				else:
-					condition['negate'] = False
-				token = self.nextToken()
-				condition['type'] = token
-				if token in ['numeric', 'even', 'odd', 'boolean']:
+			if token in ['greater', 'less']:
+				if self.nextToken() == 'than':
+					condition['value2'] = self.nextValue()
 					return condition
-				if token in ['greater', 'less']:
-					if self.nextToken() == 'than':
-						condition['value2'] = self.nextValue()
-						return condition
-				condition['type'] = 'is'
-				condition['value2'] = self.getValue()
-				return condition
-			if condition['value1']:
-				# It's a boolean if
-				condition['type'] = 'boolean'
-				return condition
-		except Error as err:
-			self.warning(f'I can\'t get a conditional: {err}')
+			condition['type'] = 'is'
+			condition['value2'] = self.getValue()
+			return condition
+		if condition['value1']:
+			# It's a boolean if
+			condition['type'] = 'boolean'
+			return condition
+
+		self.warning(f'I can\'t get a conditional:')
 		return None
 
 	def isNegate(self):
@@ -1424,3 +1478,10 @@ class Core(Handler):
 		value1 = self.getRuntimeValue(condition['value1'])
 		value2 = self.getRuntimeValue(condition['value1'])
 		return value1 in value2
+	
+	def c_empty(self, condition):
+		return self.getRuntimeValue(condition['value1']) == ''
+	
+	def c_exists(self, condition):
+		path = self.getRuntimeValue(condition['path'])
+		return os.path.exists(path)

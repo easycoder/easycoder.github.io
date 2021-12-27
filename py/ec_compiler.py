@@ -1,4 +1,4 @@
-from ec_classes import Token, Error
+from ec_classes import Token, FatalError
 from ec_value import Value
 from ec_condition import Condition
 
@@ -31,7 +31,7 @@ class Compiler:
 	# Get the current token
 	def getToken(self):
 		if self.index >= len(self.tokens):
-			raise Error('Premature end of script')
+			FatalError(self, 'Premature end of script')
 		return self.tokens[self.index].token
 	
 	# Get the next token
@@ -53,6 +53,11 @@ class Compiler:
 	def nextValue(self):
 		self.index += 1
 		return self.value.compileValue()
+	
+	# Get a constant
+	def getConstant(self, token):
+		self.index += 1
+		return self.value.compileConstant(token)
 	
 	# Get a condition
 	def getCondition(self):
@@ -88,7 +93,7 @@ class Compiler:
 		self.marker = self.index
 
 	def rewind(self):
-		return self.marker
+		self.index = self.marker
 	
 	def getLino(self):
 		if self.index >= len(self.tokens):
@@ -97,6 +102,10 @@ class Compiler:
 	
 	def warning(self, message):
 		self.warnings.append(message)
+	
+	def showWarnings(self):
+		for warning in self.warnings:
+			print(f'Line {self.getLino() + 1}: {warning}')
 
 	def getSymbolRecord(self):
 		symbolRecord = self.code[self.symbols[self.getToken()]]
@@ -111,7 +120,8 @@ class Compiler:
 
 	def compileSymbol(self, command, name, valueHolder):
 		if hasattr(self.symbols, name):
-			raise Error(f'Duplicate symbol name "{name}"')
+			FatalError(self, f'{self.code[self.pc].lino}: Duplicate symbol name "{name}"')
+			return False
 		self.symbols[name] = self.getPC()
 		command['isSymbol'] = True
 		command['used'] = False
@@ -127,38 +137,38 @@ class Compiler:
 	# Compile the current token
 	def compileToken(self):
 		token = self.getToken()
+		#print(token)
 		if not token:
-			return
+			return False
 		self.mark()
 		for domain in self.domains:
-			try:
-				handler = domain.keywordHandler(token)
+			handler = domain.keywordHandler(token)
+			if handler:
 				command = {}
 				command['domain'] = domain.getName()
 				command['lino'] = self.tokens[self.index].lino
 				command['keyword'] = token
 				command['debug'] = True
-				if handler(command):
-					return
-			except Exception as err:
-				self.warning(f'No handler found for "{token}" in domain "{domain.getName()}"')
+				result = handler(command)
+				return result
+			else:
 				self.rewind()
-		lino = self.tokens[self.index].lino
-		raise Error(f'Line {lino + 1}: I can\'t compile "{self.script.lines[self.tokens[self.index].lino]}"')
+		FatalError(self, f'No handler found for "{token}"')
+		return False
 
-	# Compile a single command%
+	# Compile a single command
 	def compileOne(self):
 		keyword = self.getToken()
 		if not keyword:
-			return
+			return False
 		#print(f'Compile keyword "{keyword}"')
 		if keyword.endswith(':'):
 			command = {}
 			command['domain'] = None
 			command['lino'] = self.tokens[self.index].lino
-			self.compileLabel(command)
+			return self.compileLabel(command)
 		else:
-			self.compileToken()
+			return self.compileToken()
 
 	# Compile the script
 	def compileFrom(self, index, stopOn):
@@ -166,13 +176,17 @@ class Compiler:
 		while True:
 			token = self.tokens[self.index]
 			keyword = token.token
-			if not keyword is 'else':
-				self.compileOne()
-				if self.index == len(self.tokens) - 1:
-					return
-				token = self.nextToken()
-				if token in stopOn:
-					return
+#			line = self.script.lines[token.lino]
+#			print(f'{keyword} - {line}')
+			if keyword != 'else':
+				if self.compileOne() == True:
+					if self.index == len(self.tokens) - 1:
+						return True
+					token = self.nextToken()
+					if token in stopOn:
+						return True
+				else:
+					return False
 
 	def compileFromHere(self, stopOn):
-		self.compileFrom(self.getIndex(), stopOn)
+		return self.compileFrom(self.getIndex(), stopOn)

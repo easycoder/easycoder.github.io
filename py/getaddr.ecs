@@ -1,0 +1,63 @@
+!   IP and MAC address finder
+
+    script GetAddr
+
+    file File
+    variable Path
+    variable Line
+    variable IP
+    variable MAC
+    variable P
+
+!    debug step
+
+! 	put `/home/graham/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/py` into Path
+	put `.` into Path
+
+	put empty into IP
+	put empty into MAC
+
+    open File Path cat `/config` for reading
+    while true
+    begin
+        read line Line from File
+        if Line is empty stop
+        put the position of ` ` in Line into P
+        add 1 to P
+        put from P of Line into Line
+        put the position of ` ` in Line into P
+        if  left P of Line is `eth0:` go to Loop2
+    end
+
+Loop2:
+    read line Line from File
+    if Line is empty stop
+    put the position of ` ` in Line into P
+    if left P of Line is `link/ether`
+    begin
+        add 1 to P
+        put from P of Line into Line
+        put the position of ` ` in Line into P
+        put left P of Line into MAC
+        if IP is empty go to Loop2
+    end
+    else if left P of Line is `inet`
+    begin
+        add 1 to P
+        put from P of Line into Line
+        put the position of ` ` in Line into P
+        put left P of Line into IP
+        put the position of `/` in IP into P
+        put left P of IP into IP
+        if MAC is empty go to Loop2
+    end
+
+Save:
+    close File
+    open File Path cat `/ip` for writing
+    write IP to File
+    close File
+    open File Path cat `/mac` for writing
+    write MAC to File
+    close File
+    exit

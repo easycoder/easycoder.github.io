@@ -1,10 +1,8 @@
 import time, json
 from copy import copy
 from collections import deque 
-from ec_classes import Script, Token, Error
+from ec_classes import Script, Token, FatalError, RuntimeError
 from ec_compiler import Compiler
-from ec_value import Value
-from ec_condition import Condition
 
 class Program:
 
@@ -25,7 +23,7 @@ class Program:
 		self.value = self.compiler.value
 		self.condition = self.compiler.condition
 		for name in domainMap:
-			if not name[0] is '_':
+			if name[0] != '_':
 				domain = domainMap[name](self.compiler)
 				self.domains.append(domain)
 		self.domainList = {}
@@ -35,19 +33,21 @@ class Program:
 
 		startCompile = time.time()
 		self.tokenise(self.script)
-		try:
-			self.compiler.compileFrom(0, [])
+		if self.compiler.compileFrom(0, []):
 			finishCompile = time.time()
 			s = len(self.script.lines)
 			t = len(self.script.tokens)
 			print(f'Compiled {self.name}: {s} lines ({t} tokens) in ' +
 				f'{round((finishCompile - startCompile) * 1000)} ms')
+			for name in self.symbols.keys():
+				record = self.code[self.symbols[name]]
+				if name[-1] != ':' and not record['used']:
+					print(f'Variable "{name}" not used')
+			print(f'Run {self.name}')
 			self.run(0)
-		except Error as err:
-			print(err)
-			if (err != 'stop'):
-				if (self.onError):
-					self.run(self.onError)
+		else:
+			self.compiler.showWarnings()
+			return
 	
 	# Add a command to the code list
 	def add(self, command):
@@ -55,34 +55,35 @@ class Program:
 
 	def getSymbolRecord(self, name):
 		target = self.code[self.symbols[name]]
-		"""
-		if (target.alias) {
-			return this.getSymbolRecord(target.alias);
-		}
-		if (target.exporter) {
-			if (target.exporter != this) {
-				return target.exporter.getSymbolRecord(target.exportedName);
-			}
-		}
-		"""
 		return target
 
 	def doValue(self, value):
 		if value == None:
-			raise Error(f'{self.code[self.pc].lino}: Undefined value (variable not initialized?)')
+			FatalError(self.compiler, f'Undefined value (variable not initialized?)')
+			return None
 		
 		valType = value['type']
 		result = {}
-		if valType in ['boolean', 'numeric', 'text', 'json']:
+		if valType in ['boolean', 'int', 'text', 'json']:
 			result = value
 		elif valType == 'cat':
 			content = ''
 			for part in value['parts']:
-				content += str(self.doValue(part)['content'])
+				val = self.doValue(part)
+				if val == None:
+					return None
+				val = str(val['content'])
+				if val == None:
+					return None
+				content += val
 			result['type'] = 'text'
 			result['content'] = content
 		elif valType == 'symbol':
-			symbolRecord = self.getSymbolRecord(value['name'])
+			name = value['name']
+			symbolRecord = self.getSymbolRecord(name)
+			if symbolRecord['value'] == [None]:
+				RuntimeError(f'Variable "{name}" has no value')
+				return None
 			handler = self.domainList[symbolRecord['domain']].valueHandler('symbol')
 			result = handler(symbolRecord)
 		else:
@@ -96,12 +97,12 @@ class Program:
 
 	def constant(self, content, numeric):
 		result = {}
-		result['type'] = 'numeric' if numeric else 'text'
+		result['type'] = 'int' if numeric else 'text'
 		result['content'] = content
 		return result
 
 	def evaluate(self, value):
-		if not value:
+		if value == None:
 			result = {}
 			result['type'] = 'text'
 			result['content'] = ''
@@ -110,27 +111,27 @@ class Program:
 		result = self.doValue(value)
 		if result:
 			return result
-
-		raise Error(f'Line {self.code[self.pc]["lino"]+1}: I can\'t decode value: {value}')
+		return None
 
 	def getValue(self, value):
 		return self.evaluate(value).content
 
 	def getRuntimeValue(self, value):
 		v = self.evaluate(value)
-		content = v['content']
-		if v['type'] == 'boolean':
-			return True if content else False
-		if v['type'] in ['numeric', 'text', 'json']:
-			return content
-		return ''
+		if v != None:
+			content = v['content']
+			if v['type'] == 'boolean':
+				return True if content else False
+			if v['type'] in ['int', 'float', 'text', 'json']:
+				return content
+			return ''
+		return None
 	
 	def getSymbolValue(self, symbolRecord):
 		value = copy(symbolRecord['value'][symbolRecord['index']])
 		return value
 	
 	def putSymbolValue(self, symbolRecord, value):
-		content = value['content']
 		symbolRecord['value'][symbolRecord['index']] = value
 	
 	def encode(self, value):
@@ -150,7 +151,7 @@ class Program:
 			n = 0
 			while n < length:
 				c = line[n]
-				if len(c.strip()) is 0:
+				if len(c.strip()) == 0:
 					if (inSpace):
 						n += 1
 						continue
@@ -161,16 +162,16 @@ class Program:
 					n += 1
 					continue
 				inSpace = False
-				if c is '`':
+				if c == '`':
 					m = n
 					n += 1
 					while n < len(line) - 1:
-						if line[n] is '`':
+						if line[n] == '`':
 							break
 						n += 1
 					# n += 1
 					token = line[m:n+1]
-				elif c is '!':
+				elif c == '!':
 					break
 				else:
 					token += c
@@ -206,25 +207,27 @@ class Program:
 					handler = domain.runHandler(keyword)
 					if handler:
 						self.pc = handler(self.code[self.pc])
-				if not self.pc or self.pc >= len(self.code):
-					break
+						if self.pc == 0 or self.pc >= len(self.code):
+							return 0
+				if self.pc < 0:
+					return -1
 	
-	def nonNumericValueError(self, lino):
-		raise Error(f'Line {lino}: Non-numeric value')
+	def nonNumericValueError(self):
+		FatalError(self.compiler, 'Non-numeric value')
 
-	def variableDoesNotHoldAValueError(self, lino, name):
-		raise Error(f'Line {lino}: Variable "{name}" does not hold a value')
+	def variableDoesNotHoldAValueError(self, name):
+		raise FatalError(self.compiler, f'Variable "{name}" does not hold a value')
 
 	def compare(self, value1, value2):
 		val1 = self.evaluate(value1)
 		val2 = self.evaluate(value2)
 		v1 = val1['content']
 		v2 = val2['content']
-		if not v1 == None and val1['type'] == 'numeric':
-			if not val2['type'] == 'numeric':
+		if not v1 == None and val1['type'] == 'int':
+			if not val2['type'] == 'int':
 				v2 = 0 if v2 == None else int(v2)
 		else:
-			if not v2 == None and val2['type'] == 'numeric':
+			if not v2 == None and val2['type'] == 'int':
 				v2 = str(v2)
 			if v1 == None:
 				v1 = ''
