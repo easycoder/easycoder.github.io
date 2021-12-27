@@ -2,7 +2,7 @@
 
 This version of **_EasyCoder_** is written in Python, partly as an exercise and partly to build a viable alternative to Bash or Perl when creating shell scripts. There's currently no specific documentation outside of this ReadMe but many of the features are the same as in the JavaScript version.
 
-The test script test.ec contains examples of most of the language features.
+The test script benchmark.ecs contains examples of most of the language features.
 
 ## How it works ##
 
