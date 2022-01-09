@@ -32,8 +32,8 @@
 	script RBR
 !	debug step
 
-!	put `/home/graham/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/py` into Path
-    put `.` into Path
+	put `/home/graham/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/py` into Path
+!    put `.` into Path
 
     put empty into Sensors
     open File Path cat `/mac` for reading
@@ -45,13 +45,22 @@
         open File Path cat `/map` for reading
         read Map from File
         close File
-        put property `rooms` of Map into Rooms
-        put 0 into RoomNumber
-        while RoomNumber is less than the count of Rooms
+        print `1`
+        print Map
+        print the length of Map
+        if Map is not empty
         begin
-            put element RoomNumber of Rooms into Room
-            gosub to ProcessRoom
-            add 1 to RoomNumber
+		dummy
+            put json Map into Map
+            print `2`
+            put property `rooms` of Map into Rooms
+            put 0 into RoomNumber
+            while RoomNumber is less than the count of Rooms
+            begin
+                put element RoomNumber of Rooms into Room
+                gosub to ProcessRoom
+                add 1 to RoomNumber
+            end
         end
     end
 
@@ -69,17 +78,17 @@
         if NewMap is not stringify Map
         begin
             print `Map updated`
-            open File Path cat `/map` for writing
-            write NewMap to File
-            close File
+!            open File Path cat `/map` for writing
+!            write NewMap to File
+!            close File
         end
     end
     else
     begin
         get Password from `https://rbr.easycoder.software/rest.php/register/` cat MAC
-        open File Path cat `/password` for writing
-        write Password to File
-        close File
+!        open File Path cat `/password` for writing
+!        write Password to File
+!        close File
         print Password
     end
 	exit

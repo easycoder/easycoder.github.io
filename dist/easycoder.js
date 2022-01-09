@@ -8382,12 +8382,15 @@ const EasyCoder = {
 	},
 
 	isJsonString: function (str) {
-		try {
-			JSON.parse(str);
-		} catch (e) {
-			return false;
+		if ([`{`, `[`].includes(str[0])) {
+			try {
+				JSON.parse(str);
+			} catch (e) {
+				return false;
+			}
+			return true;
 		}
-		return true;
+		return false;
 	},
 
 	runScript: function (program) {

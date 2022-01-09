@@ -62,9 +62,9 @@ class Program:
 			FatalError(self.compiler, f'Undefined value (variable not initialized?)')
 			return None
 		
-		valType = value['type']
 		result = {}
-		if valType in ['boolean', 'int', 'text', 'json']:
+		valType = value['type']
+		if valType in ['boolean', 'int', 'text', 'object']:
 			result = value
 		elif valType == 'cat':
 			content = ''
@@ -122,7 +122,7 @@ class Program:
 			content = v['content']
 			if v['type'] == 'boolean':
 				return True if content else False
-			if v['type'] in ['int', 'float', 'text', 'json']:
+			if v['type'] in ['int', 'float', 'text', 'object']:
 				return content
 			return ''
 		return None
