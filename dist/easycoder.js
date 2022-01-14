@@ -585,7 +585,7 @@ const EasyCoder_Core = {
 	Every: {
 		compile: compiler => {
 			const lino = compiler.getLino();
-			const rate = compiler.nextValue();
+			const rate = compiler.getNextValue();
 			const m = compiler.peek();
 			let multiplier = 1000;
 			if ([`minute`,
