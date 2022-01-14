@@ -614,7 +614,8 @@ const EasyCoder_Core = {
 				domain: `core`,
 				keyword: `every`,
 				lino,
-				rate
+				rate,
+				multiplier
 			});
 			return compiler.completeHandler();
 		},
@@ -622,11 +623,10 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const cb = command.pc + 2;
-			const rate = program.getValue(command.rate);
-			const multiplier = program.getValue(command.multiplier);
+			const rate = program.getValue(command.rate) * command.multiplier;
 			setInterval(function() {
 				program.run(cb);
-			}, program.getValue(rate * multiplier));
+			}, program.getValue(rate));
 			return command.pc + 1;
 		}
 	},
