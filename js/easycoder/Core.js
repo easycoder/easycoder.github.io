@@ -582,6 +582,55 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Every: {
+		compile: compiler => {
+			const lino = compiler.getLino();
+			const rate = compiler.nextValue();
+			const m = compiler.peek();
+			let multiplier = 1000;
+			if ([`minute`,
+				`minutes`,
+				`second`,
+				`seconds`,
+				`tick`,
+				`ticks`].includes(m)) {
+					switch (m) {
+						case `minute`:
+						case `minutes`:
+							multiplier = 60000;
+							break;
+						case `second`:
+						case `seconds`:
+							multiplier = 1000;
+							break;
+						case `tick`:
+						case `ticks`:
+							multiplier = 10;
+							break;
+					}
+			}
+			compiler.next();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `every`,
+				lino,
+				rate
+			});
+			return compiler.completeHandler();
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			const cb = command.pc + 2;
+			const rate = program.getValue(command.rate);
+			const multiplier = program.getValue(command.multiplier);
+			setInterval(function() {
+				program.run(cb);
+			}, program.getValue(rate * multiplier));
+			return command.pc + 1;
+		}
+	},
+
 	Exit: {
 
 		compile: compiler => {
@@ -2156,6 +2205,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Encode;
 		case `end`:
 			return EasyCoder_Core.End;
+		case `every`:
+			return EasyCoder_Core.Every;
 		case `exit`:
 			return EasyCoder_Core.Exit;
 		case `filter`:
