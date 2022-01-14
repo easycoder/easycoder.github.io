@@ -624,9 +624,7 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const cb = command.pc + 2;
 			const rate = program.getValue(command.rate) * command.multiplier;
-			setInterval(function() {
-				program.run(cb);
-			}, program.getValue(rate));
+			setInterval(function() { program.run(cb) }, rate);
 			return command.pc + 1;
 		}
 	},
