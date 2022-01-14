@@ -586,7 +586,7 @@ const EasyCoder_Core = {
 		compile: compiler => {
 			const lino = compiler.getLino();
 			const rate = compiler.getNextValue();
-			const m = compiler.peek();
+			const m = compiler.getToken();
 			let multiplier = 1000;
 			if ([`minute`,
 				`minutes`,
@@ -608,8 +608,8 @@ const EasyCoder_Core = {
 							multiplier = 10;
 							break;
 					}
+					compiler.next();
 			}
-			compiler.next();
 			compiler.addCommand({
 				domain: `core`,
 				keyword: `every`,
