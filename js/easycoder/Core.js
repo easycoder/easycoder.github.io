@@ -2484,13 +2484,6 @@ const EasyCoder_Core = {
 			}
 			const type = compiler.getToken();
 			switch (type) {
-			case `time`:
-				compiler.next();
-				return {
-					domain: `core`,
-					type
-				}
-				break;
 			case `elements`:
 				if ([`of`, `in`].includes(compiler.nextToken())) {
 					if (compiler.nextIsSymbol()) {
@@ -2638,6 +2631,7 @@ const EasyCoder_Core = {
 			case `message`:
 			case `error`:
 			case `millisecond`:
+			case `time`:
 				compiler.next();
 				return {
 					domain: `core`,
