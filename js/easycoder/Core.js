@@ -2801,13 +2801,15 @@ const EasyCoder_Core = {
 					content: Math.floor(Date.now())
 				};
 			case `time`:
+				let date = new Date();
+				date.setHours(0);
 				return {
 					type: `constant`,
 					numeric: true,
-					content: Math.floor(new Date().getTime() / 1000)
+					content: Math.floor(date.getTime() / 1000)
 				};
 			case `today`:
-				const date = new Date();
+				date = new Date();
 				date.setHours(0, 0, 0, 0);
 				return {
 					type: `constant`,
