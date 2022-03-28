@@ -2802,11 +2802,12 @@ const EasyCoder_Core = {
 				};
 			case `time`:
 				let date = new Date();
-				date.setHours(0);
+				let date2 = new Date();
+				date2.setHours(0, 0, 0, 0);
 				return {
 					type: `constant`,
 					numeric: true,
-					content: Math.floor(date.getTime() / 1000)
+					content: Math.floor((date.getTime() - date2.getTime())/1000)
 				};
 			case `today`:
 				date = new Date();
