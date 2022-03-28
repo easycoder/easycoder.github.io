@@ -2392,7 +2392,7 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
-			if ([`now`, `time`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
+			if ([`now`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
 					domain: `core`,
@@ -2484,6 +2484,13 @@ const EasyCoder_Core = {
 			}
 			const type = compiler.getToken();
 			switch (type) {
+			case `time`:
+				compiler.next();
+				return {
+					domain: `core`,
+					type
+				}
+				break;
 			case `elements`:
 				if ([`of`, `in`].includes(compiler.nextToken())) {
 					if (compiler.nextIsSymbol()) {
