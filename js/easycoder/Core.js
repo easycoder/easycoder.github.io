@@ -2632,12 +2632,22 @@ const EasyCoder_Core = {
 			case `error`:
 			case `millisecond`:
 			case `time`:
+			case `year`:
 				compiler.next();
 				return {
 					domain: `core`,
 					type
 				};
-
+			case `day`:
+			case `month`:
+				if (compiler.nextTokenIs(`number`)) {
+					compiler.next();
+					return {
+						domain: `core`,
+						type: `${type}number`
+					};
+				}
+				return null;
 			}
 			return null;
 		},
@@ -2982,6 +2992,24 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: false,
 					content: string[index]
+				};
+			case `year`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: new Date().getFullYear()
+				};
+			case `monthnumber`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: new Date().getMonth()
+				};
+			case `daynumber`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: new Date().getDate()
 				};
 			}
 			return null;
