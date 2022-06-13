@@ -92,9 +92,9 @@ const EasyCoder_CodeMirror = {
 			case `init`:
 				switch (command.mode) {
 				case `basic`:
-					program.require(`css`, `https://codemirror.net/lib/codemirror.css`,
+					program.require(`css`, `https://easycoder.github.io/dist/plugins/codemirror/codemirror.css`,
 						function () {
-							program.require(`js`, `https://codemirror.net/lib/codemirror.js`,
+							program.require(`js`, `https://easycoder.github.io/dist/plugins/codemirror/codemirror.js`,
 								function () {
 									if (command.profile) {
 										program.require(`js`, program.getValue(command.profile),
