@@ -12,6 +12,8 @@
 	
 	dictionary Dictionary
 	
+	!go to Skip
+	
 	print `FOR loop counting to 10,000`
 	put now into Start
 	put 0 into N
@@ -65,6 +67,11 @@
 	take Start from Finish giving N
 	print N cat ` milliseconds`
 
+	put 20 into Y
+	put 6 into X
+	multiply Y by X
+	print `20 * 6 = ` cat Y
+
 	put empty into X
 	set property `name` of X to `Fred`
 	print property `name` of X
@@ -105,15 +112,10 @@
 	put 51 into N
 	while N is less than 54
 	begin
-			if 52 is greater than N print `52 is greater than ` cat N
-			else print `52 is not greater than ` cat N
-			if 52 is less than N print `52 is less than ` cat N
-			else print `52 is not less than ` cat N
-			dummy
-			if 52 is not greater than N print `52 is not greater than ` cat N
-			else print `52 is greater than ` cat N
-			if 52 is not less than N print `52 is not less than ` cat N
-			else print `52 is less than ` cat N
+			if 52 is greater than N print `52 is greater than ` cat N else print `52 is not greater than  cat N
+			if 52 is less than N print `52 is less than ` cat N else print `52 is not less than ` cat N
+			if 52 is not greater than N print `52 is not greater than ` cat N else print `52 is greater than ` cat N
+			if 52 is not less than N print `52 is not less than ` cat N else print `52 is less than ` cat N
 			add 1 to N
 	end
 
@@ -133,6 +135,7 @@ Loop1:
 	write `I'm back!` to File
 	close File
 
+Skip:
 	wait 2 seconds
 	open File `/home/pi/test.txt` for reading
 	read line X from File

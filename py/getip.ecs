@@ -1,0 +1,36 @@
+!   getip.ecs
+
+!   This script gets the IP address from the user
+
+    script GetIP
+
+    file File
+    variable Template
+    variable IP
+
+    open File `dhcpcd.conf` for reading
+    read Template from File
+    close File
+
+    print `Please complete the IP address of the system controller:`
+    input IP with `192.168.`
+    print IP
+
+    replace `192.168.!STATIC_IP!` with IP in Template
+
+    print `Please complete the IP address of the router:`
+    input IP with `192.168.`
+    print IP
+
+    replace `192.168.!STATIC_ROUTER!` with IP in Template
+
+    print `Please complete the IP address of the DNS server:`
+    input IP with `192.168.`
+    print IP
+
+    replace `192.168.!STATIC_DNS!` with IP in Template
+
+    open File  `/etc/dhcpcd.conf` for writing
+    write Template to File
+    close File
+    exit

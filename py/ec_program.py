@@ -1,6 +1,6 @@
 import time, json
 from copy import copy
-from collections import deque 
+from collections import deque
 from ec_classes import Script, Token, FatalError, RuntimeError
 from ec_compiler import Compiler
 
@@ -48,7 +48,7 @@ class Program:
 		else:
 			self.compiler.showWarnings()
 			return
-	
+
 	# Add a command to the code list
 	def add(self, command):
 		self.code.append(command)
@@ -61,7 +61,7 @@ class Program:
 		if value == None:
 			FatalError(self.compiler, f'Undefined value (variable not initialized?)')
 			return None
-		
+
 		result = {}
 		valType = value['type']
 		if valType in ['boolean', 'int', 'text', 'object']:
@@ -92,7 +92,7 @@ class Program:
 			handler = domain.valueHandler(value['type'])
 			if handler:
 				result = handler(value)
-				
+
 		return result
 
 	def constant(self, content, numeric):
@@ -126,17 +126,17 @@ class Program:
 				return content
 			return ''
 		return None
-	
+
 	def getSymbolValue(self, symbolRecord):
 		value = copy(symbolRecord['value'][symbolRecord['index']])
 		return value
-	
+
 	def putSymbolValue(self, symbolRecord, value):
 		symbolRecord['value'][symbolRecord['index']] = value
-	
+
 	def encode(self, value):
 		return value
-	
+
 	def decode(self, value):
 		return value
 
@@ -189,7 +189,7 @@ class Program:
 		self.queue.append(pc)
 		if length > 0:
 			return
-		
+
 		while len(self.queue):
 			self.pc = self.queue.popleft()
 			while True:
@@ -211,7 +211,7 @@ class Program:
 							return 0
 				if self.pc < 0:
 					return -1
-	
+
 	def nonNumericValueError(self):
 		FatalError(self.compiler, 'Non-numeric value')
 
@@ -223,11 +223,11 @@ class Program:
 		val2 = self.evaluate(value2)
 		v1 = val1['content']
 		v2 = val2['content']
-		if not v1 == None and val1['type'] == 'int':
+		if v1 != None and val1['type'] == 'int':
 			if not val2['type'] == 'int':
 				v2 = 0 if v2 == None else int(v2)
 		else:
-			if not v2 == None and val2['type'] == 'int':
+			if v2 != None and val2['type'] == 'int':
 				v2 = str(v2)
 			if v1 == None:
 				v1 = ''
