@@ -2638,7 +2638,7 @@ const EasyCoder_Core = {
 					type
 				};
 			case `year`:
-				var timestamp = time();
+				var timestamp = new Date().getTime();
 				if (compiler.peek() == `of`) {
 					compiler.next();
 					timestamp = compiler.getNextValue();
