@@ -409,7 +409,11 @@ class Core(Handler):
         # get the variable
         if self.nextIsSymbol():
             command['target'] = self.getToken()
-            command['prompt'] = ': '
+            value = {}
+            value['type'] = 'text'
+            value['numeric'] = 'false'
+            value['content'] = ': '
+            command['prompt'] = value
             if self.peek() == 'with':
                 self.nextToken()
                 command['prompt'] = self.nextValue()
@@ -646,7 +650,8 @@ class Core(Handler):
 
     def k_replace(self, command):
         original = self.nextValue()
-        if self.nextIs('with'):
+        if self.peek() == 'with':
+            self.nextToken()
             replacement = self.nextValue()
             if self.nextIs('in'):
                 if self.nextIsSymbol():
