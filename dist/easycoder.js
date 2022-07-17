@@ -2632,12 +2632,21 @@ const EasyCoder_Core = {
 			case `error`:
 			case `millisecond`:
 			case `time`:
-			case `year`:
 				compiler.next();
 				return {
 					domain: `core`,
 					type
 				};
+			case `year`:
+				var timestamp = time();
+				if (compiler.nextTokenIs(`of`)) {
+					timestamp = compiler.getNextValue();
+				}
+				return {
+					domain: `core`,
+					type,
+					timestamp
+				}
 			case `day`:
 			case `month`:
 				if (compiler.nextTokenIs(`number`)) {
