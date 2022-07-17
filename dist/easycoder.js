@@ -2651,10 +2651,15 @@ const EasyCoder_Core = {
 			case `day`:
 			case `month`:
 				if (compiler.nextTokenIs(`number`)) {
-					compiler.next();
+					var timestamp = null;
+					if (compiler.peek() == `of`) {
+						compiler.next();
+						timestamp = compiler.getNextValue();
+					}
 					return {
 						domain: `core`,
-						type: `${type}number`
+						type: `${type}number`,
+						timestamp
 					};
 				}
 				return null;
@@ -3014,16 +3019,24 @@ const EasyCoder_Core = {
 					content: year
 				};
 			case `monthnumber`:
+				var monthNumber = new Date().getMonth();
+				if (value.timestamp) {
+					monthNumber = new Date(program.getValue(value.timestamp)).getMonth();
+				}
 				return {
 					type: `constant`,
 					numeric: true,
-					content: new Date().getMonth()
+					content: monthNumber
 				};
 			case `daynumber`:
+				var dayNumber = new Date().getDate();
+				if (value.timestamp) {
+					dayNumber = new Date(program.getValue(value.timestamp)).getDate();
+				}
 				return {
 					type: `constant`,
 					numeric: true,
-					content: new Date().getDate()
+					content: dayNumber
 				};
 			default:
 				return null;
