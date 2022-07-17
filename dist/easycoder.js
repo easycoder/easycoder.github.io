@@ -2638,7 +2638,7 @@ const EasyCoder_Core = {
 					type
 				};
 			case `year`:
-				var timestamp = new Date().getTime();
+				var timestamp = null;
 				if (compiler.peek() == `of`) {
 					compiler.next();
 					timestamp = compiler.getNextValue();
@@ -3004,10 +3004,14 @@ const EasyCoder_Core = {
 					content: string[index]
 				};
 			case `year`:
+				var year = new Date().getFullYear();
+				if (value.timestamp) {
+					year = new Date(program.getValue(value.timestamp)).getFullYear();
+				}
 				return {
 					type: `constant`,
 					numeric: true,
-					content: new Date().getFullYear()
+					content: year
 				};
 			case `monthnumber`:
 				return {
@@ -3021,8 +3025,9 @@ const EasyCoder_Core = {
 					numeric: true,
 					content: new Date().getDate()
 				};
+			default:
+				return null;
 			}
-			return null;
 		},
 
 		put: (symbol, value) => {
