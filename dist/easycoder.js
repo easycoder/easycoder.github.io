@@ -3011,7 +3011,7 @@ const EasyCoder_Core = {
 			case `year`:
 				var year = new Date().getFullYear();
 				if (value.timestamp) {
-					year = new Date(program.getValue(value.timestamp)).getFullYear();
+					year = new Date(program.getValue(value.timestamp * 1000)).getFullYear();
 				}
 				return {
 					type: `constant`,
@@ -3021,10 +3021,7 @@ const EasyCoder_Core = {
 			case `monthnumber`:
 				var monthNumber = new Date().getMonth();
 				if (value.timestamp) {
-					const ts = value.timestamp;
-					const t = program.getValue(ts);
-					monthNumber = new Date(t * 1000).getMonth();
-					monthNumber = new Date(program.getValue(value.timestamp)).getMonth();
+					monthNumber = new Date(program.getValue(value.timestamp * 1000)).getMonth();
 				}
 				return {
 					type: `constant`,
@@ -3034,7 +3031,7 @@ const EasyCoder_Core = {
 			case `daynumber`:
 				var dayNumber = new Date().getDate();
 				if (value.timestamp) {
-					dayNumber = new Date(program.getValue(value.timestamp)).getDate();
+					dayNumber = new Date(program.getValue(value.timestamp * 1000)).getDate();
 				}
 				return {
 					type: `constant`,
