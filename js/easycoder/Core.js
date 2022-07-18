@@ -2638,6 +2638,8 @@ const EasyCoder_Core = {
 					type
 				};
 			case `year`:
+			case `minute`:
+			case `second`:
 				var timestamp = null;
 				if (compiler.peek() == `of`) {
 					compiler.next();
@@ -3017,6 +3019,26 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: true,
 					content: year
+				};
+			case `minute`:
+				var minute = new Date().getMinute();
+				if (value.timestamp) {
+					minute = new Date(program.getValue(value.timestamp) * 1000).getMinute();
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: minute
+				};
+			case `second`:
+				var second = new Date().getSecond();
+				if (value.timestamp) {
+					second = new Date(program.getValue(value.timestamp) * 1000).getSecond();
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: second
 				};
 			case `monthnumber`:
 				var monthNumber = new Date().getMonth();
