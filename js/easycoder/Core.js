@@ -3021,6 +3021,9 @@ const EasyCoder_Core = {
 			case `monthnumber`:
 				var monthNumber = new Date().getMonth();
 				if (value.timestamp) {
+					const ts = value.timestamp;
+					const t = program.getValue(ts);
+					monthNumber = new Date(t).getMonth();
 					monthNumber = new Date(program.getValue(value.timestamp)).getMonth();
 				}
 				return {
