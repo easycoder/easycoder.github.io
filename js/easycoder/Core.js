@@ -2638,6 +2638,7 @@ const EasyCoder_Core = {
 					type
 				};
 			case `year`:
+			case `hour`:
 			case `minute`:
 			case `second`:
 				var timestamp = null;
@@ -3020,10 +3021,20 @@ const EasyCoder_Core = {
 					numeric: true,
 					content: year
 				};
-			case `minute`:
-				var minute = new Date().getMinute();
+			case `hour`:
+				var hour = new Date().getHours();
 				if (value.timestamp) {
-					minute = new Date(program.getValue(value.timestamp) * 1000).getMinute();
+					hour = new Date(program.getValue(value.timestamp) * 1000).getHours();
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: hour
+				};
+			case `minute`:
+				var minute = new Date().getMinutes();
+				if (value.timestamp) {
+					minute = new Date(program.getValue(value.timestamp) * 1000).getMinutes();
 				}
 				return {
 					type: `constant`,
@@ -3031,9 +3042,9 @@ const EasyCoder_Core = {
 					content: minute
 				};
 			case `second`:
-				var second = new Date().getSecond();
+				var second = new Date().getSeconds();
 				if (value.timestamp) {
-					second = new Date(program.getValue(value.timestamp) * 1000).getSecond();
+					second = new Date(program.getValue(value.timestamp) * 1000).getSeconds();
 				}
 				return {
 					type: `constant`,
