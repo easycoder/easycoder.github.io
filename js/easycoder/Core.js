@@ -3023,7 +3023,7 @@ const EasyCoder_Core = {
 				if (value.timestamp) {
 					const ts = value.timestamp;
 					const t = program.getValue(ts);
-					monthNumber = new Date(t).getMonth();
+					monthNumber = new Date(t * 1000).getMonth();
 					monthNumber = new Date(program.getValue(value.timestamp)).getMonth();
 				}
 				return {
