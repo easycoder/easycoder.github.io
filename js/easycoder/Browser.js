@@ -147,7 +147,7 @@ const EasyCoder_Browser = {
 		},
 
 		getElementById: (program, command, id, retries) => {
-            element = document.getElementById(id);
+            const element = document.getElementById(id);
             if (element) {
 				if (program.run) {
 					const target = program.getSymbolRecord(command.symbol);
