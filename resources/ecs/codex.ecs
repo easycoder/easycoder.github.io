@@ -299,7 +299,7 @@ L2:
 	set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
 	gosub to ShowHelpPage
-	rest get Script from `/resources/ecs/docman.ecs`
+	rest get Script from `/resources/ecs/docman.ecs?v=` cat now
 	run Script with ReferencePanel as DocManModule
 	put empty into storage as `.ref`
 
@@ -625,7 +625,7 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
-	if PasswordValid rest get Content from `/resources/scripts/` cat File
+	if PasswordValid rest get Content from `/resources/scripts/` cat File cat `?v=` cat now
     else get Content from storage as File
     put Content into Current
     set the content of Status to `Script '` cat File cat `' loaded`
@@ -823,7 +823,7 @@ ProcessMarkdown: ! TODO Count the links & set up listeners
   end
   on click Link
   begin
-    put attribute `data-id` of Link into Step
+    put attribute `data-codexid` of Link into Step
     goto ShowHelpPage
   end
   return
@@ -878,7 +878,7 @@ Decorate:
     put left N of Payload into Data
     add 1 to N
     put from N of Payload into Payload
-  	put `<b><a href="" id="ec-link-` cat LinkCount cat `" data-id="` cat Data cat `">`
+  	put `<b><a href="" id="ec-link-` cat LinkCount cat `" data-codexid="` cat Data cat `">`
     	cat Payload cat `</a></b>` into Payload
   	add 1 to LinkCount
   end

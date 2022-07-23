@@ -8,7 +8,7 @@
     variable Item
     variable Message
     
-    rest get Script from `/resources/md/home.md`
+    rest get Script from `/resources/md/home.md?v=` cat now
     if mobile
     begin
     	replace `/SIDEBAR/` with `below` in Script

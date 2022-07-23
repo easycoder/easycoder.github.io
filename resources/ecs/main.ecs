@@ -107,29 +107,29 @@ BuildPage:
 
 	require js `dist/plugins/showdown.js`
 
-	rest get Script from `/resources/ecs/showdown.ecs`
+	rest get Script from `/resources/ecs/showdown.ecs?v=` cat now
 	run Script with Document as ShowdownModule
-	rest get Script from `/resources/ecs/home.ecs`
+	rest get Script from `/resources/ecs/home.ecs?v=` cat now
 	run Script with ShowdownModule as HomeModule
-	rest get Script from `/resources/ecs/intro.ecs`
+	rest get Script from `/resources/ecs/intro.ecs?v=` cat now
 	run Script with ShowdownModule as IntroModule
-	rest get Script from `/resources/ecs/examples.ecs`
+	rest get Script from `/resources/ecs/examples.ecs?v=` cat now
 	run Script with ShowdownModule as ExamplesModule
-	rest get Script from `/resources/ecs/about.ecs`
+	rest get Script from `/resources/ecs/about.ecs?v=` cat now
 	run Script with ShowdownModule as AboutModule
-	rest get Script from `/resources/ecs/philosophy.ecs`
+	rest get Script from `/resources/ecs/philosophy.ecs?v=` cat now
 	run Script with ShowdownModule as PhilosophyModule
-	rest get Script from `/resources/ecs/contact.ecs`
+	rest get Script from `/resources/ecs/contact.ecs?v=` cat now
 	run Script with ShowdownModule as ContactModule
-	rest get Script from `/resources/ecs/life.ecs`
+	rest get Script from `/resources/ecs/life.ecs?v=` cat now
 	run Script with ShowdownModule as LifeModule
-	rest get Script from `/resources/ecs/technical.ecs`
+	rest get Script from `/resources/ecs/technical.ecs?v=` cat now
 	run Script with ShowdownModule as TechnicalModule
-	rest get Script from `/resources/ecs/howitworks.ecs`
+	rest get Script from `/resources/ecs/howitworks.ecs?v=` cat now
 	run Script with ShowdownModule as HowItWorksModule
-	rest get Script from `/resources/ecs/wordpress.ecs`
+	rest get Script from `/resources/ecs/wordpress.ecs?v=` cat now
 	run Script with ShowdownModule as WordPressModule
-	rest get Script from `/resources/ecs/pie.ecs`
+	rest get Script from `/resources/ecs/pie.ecs?v=` cat now
 	run Script with ShowdownModule as PieModule
 
 	alias CurrentModule to HomeModule
@@ -300,7 +300,7 @@ RunCodex:
 		require js `dist/plugins/codemirror.js`
 		require js `dist/plugins/float.js`
 		require js `dist/plugins/vfx.js`
-		rest get Script from `/resources/ecs/codex.ecs`
+		rest get Script from `/resources/ecs/codex.ecs?v=` cat now
 		send `pause` to CurrentModule
 		set style `display` of Body to `none`
 		run Script as CodexModule

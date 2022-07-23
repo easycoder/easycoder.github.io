@@ -344,17 +344,30 @@ Viewer:
   create DescriptionDiv in ContentDiv
   put 0 into LinkCount
   set the content of DescriptionDiv to showdown decode Description with DecoratorCallback
+  print LinkCount cat ` links`
   set the elements of Link to LinkCount
   put 0 into Index
   while Index is less than LinkCount
   begin
     index Link to Index
-    attach Link to `ec-link-` cat Index
+    attach Link to `ec-docman-` cat Index
     add 1 to Index
   end
-  on click Link
-  begin
-    put attribute `data-id` of Link into Data
+  on click Link go to OnClickLink
+  put the json index of Keyword in KeywordKeys into Index
+  take 1 from Index
+  if Index is less than 0 add the json count of KeywordKeys to Index
+  set the text of PreviousButton to element Index of KeywordKeys
+  add 2 to Index
+  if Index is not less than the json count of KeywordKeys
+    take the json count of KeywordKeys from Index
+  set the text of NextButton to element Index of KeywordKeys
+  stop
+
+OnClickLink:
+dummy
+    put attribute `data-docmanid` of Link into Data
+    print `Link ` cat the index of Link cat `: ` cat Data
     put the position of `|` in Data into N
     if N is less than 0 put Data into Keyword
     else
@@ -381,17 +394,6 @@ Viewer:
     put Keyword into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
     put property Group of Package into Keywords
     go to Groups
-  end
-
-  put the json index of Keyword in KeywordKeys into Index
-  take 1 from Index
-  if Index is less than 0 add the json count of KeywordKeys to Index
-  set the text of PreviousButton to element Index of KeywordKeys
-  add 2 to Index
-  if Index is not less than the json count of KeywordKeys
-    take the json count of KeywordKeys from Index
-  set the text of NextButton to element Index of KeywordKeys
-  stop
 
 Decorate:
   put the payload of DecoratorCallback into Payload
@@ -426,7 +428,7 @@ ProcessQuote:
   return
 
 ProcessLink:
-  put `<a href="#" id="ec-link-` cat LinkCount cat `" data-id="` cat Data cat `">`
+  put `<a href="#" id="ec-docman-` cat LinkCount cat `" data-docmanid="` cat Data cat `">`
     cat Display cat `</a>` into Payload
   add 1 to LinkCount
   return
