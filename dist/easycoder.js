@@ -2656,7 +2656,7 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`number`)) {
 					compiler.next();
 					var timestamp = null;
-					if (compiler.peek() == `of`) {
+					if (compiler.tokenIs() == `of`) {
 						compiler.next();
 						timestamp = compiler.getNextValue();
 					}
