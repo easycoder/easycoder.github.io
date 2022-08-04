@@ -2654,6 +2654,7 @@ const EasyCoder_Core = {
 			case `day`:
 			case `month`:
 				if (compiler.nextTokenIs(`number`)) {
+					compiler.next();
 					var timestamp = null;
 					if (compiler.peek() == `of`) {
 						compiler.next();
@@ -8737,7 +8738,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `2.7.12`;
+EasyCoder.version = `2.7.13`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 

@@ -2654,6 +2654,7 @@ const EasyCoder_Core = {
 			case `day`:
 			case `month`:
 				if (compiler.nextTokenIs(`number`)) {
+					compiler.next();
 					var timestamp = null;
 					if (compiler.peek() == `of`) {
 						compiler.next();
