@@ -344,7 +344,6 @@ Viewer:
   create DescriptionDiv in ContentDiv
   put 0 into LinkCount
   set the content of DescriptionDiv to showdown decode Description with DecoratorCallback
-  print LinkCount cat ` links`
   set the elements of Link to LinkCount
   put 0 into Index
   while Index is less than LinkCount
