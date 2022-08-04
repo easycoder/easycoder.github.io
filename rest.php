@@ -11,7 +11,8 @@
     $method = $_SERVER['REQUEST_METHOD'];
 
     $props = array();
-    $filename = 'properties.txt';
+//     $filename = 'properties.txt';
+    $filename = '../easycoder.software.txt';
     if (file_exists($filename)) {
         $file = fopen($filename, 'r');
         while (!feof($file)) {
@@ -174,7 +175,7 @@
                     $dir = substr($path, 0, $p);
                     mkdir($dir, 0777, true);
                     header("Content-Type: application/text");
-                    $content = base64_decode(stripslashes(file_get_contents("php://input")));
+                    $content = stripslashes(file_get_contents("php://input"));
                     $p = strrpos($path, '.');
                     $root = substr($path, 0, $p);
                     $ext = substr($path, $p);
