@@ -116,7 +116,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
         } else {
             while (mod) {
                 mod = false;
-                re = /(?:\#|\$)[a-zA-Z0-9_.]*/g;
+                re = /(?:\#|\$)[a-zA-Z0-9_.<>]*/g;
                 while ((values = re.exec(output)) !== null) {
                     let item = values[0];
                     switch (item[0]) {
