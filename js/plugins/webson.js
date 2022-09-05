@@ -274,7 +274,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
                 case `#content`:
                     // Handle the content of the element
                     // If it's an array, expand it and catenate the elements
-                    var val;
+                    var val = '';
                     if (Array.isArray(value)) {
                         for (const item of value) {
                             val += Webson.expand(element, item, symbols);
