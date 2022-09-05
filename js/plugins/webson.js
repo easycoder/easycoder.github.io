@@ -184,7 +184,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
                         const v = eval(substr);
                         output = output.replace(repl, v);
                     } catch (e) {
-                        output = output.replace(repl, substr);
+                        //output = output.replace(repl, substr);
                     }
                     changed = true;
                 }
