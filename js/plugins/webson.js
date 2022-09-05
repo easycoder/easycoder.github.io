@@ -179,7 +179,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
                         throw Error(`Mismatched braces in ${input}`);
                     }
                     const substr = output.substring(p + 1, q);
-                    if (!['b', '/b', 'i', '/i'].includes(substr)) {
+                    if (!['b', '/b', 'i', '/i', 'br', '/br'].includes(substr)) {
                         let repl = `<${substr}>`;
                         try {
                             const v = eval(substr);
