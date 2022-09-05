@@ -271,7 +271,14 @@ EasyCoder.domain.webson = EasyCoder_Webson;
                     break;
                 case `#content`:
                     // Handle the content of the element
-                    const val = Webson.expand(element, value, symbols);
+                    // If it's an array, catenate the elements
+                    var val;
+                    if (Array.isArray(value)) {
+                        for (const item of value) {
+                            val += Webson.expand(element, item, symbols);
+                        } 
+                    } else {
+                        val = Webson.expand(element, value, symbols);
                     if (symbols[`#debug`] >= 2) {
                         console.log(`#content: ${value} -> ${val}`);
                     }
@@ -333,7 +340,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
                         const path = value[name];
                         Webson.include(element, name, path, symbols);
                     } else if (Array.isArray(value)) {
-                        for (item of value) {
+                        for (const item of value) {
                             const defs = Object.keys(item);
                             const name = defs[0];
                             const path = item[name];
