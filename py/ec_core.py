@@ -1,4 +1,4 @@
-import json, math, hashlib, threading, os, requests, time
+import json, math, hashlib, threading, os, requests, time, numbers
 from datetime import datetime, timezone
 from random import randrange
 from ec_classes import FatalError, RuntimeError
@@ -124,7 +124,7 @@ class Core(Handler):
         val['type'] = 'boolean'
         val['content'] = False
         self.putSymbolValue(target, val)
-        self.add(command)
+        # self.add(command)
         return self.nextPC()
 
     def k_close(self, command):
@@ -173,7 +173,7 @@ class Core(Handler):
         return self.incdec(command, '-')
 
     def k_dictionary(self, command):
-        return self.compileVariable(command, False)
+        return self.compileVariable(command, 'dictionary', False)
 
     def r_dictionary(self, command):
         return self.nextPC()
@@ -245,10 +245,10 @@ class Core(Handler):
         return True
 
     def r_exit(self, command):
-        return 0
+        return -1
 
     def k_file(self, command):
-        return self.compileVariable(command, False)
+        return self.compileVariable(command, 'file', False)
 
     def r_file(self, command):
         return self.nextPC()
@@ -561,6 +561,7 @@ class Core(Handler):
         if value != None:
             print(f'-> {value}')
             return self.nextPC()
+        return False
 
     def k_put(self, command):
         command['value'] = self.nextValue()
@@ -621,17 +622,20 @@ class Core(Handler):
         else:
             command['line'] = False
         if self.nextIsSymbol():
-                symbolRecord = self.getSymbolRecord()
-                if symbolRecord['valueHolder']:
-                    if self.peek() == 'from':
-                        self.nextToken()
-                        if self.nextIsSymbol():
-                            fileRecord = self.getSymbolRecord()
-                            if fileRecord['keyword'] == 'file':
-                                command['target'] = symbolRecord['name']
-                                command['file'] = fileRecord['name']
-                                self.add(command)
-                                return True
+            symbolRecord = self.getSymbolRecord()
+            if symbolRecord['valueHolder']:
+                if self.peek() == 'from':
+                    self.nextToken()
+                    if self.nextIsSymbol():
+                        fileRecord = self.getSymbolRecord()
+                        if fileRecord['keyword'] == 'file':
+                            command['target'] = symbolRecord['name']
+                            command['file'] = fileRecord['name']
+                            self.add(command)
+                            return True
+            FatalError(self.program.compiler, f'Symbol "{symbolRecord["name"]}" is not a value holder')
+            return False
+        FatalError(self.program.compiler, f'Symbol "{self.getToken()}" has not been declared')
         return False
 
     def r_read(self, command):
@@ -781,12 +785,57 @@ class Core(Handler):
             self.putSymbolValue(target, val)
             return self.nextPC()
 
+    def k_split(self, command):
+        if self.nextIsSymbol():
+            symbolRecord = self.getSymbolRecord()
+            if symbolRecord['valueHolder']:
+                command['target'] = symbolRecord['name']
+                command['on'] = '\n'
+                if self.peek() == 'on':
+                    self.nextToken()
+                    command['on'] = self.getValue()
+                self.add(command)
+                return True
+        return False
+
+    def r_split(self, command):
+        target = self.getVariable(command['target'])
+        value = self.getSymbolValue(target)
+        content = value['content'].split(command['on'])
+        elements = len(content)
+        target['elements'] = elements
+        target['value'] = [None] * elements
+
+        for index, item in enumerate(content):
+            element = {}
+            element['type'] = 'text'
+            element['numeric'] = 'false'
+            element['content'] = item
+            target['value'][index] = element
+        
+        return self.nextPC()
+
     def k_stop(self, command):
         self.add(command)
         return True
 
     def r_stop(self, command):
         return 0
+
+    def k_system(self, command):
+        value = self.nextValue()
+        if value != None:
+            command['value'] = value
+            self.add(command)
+            return True
+        FatalError(self.program.compiler, 'I can\'t give this command')
+        return False
+
+    def r_system(self, command):
+        value = self.getRuntimeValue(command['value'])
+        if value != None:
+            os.system(value)
+            return self.nextPC()
 
     def k_take(self, command):
         # Get the (first) value
@@ -862,17 +911,19 @@ class Core(Handler):
         val['type'] = 'boolean'
         val['content'] = not value['content']
         self.putSymbolValue(target, val)
-        self.add(command)
         return self.nextPC()
 
     def k_variable(self, command):
-        return self.compileVariable(command, True)
+        return self.compileVariable(command, 'variable', True)
 
     def r_variable(self, command):
         return self.nextPC()
 
     def k_wait(self, command):
-        command['value'] = self.nextValue()
+        value = self.nextValue()
+        if value is None:
+            return False
+        command['value'] = value
         multipliers = {}
         multipliers['milli'] = 1
         multipliers['millis'] = 1
@@ -881,7 +932,7 @@ class Core(Handler):
         multipliers['second'] = 1000
         multipliers['seconds'] = 1000
         multipliers['minute'] = 60000
-        multipliers['minutes7'] = 60000
+        multipliers['minutes'] = 60000
         command['multiplier'] = multipliers['second']
         token = self.peek()
         if token in multipliers:
@@ -1379,15 +1430,13 @@ class Core(Handler):
         target = self.getVariable(v['target'])
         target = self.getSymbolValue(target)
         content = target['content']
-        if content == '':
-            content = ''
-            content['name'] = '(anon)'
+        val = content.get(name)
         value = {}
-        value['type'] = 'text'
-        if content.get(name):
-            value['content'] = content[name]
+        value['content'] = val
+        if isinstance(v, numbers.Number):
+            value['type'] = 'int'
         else:
-            value['content'] = ''
+            value['type'] = 'text'
         return value
 
     def v_random(self, v):
@@ -1572,7 +1621,10 @@ class Core(Handler):
 
     def c_empty(self, condition):
         value = self.getRuntimeValue(condition['value1'])
-        comparison = len(value) == 0
+        if value == None:
+            comparison = True
+        else:
+            comparison = len(value) == 0
         return not comparison if condition['negate'] else comparison
 
     def c_exists(self, condition):

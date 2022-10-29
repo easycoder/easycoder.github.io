@@ -49,12 +49,18 @@ class Handler:
 
 	# Get a run handler
 	def runHandler(self, name):
-		return getattr(self, f'r_{name}')
+		if hasattr(self, f'r_{name}'):
+			return getattr(self, f'r_{name}')
+		return None
 
 	# Get a value handler
 	def valueHandler(self, name):
-		return getattr(self, f'v_{name}')
+		if hasattr(self, f'v_{name}'):
+			return getattr(self, f'v_{name}')
+		return None
 
 	# Get a condition handler
 	def conditionHandler(self, name):
-		return getattr(self, f'c_{name}')
+		if hasattr(self, f'c_{name}'):
+			return getattr(self, f'c_{name}')
+		return None

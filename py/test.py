@@ -1,22 +1,19 @@
 #! /bin/python
 
-import sys
 from ec_program import Program
 from ec_core import Core
+from ec_graphics import Graphics
 
 class EasyCoder:
 
 	def __init__(self):
 		self.version = 1
 
-	domainMap = {}
-	domainMap['core'] = Core
-
-	f = open('py/getip.ecs', 'r')
+	f = open('/home/graham/Dropbox/Code/VisualStudio/EasyCoder/easycoder.github.io/py/test.ecs', 'r')
 	source = f.read()
 	f.close()
 
-	Program(source, domainMap)
+	Program(source, [Core, Graphics])
 
 if __name__ == '__main__':
     EasyCoder()

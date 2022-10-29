@@ -14,33 +14,33 @@
 	
 	!go to Skip
 	
-	print `FOR loop counting to 10,000`
+	print `FOR loop counting to 100,000`
 	put now into Start
 	put 0 into N
-	while N is less than 10000 increment N
+	while N is less than 100000 increment N
 	put now into Finish
 	take Start from Finish giving N
-	print N cat ` milliseconds`
+	print N cat ` seconds`
 	
 !	debug step
 
-	print `Compare 10,000 long integers for equality`
+	print `Compare 100,000 long integers for equality`
 	put now into Start
 	put 0 into N
-	while N is less than 10000
+	while N is less than 100000
 	begin
 		if N is 1234567890 begin end
 		increment N
 	end
 	put now into Finish
 	take Start from Finish giving N
-	print N cat ` milliseconds`
+	print N cat ` seconds`
 
-	print `Allocate and initialize a 10,000 element array`
+	print `Allocate and initialize a 100,000 element array`
 	put now into Start
-	set the elements of Array to 10000
+	set the elements of Array to 100000
 	put 0 into N
-	while N is less than 10000
+	while N is less than 100000
 	begin
 		index Array to N
 		put N into Array
@@ -48,15 +48,15 @@
 	end
 	put now into Finish
 	take Start from Finish giving N
-	print N cat ` milliseconds`
+	print N cat ` seconds`
 
-	print `Allocate and initialize a 50x50 dictionary`
+	print `Allocate and initialize a 200x5200 dictionary`
 	put now into Start
 	put 0 into N
-	while N is less than 50
+	while N is less than 200
 	begin
 		put 0 into M
-		while M is less than 50
+		while M is less than 200
 		begin
 			put M into Dictionary as N cat ` ` cat M
 			increment M
@@ -65,7 +65,7 @@
 	end
 	put now into Finish
 	take Start from Finish giving N
-	print N cat ` milliseconds`
+	print N cat ` seconds`
 
 	put 20 into Y
 	put 6 into X
@@ -112,7 +112,7 @@
 	put 51 into N
 	while N is less than 54
 	begin
-			if 52 is greater than N print `52 is greater than ` cat N else print `52 is not greater than  cat N
+			if 52 is greater than N print `52 is greater than ` cat N else print `52 is not greater than ` cat N
 			if 52 is less than N print `52 is less than ` cat N else print `52 is not less than ` cat N
 			if 52 is not greater than N print `52 is not greater than ` cat N else print `52 is greater than ` cat N
 			if 52 is not less than N print `52 is not less than ` cat N else print `52 is less than ` cat N
@@ -128,16 +128,16 @@ Loop1:
 	add 1 to N
 	if N is less than 10 go to Loop1
 
-	open File `/home/pi/test.txt` for writing
+	open File `test.txt` for writing
 	write line `Hello, world!` to File
 	close File
-	open File `/home/pi/test.txt` for appending
+	open File `test.txt` for appending
 	write `I'm back!` to File
 	close File
 
 Skip:
 	wait 2 seconds
-	open File `/home/pi/test.txt` for reading
+	open File `test.txt` for reading
 	read line X from File
 	print X
 	read X from File

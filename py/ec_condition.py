@@ -21,6 +21,6 @@ class Condition:
 			return None
 
 	def testCondition(self, condition):
-		handler = self.program.domainList[condition['domain']]
+		handler = self.program.domainIndex[condition['domain']]
 		handler = handler.conditionHandler(condition['type'])
 		return handler(condition)

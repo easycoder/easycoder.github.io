@@ -1,4 +1,4 @@
-from ec_classes import Token, FatalError
+from ec_classes import FatalError
 from ec_value import Value
 from ec_condition import Condition
 
@@ -56,7 +56,6 @@ class Compiler:
 	
 	# Get a constant
 	def getConstant(self, token):
-		self.index += 1
 		return self.value.compileConstant(token)
 	
 	# Get a condition
@@ -108,21 +107,26 @@ class Compiler:
 			print(f'Line {self.getLino() + 1}: {warning}')
 
 	def getSymbolRecord(self):
-		symbolRecord = self.code[self.symbols[self.getToken()]]
-		symbolRecord['used'] = True
-		return symbolRecord
+		token = self.getToken()
+		symbol = self.symbols[token]
+		if symbol != None:
+			symbolRecord = self.code[symbol]
+			symbolRecord['used'] = True
+			return symbolRecord
+		return None
 	
 	def compileLabel(self, command):
-		return self.compileSymbol(command, self.getToken(), False)
+		return self.compileSymbol(command, 'label', self.getToken(), False)
 
-	def compileVariable(self, command, valueHolder):
-		return self.compileSymbol(command, self.nextToken(), valueHolder)
+	def compileVariable(self, command, type, valueHolder):
+		return self.compileSymbol(command, type, self.nextToken(), valueHolder)
 
-	def compileSymbol(self, command, name, valueHolder):
+	def compileSymbol(self, command, type, name, valueHolder):
 		if hasattr(self.symbols, name):
 			FatalError(self, f'{self.code[self.pc].lino}: Duplicate symbol name "{name}"')
 			return False
 		self.symbols[name] = self.getPC()
+		command['type'] = type
 		command['isSymbol'] = True
 		command['used'] = False
 		command['valueHolder'] = valueHolder
@@ -150,8 +154,8 @@ class Compiler:
 				command['keyword'] = token
 				command['debug'] = True
 				result = handler(command)
-				return result
-			else:
+				if result:
+					return result
 				self.rewind()
 		FatalError(self, f'No handler found for "{token}"')
 		return False
@@ -161,7 +165,7 @@ class Compiler:
 		keyword = self.getToken()
 		if not keyword:
 			return False
-		#print(f'Compile keyword "{keyword}"')
+		# print(f'Compile keyword "{keyword}"')
 		if keyword.endswith(':'):
 			command = {}
 			command['domain'] = None
@@ -176,8 +180,6 @@ class Compiler:
 		while True:
 			token = self.tokens[self.index]
 			keyword = token.token
-#			line = self.script.lines[token.lino]
-#			print(f'{keyword} - {line}')
 			if keyword != 'else':
 				if self.compileOne() == True:
 					if self.index == len(self.tokens) - 1:

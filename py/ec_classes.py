@@ -6,6 +6,7 @@ class FatalError():
 class RuntimeError:
 	def __init__(self, message):
 		print(f'Runtime Error: {message}')
+		quit()
 
 class Script:
 	def __init__(self, source):

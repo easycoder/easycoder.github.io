@@ -1,4 +1,4 @@
-import pytz, time
+import pytz
 from datetime import datetime
 
 def getTimestamp(t):

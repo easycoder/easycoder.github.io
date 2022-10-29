@@ -9,9 +9,6 @@ class EasyCoder:
 	def __init__(self):
 		self.version = 1
 
-	domainMap = {}
-	domainMap['core'] = Core
-
 	if (len(sys.argv) > 1):
 		scriptName = sys.argv[1]
 
@@ -19,7 +16,7 @@ class EasyCoder:
 		source = f.read()
 		f.close()
 
-		Program(source, domainMap)
+	Program(source, [Core])
 
 if __name__ == '__main__':
     EasyCoder()

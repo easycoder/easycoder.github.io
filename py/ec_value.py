@@ -58,7 +58,7 @@ class Value:
 		token = self.getToken()
 		item = self.getItem()
 		if item == None:
-			FatalError(self.compiler, f'Cannot get the value of "{token}"')
+			self.warning(f'Cannot get the value of "{token}"')
 			return None
 
 		value = {}
@@ -75,7 +75,7 @@ class Value:
 		else:
 			value = item
 
-	# See if any domain has something to add to the value
+		# See if any domain has something to add to the value
 		for domain in self.domains:
 			value = domain.modifyValue(value)
 
@@ -83,8 +83,10 @@ class Value:
 	
 	def compileConstant(self, token):
 		value = {}
-		if token.isnumeric():
+		if isinstance(token, str):
 			val = eval(token)
+		else:
+			val = token
 			if isinstance(val, int):
 				value['type'] = 'int'
 				value['content'] = val

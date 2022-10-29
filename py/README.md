@@ -31,7 +31,7 @@ This class contans compiler and runtime modules for core keywords, values and co
  - a `compileCondition()` function to compile 'conditions'
  - a `c_xxx()` function to evaluate each runtime 'condition'
 
-Each extension package has the same structure and deals with its own vocabulary and syntax.
+Each extension package has the same structure and deals with its own vocabulary and syntax. For example, `ec_graphics.py`, which is currently under development.
 
 The individual compiler functions make heavy use of the Compiler class to retrieve tokens and process them. When they successfully complete the compilation of any given language structure they return an 'intermediate code' object with some standard fields such as the name of the package (the 'domain'), the script line number, and other fields that relate to the specific keyword, value or condition. This object goes into the array that becomes the program to be run.
 
