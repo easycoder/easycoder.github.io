@@ -2,11 +2,11 @@
 
 This version of **_EasyCoder_** is written in Python, partly as an exercise and partly to build a viable alternative to Bash or Perl when creating shell scripts. There's currently no specific documentation outside of this ReadMe but many of the features are the same as in the JavaScript version.
 
-The test script benchmark.ecs contains examples of most of the language features.
+The test script benchmark.ecs contains examples of many of the language features.
 
 ## How it works ##
 
-The `easycoder.py` script starts by defining all the 'packages' that will be used. Each one of these handles a set of functionality related to a given application domain. Currently there is only one; the 'core' package, which contains things needed by virtually any programming language, like variables, control structures and so on.
+The `easycoder.py` script starts by defining all the 'packages' that will be used. Each one of these handles a set of functionality related to a given application domain. Currently there are only two; the 'core' package, which contains things needed by virtually any programming language, like variables, control structures and so on, and - under development - the 'graphics' package, which builds on TKinter to provide a set of features enabling GUI applications to be built quickly without getting bogged down in UI programming.
 
 Then it loads the requested scripts and calls Program to compile and run it.
 
