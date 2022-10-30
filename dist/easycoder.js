@@ -2832,8 +2832,8 @@ const EasyCoder_Core = {
 					content: Math.floor(Date.now())
 				};
 			case `time`:
-				let date = new Date.UTC();
-				let date2 = new Date.UTC();
+				let date = new Date()
+				let date2 = new Date()
 				date2.setHours(0, 0, 0, 0);
 				return {
 					type: `constant`,
@@ -2841,7 +2841,7 @@ const EasyCoder_Core = {
 					content: Math.floor((date.getTime() - date2.getTime())/1000)
 				};
 			case `today`:
-				date = new Date.UTC();
+				date = new Date()
 				date.setHours(0, 0, 0, 0);
 				return {
 					type: `constant`,
