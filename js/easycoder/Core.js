@@ -2032,6 +2032,19 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Test: {
+
+		compile: compiler => {
+			compiler.next();
+			return true;
+		},
+
+		run: program => {
+			console.log(`Test`);
+			return program[program.pc].pc + 1;
+		}
+	},
+
 	Toggle: {
 
 		compile: compiler => {
@@ -2262,6 +2275,8 @@ const EasyCoder_Core = {
 		case `subtract`:
 		case `take`:
 			return EasyCoder_Core.Take;
+		case `test`:
+			return EasyCoder-Core.Test;
 		case `toggle`:
 			return EasyCoder_Core.Toggle;
 		case `variable`:

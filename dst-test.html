@@ -1,0 +1,29 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>EasyCoder - coding made simple</title>
+			<link rel='stylesheet' href='resources/css/styles.css' type='text/css' media='all' />
+		<script type='text/javascript' src='ectest.js?v=2'></script>
+		<script type='text/javascript' src='dist/easycoder.js?v=2'></script>
+	</head>
+
+	<body>
+		<pre id="easycoder-script" style="display:none">
+		! This should be kept until the next daylight saving time change.
+		! It may be necessary to use some of the functionality in 'test'
+		! October 30, 2022
+		script Test
+		test
+
+		variable N
+		variable H
+		variable M
+            divide now by 60 giving N
+            put N modulo 24*60 into N
+            divide N by 60 giving H
+            put N modulo 60 into M
+		print N cat ` ` cat H cat ` ` cat M
+ 		</pre>
+	</body>
+</html>
