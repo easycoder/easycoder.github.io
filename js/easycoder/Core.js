@@ -2795,11 +2795,11 @@ const EasyCoder_Core = {
 						return {
 							type: `constant`,
 							numeric: true,
-							content: new Date(fmtValue).toLocaleTimeString(spec.locale, spec.options)
+							content: new Date.UTC(fmtValue).toLocaleTimeString(spec.locale, spec.options)
 						};
 					case `date`:
 					default:
-						const date = new Date(fmtValue);
+						const date = new Date.UTC(fmtValue);
 						const content = (spec.format === `iso`)
 							? `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 							: date.toLocaleDateString(spec.locale, spec.options);
@@ -2832,8 +2832,8 @@ const EasyCoder_Core = {
 					content: Math.floor(Date.now())
 				};
 			case `time`:
-				let date = new Date();
-				let date2 = new Date();
+				let date = new Date.UTC();
+				let date2 = new Date.UTC();
 				date2.setHours(0, 0, 0, 0);
 				return {
 					type: `constant`,
@@ -2841,7 +2841,7 @@ const EasyCoder_Core = {
 					content: Math.floor((date.getTime() - date2.getTime())/1000)
 				};
 			case `today`:
-				date = new Date();
+				date = new Date.UTC();
 				date.setHours(0, 0, 0, 0);
 				return {
 					type: `constant`,
@@ -3014,9 +3014,9 @@ const EasyCoder_Core = {
 					content: string[index]
 				};
 			case `year`:
-				var year = new Date().getFullYear();
+				var year = new Date.UTC().getFullYear();
 				if (value.timestamp) {
-					year = new Date(program.getValue(value.timestamp) * 1000).getFullYear();
+					year = new Date.UTC(program.getValue(value.timestamp) * 1000).getFullYear();
 				}
 				return {
 					type: `constant`,
@@ -3024,9 +3024,9 @@ const EasyCoder_Core = {
 					content: year
 				};
 			case `hour`:
-				var hour = new Date().getHours();
+				var hour = new Date.UTC().getHours();
 				if (value.timestamp) {
-					hour = new Date(program.getValue(value.timestamp) * 1000).getHours();
+					hour = new Date.UTC(program.getValue(value.timestamp) * 1000).getHours();
 				}
 				return {
 					type: `constant`,
@@ -3034,9 +3034,9 @@ const EasyCoder_Core = {
 					content: hour
 				};
 			case `minute`:
-				var minute = new Date().getMinutes();
+				var minute = new Date.UTC().getMinutes();
 				if (value.timestamp) {
-					minute = new Date(program.getValue(value.timestamp) * 1000).getMinutes();
+					minute = new Date.UTC(program.getValue(value.timestamp) * 1000).getMinutes();
 				}
 				return {
 					type: `constant`,
@@ -3044,9 +3044,9 @@ const EasyCoder_Core = {
 					content: minute
 				};
 			case `second`:
-				var second = new Date().getSeconds();
+				var second = new Date.UTC().getSeconds();
 				if (value.timestamp) {
-					second = new Date(program.getValue(value.timestamp) * 1000).getSeconds();
+					second = new Date.UTC(program.getValue(value.timestamp) * 1000).getSeconds();
 				}
 				return {
 					type: `constant`,
@@ -3054,7 +3054,7 @@ const EasyCoder_Core = {
 					content: second
 				};
 			case `monthnumber`:
-				var monthNumber = new Date().getMonth();
+				var monthNumber = new Date.UTC().getMonth();
 				if (value.timestamp) {
 					monthNumber = new Date(program.getValue(value.timestamp) * 1000).getMonth();
 				}
@@ -3064,9 +3064,9 @@ const EasyCoder_Core = {
 					content: monthNumber
 				};
 			case `daynumber`:
-				var dayNumber = new Date().getDate();
+				var dayNumber = new Date.UTC().getDate();
 				if (value.timestamp) {
-					dayNumber = new Date(program.getValue(value.timestamp) * 1000).getDate();
+					dayNumber = new Date.UTC(program.getValue(value.timestamp) * 1000).getDate();
 				}
 				return {
 					type: `constant`,

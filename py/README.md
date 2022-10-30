@@ -8,7 +8,7 @@ The test script benchmark.ecs contains examples of many of the language features
 
 The `easycoder.py` script starts by defining all the 'packages' that will be used. Each one of these handles a set of functionality related to a given application domain. Currently there are only two; the 'core' package, which contains things needed by virtually any programming language, like variables, control structures and so on, and - under development - the 'graphics' package, which builds on TKinter to provide a set of features enabling GUI applications to be built quickly without getting bogged down in UI programming.
 
-Then it loads the requested scripts and calls Program to compile and run it.
+Then it loads the requested script and calls Program to compile and run it.
 
 ### The Program class ###
 

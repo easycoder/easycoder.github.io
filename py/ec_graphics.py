@@ -28,8 +28,15 @@ class Graphics(Handler):
         id = self.getRuntimeValue(command['id'])
         element = getElement(id)
         if element == None:
-            FatalError(self.program.compiler, f'There is no screen element with id \'{self.getToken()}\'')
+            FatalError(self.program.compiler, f'There is no screen element with id \'{id}\'')
+            return -1
         self.putSymbolValue(target, {'type': 'text', 'content': id})
+        return self.nextPC()
+
+    def k_canvas(self, command):
+        return self.compileVariable(command, 'canvas', False)
+
+    def r_canvas(self, command):
         return self.nextPC()
 
     def k_close(self, command):
@@ -102,6 +109,12 @@ class Graphics(Handler):
             setOnClick(value['content'], lambda: self.run(pc))
         return self.nextPC()
 
+    def k_oval(self, command):
+        return self.compileVariable(command, 'oval', False)
+
+    def r_oval(self, command):
+        return self.nextPC()
+
     def k_rectangle(self, command):
         return self.compileVariable(command, 'rectangle', False)
 
@@ -125,7 +138,7 @@ class Graphics(Handler):
                         record = self.getSymbolRecord()
                         type = record['type']
                         name = record['name']
-                        if type in ['rectangle', 'ellipse']:
+                        if type in ['rect', 'oval']:
                             command['parent'] = record['name']
                             self.add(command)
                             return True

@@ -1,5 +1,5 @@
 import tkinter as tk
-import json
+import json, math
 
 elements = {}
 zlist = []
@@ -80,6 +80,15 @@ def renderSpec(screen, text, offset):
         fill = values['fill'] if 'fill' in values else 'white'
         canvas = tk.Canvas(master=screen, width=width, height=height, bg=fill)
         canvas.place(x=left, y=top)
+        spec = {
+            "id": "canvas",
+            "left": left,
+            "top": top,
+            "width": width,
+            "height": height
+        }
+        elements["canvas"] = spec
+        zlist.append({"canvas": spec})
         if '#' in values:
             children = values['#']
             if type(children) == list:
@@ -95,7 +104,7 @@ def renderSpec(screen, text, offset):
                 child = values[children]
                 return renderWidget(child, offset)
 
-    def renderRect(values, offset):
+    def renderIntoRectangle(widgetType, values, offset):
         global canvas
         left = values['left'] if 'left' in values else 10
         top = values['top'] if 'top' in values else 10
@@ -107,11 +116,16 @@ def renderSpec(screen, text, offset):
         bottom = top + height
         fill = values['fill'] if 'fill' in values else None
         outline = values['outline'] if 'outline' in values else None
-        rectId = canvas.create_rectangle(left, top, right, bottom, fill=fill, outline=outline)
+        if widgetType == 'rect':
+            widgetId = canvas.create_rectangle(left, top, right, bottom, fill=fill, outline=outline)
+        elif widgetType == 'oval':
+            widgetId = canvas.create_oval(left, top, right, bottom, fill=fill, outline=outline)
+        else:
+            return f'Unknown widget type \'{widgetType}\''
         if 'id' in values:
             id = values['id']
             spec = {
-                "id": rectId,
+                "id": widgetId,
                 "left": left,
                 "top": top,
                 "width": width,
@@ -151,6 +165,10 @@ def renderSpec(screen, text, offset):
         outline = values['outline'] if 'outline' in values else None
         color = values['color'] if 'color' in values else None
         text = values['text'] if 'text' in values else ''
+        fontFace = values['fontface'] if 'fontface' in values else 'Helvetica'
+        fontWeight = values['fontWeight'] if 'fontWeight' in values else 'normal'
+        fontHeight = round(height*2/5)
+        offset = round(fontHeight/5)
         rectId = canvas.create_rectangle(left, top, right, bottom, fill=fill, outline=outline)
         if 'id' in values:
             id = values['id']
@@ -163,7 +181,7 @@ def renderSpec(screen, text, offset):
             }
             elements[id] = spec
             zlist.append({id: spec})
-        canvas.create_text(left + width/2, top + height/2 + 5, fill=color, font="Times 22  bold", text=text, anchor='center')
+        canvas.create_text(left + width/2, top + height/2 + offset, fill=color, font=f'{fontFace} {fontHeight} {fontWeight}', text=text, anchor='center')
         return None
 
     # Create a canvas or render a widget
@@ -171,8 +189,8 @@ def renderSpec(screen, text, offset):
         widgetType = widget['type']
         if widgetType == 'canvas':
             return renderCanvas(widget)
-        elif widgetType == 'rect':
-            return renderRect(widget, offset)
+        elif widgetType in ['rect', 'oval']:
+            return renderIntoRectangle(widgetType,widget, offset)
         elif widgetType == 'label':
             return renderLabel(widget, offset)
     

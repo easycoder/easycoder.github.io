@@ -2,6 +2,7 @@
     {
         "Background": {
             "type": "canvas",
+            "id": "background",
             "left": 0,
             "top": 0,
             "width": 600,
@@ -10,7 +11,7 @@
             "#": ["Rect 1", "Rect 2", "Exit"],
 
             "Rect 1": {
-                "type": "rect",
+                "type": "oval",
                 "left": 100,
                 "top": 100,
                 "width": 200,
