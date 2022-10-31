@@ -61,7 +61,7 @@ class Program:
 		result = {}
 		valType = value['type']
 		if valType in ['boolean', 'int', 'text', 'object']:
-			result = value
+			return value
 		elif valType == 'cat':
 			content = ''
 			for part in value['parts']:
@@ -74,29 +74,28 @@ class Program:
 				content += val
 			result['type'] = 'text'
 			result['content'] = content
-		# elif valType == 'symbol':
-		# 	name = value['name']
-		# 	symbolRecord = self.getSymbolRecord(name)
-		# 	if symbolRecord['value'] == [None]:
-		# 		RuntimeError(f'Variable "{name}" has no value')
-		# 		return None
-		# 	handler = self.domainIndex[symbolRecord['domain']].valueHandler('symbol')
-		# 	result = handler(symbolRecord)
-		elif value['isSymbol']:
+			return result
+		elif valType == 'symbol':
+			name = value['name']
+			symbolRecord = self.getSymbolRecord(name)
+			if symbolRecord['value'] == [None]:
+				RuntimeError(f'Variable "{name}" has no value')
+				return None
+			handler = self.domainIndex[symbolRecord['domain']].valueHandler('symbol')
+			return handler(symbolRecord)
+		elif 'isSymbol' in value:
 			if value['value'] == [None]:
 				name = value['name']
 				RuntimeError(f'Variable "{name}" has no value')
 				return None
 			handler = self.domainIndex[value['domain']].valueHandler('symbol')
-			result = handler(value)
+			return handler(value)
 		else:
 			# Call the given domain to handle a value
 			domain = self.domainIndex[value['domain']]
 			handler = domain.valueHandler(value['type'])
 			if handler:
-				result = handler(value)
-
-		return result
+				return handler(value)
 
 	def constant(self, content, numeric):
 		result = {}

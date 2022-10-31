@@ -1,6 +1,7 @@
 from ec_classes import FatalError, RuntimeError
 from ec_handler import Handler
-from graphson import createScreen, renderSpec, renderScreen, getElement, closeScreen, setOnClick
+from graphson import createScreen, render, showScreen, getElement, closeScreen, setOnClick
+import json
 
 class Graphics(Handler):
 
@@ -45,24 +46,44 @@ class Graphics(Handler):
         return True
 
     def r_close(self, command):
-        closeScreen(self.screen)
-        self.screen = None
+        closeScreen()
         return self.nextPC()
 
     def k_create(self, command):
         if self.nextToken() == 'screen':
+            while True:
+                token = self.peek()
+                if token == 'at':
+                    self.nextToken()
+                    command['left'] = self.nextValue()
+                    command['top'] = self.nextValue()
+                elif token == 'size':
+                    self.nextToken()
+                    command['width'] = self.nextValue()
+                    command['height'] = self.nextValue()
+                elif token == 'fill':
+                    self.nextToken()
+                    command['fill'] = self.nextValue()
+                else:
+                    break
             self.add(command)
             return True
         return False
 
     def r_create(self, command):
-        self.screen = createScreen()
+        createScreen(command)
         return self.nextPC()
 
-    def k_label(self, command):
-        return self.compileVariable(command, 'label', False)
+    def k_ellipse(self, command):
+        return self.compileVariable(command, 'ellipse', False)
 
-    def r_label(self, command):
+    def r_ellipse(self, command):
+        return self.nextPC()
+
+    def k_image(self, command):
+        return self.compileVariable(command, 'image', False)
+
+    def r_image(self, command):
         return self.nextPC()
 
     def k_on(self, command):
@@ -91,6 +112,12 @@ class Graphics(Handler):
             cmd['debug'] = False
             self.addCommand(cmd)
             self.compileOne()
+            cmd = {}
+            cmd['domain'] = 'core'
+            cmd['lino'] = command['lino']
+            cmd['keyword'] = 'stop'
+            cmd['debug'] = False
+            self.addCommand(cmd)
             # Fixup the link
             self.getCommandAt(pcNext)['goto'] = self.getPC()
             return True
@@ -109,12 +136,6 @@ class Graphics(Handler):
             setOnClick(value['content'], lambda: self.run(pc))
         return self.nextPC()
 
-    def k_oval(self, command):
-        return self.compileVariable(command, 'oval', False)
-
-    def r_oval(self, command):
-        return self.nextPC()
-
     def k_rectangle(self, command):
         return self.compileVariable(command, 'rectangle', False)
 
@@ -122,11 +143,7 @@ class Graphics(Handler):
         return self.nextPC()
 
     def k_render(self, command):
-        if self.nextIs('screen'):
-            command['name'] = None
-            self.add(command)
-            return True
-        elif self.isSymbol():
+        if  self.nextIsSymbol():
             record = self.getSymbolRecord()
             name = record['name']
             type = record['type']
@@ -134,11 +151,12 @@ class Graphics(Handler):
             if type == 'variable':
                 command['name'] = name
                 if self.peek() == 'in':
+                    self.nextToken()
                     if self.nextIsSymbol():
                         record = self.getSymbolRecord()
                         type = record['type']
                         name = record['name']
-                        if type in ['rect', 'oval']:
+                        if type in ['rectangle', 'ellipse']:
                             command['parent'] = record['name']
                             self.add(command)
                             return True
@@ -154,15 +172,29 @@ class Graphics(Handler):
         return False
 
     def r_render(self, command):
-        if command['name'] == None:
-            renderScreen(self.screen)
-        else:
-            variable = self.getVariable(command['name'])
-            spec = self.getRuntimeValue(variable)
-            offset = {'dx': 0, 'dy': 0}
-            result = renderSpec(self.screen, spec, offset)
-            if result != None:
-                RuntimeError(f'Rendering error: {result}')
+        variable = self.getVariable(command['name'])
+        parent = command['parent']
+        value = self.getRuntimeValue(variable)
+        result = render(value, parent)
+        if result != None:
+            RuntimeError(f'Rendering error: {result}')
+        return self.nextPC()
+
+    def k_show(self, command):
+        if self.nextIs('screen'):
+            command['name'] = None
+            self.add(command)
+            return True
+        return False
+
+    def r_show(self, command):
+        showScreen()
+        return self.nextPC()
+
+    def k_text(self, command):
+        return self.compileVariable(command, 'text', False)
+
+    def r_text(self, command):
         return self.nextPC()
     
     #############################################################################

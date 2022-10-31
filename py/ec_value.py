@@ -58,7 +58,7 @@ class Value:
 		token = self.getToken()
 		item = self.getItem()
 		if item == None:
-			self.warning(f'Cannot get the value of "{token}"')
+			self.compiler.warning(f'Cannot get the value of "{token}"')
 			return None
 
 		value = {}

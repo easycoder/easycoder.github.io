@@ -1,58 +1,62 @@
-[
-    {
-        "Background": {
-            "type": "canvas",
-            "id": "background",
-            "left": 0,
-            "top": 0,
-            "width": 600,
-            "height": 800,
-            "fill": "#ffc",
-            "#": ["Rect 1", "Rect 2", "Exit"],
+{
+    "#": ["Ellipse", "RectGroup", "Text", "Exit"],
 
-            "Rect 1": {
-                "type": "oval",
-                "left": 100,
-                "top": 100,
-                "width": 200,
-                "height": 100,
-                "fill": "red",
-                "outline": "black"
-            },
+    "Ellipse": {
+        "type": "ellipse",
+        "left": 100,
+        "top": 100,
+        "width": 200,
+        "height": 100,
+        "fill": "red",
+        "outline": "black"
+    },
 
-            "Rect 2": {
-                "type": "rect",
-                "left": 500,
-                "top": 500,
-                "width": 100,
-                "height": 200,
-                "fill": "green",
-                "outline": "black",
-                "#":["Rect 2A"],
+    "RectGroup": {
+        "type": "rect",
+        "left": 500,
+        "top": 500,
+        "width": 100,
+        "height": 200,
+        "fill": "green",
+        "outline": "black",
+        "#":["Inner"],
 
-                "Rect 2A": {
-                    "type": "rect",
-                    "left": 10,
-                    "top": 100,
-                    "width": 50,
-                    "height": 50,
-                    "fill": "blue",
-                    "outline": "white"
-                }
-            },
-
-            "Exit": {
-                "type": "label",
-                "id": "exit",
-                "left": 530,
-                "top": 760,
-                "width": 60,
-                "height": 30,
-                "fill": "black",
-                "outline": "red",
-                "color": "yellow",
-                "text": "Exit"
-            }
+        "Inner": {
+            "type": "rect",
+            "left": 10,
+            "top": 100,
+            "width": 50,
+            "height": 50,
+            "fill": "blue",
+            "outline": "white"
         }
+    },
+    
+    "Text": {
+        "type": "text",
+        "shape": "rectangle",
+        "left": 100,
+        "top": 400,
+        "width": 300,
+        "height": 100,
+        "color": "blue",
+        "outlineWidth": 0,
+        "fontFace": "Great Vibes",
+        "fontWeight": "bold",
+        "text": "Some text"
+    },
+
+    "Exit": {
+        "type": "text",
+        "shape": "ellipse",
+        "id": "exit",
+        "left": 530,
+        "top": 760,
+        "width": 60,
+        "height": 30,
+        "fill": "black",
+        "outline": "red",
+        "color": "yellow",
+        "text": "Exit"
     }
-]
+}
