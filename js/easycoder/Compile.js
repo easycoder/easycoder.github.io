@@ -167,14 +167,6 @@ const EasyCoder_Compiler = {
 		};
 	},
 
-	mark: function() {
-		this.savedMark = this.index;
-	},
-
-	rewind: function() {
-		this.index = this.savedMark;
-	},
-
 	rewindTo: function(index) {
 		this.index = index;
 	},
