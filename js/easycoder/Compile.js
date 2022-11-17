@@ -245,7 +245,7 @@ const EasyCoder_Compiler = {
 			return;
 		}
 		// console.log(`Compile ${token}`);
-		const mark = compiler.getIndex();
+		const mark = this.getIndex();
 		for (const domainName of Object.keys(this.domain)) {
 			// console.log(`Try domain ${domainName} for token ${token}`);
 			const domain = this.domain[domainName];
