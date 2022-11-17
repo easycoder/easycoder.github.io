@@ -5,7 +5,7 @@ const EasyCoder_Condition = {
 
 	compile: (compiler) => {
 		// See if any of the domains can handle it
-		compiler.mark();
+		const mark = compiler.getIndex();
 		for (const domainName of Object.keys(compiler.domain)) {
 			// console.log(`Try domain '${domainName}' for condition`);
 			const domain = compiler.domain[domainName];
@@ -13,7 +13,7 @@ const EasyCoder_Condition = {
 			if (code) {
 				return code;
 			}
-			compiler.rewind();
+			compiler.rewindto(mark);
 		}
 	},
 

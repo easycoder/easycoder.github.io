@@ -1509,11 +1509,11 @@ const EasyCoder_Core = {
 					}
 					const value = [];
 					while (true) {
-						compiler.mark();
+						const mark = compiler.getIndex();
 						try {
 							value.push(compiler.getValue());
 						} catch (err) {
-							compiler.rewind();
+							compiler.rewindTo(mark);
 							break;
 						}
 					}
@@ -7617,7 +7617,7 @@ const EasyCoder_Condition = {
 
 	compile: (compiler) => {
 		// See if any of the domains can handle it
-		compiler.mark();
+		const mark = compiler.getIndex();
 		for (const domainName of Object.keys(compiler.domain)) {
 			// console.log(`Try domain '${domainName}' for condition`);
 			const domain = compiler.domain[domainName];
@@ -7625,7 +7625,7 @@ const EasyCoder_Condition = {
 			if (code) {
 				return code;
 			}
-			compiler.rewind();
+			compiler.rewindto(mark);
 		}
 	},
 
@@ -7691,14 +7691,14 @@ const EasyCoder_Value = {
 		}
 
 		// See if any of the domains can handle it
-		compiler.mark();
+		const mark = compiler.getIndex();
 		for (const name of Object.keys(compiler.domain)) {
 			const handler = compiler.domain[name];
 			const code = handler.value.compile(compiler);
 			if (code) {
 				return code;
 			}
-			compiler.rewind();
+			compiler.rewindTo(mark);
 		}
 		return null;
 	},
@@ -8210,6 +8210,10 @@ const EasyCoder_Compiler = {
 		this.index = this.savedMark;
 	},
 
+	rewindTo: function(index) {
+		this.index = index;
+	},
+
 	completeHandler: function() {
 		const lino = this.getLino();
 		// Add a 'goto' to skip the action
@@ -8284,7 +8288,7 @@ const EasyCoder_Compiler = {
 			return;
 		}
 		// console.log(`Compile ${token}`);
-		this.mark();
+		const mark = compiler.getIndex();
 		for (const domainName of Object.keys(this.domain)) {
 			// console.log(`Try domain ${domainName} for token ${token}`);
 			const domain = this.domain[domainName];
@@ -8296,7 +8300,7 @@ const EasyCoder_Compiler = {
 					}
 				}
 			}
-			this.rewind();
+			this.rewindTo(mark);
 		}
 		console.log(`No handler found`);
 		throw new Error(`I don't understand '${token}...'`);

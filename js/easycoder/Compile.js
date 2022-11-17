@@ -175,6 +175,10 @@ const EasyCoder_Compiler = {
 		this.index = this.savedMark;
 	},
 
+	rewindTo: function(index) {
+		this.index = index;
+	},
+
 	completeHandler: function() {
 		const lino = this.getLino();
 		// Add a 'goto' to skip the action
@@ -249,7 +253,7 @@ const EasyCoder_Compiler = {
 			return;
 		}
 		// console.log(`Compile ${token}`);
-		this.mark();
+		const mark = compiler.getIndex();
 		for (const domainName of Object.keys(this.domain)) {
 			// console.log(`Try domain ${domainName} for token ${token}`);
 			const domain = this.domain[domainName];
@@ -261,7 +265,7 @@ const EasyCoder_Compiler = {
 					}
 				}
 			}
-			this.rewind();
+			this.rewindTo(mark);
 		}
 		console.log(`No handler found`);
 		throw new Error(`I don't understand '${token}...'`);

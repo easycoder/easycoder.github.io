@@ -1509,11 +1509,11 @@ const EasyCoder_Core = {
 					}
 					const value = [];
 					while (true) {
-						compiler.mark();
+						const mark = compiler.getIndex();
 						try {
 							value.push(compiler.getValue());
 						} catch (err) {
-							compiler.rewind();
+							compiler.rewindTo(mark);
 							break;
 						}
 					}
