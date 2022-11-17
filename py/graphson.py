@@ -5,6 +5,7 @@ import json
 elements = {}
 zlist = []
 images = {}
+onTick = None
 
 def createScreen(values):
     global screen, canvas, screenLeft, screenTop, running
@@ -61,6 +62,11 @@ def setOnClick(id, cb):
         RuntimeError(f'Element \'{id}\' does not exist')
     return
 
+# Set up the tick handler
+def setOnTick(cb):
+    global onTick
+    onTick = cb
+
 # Signal that the screen should close
 def closeScreen():
     global running
@@ -68,13 +74,15 @@ def closeScreen():
 
 # Show the screen and check every second if it's still running
 def showScreen():
-    global screen
+    global screen, onTick
     def afterCB(screen):
         global running
         if not running:
             screen.destroy()
         else:
-            screen.after(1000, lambda: afterCB(screen))
+            if onTick != None:
+                onTick()
+            screen.after(100, lambda: afterCB(screen))
     screen.after(1000, lambda: afterCB(screen))
     screen.mainloop()
     return
@@ -83,27 +91,27 @@ def showScreen():
 def render(spec, parent):
     global canvas, elements
 
-    def getValue(vars, item):
-        if item in vars:
+    def getValue(args, item):
+        if item in args:
             if type(item) == int:
                 return item
-            return vars[item]
+            return args[item]
         return item
 
-    def renderIntoRectangle(widgetType, values, offset, vars):
+    def renderIntoRectangle(widgetType, values, offset, args):
         global canvas, zlist
-        left = getValue(vars, values['left']) if 'left' in values else 10
-        top = getValue(vars, values['top']) if 'top' in values else 10
+        left = getValue(args, values['left']) if 'left' in values else 10
+        top = getValue(args, values['top']) if 'top' in values else 10
         left = offset['dx'] + left
         top = offset['dy'] + top
-        width = getValue(vars, values['width']) if 'width' in values else 100
-        height = getValue(vars, values['height']) if 'height' in values else 100
+        width = getValue(args, values['width']) if 'width' in values else 100
+        height = getValue(args, values['height']) if 'height' in values else 100
         right = left + width
         bottom = top + height
         fill = values['fill'] if 'fill' in values else None
         outline = values['outline'] if 'outline' in values else None
         if outline != None:
-            outlineWidth = getValue(vars, values['outlineWidth']) if 'outlineWidth' in values else 1
+            outlineWidth = getValue(args, values['outlineWidth']) if 'outlineWidth' in values else 1
         else:
             outlineWidth = 0
         if widgetType == 'rect':
@@ -113,7 +121,7 @@ def render(spec, parent):
         else:
             return f'Unknown widget type \'{widgetType}\''
         if 'id' in values:
-            id = getValue(vars, values['id'])
+            id = getValue(args, values['id'])
             widgetSpec = {
                 "id": widgetId,
                 "left": left,
@@ -129,7 +137,7 @@ def render(spec, parent):
                 for item in children:
                     if item in values:
                         child = values[item]
-                        result = renderWidget(child, {'dx': left, 'dy': top}, vars)
+                        result = renderWidget(child, {'dx': left, 'dy': top}, args)
                         if result != None:
                             return result
                     else:
@@ -141,31 +149,31 @@ def render(spec, parent):
                     return result
         return None
    
-    def renderText(values, offset, vars):
+    def renderText(values, offset, args):
         global canvas
-        left = getValue(vars, values['left']) if 'left' in values else 10
-        top = getValue(vars, values['top']) if 'top' in values else 10
+        left = getValue(args, values['left']) if 'left' in values else 10
+        top = getValue(args, values['top']) if 'top' in values else 10
         left = offset['dx'] + left
         top = offset['dy'] + top
-        width = getValue(vars, values['width']) if 'width' in values else 100
-        height = getValue(vars, values['height']) if 'height' in values else 100
+        width = getValue(args, values['width']) if 'width' in values else 100
+        height = getValue(args, values['height']) if 'height' in values else 100
         right = left + width
         bottom = top + height
-        shape = getValue(vars, values['shape']) if 'shape' in values else 'rectangle'
-        fill = getValue(vars, values['fill']) if 'fill' in values else None
-        outline = getValue(vars, values['outline']) if 'outline' in values else None
-        outlineWidth = getValue(vars, values['outlineWidth']) if 'outlineWidth' in values else 0 if outline == None else 1
-        color = getValue(vars, values['color']) if 'color' in values else None
-        text = getValue(vars, values['text']) if 'text' in values else ''
-        fontFace = getValue(vars, values['fontFace']) if 'fontFace' in values else 'Helvetica'
-        fontWeight = getValue(vars, values['fontWeight']) if 'fontWeight' in values else 'normal'
+        shape = getValue(args, values['shape']) if 'shape' in values else 'rectangle'
+        fill = getValue(args, values['fill']) if 'fill' in values else None
+        outline = getValue(args, values['outline']) if 'outline' in values else None
+        outlineWidth = getValue(args, values['outlineWidth']) if 'outlineWidth' in values else 0 if outline == None else 1
+        color = getValue(args, values['color']) if 'color' in values else None
+        text = getValue(args, values['text']) if 'text' in values else ''
+        fontFace = getValue(args, values['fontFace']) if 'fontFace' in values else 'Helvetica'
+        fontWeight = getValue(args, values['fontWeight']) if 'fontWeight' in values else 'normal'
         fontSize = round(height*2/5) if shape == 'ellipse' else round(height*3/5)
         fontTop = top + height/2
         if 'fontSize' in values:
-            fontSize = getValue(vars, values['fontSize'])
+            fontSize = getValue(args, values['fontSize'])
             fontTop = top + round(fontSize * 5 / 4)
         adjust = round(fontSize/5) if shape == 'ellipse' else 0
-        align = getValue(vars, values['align']) if 'align' in values else 'center'
+        align = getValue(args, values['align']) if 'align' in values else 'center'
         if align == 'left':
             xoff = round(fontSize/5)
             anchor = 'w'
@@ -182,7 +190,7 @@ def render(spec, parent):
         else:
             containerId = canvas.create_rectangle(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
         if 'id' in values:
-            id = getValue(vars, values['id'])
+            id = getValue(args, values['id'])
             widgetSpec = {
                 "id": containerId,
                 "left": left,
@@ -195,17 +203,17 @@ def render(spec, parent):
         canvas.create_text(left + xoff, fontTop + adjust, fill=color, font=f'"{fontFace}" {fontSize} {fontWeight}', text=text, anchor=anchor)
         return None
    
-    def renderImage(values, offset, vars):
+    def renderImage(values, offset, args):
         global canvas, images
-        left = getValue(vars, values['left']) if 'left' in values else 10
-        top = getValue(vars, values['top']) if 'top' in values else 10
+        left = getValue(args, values['left']) if 'left' in values else 10
+        top = getValue(args, values['top']) if 'top' in values else 10
         left = offset['dx'] + left
         top = offset['dy'] + top
-        width = getValue(vars, values['width']) if 'width' in values else 100
-        height = getValue(vars, values['height']) if 'height' in values else 100
+        width = getValue(args, values['width']) if 'width' in values else 100
+        height = getValue(args, values['height']) if 'height' in values else 100
         right = left + width
         bottom = top + height
-        src = getValue(vars, values['src']) if 'src' in values else None
+        src = getValue(args, values['src']) if 'src' in values else None
         containerId = canvas.create_rectangle(left, top, right, bottom, width=0)
         if 'id' in values:
             id = values['id']
@@ -228,27 +236,27 @@ def render(spec, parent):
         return None
 
     # Create a canvas or render a widget
-    def renderWidget(widget, offset, vars):
+    def renderWidget(widget, offset, args):
         widgetType = widget['type']
         if widgetType in ['rect', 'ellipse']:
-            return renderIntoRectangle(widgetType,widget, offset, vars)
+            return renderIntoRectangle(widgetType,widget, offset, args)
         elif widgetType == 'text':
-            return renderText(widget, offset, vars)
+            return renderText(widget, offset, args)
         elif widgetType == 'image':
-            return renderImage(widget, offset, vars)
+            return renderImage(widget, offset, args)
 
     # Render a complete specification
-    def renderSpec(spec, offset, vars):
+    def renderSpec(spec, offset, args):
         widgets = spec['#']
         # If a list, iterate it
         if type(widgets) is list:
             for widget in widgets:
-                result = renderWidget(spec[widget], offset, vars)
+                result = renderWidget(spec[widget], offset, args)
                 if result != None:
                     return result
         # Otherwise, process the single widget
         else:
-            return renderWidget(spec[widgets], offset, vars)
+            return renderWidget(spec[widgets], offset, args)
 
     # Main entry point
     offset = {'dx': 0, 'dy': 0}
@@ -259,11 +267,11 @@ def render(spec, parent):
     if type(spec) is str:
         return renderSpec(json.loads(spec), offset, {})
 
-    # If it's a 'dict', extract the spec and the vars
+    # If it's a 'dict', extract the spec and the args
     if type(spec) is dict:
-        vars = spec['vars']
+        args = spec['args']
         spec = json.loads(spec['spec'])
-        return renderSpec(spec, offset, vars)
+        return renderSpec(spec, offset, args)
 
 # Get the widget whose name is given
 def getElement(name):

@@ -1,12 +1,14 @@
+import sys
+
 class FatalError():
 	def __init__(self, compiler, message):
+		compiler.showWarnings()
 		lino = compiler.tokens[compiler.index].lino + 1
-		print(f'Line {lino}: {message}')
+		sys.exit(f'Line {lino}: {message}')
 
 class RuntimeError:
 	def __init__(self, message):
 		print(f'Runtime Error: {message}')
-		quit()
 
 class Script:
 	def __init__(self, source):

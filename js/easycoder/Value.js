@@ -53,14 +53,14 @@ const EasyCoder_Value = {
 		}
 
 		// See if any of the domains can handle it
-		const index = compiler.getIndex();
+		compiler.mark();
 		for (const name of Object.keys(compiler.domain)) {
-			compiler.rewindTo(index);
 			const handler = compiler.domain[name];
 			const code = handler.value.compile(compiler);
 			if (code) {
 				return code;
 			}
+			compiler.rewind();
 		}
 		return null;
 	},

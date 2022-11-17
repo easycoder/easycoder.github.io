@@ -1,7 +1,6 @@
 from ec_classes import FatalError, RuntimeError
 from ec_handler import Handler
-from graphson import createScreen, render, showScreen, getElement, closeScreen, setOnClick
-import json
+from graphson import *
 
 class Graphics(Handler):
 
@@ -88,6 +87,7 @@ class Graphics(Handler):
 
     def k_on(self, command):
         token = self.nextToken()
+        command['type'] = token
         if token == 'click':
             command['event'] = token
             if self.peek() == 'in':
@@ -121,19 +121,45 @@ class Graphics(Handler):
             # Fixup the link
             self.getCommandAt(pcNext)['goto'] = self.getPC()
             return True
+        elif token == 'tick':
+            command['event'] = token
+            command['goto'] = self.getPC() + 2
+            self.add(command)
+            self.nextToken()
+            pcNext = self.getPC()
+            cmd = {}
+            cmd['domain'] = 'core'
+            cmd['lino'] = command['lino']
+            cmd['keyword'] = 'gotoPC'
+            cmd['goto'] = 0
+            cmd['debug'] = False
+            self.addCommand(cmd)
+            self.compileOne()
+            cmd = {}
+            cmd['domain'] = 'core'
+            cmd['lino'] = command['lino']
+            cmd['keyword'] = 'stop'
+            cmd['debug'] = False
+            self.addCommand(cmd)
+            # Fixup the link
+            self.getCommandAt(pcNext)['goto'] = self.getPC()
+            return True
         return False
 
     def r_on(self, command):
-        event = command['event']
-        if event == 'click':
-            target = command['target']
-            if target == None:
-                value = 'screen'
-            else:
-                widget = self.getVariable(target)
+        pc = command['goto']
+        if command['type'] == 'click':
+            event = command['event']
+            if event == 'click':
+                target = command['target']
+                if target == None:
+                    value = 'screen'
+                else:
+                    widget = self.getVariable(target)
                 value = widget['value'][widget['index']]
-            pc = command['goto']
-            setOnClick(value['content'], lambda: self.run(pc))
+                setOnClick(value['content'], lambda: self.run(pc))
+        elif command['type'] == 'tick':
+            setOnTick(lambda: self.run(pc))
         return self.nextPC()
 
     def k_rectangle(self, command):

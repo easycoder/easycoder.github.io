@@ -175,10 +175,6 @@ const EasyCoder_Compiler = {
 		this.index = this.savedMark;
 	},
 
-	rewindTo: function(index) {
-		this.index = index;
-	},
-
 	completeHandler: function() {
 		const lino = this.getLino();
 		// Add a 'goto' to skip the action
