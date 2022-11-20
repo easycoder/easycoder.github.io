@@ -46,12 +46,12 @@ class Value:
 			FatalError(self.compiler, f'{token} is not an integer')
 
 		# See if any of the domains can handle it
-		self.compiler.mark()
+		mark = self.compiler.getIndex()
 		for domain in self.domains:
 			item = domain.compileValue()
 			if item != None:
 				return item
-			self.compiler.rewind()
+			self.compiler.rewindTo(mark)
 		FatalError(self.compiler, f'I don\'t understand \'{token}\'')
 		return None
 

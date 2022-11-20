@@ -33,23 +33,8 @@ class Graphics(Handler):
         self.putSymbolValue(target, {'type': 'text', 'content': id})
         return self.nextPC()
 
-    def k_canvas(self, command):
-        return self.compileVariable(command, 'canvas', False)
-
-    def r_canvas(self, command):
-        return self.nextPC()
-
-    def k_close(self, command):
-        if self.nextToken() == 'screen':
-            self.add(command)
-        return True
-
-    def r_close(self, command):
-        closeScreen()
-        return self.nextPC()
-
     def k_create(self, command):
-        if self.nextToken() == 'screen':
+        if self.nextIs('screen'):
             while True:
                 token = self.peek()
                 if token == 'at':
@@ -74,13 +59,13 @@ class Graphics(Handler):
         return self.nextPC()
 
     def k_ellipse(self, command):
-        return self.compileVariable(command, 'ellipse', False)
+        return self.compileVariable(command)
 
     def r_ellipse(self, command):
         return self.nextPC()
 
     def k_image(self, command):
-        return self.compileVariable(command, 'image', False)
+        return self.compileVariable(command)
 
     def r_image(self, command):
         return self.nextPC()
@@ -163,7 +148,7 @@ class Graphics(Handler):
         return self.nextPC()
 
     def k_rectangle(self, command):
-        return self.compileVariable(command, 'rectangle', False)
+        return self.compileVariable(command)
 
     def r_rectangle(self, command):
         return self.nextPC()
@@ -172,9 +157,9 @@ class Graphics(Handler):
         if  self.nextIsSymbol():
             record = self.getSymbolRecord()
             name = record['name']
-            type = record['type']
+            type = record['keyword']
             command['type'] = type
-            if type == 'variable':
+            if record['isValueHolder']:
                 command['name'] = name
                 if self.peek() == 'in':
                     self.nextToken()
@@ -203,7 +188,7 @@ class Graphics(Handler):
         value = self.getRuntimeValue(variable)
         result = render(value, parent)
         if result != None:
-            RuntimeError(f'Rendering error: {result}')
+            RuntimeError(command['program'], f'Rendering error: {result}')
         return self.nextPC()
 
     def k_show(self, command):
@@ -217,10 +202,32 @@ class Graphics(Handler):
         showScreen()
         return self.nextPC()
 
+    def k_spec(self, command):
+        return self.compileVariable(command, True)
+
+    def r_spec(self, command):
+        return self.nextPC()
+
     def k_text(self, command):
-        return self.compileVariable(command, 'text', False)
+        return self.compileVariable(command)
 
     def r_text(self, command):
+        return self.nextPC()
+
+    def k_update(self, command):
+        if self.nextIsSymbol():
+            record = self.getSymbolRecord()
+            if record['isValueHolder']:
+                command['widget'] = record['name']
+                self.add(command)
+                return True
+            else:
+                name = record['name']
+                FatalError(self.program.compiler, f'{name} is not a graphic object')
+        return False
+
+    def r_update(self, command):
+        RuntimeError(command['program'], f'Runtime code not completed')
         return self.nextPC()
     
     #############################################################################
@@ -228,6 +235,20 @@ class Graphics(Handler):
     def compileValue(self):
         value = {}
         value['domain'] = 'graphics'
+        token = self.getToken()
+        if self.isSymbol():
+            value['name'] = token
+            symbolRecord = self.getSymbolRecord()
+            keyword = symbolRecord['keyword']
+            if keyword == 'module':
+                value['type'] = 'module'
+                return value
+
+            if symbolRecord['isValueHolder'] is True or keyword is 'dictionary':
+                value['type'] = 'symbol'
+                return value
+            return None
+
         if self.tokenIs('the'):
             self.nextToken()
         token = self.getToken()
@@ -244,9 +265,20 @@ class Graphics(Handler):
     #############################################################################
     # Value handlers
 
-    def v_xxxxx(self, v):
-        value = {}
-        return value
+    def v_symbol(self, symbolRecord):
+        result = {}
+        if symbolRecord['isValueHolder']:
+            symbolValue = self.getSymbolValue(symbolRecord)
+            if symbolValue == None:
+                return None
+            result['type'] = symbolValue['type']
+            content = symbolValue['content']
+            if content == None:
+                return ''
+            result['content'] = content
+            return result
+        else:
+            return ''
 
     #############################################################################
     # Compile a condition

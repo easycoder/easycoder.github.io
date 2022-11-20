@@ -50,18 +50,22 @@ class Program:
 		self.code.append(command)
 
 	def getSymbolRecord(self, name):
-		target = self.code[self.symbols[name]]
+		try:
+			target = self.code[self.symbols[name]]
+		except:
+			RuntimeError(self.compiler.program, f'Unknown symbol \'{name}\'')
+			return None
+
 		return target
 
 	def doValue(self, value):
 		if value == None:
 			FatalError(self.compiler, f'Undefined value (variable not initialized?)')
-			return None
 
 		result = {}
 		valType = value['type']
 		if valType in ['boolean', 'int', 'text', 'object']:
-			return value
+			result = value
 		elif valType == 'cat':
 			content = ''
 			for part in value['parts']:
@@ -74,28 +78,22 @@ class Program:
 				content += val
 			result['type'] = 'text'
 			result['content'] = content
-			return result
 		elif valType == 'symbol':
 			name = value['name']
 			symbolRecord = self.getSymbolRecord(name)
 			if symbolRecord['value'] == [None]:
-				RuntimeError(f'Variable "{name}" has no value')
+				RuntimeError(self.compiler.program, f'Variable "{name}" has no value')
 				return None
 			handler = self.domainIndex[symbolRecord['domain']].valueHandler('symbol')
-			return handler(symbolRecord)
-		elif 'isSymbol' in value:
-			if value['value'] == [None]:
-				name = value['name']
-				RuntimeError(f'Variable "{name}" has no value')
-				return None
-			handler = self.domainIndex[value['domain']].valueHandler('symbol')
-			return handler(value)
+			result = handler(symbolRecord)
 		else:
 			# Call the given domain to handle a value
 			domain = self.domainIndex[value['domain']]
 			handler = domain.valueHandler(value['type'])
 			if handler:
-				return handler(value)
+				result = handler(value)
+
+		return result
 
 	def constant(self, content, numeric):
 		result = {}
@@ -208,7 +206,9 @@ class Program:
 					domain = self.domainIndex[domainName]
 					handler = domain.runHandler(keyword)
 					if handler:
-						self.pc = handler(self.code[self.pc])
+						command = self.code[self.pc]
+						command['program'] = self
+						self.pc = handler(command)
 						if self.pc == 0 or self.pc >= len(self.code):
 							return 0
 				if self.pc < 0:
@@ -227,7 +227,12 @@ class Program:
 		v2 = val2['content']
 		if v1 != None and val1['type'] == 'int':
 			if not val2['type'] == 'int':
-				v2 = 0 if v2 == None else int(v2)
+				if type(v2) is str:
+					try:
+						v2 = int(v2)
+					except:
+						lino = self.code[self.pc]['lino'] + 1
+						RuntimeError(None, f'Line {lino}: \'{v2}\' is not an integer')
 		else:
 			if v2 != None and val2['type'] == 'int':
 				v2 = str(v2)

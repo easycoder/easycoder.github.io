@@ -5,19 +5,19 @@ class Condition:
 		self.getToken = compiler.getToken
 		self.nextToken = compiler.nextToken
 		self.peek = compiler.peek
+		self.getIndex = compiler.getIndex
 		self.tokenIs = compiler.tokenIs
-		self.mark = compiler.mark
-		self.rewind = compiler.rewind
+		self.rewindTo = compiler.rewindTo
 		self.program = compiler.program
 
 	def compileCondition(self):
-		self.mark()
+		mark = self.getIndex()
 		for domain in self.domains:
 			item = domain.compileCondition()
 			if item != None:
 				item['domain'] = domain.getName()
 				return item
-			self.rewind()
+			self.rewindTo(mark)
 			return None
 
 	def testCondition(self, condition):

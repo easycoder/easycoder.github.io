@@ -16,6 +16,7 @@ class Handler:
 		self.nextIsSymbol = compiler.nextIsSymbol
 		self.getSymbolRecord = compiler.getSymbolRecord
 		self.compileVariable = compiler.compileVariable
+		self.rewindTo = compiler.rewindTo
 		self.warning = compiler.warning
 		self.getPC = compiler.getPC
 		self.addCommand = compiler.addCommand
@@ -49,18 +50,12 @@ class Handler:
 
 	# Get a run handler
 	def runHandler(self, name):
-		if hasattr(self, f'r_{name}'):
-			return getattr(self, f'r_{name}')
-		return None
+		return getattr(self, f'r_{name}')
 
 	# Get a value handler
 	def valueHandler(self, name):
-		if hasattr(self, f'v_{name}'):
-			return getattr(self, f'v_{name}')
-		return None
+		return getattr(self, f'v_{name}')
 
 	# Get a condition handler
 	def conditionHandler(self, name):
-		if hasattr(self, f'c_{name}'):
-			return getattr(self, f'c_{name}')
-		return None
+		return getattr(self, f'c_{name}')

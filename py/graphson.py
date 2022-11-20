@@ -45,7 +45,7 @@ def createScreen(values):
                         element['cb']()
                         break
                 else:
-                    RuntimeError(f'Element \'{id}\' does not exist')
+                    RuntimeError(command['program'], f'Element \'{id}\' does not exist')
 
     screen.bind('<Button-1>', onClick)
 
@@ -59,7 +59,7 @@ def setOnClick(id, cb):
     if id in elements:
         elements[id]['cb'] = cb
     else:
-        RuntimeError(f'Element \'{id}\' does not exist')
+        RuntimeError(command['program'], f'Element \'{id}\' does not exist')
     return
 
 # Set up the tick handler
@@ -67,22 +67,13 @@ def setOnTick(cb):
     global onTick
     onTick = cb
 
-# Signal that the screen should close
-def closeScreen():
-    global running
-    running = False
-
 # Show the screen and check every second if it's still running
 def showScreen():
     global screen, onTick
     def afterCB(screen):
-        global running
-        if not running:
-            screen.destroy()
-        else:
-            if onTick != None:
-                onTick()
-            screen.after(100, lambda: afterCB(screen))
+        if onTick != None:
+            onTick()
+        screen.after(100, lambda: afterCB(screen))
     screen.after(1000, lambda: afterCB(screen))
     screen.mainloop()
     return
@@ -261,7 +252,7 @@ def render(spec, parent):
     # Main entry point
     offset = {'dx': 0, 'dy': 0}
     if parent != screen:
-        RuntimeError('Can\'t yet render into parent widget')
+        RuntimeError(None, 'Can\'t yet render into parent widget')
 
     # If it'a string, process it
     if type(spec) is str:
@@ -279,4 +270,4 @@ def getElement(name):
     if name in elements:
         return elements[name]
     else:
-        RuntimeError(f'Element \'{name}\' does not exist')
+        RuntimeError(None, f'Element \'{name}\' does not exist')

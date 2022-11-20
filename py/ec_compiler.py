@@ -89,11 +89,8 @@ class Compiler:
 		self.next()
 		return self.isSymbol()
 
-	def mark(self):
-		self.marker = self.index
-
-	def rewind(self):
-		self.index = self.marker
+	def rewindTo(self, index):
+		self.index = index
 	
 	def getLino(self):
 		if self.index >= len(self.tokens):
@@ -119,7 +116,7 @@ class Compiler:
 	def compileLabel(self, command):
 		return self.compileSymbol(command, self.getToken(), False)
 
-	def compileVariable(self, command, valueHolder):
+	def compileVariable(self, command, valueHolder=False):
 		return self.compileSymbol(command, self.nextToken(), valueHolder)
 
 	def compileSymbol(self, command, name, valueHolder):
@@ -127,13 +124,13 @@ class Compiler:
 			FatalError(self, f'{self.code[self.pc].lino}: Duplicate symbol name "{name}"')
 			return False
 		self.symbols[name] = self.getPC()
-		command['isSymbol'] = True
-		command['used'] = False
-		command['valueHolder'] = valueHolder
+		command['type'] = 'symbol'
+		command['isValueHolder'] = valueHolder
 		command['name'] = name
 		command['elements'] = 1
 		command['index'] = 0
 		command['value'] = [None]
+		command['used'] = False
 		command['debug'] = False
 		self.addCommand(command)
 		return True
@@ -144,7 +141,7 @@ class Compiler:
 		# print(token)
 		if not token:
 			return False
-		self.mark()
+		mark = self.getIndex()
 		for domain in self.domains:
 			handler = domain.keywordHandler(token)
 			if handler:
@@ -152,12 +149,15 @@ class Compiler:
 				command['domain'] = domain.getName()
 				command['lino'] = self.tokens[self.index].lino
 				command['keyword'] = token
+				command['type'] = None
 				command['debug'] = True
 				result = handler(command)
 				if result:
 					return result
+				else:
+					self.rewindTo(mark)
 			else:
-				self.rewind()
+				self.rewindTo(mark)
 		FatalError(self, f'No handler found for "{token}"')
 		return False
 
@@ -183,7 +183,7 @@ class Compiler:
 			keyword = token.token
 #			line = self.script.lines[token.lino]
 #			print(f'{keyword} - {line}')
-			# if keyword != 'else':
+#			if keyword != 'else':
 			if self.compileOne() == True:
 				if self.index == len(self.tokens) - 1:
 					return True
