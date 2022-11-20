@@ -2956,13 +2956,7 @@ const EasyCoder_Core = {
 						JSON.stringify(elementContent) : elementContent
 				};
 			case `property`:
-				let property = ``
-				try {
-					property = program.getValue(value.property);
-				}
-				catch (err) {
-					console.log(`Error: `, err);
-				}
+				const property = program.getValue(value.property);
 				const propertyRecord = program.getSymbolRecord(value.symbol);
 				let propertyContent = program.getValue(propertyRecord.value[propertyRecord.index]);
 				var content = ``;
