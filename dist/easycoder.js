@@ -2688,6 +2688,7 @@ const EasyCoder_Core = {
 		},
 
 		get: (program, value) => {
+			let content = ``;
 			switch (value.type) {
 			case `boolean`:
 				return {
@@ -2959,16 +2960,19 @@ const EasyCoder_Core = {
 				const property = program.getValue(value.property);
 				const propertyRecord = program.getSymbolRecord(value.symbol);
 				let propertyContent = program.getValue(propertyRecord.value[propertyRecord.index]);
-				let content = ``;
 				if (property && propertyContent) {
 					if (typeof propertyContent === `object`) {
 						content = propertyContent[property];
 					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
 						try {
-							let c = JSON.parse(propertyContent);
-							content = c[property];
+							content = JSON.parse(propertyContent);
 						} catch (err) {
-							console.log(`Can't parse '${propertyContent}': ${err.message}`);
+							program.runtimeError(program[program.pc].lino, `Can't parse '${propertyContent}': ${err.message}`);
+						}
+						try {
+							content = content[property];
+						} catch (err) {
+							program.runtimeError(program[program.pc].lino, `Property '${property}' does not exist`);
 						}
 					}
 				}
