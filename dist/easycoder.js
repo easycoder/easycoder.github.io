@@ -2962,11 +2962,11 @@ const EasyCoder_Core = {
 				let content = ``;
 				if (property && propertyContent) {
 					if (typeof propertyContent === `object`) {
-						content = propertyContent.property;
+						content = propertyContent[property];
 					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
 						try {
 							let c = JSON.parse(propertyContent);
-							content = c.property;
+							content = c[property];
 						} catch (err) {
 							console.log(`Can't parse '${propertyContent}': ${err.message}`);
 						}
