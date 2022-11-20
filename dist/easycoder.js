@@ -2961,6 +2961,7 @@ const EasyCoder_Core = {
 					property = program.getValue(value.property);
 				}
 				catch (err) {
+					console.log(`Error: `, err);
 				}
 				const propertyRecord = program.getSymbolRecord(value.symbol);
 				let propertyContent = program.getValue(propertyRecord.value[propertyRecord.index]);
