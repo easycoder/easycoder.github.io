@@ -2959,13 +2959,14 @@ const EasyCoder_Core = {
 				const property = program.getValue(value.property);
 				const propertyRecord = program.getSymbolRecord(value.symbol);
 				let propertyContent = program.getValue(propertyRecord.value[propertyRecord.index]);
-				var content = ``;
+				let content = ``;
 				if (property && propertyContent) {
 					if (typeof propertyContent === `object`) {
 						content = propertyContent[property];
 					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
 						try {
-							content = JSON.parse(propertyContent)[property];
+							content = JSON.parse(propertyContent);
+							content = content.property;
 						} catch (err) {
 							console.log(`Can't parse '${propertyContent}': ${err.message}`);
 						}
