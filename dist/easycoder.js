@@ -2969,10 +2969,9 @@ const EasyCoder_Core = {
 						} catch (err) {
 							program.runtimeError(program[program.pc].lino, `Can't parse '${propertyContent}': ${err.message}`);
 						}
-						try {
-							content = content[property];
-						} catch (err) {
-							program.runtimeError(program[program.pc].lino, `Property '${property}' does not exist`);
+						content = content[property];
+						if (content == undefined) {
+							content = ``;
 						}
 					}
 				}
