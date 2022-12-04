@@ -3119,7 +3119,8 @@ const EasyCoder_Browser = {
 				return {
 					domain: `browser`,
 					type: `boolean`,
-					content: (typeof window.orientation !== `undefined`) || (navigator.userAgent.indexOf(`IEMobile`) !== -1)
+					// content: (typeof window.orientation !== `undefined`) || (navigator.userAgent.indexOf(`IEMobile`) !== -1)
+					content: (/Android|iPhone/i.test(navigator.userAgent))
 				};
 			case `portrait`:
 				return {

@@ -1,6 +1,6 @@
 from ec_classes import FatalError, RuntimeError
 from ec_handler import Handler
-from graphson import *
+from pyctures import *
 
 class Graphics(Handler):
 
@@ -154,7 +154,7 @@ class Graphics(Handler):
         return self.nextPC()
 
     def k_render(self, command):
-        if  self.nextIsSymbol():
+        if self.nextIsSymbol():
             record = self.getSymbolRecord()
             name = record['name']
             type = record['keyword']
@@ -191,6 +191,60 @@ class Graphics(Handler):
             RuntimeError(command['program'], f'Rendering error: {result}')
         return self.nextPC()
 
+    def k_set(self, command):
+        if self.peek() == 'the':
+            self.nextToken()
+        token = self.peek()
+        if token == 'text':
+            self.nextToken()
+            command['variant'] = 'setText'
+            if self.peek() == 'of':
+                self.nextToken()
+            if self.nextIsSymbol():
+                record = self.getSymbolRecord()
+                command['name'] = record['name']
+                if record['keyword'] != 'text':
+                    RuntimeError(command['program'], f'Symbol type is not \'text\'')
+                if self.peek() == 'to':
+                    self.nextToken()
+                    command['value'] = self.nextValue()
+                    self.add(command)
+                    return True
+            return False
+        elif token == 'background':
+            self.nextToken()
+            command['variant'] = 'setBackground'
+            if self.peek() == 'color':
+                self.nextToken()
+            if self.peek() == 'of':
+                self.nextToken()
+            if self.nextIsSymbol():
+                record = self.getSymbolRecord()
+                command['name'] = record['name']
+                if not record['keyword'] in ['rectangle', 'ellipse']:
+                    RuntimeError(command['program'], f'Symbol type is not \'rectangle\' or \'ellipse\'')
+                if self.peek() == 'to':
+                    self.nextToken()
+                    command['value'] = self.nextValue()
+                    self.add(command)
+                return True
+            return False
+        return False
+
+    def r_set(self, command):
+        variant = command['variant']
+        if variant == 'setText':
+            variable = self.getVariable(command['name'])
+            element = self.getSymbolValue(variable)
+            value = self.getRuntimeValue(command['value'])
+            setText(element['content'], value)
+        elif variant == 'setBackground':
+            variable = self.getVariable(command['name'])
+            element = self.getSymbolValue(variable)
+            value = self.getRuntimeValue(command['value'])
+            setBackground(element['content'], value)
+        return self.nextPC()
+
     def k_show(self, command):
         if self.nextIs('screen'):
             command['name'] = None
@@ -213,22 +267,6 @@ class Graphics(Handler):
 
     def r_text(self, command):
         return self.nextPC()
-
-    def k_update(self, command):
-        if self.nextIsSymbol():
-            record = self.getSymbolRecord()
-            if record['isValueHolder']:
-                command['widget'] = record['name']
-                self.add(command)
-                return True
-            else:
-                name = record['name']
-                FatalError(self.program.compiler, f'{name} is not a graphic object')
-        return False
-
-    def r_update(self, command):
-        RuntimeError(command['program'], f'Runtime code not completed')
-        return self.nextPC()
     
     #############################################################################
     # Compile a value in this domain
@@ -244,7 +282,7 @@ class Graphics(Handler):
                 value['type'] = 'module'
                 return value
 
-            if symbolRecord['isValueHolder'] is True or keyword is 'dictionary':
+            if symbolRecord['isValueHolder'] == True or keyword == 'dictionary':
                 value['type'] = 'symbol'
                 return value
             return None

@@ -1460,19 +1460,21 @@ class Core(Handler):
 
     def v_property(self, v):
         name = self.getRuntimeValue(v['name'])
-        target = self.getVariable(v['target'])
-        target = self.getSymbolValue(target)
-        content = target['content']
-        try:
-            val = content.get(name)
-        except:
-            FatalError(self.program.compiler, f'"{name}" does not have any properties')
-            return None
+        targetName = v['target']
+        target = self.getVariable(targetName)
+        targetValue = self.getSymbolValue(target)
+        content = targetValue['content']
         value = {}
-        value['content'] = val
-        if isinstance(v, numbers.Number):
-            value['type'] = 'int'
-        else:
+        try:
+            val = content[name]
+            value['content'] = val
+            if isinstance(v, numbers.Number):
+                value['type'] = 'int'
+            else:
+                value['type'] = 'text'
+        except:
+            # RuntimeError(self.program, f'"{targetName}" does not have any properties')
+            value['content'] = ''
             value['type'] = 'text'
         return value
 

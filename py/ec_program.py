@@ -221,8 +221,10 @@ class Program:
 		raise FatalError(self.compiler, f'Variable "{name}" does not hold a value')
 
 	def compare(self, value1, value2):
+		# print(f'Compare {value1} with {value2}')
 		val1 = self.evaluate(value1)
 		val2 = self.evaluate(value2)
+		# print(f'Compare {val1} with {val2}')
 		v1 = val1['content']
 		v2 = val2['content']
 		if v1 != None and val1['type'] == 'int':

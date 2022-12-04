@@ -1,42 +1,57 @@
+# Pyctures.py
+
+import sys, json
 import tkinter as tk
 from PIL import Image, ImageTk
-import json
 
 elements = {}
 zlist = []
 images = {}
 onTick = None
 
+# Get the canvas
+def setCanvas(c):
+    global canvas
+    canvas = c
+
+# Get the canvas
+def getCanvas():
+    global canvas
+    return canvas
+
 def createScreen(values):
     global screen, canvas, screenLeft, screenTop, running
     running = True
     screen = tk.Tk()
+    screen.title('RBR Simulator')
     # screen.attributes('-fullscreen', True)
 
-    screen.overrideredirect(True)
-    screenLeft = values['left']['content'] if 'left' in values else 0
-    screenTop = values['top']['content'] if 'top' in values else 0
+    # screen.overrideredirect(True)
     width = values['width']['content'] if 'width' in values else 600
     height = values['height']['content'] if 'height' in values else 800
+    screenLeft = int((screen.winfo_screenwidth() - width) / 2)
+    screenTop = int((screen.winfo_screenheight() - height) / 2)
+    if 'left' in values:
+        screenLeft = values['left']['content']
+    if 'top' in values:
+        screenTop = values['top']['content'] 
 
-    # screenLeft = int(screen.winfo_screenwidth() - width)
-    # screenTop = int((screen.winfo_screenheight() / 2) - (height / 2))
     geometry = str(width) + 'x' + str(height) + '+' + str(screenLeft) + '+' + str(screenTop) 
     screen.geometry(geometry)
 
     # Handle a click in the screen
     def onClick(event):
         global screenLeft, screenTop, zlist
-        x = event.x_root
-        y = event.y_root
+        x = event.x
+        y = event.y
         # print('Clicked at : '+ str(x) +","+ str(y))
         for i in range(1, len(zlist) + 1):
             element = zlist[-i]
             id = list(element)[0]
             values = element[id]
-            x1 = screenLeft + values['left']
+            x1 = values['left']
             x2 = x1 + values['width']
-            y1 = screenTop + values['top']
+            y1 = values['top']
             y2 = y1 + values['height']
             if x >= x1 and x < x2 and y >= y1 and y < y2:
                 if id in elements:
@@ -45,13 +60,14 @@ def createScreen(values):
                         element['cb']()
                         break
                 else:
-                    RuntimeError(command['program'], f'Element \'{id}\' does not exist')
+                    RuntimeError(None, f'Element \'{id}\' does not exist')
 
     screen.bind('<Button-1>', onClick)
 
     fill = values['fill']['content'] if 'fill' in values else 'white'
     canvas = tk.Canvas(master=screen, width=width, height=height, bg=fill)
     canvas.place(x=0, y=0)
+    setCanvas(canvas)
 
 # Set up a click handler in an element
 def setOnClick(id, cb):
@@ -59,7 +75,7 @@ def setOnClick(id, cb):
     if id in elements:
         elements[id]['cb'] = cb
     else:
-        RuntimeError(command['program'], f'Element \'{id}\' does not exist')
+        RuntimeError(None, f'Element \'{id}\' does not exist')
     return
 
 # Set up the tick handler
@@ -76,11 +92,11 @@ def showScreen():
         screen.after(100, lambda: afterCB(screen))
     screen.after(1000, lambda: afterCB(screen))
     screen.mainloop()
-    return
+    sys.exit()
 
 # Render a graphic specification
 def render(spec, parent):
-    global canvas, elements
+    global elements
 
     def getValue(args, item):
         if item in args:
@@ -90,7 +106,7 @@ def render(spec, parent):
         return item
 
     def renderIntoRectangle(widgetType, values, offset, args):
-        global canvas, zlist
+        global zlist
         left = getValue(args, values['left']) if 'left' in values else 10
         top = getValue(args, values['top']) if 'top' in values else 10
         left = offset['dx'] + left
@@ -106,9 +122,9 @@ def render(spec, parent):
         else:
             outlineWidth = 0
         if widgetType == 'rect':
-            widgetId = canvas.create_rectangle(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
+            widgetId = getCanvas().create_rectangle(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
         elif widgetType == 'ellipse':
-            widgetId = canvas.create_oval(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
+            widgetId = getCanvas().create_oval(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
         else:
             return f'Unknown widget type \'{widgetType}\''
         if 'id' in values:
@@ -141,7 +157,6 @@ def render(spec, parent):
         return None
    
     def renderText(values, offset, args):
-        global canvas
         left = getValue(args, values['left']) if 'left' in values else 10
         top = getValue(args, values['top']) if 'top' in values else 10
         left = offset['dx'] + left
@@ -177,13 +192,15 @@ def render(spec, parent):
         if xoff < 3:
             xoff = 3
         if shape == 'ellipse':
-            containerId = canvas.create_oval(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
+            containerId = getCanvas().create_oval(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
         else:
-            containerId = canvas.create_rectangle(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
+            containerId = getCanvas().create_rectangle(left, top, right, bottom, fill=fill, outline=outline, width=outlineWidth)
+        textId = canvas.create_text(left + xoff, fontTop + adjust, fill=color, font=f'"{fontFace}" {fontSize} {fontWeight}', text=text, anchor=anchor)
         if 'id' in values:
             id = getValue(args, values['id'])
             widgetSpec = {
-                "id": containerId,
+                "id": textId,
+                "containerId": containerId,
                 "left": left,
                 "top": top,
                 "width": width,
@@ -191,11 +208,10 @@ def render(spec, parent):
             }
             elements[id] = widgetSpec
             zlist.append({id: widgetSpec})
-        canvas.create_text(left + xoff, fontTop + adjust, fill=color, font=f'"{fontFace}" {fontSize} {fontWeight}', text=text, anchor=anchor)
         return None
    
     def renderImage(values, offset, args):
-        global canvas, images
+        global images
         left = getValue(args, values['left']) if 'left' in values else 10
         top = getValue(args, values['top']) if 'top' in values else 10
         left = offset['dx'] + left
@@ -205,7 +221,7 @@ def render(spec, parent):
         right = left + width
         bottom = top + height
         src = getValue(args, values['src']) if 'src' in values else None
-        containerId = canvas.create_rectangle(left, top, right, bottom, width=0)
+        containerId = getCanvas().create_rectangle(left, top, right, bottom, width=0)
         if 'id' in values:
             id = values['id']
             widgetSpec = {
@@ -222,7 +238,7 @@ def render(spec, parent):
         img = (Image.open(src))
         resized_image= img.resize((width, height), Image.ANTIALIAS)
         new_image= ImageTk.PhotoImage(resized_image)
-        imageid = canvas.create_image(left, top, anchor='nw', image=new_image)
+        imageid = getCanvas().create_image(left, top, anchor='nw', image=new_image)
         images[containerId] = {'id': imageid, "image": new_image}
         return None
 
@@ -271,3 +287,13 @@ def getElement(name):
         return elements[name]
     else:
         RuntimeError(None, f'Element \'{name}\' does not exist')
+
+# Set the content of a text widget
+def setText(name, value):
+    getCanvas().itemconfig(getElement(name)['id'], text=value)
+
+# Set the background of a rectangle or ellipse widget
+def setBackground(name, value):
+    id = getElement(name)['id']
+    getCanvas().itemconfig(getElement(name)['id'], fill=value)
+    
