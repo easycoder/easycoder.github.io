@@ -6159,6 +6159,15 @@ const EasyCoder_Browser = {
 					domain: `browser`,
 					type
 				};
+			case `browser`:
+				if (compiler.nextTokenIs(`name`)) {
+					compiler.next();
+					return {
+						domain: `browser`,
+						type: `browserName`
+					};
+				}
+				break;
 			case `content`:
 			case `text`:
 				if (compiler.nextTokenIs(`of`)) {
@@ -6418,6 +6427,33 @@ const EasyCoder_Browser = {
 					// content: (typeof window.orientation !== `undefined`) || (navigator.userAgent.indexOf(`IEMobile`) !== -1)
 					content: (/Android|iPhone/i.test(navigator.userAgent))
 				};
+			case `browserName`:
+				let userAgent = navigator.userAgent;
+				let browserName;
+			
+				if (userAgent.match(/chrome|chromium|crios/i)) {
+					browserName = "Chrome";
+				} else if (userAgent.match(/firefox|fxios/i)) {
+					browserName = "Firefox";
+				} else if (userAgent.match(/safari/i)) {
+					browserName = "Safari";
+				} else if (userAgent.match(/opr\//i)) {
+					browserName = "Opera";
+				} else if (userAgent.match(/edg/i)) {
+					browserName = "Edge";
+				} else if (userAgent.match(/android/i)) {
+					browserName = "Android";
+				} else if (userAgent.match(/iphone/i)) {
+					browserName = "iPhone";
+				} else {
+					browserName = "Unknown";
+				}
+				return {
+					domain: `browser`,
+					type: `constant`,
+					numeric: false,
+					content: browserName
+				};  
 			case `portrait`:
 				return {
 					domain: `browser`,
