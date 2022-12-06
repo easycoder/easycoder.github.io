@@ -388,6 +388,9 @@ EasyCoder.domain.webson = EasyCoder_Webson;
                         // Handle attributes
                         const aName = key.substring(1);
                         const aValue = Webson.expand(parent, value, symbols);
+                        if (typeof(aValue) == `undefined`) {
+                            throw Error(`Element ${value} could not be found`);
+                        }
                         element.setAttribute(aName, aValue);
                         if (symbols[`#debug`] >= 2) {
                             console.log(
