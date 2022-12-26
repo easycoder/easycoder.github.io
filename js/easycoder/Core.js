@@ -1152,7 +1152,7 @@ const EasyCoder_Core = {
 			if (!target.isVHolder) {
 				program.variableDoesNotHoldAValueError(command.lino, target.name);
 			}
-			target.value = program.dataStack.pop();
+			target.value = program.getValue(program.dataStack.pop());
 			target.value[target.index] = {
 				type: target.value.type,
 				numeric: target.value.numeric,
