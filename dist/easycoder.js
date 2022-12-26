@@ -1154,9 +1154,9 @@ const EasyCoder_Core = {
 			}
 			target.value = program.dataStack.pop();
 			target.value[target.index] = {
-				type: value.type,
-				numeric: value.numeric,
-				content: value.content
+				type: target.value.type,
+				numeric: target.value.numeric,
+				content: target.value.content
 			};
 			if (target.imported) {
 				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
