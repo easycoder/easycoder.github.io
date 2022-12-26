@@ -1153,11 +1153,7 @@ const EasyCoder_Core = {
 				program.variableDoesNotHoldAValueError(command.lino, target.name);
 			}
 			const value = program.dataStack.pop();
-			target.value[target.index] = {
-				type: value.type,
-				numeric: value.numeric,
-				content: value.content
-			};
+			target.value[target.index] = value;
 			if (target.imported) {
 				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
 				exporterRecord.value[exporterRecord.index] = value;
@@ -1205,7 +1201,12 @@ const EasyCoder_Core = {
 
 		run: program => {
 			const command = program[program.pc];
-			program.dataStack.push(program.getValue(command.value));
+			const value = program.getValue(command.value);
+			program.dataStack.push({
+				type: value.type,
+				numeric: value.numeric,
+				content: value.content
+			});
 			return command.pc + 1;
 		}
 	},
