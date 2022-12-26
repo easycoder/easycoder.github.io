@@ -37,7 +37,7 @@ class Value:
 			return None
 
 		# Check for a numeric constant
-		if token.isnumeric():
+		if token.isnumeric() or (token[0] == '-' and token[1:].isnumeric):
 			val = eval(token)
 			if isinstance(val, int):
 				value['type'] = 'int'

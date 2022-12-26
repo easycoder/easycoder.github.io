@@ -69,6 +69,11 @@ def createScreen(values):
     canvas.place(x=0, y=0)
     setCanvas(canvas)
 
+# Close the screen
+def closeScreen():
+    global screen
+    screen.destroy()
+
 # Set up a click handler in an element
 def setOnClick(id, cb):
     global elements

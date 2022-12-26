@@ -3,6 +3,7 @@
 import sys
 from ec_program import Program
 from ec_core import Core
+from ec_graphics import Graphics
 from ec_p100 import P100
 
 class EasyCoder:
@@ -17,7 +18,7 @@ class EasyCoder:
 		source = f.read()
 		f.close()
 
-	Program(source, [Core, P100])
+	Program(source, [Core, Graphics, P100])
 
 if __name__ == '__main__':
     EasyCoder()

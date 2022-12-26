@@ -33,6 +33,16 @@ class Graphics(Handler):
         self.putSymbolValue(target, {'type': 'text', 'content': id})
         return self.nextPC()
 
+    def k_close(self, command):
+        if self.nextIs('screen'):
+            self.add(command)
+            return True
+        return False
+
+    def r_close(self, command):
+        closeScreen()
+        return self.nextPC()
+
     def k_create(self, command):
         if self.nextIs('screen'):
             while True:
@@ -159,7 +169,7 @@ class Graphics(Handler):
             name = record['name']
             type = record['keyword']
             command['type'] = type
-            if record['isValueHolder']:
+            if record['valueHolder']:
                 command['name'] = name
                 if self.peek() == 'in':
                     self.nextToken()
@@ -282,7 +292,7 @@ class Graphics(Handler):
                 value['type'] = 'module'
                 return value
 
-            if symbolRecord['isValueHolder'] == True or keyword == 'dictionary':
+            if symbolRecord['valueHolder'] == True or keyword == 'dictionary':
                 value['type'] = 'symbol'
                 return value
             return None
@@ -305,7 +315,7 @@ class Graphics(Handler):
 
     def v_symbol(self, symbolRecord):
         result = {}
-        if symbolRecord['isValueHolder']:
+        if symbolRecord['valueHolder']:
             symbolValue = self.getSymbolValue(symbolRecord)
             if symbolValue == None:
                 return None
