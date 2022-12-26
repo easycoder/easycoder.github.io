@@ -1152,7 +1152,7 @@ const EasyCoder_Core = {
 			if (!target.isVHolder) {
 				program.variableDoesNotHoldAValueError(command.lino, target.name);
 			}
-			const value = program.getValue(program.dataStack.pop());
+			const value = program.dataStack.pop();
 			target.value[target.index] = {
 				type: value.type,
 				numeric: value.numeric,
@@ -1205,7 +1205,7 @@ const EasyCoder_Core = {
 
 		run: program => {
 			const command = program[program.pc];
-			program.dataStack.push(command.value);
+			program.dataStack.push(program.getValue(command.value));
 			return command.pc + 1;
 		}
 	},
