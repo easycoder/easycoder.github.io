@@ -783,7 +783,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			if (program.verifySymbol(command.label)) {
-				program.stack.push(program.pc + 1);
+				program.programtack.push(program.pc + 1);
 				return program.symbols[command.label].pc;
 			}
 			program.runtimeError(command.lino, `Unknown symbol '${command.label}'`);
@@ -1129,6 +1129,43 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Pop: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const target = compiler.getToken();
+				compiler.next();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `pop`,
+					lino,
+					target
+				});
+			}
+			return true;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			const target = program.getSymbolRecord(command.target);
+			if (!target.isVHolder) {
+				program.variableDoesNotHoldAValueError(command.lino, target.name);
+			}
+			target.value = program.dataStack.pop();
+			target.value[target.index] = {
+				type: value.type,
+				numeric: value.numeric,
+				content: value.content
+			};
+			if (target.imported) {
+				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
+				exporterRecord.value[exporterRecord.index] = value;
+			}
+			return true;
+		}
+	},
+
 	Print: {
 
 		compile: compiler => {
@@ -1149,6 +1186,27 @@ const EasyCoder_Core = {
 			const value = program.getFormattedValue(command.value);
 			console.log(`-> ` + value);
 			return command.pc + 1;
+		}
+	},
+
+	Push: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			const value = compiler.getNextValue();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `push`,
+				lino,
+				value
+			});
+			return true;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			program.dataStack.push(command.value);
+			return true;
 		}
 	},
 
@@ -1298,7 +1356,7 @@ const EasyCoder_Core = {
 		// runtime
 
 		run: program => {
-			return program.stack.pop();
+			return program.programStack.pop();
 		}
 	},
 
@@ -2246,8 +2304,12 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Negate;
 		case `on`:
 			return EasyCoder_Core.On;
+		case `pop`:
+			return EasyCoder_Core.Pop;
 		case `print`:
 			return EasyCoder_Core.Print;
+		case `push`:
+			return EasyCoder_Core.Push;
 		case `put`:
 			return EasyCoder_Core.Put;
 		case `replace`:
@@ -8667,7 +8729,8 @@ const EasyCoder = {
 		program.unblocked = false;
 		program.encoding = `ec`;
 		program.popups = [];
-		program.stack = [];
+		program.programStack = [];
+		program.dataStack = [];
 		program.queue = [0];
 		program.module = module;
 		program.parent = parent;
@@ -8787,7 +8850,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `221206`;
+EasyCoder.version = `221226`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 

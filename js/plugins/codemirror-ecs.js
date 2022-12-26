@@ -1,3 +1,5 @@
+// This contains the code for color-highlighting .ecs scripts
+
 (function (mod) {
 	if (typeof exports == `object` && typeof module == `object`) // CommonJS
 		mod(require(`../../lib/codemirror`));
@@ -7,7 +9,6 @@
 		mod(CodeMirror);
 })(function (CodeMirror) {
 	"use strict";
-
 
 	CodeMirror.defineMode(`ecs`, function () {
 		return {
