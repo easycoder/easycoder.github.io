@@ -783,7 +783,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			if (program.verifySymbol(command.label)) {
-				program.programtack.push(program.pc + 1);
+				program.programStack.push(program.pc + 1);
 				return program.symbols[command.label].pc;
 			}
 			program.runtimeError(command.lino, `Unknown symbol '${command.label}'`);
