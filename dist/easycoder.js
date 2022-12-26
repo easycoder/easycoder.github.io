@@ -1152,15 +1152,15 @@ const EasyCoder_Core = {
 			if (!target.isVHolder) {
 				program.variableDoesNotHoldAValueError(command.lino, target.name);
 			}
-			target.value = program.getValue(program.dataStack.pop());
+			const value = program.getValue(program.dataStack.pop());
 			target.value[target.index] = {
-				type: target.value.type,
-				numeric: target.value.numeric,
-				content: target.value.content
+				type: value.type,
+				numeric: value.numeric,
+				content: value.content
 			};
 			if (target.imported) {
 				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
-				exporterRecord.value[exporterRecord.index] = target.value;
+				exporterRecord.value[exporterRecord.index] = value;
 			}
 			return command.pc + 1;
 		}
