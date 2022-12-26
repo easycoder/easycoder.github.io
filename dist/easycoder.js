@@ -1162,7 +1162,7 @@ const EasyCoder_Core = {
 				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
 				exporterRecord.value[exporterRecord.index] = target.value;
 			}
-			return true;
+			return command.pc + 1;
 		}
 	},
 
