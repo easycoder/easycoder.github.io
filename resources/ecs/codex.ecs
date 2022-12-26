@@ -952,7 +952,6 @@ DoRunStop:
     set Running
     wait 10 ticks
 
-dummy
     run Script with RunPanel as TestModule nowait then
     begin
         clear Running

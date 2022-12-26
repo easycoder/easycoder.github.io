@@ -1160,7 +1160,7 @@ const EasyCoder_Core = {
 			};
 			if (target.imported) {
 				const exporterRecord = EasyCoder.scripts[target.exporter].getSymbolRecord(target.exportedName);
-				exporterRecord.value[exporterRecord.index] = value;
+				exporterRecord.value[exporterRecord.index] = target.value;
 			}
 			return true;
 		}
@@ -1206,7 +1206,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			program.dataStack.push(command.value);
-			return true;
+			return command.pc + 1;
 		}
 	},
 
