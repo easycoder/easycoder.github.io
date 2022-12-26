@@ -1203,9 +1203,9 @@ const EasyCoder_Core = {
 			const command = program[program.pc];
 			const value = program.getValue(command.value);
 			program.dataStack.push({
-				type: value.type,
-				numeric: value.numeric,
-				content: value.content
+				type: command.value.type,
+				numeric: command.value.numeric,
+				content: value
 			});
 			return command.pc + 1;
 		}
