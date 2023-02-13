@@ -346,15 +346,18 @@ const EasyCoder_Core = {
 					name
 				});
 				return true;
-			} else if (compiler.tokenIs(`step`)) {
-				compiler.next();
-				compiler.addCommand({
-					domain: `core`,
-					keyword: `debug`,
-					lino,
-					item: `step`
-				});
-				return true;
+			} else {
+				const item = compiler.getToken();
+				if ([`step`, `stop`].includes(item)) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `core`,
+						keyword: `debug`,
+						lino,
+						item
+					});
+					return true;
+				}
 			}
 			return false;
 		},
@@ -375,6 +378,9 @@ const EasyCoder_Core = {
 				break;
 			case `step`:
 				program.debugStep = true;
+				break;
+			case `stop`:
+				program.debugStep = false;
 				break;
 			case `program`:
 				console.log(`Debug program: ${JSON.stringify(program, null, 2)}`);
