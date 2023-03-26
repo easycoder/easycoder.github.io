@@ -2476,6 +2476,9 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
+			if (compiler.tokenIs(`the`)) {
+				compiler.next();
+			}
 			if ([`now`, `timestamp`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
@@ -2562,9 +2565,6 @@ const EasyCoder_Core = {
 						value
 					};
 				}
-			}
-			if (compiler.tokenIs(`the`)) {
-				compiler.next();
 			}
 			const type = compiler.getToken();
 			switch (type) {
