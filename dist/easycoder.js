@@ -2905,13 +2905,12 @@ const EasyCoder_Core = {
 					content: ``
 				};
 			case `now`:
-				function isDST(d) {
-					let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
-					let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
-					return Math.max(jan, jul) !== d.getTimezoneOffset();    
-				}
-				let now = Math.floor(Date.now() / 1000)
-				if (isDST(now)) {
+                const d = Date();
+                const jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
+                const jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
+                const isDST = Math.max(jan, jul) !== d.getTimezoneOffset();  
+                let now = Math.floor(Date.now() / 1000)
+				if (isDST) {
 					now += 3600
 				}
 				return {
