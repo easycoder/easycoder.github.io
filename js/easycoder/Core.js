@@ -2413,6 +2413,10 @@ const EasyCoder_Core = {
 				}
 				return null;
 			}
+			
+			if (compiler.tokenIs(`the`)) {
+				compiler.next();
+			}
 
 			var token = compiler.getToken();
 			if (token === `true`) {
@@ -2475,9 +2479,6 @@ const EasyCoder_Core = {
 					angle_t,
 					radius_t
 				};
-			}
-			if (compiler.tokenIs(`the`)) {
-				compiler.next();
 			}
 			if ([`now`, `timestamp`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
