@@ -2476,7 +2476,7 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
-			if ([`now`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
+			if ([`now`, `timestamp`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
 					domain: `core`,
@@ -2917,6 +2917,12 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: true,
 					content: now
+				};
+			case `timestamp`:
+				return {
+					type: `constant`,
+					numeric: true,
+					content: Math.floor(Date.now() / 1000)
 				};
 			case `millisecond`:
 				return {
