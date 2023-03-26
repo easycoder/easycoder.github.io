@@ -2905,10 +2905,19 @@ const EasyCoder_Core = {
 					content: ``
 				};
 			case `now`:
+				function isDST(d) {
+					let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
+					let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
+					return Math.max(jan, jul) !== d.getTimezoneOffset();    
+				}
+				let now = Math.floor(Date.now() / 1000)
+				if (isDST(now)) {
+					now += 3600
+				}
 				return {
 					type: `constant`,
 					numeric: true,
-					content: Math.floor(Date.now() / 1000)
+					content: now
 				};
 			case `millisecond`:
 				return {
