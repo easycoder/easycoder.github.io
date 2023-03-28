@@ -230,7 +230,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
             throw Error(`build: element is undefined (is the #element directive missing?`);
         }
         if (typeof items === `undefined`) {
-            throw Error(`build: item is undefined`);
+            throw Error(`build: ${name} has no properties`);
         }
         // Deep copy the symbol table
         const symbols = JSON.parse(JSON.stringify(parentSymbols));
