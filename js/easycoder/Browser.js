@@ -3132,9 +3132,6 @@ const EasyCoder_Browser = {
 					BlackBerry: function() {
 						return navigator.userAgent.match(/BlackBerry/i);
 					},
-					Chrome: function() {
-						return navigator.userAgent.match(/chrome|chromium|crios/i);
-					},
 					iOS: function() {
 						return navigator.userAgent.match(/iPhone|iPad|iPod/i);
 					},
@@ -3145,7 +3142,7 @@ const EasyCoder_Browser = {
 						return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
 					},
 					any: function() {
-						return (isMobile.Android() || isMobile.BlackBerry() || isMobile.Chrome()
+						return (isMobile.Android() || isMobile.BlackBerry()
 						|| isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
 					}
 				};
