@@ -3125,11 +3125,36 @@ const EasyCoder_Browser = {
 					content: typeof symbolRecord.element[symbolRecord.index] !== `undefined`
 				};
 			case `mobile`:
+				const isMobile = {
+					Android: function() {
+						return navigator.userAgent.match(/Android/i);
+					},
+					BlackBerry: function() {
+						return navigator.userAgent.match(/BlackBerry/i);
+					},
+					Chrome: function() {
+						return navigator.userAgent.match(/chrome|chromium|crios/i);
+					},
+					iOS: function() {
+						return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+					},
+					Opera: function() {
+						return navigator.userAgent.match(/Opera Mini/i);
+					},
+					Windows: function() {
+						return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+					},
+					any: function() {
+						return (isMobile.Android() || isMobile.BlackBerry() || isMobile.Chrome()
+						|| isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+					}
+				};
 				return {
 					domain: `browser`,
 					type: `boolean`,
+					content: isMobile.any()
 					// content: (typeof window.orientation !== `undefined`) || (navigator.userAgent.indexOf(`IEMobile`) !== -1)
-					content: (/Android|iPhone/i.test(navigator.userAgent))
+					//content: (/Android|iPhone/i.test(navigator.userAgent))
 				};
 			case `browserName`:
 				let userAgent = navigator.userAgent;
