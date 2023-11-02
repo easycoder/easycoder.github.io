@@ -45,9 +45,14 @@ const EasyCoder_Run = {
 				const domain = program[program.pc].domain;
 				if (program.debugStep) {
 					const lino = program[program.pc].lino;
+					let line = '';
+					try {
+						line = program.source.scriptLines[lino].line;
+					}
+					catch (e) {
+					}
 					console.log(`${program.script}: Line ${lino}: `
-					+ `${domain}:${program[program.pc].keyword} -`
-					+` ${program.source.scriptLines[lino].line}`);
+					+ `${domain}:${program[program.pc].keyword} - ${line}`);
 				}
 				const handler = program.domain[domain];
 				if (!handler) {
