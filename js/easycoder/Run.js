@@ -44,8 +44,10 @@ const EasyCoder_Run = {
 				program.watchdog++;
 				const domain = program[program.pc].domain;
 				if (program.debugStep) {
-					console.log(`${program.script}: Line ${program[program.pc].lino}: `
-					+ `${domain}:${program[program.pc].keyword} - ${program.source.scriptLines[program.pc].line}`);
+					const lino = program[program.pc].lino;
+					console.log(`${program.script}: Line ${lino}: `
+					+ `${domain}:${program[program.pc].keyword} -`
+					+` ${program.source.scriptLines[lino].line}`);
 				}
 				const handler = program.domain[domain];
 				if (!handler) {
