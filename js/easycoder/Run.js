@@ -47,7 +47,7 @@ const EasyCoder_Run = {
 					const lino = program[program.pc].lino;
 					let line = '';
 					try {
-						line = program.source.scriptLines[lino].line;
+						line = program.source.scriptLines[lino].line + 1;
 					}
 					catch (e) {
 					}
