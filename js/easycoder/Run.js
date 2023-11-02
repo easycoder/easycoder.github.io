@@ -44,7 +44,7 @@ const EasyCoder_Run = {
 				program.watchdog++;
 				const domain = program[program.pc].domain;
 				if (program.debugStep) {
-					console.log(`${program.script}: Line ${program[program.pc].lino}: PC: ${program.pc} ${domain}:${program[program.pc].keyword}`);
+					console.log(`${program.script}: Line ${program[program.pc].lino}: ${domain}:${program[program.pc].keyword}`);
 				}
 				const handler = program.domain[domain];
 				if (!handler) {
