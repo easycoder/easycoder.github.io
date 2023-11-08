@@ -3052,7 +3052,7 @@ const EasyCoder_Core = {
 							content = JSON.parse(propertyContent);
 							content = content[property];
 						} catch (err) {
-							program.runtimeError(program[program.pc].lino, `Can't parse '${propertyContent}': ${err.message}`);
+							program.runtimeError(program[program.pc].lino, `${err.message}: ${propertyContent}`);
 						}
 						if (content == undefined) {
 							content = ``;
