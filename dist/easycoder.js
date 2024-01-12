@@ -3823,6 +3823,7 @@ const EasyCoder_Browser = {
 					`table`,
 					`tr`,
 					`td`,
+					`th`,
 					`text`,
 					`textarea`,
 					`ul`
