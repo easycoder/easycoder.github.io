@@ -5836,6 +5836,18 @@ const EasyCoder_Browser = {
 		}
 	},
 
+	TH: {
+
+		compile: (compiler) => {
+			compiler.compileVariable(`browser`, `th`, false, `dom`);
+			return true;
+		},
+
+		run: (program) => {
+			return program[program.pc].pc + 1;
+		}
+	},
+
 	TEXTAREA: {
 
 		compile: (compiler) => {
@@ -6166,6 +6178,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.TR;
 		case `td`:
 			return EasyCoder_Browser.TD;
+		case `th`:
+			return EasyCoder_Browser.TH;
 		case `textarea`:
 			return EasyCoder_Browser.TEXTAREA;
 		case `trace`:
@@ -8902,12 +8916,12 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `230628`;
+EasyCoder.version = `240112`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
 function EasyCoder_Startup() {
-	console.log(`${Date.now() - EasyCoder.timestamp} ms: Page loaded; reset timer & start EasyCoder`);
+	console.log(`${Date.now() - EasyCoder.timestamp} ms: Start EasyCoder`);
 	EasyCoder.timestamp = Date.now();
 	EasyCoder.scripts = {};
 	window.EasyCoder = EasyCoder;

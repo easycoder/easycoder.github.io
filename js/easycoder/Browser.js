@@ -2456,6 +2456,18 @@ const EasyCoder_Browser = {
 		}
 	},
 
+	TH: {
+
+		compile: (compiler) => {
+			compiler.compileVariable(`browser`, `th`, false, `dom`);
+			return true;
+		},
+
+		run: (program) => {
+			return program[program.pc].pc + 1;
+		}
+	},
+
 	TEXTAREA: {
 
 		compile: (compiler) => {
@@ -2786,6 +2798,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.TR;
 		case `td`:
 			return EasyCoder_Browser.TD;
+		case `th`:
+			return EasyCoder_Browser.TH;
 		case `textarea`:
 			return EasyCoder_Browser.TEXTAREA;
 		case `trace`:
