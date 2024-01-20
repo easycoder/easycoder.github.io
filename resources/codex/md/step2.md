@@ -28,7 +28,7 @@ Of course, arithmetic is more than just addition. There's also subtraction, mult
 ~pre:add X to Y          add X to Y giving Z
 take X from Y       take X from Y giving Z
 multiply Y by X     multiply Y by X giving Z
-divide Y by X       divide Y by Z giving Z~
+divide Y by X       divide Y by X giving Z~
 Note that in the left-hand column, multiplication and division work the opposite way round to addition and subtraction, with the result of the sum (Y) being the first item, not the second. Unlike virtually all other computer languages, ~ec~ follows the way it's done in English, to make it more natural for users.
 
 Although I've used just X and Y, you can also do arithmetic with numbers:
