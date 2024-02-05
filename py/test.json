@@ -1,0 +1,183 @@
+[
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 4,
+    "name": "V",
+    "type": "symbol",
+    "used": true,
+    "value": [
+      null
+    ],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 5,
+    "name": "Stack",
+    "type": "symbol",
+    "used": true,
+    "value": [
+      null
+    ],
+    "valueHolder": true
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 7,
+    "target": "Stack",
+    "type": null,
+    "value": {
+      "content": {
+        "content": "[]",
+        "type": "text"
+      },
+      "domain": "core",
+      "type": "json"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 8,
+    "target": "V",
+    "type": null,
+    "value": {
+      "content": {
+        "content": "{}",
+        "type": "text"
+      },
+      "domain": "core",
+      "type": "json"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 9,
+    "target": "V",
+    "type": null,
+    "value": {
+      "content": "Hello, world!",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "push",
+    "lino": 10,
+    "to": "Stack",
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "V",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 11,
+    "type": null,
+    "value": {
+      "numeric": false,
+      "parts": [
+        {
+          "content": "Pushed ",
+          "type": "text"
+        },
+        {
+          "domain": "core",
+          "name": "V",
+          "type": "symbol"
+        }
+      ],
+      "type": "cat"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 12,
+    "target": "V",
+    "type": null,
+    "value": {
+      "content": "Goodbye",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 13,
+    "type": null,
+    "value": {
+      "numeric": false,
+      "parts": [
+        {
+          "content": "V: ",
+          "type": "text"
+        },
+        {
+          "domain": "core",
+          "name": "V",
+          "type": "symbol"
+        }
+      ],
+      "type": "cat"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "from": "Stack",
+    "keyword": "pop",
+    "lino": 14,
+    "target": "V",
+    "type": null
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 15,
+    "type": null,
+    "value": {
+      "numeric": false,
+      "parts": [
+        {
+          "content": "Popped ",
+          "type": "text"
+        },
+        {
+          "domain": "core",
+          "name": "V",
+          "type": "symbol"
+        }
+      ],
+      "type": "cat"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "exit",
+    "lino": 16,
+    "type": null
+  }
+]

@@ -1,0 +1,185 @@
+Lines = 13
+Lines = 42
+PC = 0, code = 0:1,#4,2:3,4:5,6:7,8:9,10:11,12:13,14:15,16:[,18,],19:9
+Lines = 13
+domain:core
+4
+keyword:variable
+type:symbol
+debug:False
+valueHolder:True
+name:V
+elements:1
+index:0
+value:[
+None
+]
+used:True
+PC = 1, code = 0:1,#5,2:3,4:5,6:7,8:9,10:20,12:13,14:15,16:[,18,],19:9
+Lines = 13
+domain:core
+5
+keyword:variable
+type:symbol
+debug:False
+valueHolder:True
+name:Stack
+elements:1
+index:0
+value:[
+None
+]
+used:True
+PC = 2, code = 0:1,#7,2:21,4:18,6:9,16:{,0:1,4:22,23:{,4:24,23:25,},},26:20
+Lines = 14
+domain:core
+7
+keyword:put
+type:None
+debug:True
+value:{
+domain:core
+type:json
+content:{
+type:text
+content:[]
+}
+}
+target:Stack
+PC = 3, code = 0:1,#8,2:21,4:18,6:9,16:{,0:1,4:22,23:{,4:24,23:27,},},26:11
+Lines = 14
+domain:core
+8
+keyword:put
+type:None
+debug:True
+value:{
+domain:core
+type:json
+content:{
+type:text
+content:{}
+}
+}
+target:V
+PC = 4, code = 0:1,#9,2:21,4:18,6:9,16:{,4:24,23:28,},26:11
+Lines = 10
+domain:core
+9
+keyword:put
+type:None
+debug:True
+value:{
+type:text
+content:Hello, world!
+}
+target:V
+PC = 5, code = 0:1,#10,2:29,4:18,6:9,16:{,0:1,10:11,4:5,},30:20
+Lines = 11
+domain:core
+10
+keyword:push
+type:None
+debug:True
+value:{
+domain:core
+name:V
+type:symbol
+}
+to:Stack
+PC = 6, code = 0:1,#11,2:31,4:18,6:9,16:{,4:32,33:7,34:[,17:{,4:24,23:35,},17:{,0:1,10:11,4:5,},],}
+Lines = 20
+domain:core
+11
+keyword:print
+type:None
+debug:True
+value:{
+type:cat
+numeric:False
+parts:[
+None:{
+type:text
+content:Pushed 
+}
+None:{
+domain:core
+name:V
+type:symbol
+}
+]
+}
+PC = 7, code = 0:1,#12,2:21,4:18,6:9,16:{,4:24,23:36,},26:11
+Lines = 10
+domain:core
+12
+keyword:put
+type:None
+debug:True
+value:{
+type:text
+content:Goodbye
+}
+target:V
+PC = 8, code = 0:1,#13,2:31,4:18,6:9,16:{,4:32,33:7,34:[,17:{,4:24,23:37,},17:{,0:1,10:11,4:5,},],}
+Lines = 20
+domain:core
+13
+keyword:print
+type:None
+debug:True
+value:{
+type:cat
+numeric:False
+parts:[
+None:{
+type:text
+content:V: 
+}
+None:{
+domain:core
+name:V
+type:symbol
+}
+]
+}
+PC = 9, code = 0:1,#14,2:38,4:18,6:9,26:11,39:20
+Lines = 7
+domain:core
+14
+keyword:pop
+type:None
+debug:True
+target:V
+from:Stack
+PC = 10, code = 0:1,#15,2:31,4:18,6:9,16:{,4:32,33:7,34:[,17:{,4:24,23:40,},17:{,0:1,10:11,4:5,},],}
+Lines = 20
+domain:core
+15
+keyword:print
+type:None
+debug:True
+value:{
+type:cat
+numeric:False
+parts:[
+None:{
+type:text
+content:Popped 
+}
+None:{
+domain:core
+name:V
+type:symbol
+}
+]
+}
+PC = 11, code = 0:1,#16,2:41,4:18,6:9
+Lines = 5
+domain:core
+16
+keyword:exit
+type:None
+debug:True
+PC = 12, code = 
+Lines = 0

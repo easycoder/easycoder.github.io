@@ -1,9 +1,0 @@
-# Network is managed by Network manager
-auto lo
-iface lo inet loopback
-auto !LAN!
-iface !LAN! inet static
-address !STATIC_IP!
-netmask 255.255.255.0
-gateway !GATEWAY!
-dns-nameservers 8.8.8.8

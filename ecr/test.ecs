@@ -1,0 +1,17 @@
+!   Test script
+
+    script Test
+
+    variable V
+    variable Stack
+
+    put json `[]` into Stack
+    put json `{}` into V
+    put `Hello, world!` into V
+    push V to Stack
+    print `Pushed ` cat V
+    put `Goodbye` into V
+    print `V: ` cat V
+    pop V from Stack
+    print `Popped ` cat V
+    exit
