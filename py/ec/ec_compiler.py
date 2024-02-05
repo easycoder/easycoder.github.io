@@ -116,7 +116,7 @@ class Compiler:
 	def compileLabel(self, command):
 		return self.compileSymbol(command, self.getToken(), False)
 
-	def compileVariable(self, command, valueHolder=False):
+	def compileVariable(self, command, valueHolder = False):
 		return self.compileSymbol(command, self.nextToken(), valueHolder)
 
 	def compileSymbol(self, command, name, valueHolder):
