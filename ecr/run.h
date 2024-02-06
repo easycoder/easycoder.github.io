@@ -2,6 +2,7 @@
 #define RUN_H
 
 #include "ecr.h"
+#include "domain/core/core-keywords.h"
 
 char* command = (char*)malloc(1);
 
@@ -16,6 +17,7 @@ int runOneCommand(char* cmd, StringArray* keys){
 
 int run(StringArray* codes, StringArray* keys) {
     printf("Run the program\n");
+    CoreKeywords core;
     char* command = codes->array[0];
     runOneCommand(command, keys);
     return 0;
