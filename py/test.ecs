@@ -1,4 +1,7 @@
 !   Test script
 
-    print `Hello, world!`
+    variable FileName
+
+    put `test.ecs` into FileName
+    print the modification time of FileName
     exit

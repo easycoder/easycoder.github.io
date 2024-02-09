@@ -157,6 +157,22 @@ class Core(Handler):
         fileRecord['file'].close()
         return self.nextPC()
 
+    #Create directory
+    def k_create(self, command):
+        if self.nextIs('directory'):
+            command['item'] = 'directory'
+            command['path'] = self.nextValue()
+            self.add(command)
+            return True
+        return False
+
+    def r_create(self, command):
+        if command['item'] == 'directory':
+            path = self.getRuntimeValue(command['path'])
+            if not os.path.exists(path):
+                os.makedirs(path)
+        return self.nextPC()
+
     # Debug the script
     def k_debug(self, command):
         token = self.peek()
@@ -216,15 +232,35 @@ class Core(Handler):
 
     # Delete a file
     def k_delete(self, command):
-        command['filename'] = self.nextValue()
-        self.add(command)
-        return True
+        if self.nextToken() == 'property':
+            command['mode'] = 'property'
+            command['property'] = self.nextValue()
+            if self.nextToken() == 'of':
+                if self.nextIsSymbol():
+                    command['target'] = self.getToken()
+                    self.add(command)
+                    return True
+        else:
+            command['mode'] = 'file'
+            command['filename'] = self.nextValue()
+            self.add(command)
+            return True
+        return False
 
     def r_delete(self, command):
-        filename = self.getRuntimeValue(command['filename'])
-        if os.path.isfile(filename):
-            os.remove(filename)
-        return self.nextPC()
+        mode = command['mode']
+        if mode == 'property':
+            property = self.getRuntimeValue(command['property'])
+            target = self.getVariable(command['target'])
+            value = self.getRuntimeValue(target)
+            value.pop(property)
+            return self.nextPC()
+        else:    
+            filename = self.getRuntimeValue(command['filename'])
+            if os.path.isfile(filename):
+                os.remove(filename)
+            return self.nextPC()
+        return None
 
     # Arithmetic division
     def k_divide(self, command):
@@ -622,7 +658,7 @@ class Core(Handler):
                     self.nextToken()
                     token = self.nextToken()
                     if token == 'appending':
-                        mode = 'a+'
+                        mode = 'a'
                     elif token == 'reading':
                         mode = 'r'
                     elif token == 'writing':
@@ -642,7 +678,7 @@ class Core(Handler):
     def r_open(self, command):
         symbolRecord = self.getVariable(command['target'])
         path = self.getRuntimeValue(command['path'])
-        if command['mode'] == 'r' and os.path.exists(path) or command['mode'] != 'r':
+        if command['mode'] != 'r' or (command['mode'] == 'r' and os.path.exists(path)):
             symbolRecord['file'] = open(path, command['mode'])
             return self.nextPC()
         RuntimeError(self.program, f"File {path} does not exist")
@@ -1156,7 +1192,22 @@ class Core(Handler):
         val['type'] = 'boolean'
         val['content'] = not value['content']
         self.putSymbolValue(target, val)
-        self.add(command)
+        return self.nextPC()
+
+    # Truncate a file (remove all its content)
+    def k_truncate(self, command):
+        if self.nextIsSymbol():
+            file = self.getSymbolRecord()
+            if file['keyword'] == 'file':
+                command['file'] = file['name']
+                self.add(command)
+                return True
+        return False
+
+    def r_truncate(self, command):
+        fileRecord = self.getVariable(command['file'])
+        file = fileRecord['file']
+        file.truncate(0)
         return self.nextPC()
 
     # Declare a general-purpose variable
@@ -1256,8 +1307,8 @@ class Core(Handler):
         value = self.getRuntimeValue(command['value'])
         fileRecord = self.getVariable(command['file'])
         file = fileRecord['file']
-        if file.mode in ['w', 'w+', 'a+']:
-            file.write(value)
+        if file.mode in ['w', 'w+', 'a', 'a+']:
+            file.write(f'{value}')
             if command['line']:
                 file.write('\n')
         return self.nextPC()
@@ -1499,6 +1550,19 @@ class Core(Handler):
         if token == 'type':
             if self.nextIs('of'):
                 value['value'] = self.nextValue()
+                return value
+            return None
+        
+        if token == 'modification':
+            if self.nextIs('time'):
+                if self.nextIs('of'):
+                    value['fileName'] = self.nextValue()
+                    return value
+            return None
+        
+        if token == 'size':
+            if self.nextIs('of'):
+                value['fileName'] = self.nextValue()
                 return value
             return None
 
@@ -1902,6 +1966,21 @@ class Core(Handler):
             value['content'] = 'object'
         return value
 
+    def v_modification(self, v):
+        fileName = self.getRuntimeValue(v['fileName'])
+        ts = int(os.stat(fileName).st_mtime)
+        value = {}
+        value['type'] = 'int'
+        value['content'] = ts
+        return value
+
+    def v_size(self, v):
+        fileName = self.getRuntimeValue(v['fileName'])
+        size = os.path.getsize(fileName)
+        value = {}
+        value['type'] = 'int'
+        value['content'] = size
+        return value
 
     #############################################################################
     # Compile a condition

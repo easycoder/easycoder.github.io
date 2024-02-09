@@ -9,8 +9,8 @@
 
 // A struct to hold an array of string buffers and the array size
 struct StringArray {
-  char** array;
   int size;
+  char** array;
 };
 
 // Replace one character with another in situ
@@ -34,7 +34,7 @@ int strpos(char* haystack, char needle) {
   return -1;
 }
 
-// Convert a string to an array of lines, using a specified delimiter.
+// Convert a string to an array of lines, using a specified delimiter. Stop at an empty line.
 StringArray* getLines(char* string, char delimiter) {
   int length = strlen(string);
   int nlines = 0;
@@ -47,6 +47,9 @@ StringArray* getLines(char* string, char delimiter) {
     if (c == delimiter || c == '\0') {
       string[pos] = '\0';
       start = pos + 1;
+      if (string[start] == '\0') {
+        break;
+      }
       nlines++;
     }
     pos++;
@@ -72,36 +75,6 @@ StringArray* getLines(char* string, char delimiter) {
   mylist->size = nlines;
 
   return mylist;
-}
-
-// Read a file and convert it into an array of strings
-StringArray* readFile(char* filename) {
-  FILE *f = fopen(filename, "rb");
-  if (f == NULL) {
-    printf("Could not read file %s\n", filename);
-    return NULL;
-  };
-  
-  fseek(f, 0, SEEK_END);
-  long fsize = ftell(f);
-  rewind(f);
-
-  char* string = (char*)malloc(fsize + 1);
-  if (string != NULL) {
-    fread(string, fsize, 1, f);
-    fclose(f);
-    string[fsize] = 0;
-  } else {
-    printf("Could not allocate memory for %s\n", filename);
-    return NULL;
-  }
-
-  // Convert the file to an array of lines
-  StringArray* lines = getLines(string, NEWLINE);
-
-  // Dispose of the original file
-  free(string);
-  return lines;
 }
 
 

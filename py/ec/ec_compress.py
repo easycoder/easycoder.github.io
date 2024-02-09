@@ -6,19 +6,19 @@ class Compress:
         self.sequence = 0
         self.shortCodes = {}
 
-        self.codeFile = open(f'{scriptName}.code', 'w')
-        self.keyFile = open(f'{scriptName}.keys', 'w')
+        self.outFile = open(f'{scriptName}.eco', 'w')
+        self.keys = ''
 
         self.processCompiled(compiled)
-        
-        self.codeFile.close()
-        self.keyFile.close()
+
+        # print(self.keys)
+        self.outFile.write(f'-\n{self.keys}--\n')
+        self.outFile.close()
 
     # Process the compiled script
     def processCompiled(self, compiled):
         for command in compiled:
             self.processCommand(command)
-        self.writeToCodeFile('\n')
 
     # Process a single command
     def processCommand(self, command):
@@ -29,7 +29,7 @@ class Compress:
             if key != 'keyword':
                 value = command[key]
                 self.processValue(key, value)
-        self.writeToCodeFile('\n')
+        self.writeToOutFile('\n')
     
     # Process a list. This may be called recursively
     def processList(self, list):
@@ -44,25 +44,25 @@ class Compress:
     # Process a value
     def processValue(self, key, value):
         if type(value) is list:
-            self.writeToCodeFile(f',{self.getShortCode(key)}:[')
+            self.writeToOutFile(f',{self.getShortCode(key)}:[')
             self.processList(value)
-            self.writeToCodeFile(',]')
+            self.writeToOutFile(',]')
         elif type(value) is dict:
-            self.writeToCodeFile(f',{self.getShortCode(key)}:{{')
+            self.writeToOutFile(f',{self.getShortCode(key)}:{{')
             self.processDictionary(value)
-            self.writeToCodeFile(',}')
+            self.writeToOutFile(',}')
         else:
             if key == 'lino':
-                self.writeToCodeFile(f',#{value}')
+                self.writeToOutFile(f',#{value}')
             else:
                 keyShortCode = self.getShortCode(key)
                 valueShortCode = self.getShortCode(f'{value}')
                 if not self.first:
-                    self.writeToCodeFile(',')
+                    self.writeToOutFile(',')
                 if key == None:
-                    self.writeToCodeFile(f'{valueShortCode}')
+                    self.writeToOutFile(f'{valueShortCode}')
                 else:
-                    self.writeToCodeFile(f'{keyShortCode}:{valueShortCode}')
+                    self.writeToOutFile(f'{keyShortCode}:{valueShortCode}')
                 self.first = False
     
     # Get a shortcode or add a new one if it doesn't exist
@@ -73,10 +73,10 @@ class Compress:
             s = self.sequence
             self.shortCodes[key] = s
             self.sequence = s + 1
-            self.keyFile.write(f'{key}\n')
+            self.keys = f'{self.keys}{key}\n'
             return s
     
     # Write to the code file
-    def writeToCodeFile(self, value):
-        self.codeFile.write(value)
+    def writeToOutFile(self, value):
+        self.outFile.write(value)
         # print(value)
