@@ -1,0 +1,13 @@
+2,0,1,2:3,4:{,2:5,6:7,}
+3,0,8,2:3
+
+core
+print
+type
+None
+value
+text
+content
+Hello: world!
+exit
+
