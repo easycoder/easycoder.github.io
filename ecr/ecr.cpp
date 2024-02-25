@@ -1,4 +1,4 @@
-#define DEBUG 1    // set to 1 to debug, 0 for no debugging
+#define DEBUG 0    // set to 1 to debug, 0 for no debugging
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,28 +52,28 @@ int main(int argc, char* argv[])
     // Codes end with an empty line
     // Keys end with another empty line
     int n = 0;
-    char* start = script;
+    int m;
     while (1) {
-        int m = n;
-        for (; start[n] != '\n'; n++) {}
+        m = n;
+        for (; script[n] != '\n'; n++) {}
         if (n == m) {
           break;
         }
         n++;
     }
-    start[n++] = '\0';
-    Text* codes = new Text(start);
-    start = &script[n];
+    script[n++] = '\0';
+    Text* codes = new Text(script,"codes");
+    char* keyStart = &script[n];
     while (1) {
-        int m = n;
-        for (; start[n] != '\n'; n++) {}
+        m = n;
+        for (; script[n] != '\n'; n++) {}
         if (n == m) {
           break;
         }
         n++;
     }
-    start[n] = '\0';
-    Text* keys = new Text(start);
+    script[n] = '\0';
+    Text* keys = new Text(keyStart, "keys");
     delete script;
 
     // print("codes: %s", codes->getText());

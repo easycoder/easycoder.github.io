@@ -1,13 +1,16 @@
 class Text {
     private:
+
+        const char* name;
         const char* text;
         int length = 0;
 
     public:
 
         ///////////////////////////////////////////////////////////////////////
-        // 1-argument constructor. This creates a copy of the calling data
-        Text(const char* t) {
+        // Initialize this Text
+        void init(const char* t, const char* name) {
+            this->name = name;
             length = strlen(t);
             char* temp = new char[length + 1];
             strcpy(temp, (char*)t);
@@ -16,12 +19,29 @@ class Text {
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // 2-argument constructor. This names itself
+        Text(const char* t, const char* name) {
+            init(t, name);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // 1-argument constructor. This creates a copy of the calling data
+        Text(const char* t) {
+            init(t, "<noname>");
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // No-argument constructor
         Text() {}
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor
-        ~Text() {}
+        ~Text() {
+            if (strcmp(name, "<noname>") != 0) {
+                print("Text: Delete %s\n", name);
+            }
+            delete text;
+        }
     
         ///////////////////////////////////////////////////////////////////////
         // Get the content of this text
@@ -82,48 +102,48 @@ class Text {
                 }
                 temp[n] = '\0';
             }
-            return new Text((const char*)temp);
+            Text* tt = new Text((const char*)temp, "replaceChar");
+            delete temp;
+            return tt;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the leftmost N characters as a new Text
         Text* left(int n) {
-            Text* t = new Text();
-            t->length = n;
-            char* temp = new char[n + 1];
-            strncpy(temp, text, n);
-            temp[n] = '\0';
-            t->text = temp;
-            return t;
+            char* t = new char[n + 1];
+            strncpy(t, text, n);
+            t[n] = '\0';
+            Text* tt = new Text(t, "left");
+            delete t;
+            return tt;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the rightmost N characters as a new Text
         Text* right(int n) {
-            Text* t = new Text();
-            t->length = n;
-            char* temp = new char[n + 1];
-            strncpy(temp, text + length - n, n);
-            temp[n] = '\0';
-            t->text = temp;
-            return t;
+            char* t = new char[n + 1];
+            strncpy(t, text + length - n, n);
+            t[n] = '\0';
+            Text* tt = new Text(t, "right");
+            delete t;
+            return tt;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get from character N to the end as a new Text
         Text* from(int n) {
-            Text* t = new Text();
             if (n > length) {
                 n = length;
             }
-            t->length = length - n;
-            char* temp = new char[t->length + 1];
-            if (t->length > 0) {
-                strncpy(temp, text + n, t->length);
+            int len = length - n;
+            char* t = new char[len + 1];
+            if (len > 0) {
+                strncpy(t, text + n, len);
             }
-            temp[t->length] = '\0';
-            t->text = temp;
-            return t;
+            t[len] = '\0';
+            Text* tt = new Text(t, "from");
+            delete t;
+            return tt;
         }
 };
 
@@ -136,6 +156,7 @@ class Text {
 class TextArray {
 
     private:
+        const char* name;
         int size = 0;                  // the number of items
         Text** array = nullptr;        // the array of items
         LinkedList* list;              // A list to hold new data items as they are added
@@ -235,7 +256,7 @@ class TextArray {
                     memcpy(cc, content, n);
                     cc[n] = '\0';
                     if (strlen(cc) > 0) {
-                        add(new Text(cc));
+                        add(new Text(cc, cc));
                     }
                     delete cc;
                     if (content[n] == '\0') {
@@ -268,21 +289,35 @@ class TextArray {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // TextArray constructor
-        // This takes a single string and breaks it into elements on a specified separator,
-        // typically '\n' or ','.
-        // Note: content is used for the lifetime of the class instance
-        TextArray(const char* data, char separator) {
+        // Initializer
+        void init(const char* data, char separator, const char* name) {
+            this->name = name;
             size = 0;
-            list = new LinkedList();
+            list = new LinkedList(name);
             parse(new Text(data), separator);
             flatten();
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // TextArray constructor
+        // This takes a single string and breaks it into elements on a specified separator,
+        // typically '\n' or ','.
+        // Note: content is used for the lifetime of the class instance
+        TextArray(const char* data, char separator) {
+            init(data, separator, "<noname>");
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Named constructor
+        TextArray(const char* name) {
+            this->name = name;
+            list = new LinkedList(name);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Default constructor
         TextArray() {
-            list = new LinkedList();
+            list = new LinkedList("<noname>");
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -290,6 +325,6 @@ class TextArray {
         ~TextArray() {
             delete array;
             delete list;
-            print("TextArray: Destructor executed\n");
+            print("TextArray: Delete %s\n", name);
          }
 };

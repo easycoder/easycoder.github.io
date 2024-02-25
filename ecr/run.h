@@ -6,8 +6,6 @@ class Run {
         TextArray* codeArray;
         TextArray* keyArray;
         TextArray** commands;
-        KeywordArray* keywordArray;
-        ValueArray* valueArray;
         CoreKeywords* coreKeywords;
         CoreValues* coreValues;
         int* scriptKeywordCodes;
@@ -19,7 +17,6 @@ class Run {
             runtime->setCodeArray(codeArray);
             runtime->setKeyArray(keyArray);
             runtime->setCommands(commands);
-            runtime->setKeywordArray(keywordArray);
         }
 
     public:
@@ -51,25 +48,27 @@ class Run {
         Run(Text* codes, Text* keys) {
             
             // Convert each part of the scanned script to a TextArray
-            codeArray = new TextArray();
+            codeArray = new TextArray("codeArray");
             codeArray->parse(codes, '\n');
-            keyArray = new TextArray();
+            keyArray = new TextArray("keyArray");
             keyArray->parse(keys, '\n');
+            delete codes;
+            delete keys;
 
             // codeArray->info();
             // keyArray->info();
 
             // Initialise the list of domains
-            domains = new TextArray();
+            domains = new TextArray("domains");
             domains->add("core");
             domains->flatten();
 
             // Get the keywords and their handlers.
             // Do this for each domain.
-            KeywordArray* keywords = new KeywordArray();
+            // KeywordArray* keywords = new KeywordArray("keywords");
             coreKeywords = new CoreKeywords();
             // coreKeywords->info();
-            ValueArray* values = new ValueArray();
+            ValueArray* values = new ValueArray("values");
             CoreValues* coreValues = new CoreValues();
             // CoreValues->info();
 
@@ -80,7 +79,7 @@ class Run {
             scriptKeywordCodes = new int[codeSize];
             for (int n = 0; n < codeSize; n++) {
                 // First parse each command into its elements
-                TextArray* elements = new TextArray();
+                TextArray* elements = new TextArray("commandElement");
                 elements->parse(codeArray->get(n), ',');
                 commands[n] = elements;
                 TextArray* cmd = commands[n];
@@ -116,13 +115,21 @@ class Run {
             setupRuntime();
             if (runFrom(runtime, 0) < 0) {
                 print("Program exit requested\n");
+                delete domains;
+                delete codeArray;
+                delete keyArray;
+                delete values;
+                for (int n = 0; n < codeSize; n++) {
+                    delete commands[n];
+                }
+                delete commands;
+                // delete domains;
             }
         };
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor
         ~Run() {
-            delete commands;
             // print("Run: Destructor executed\n");
          }
 };

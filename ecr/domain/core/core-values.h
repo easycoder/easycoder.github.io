@@ -6,7 +6,8 @@ class CoreValues {
     private:
 
         ValueArray* values;
-        Text* domain = new Text("core");
+        Text* domain = new Text("core", "domain");
+        TextArray* choices;
 
         void add(Text* name, int code)  {
             values->add(new Value(name, domain, code));
@@ -26,6 +27,12 @@ class CoreValues {
             }
             print("-----------------\n");
         };
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the value choices
+        TextArray* getChoices() {
+            return choices;
+        }
 
         void init(ValueArray* values) {
             this->values = values;

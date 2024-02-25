@@ -5,7 +5,7 @@
 #include "debug.h"
 
 /*
-    This is a doubly linked list element able to store any kind of data.
+    This is a linked list element able to store any kind of data.
     The content is immutable within this class.
 */
 class LinkedListElement {
@@ -13,7 +13,6 @@ class LinkedListElement {
     private:
 
         const void* content;
-        LinkedListElement* previous = nullptr;
         LinkedListElement* next = nullptr;
 
     public:
@@ -23,31 +22,15 @@ class LinkedListElement {
             return (void*)content;
         }
 
+        // Get the next element pointer
+        LinkedListElement* getNext() {
+            return next;
+        }
 
-
-       // Get the previous element pointer
-       LinkedListElement* getPrevious() {
-           return previous;
-       }
-
-
-       // Set the previous element pointer
-       void setPrevious(LinkedListElement* data) {
-           previous = data;
-       }
-
-
-       // Get the next element pointer
-       LinkedListElement* getNext() {
-           return next;
-       }
-
-
-       // Set the next element pointer
-       void setNext(LinkedListElement* data) {
-           next = data;
-       }
-
+        // Set the next element pointer
+        void setNext(LinkedListElement* data) {
+            next = data;
+        }
 
         // Constructor
         LinkedListElement(const void* data) {
@@ -56,13 +39,14 @@ class LinkedListElement {
 
         // Destructor
         ~LinkedListElement() {
-            // print("LinkedListElement: Destructor executed\n");
+            // print("LinkedListElement: Destructor");
         }
 };
 
 class LinkedList {
 
     private:
+        const char* name;
         int size = 0;                          // the number of items
         LinkedListElement* head = nullptr;
         LinkedListElement* tail = nullptr;
@@ -83,7 +67,6 @@ class LinkedList {
                 tail = head;
             } else {
                 tail->setNext(element);
-                element->setPrevious(tail);
                 tail = element;
             }
             ++size;
@@ -120,13 +103,18 @@ class LinkedList {
             print("LinkedList: size=%d\n", size);
         }
 
+        // Named constructor
+        LinkedList(const char* name) {
+            this->name = name;
+        }
+
         // Default constructor
         LinkedList() {}
 
         // Destructor
         ~LinkedList() {
             clear();
-            print("LinkedList: Destructor executed\n");
+            // print("LinkedList: Delete %s\n", name);
          }
 };
 

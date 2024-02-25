@@ -3,7 +3,9 @@ class RuntimeValue {
     private:
 
         int type;
-        void* content;
+        const char* textValue;
+        int intValue;
+        bool boolValue;
 
     public:
 
@@ -11,14 +13,34 @@ class RuntimeValue {
             return type;
         }
 
-        void* getContent() {
-            return content;
+        void setTextValue(const char* t) {
+            type = TEXT_VALUE;
+            textValue = t;
         }
 
-        RuntimeValue(int type, void* content) {
-            this->type = type;
-            this->content = content;
+        void setIntValue(int i) {
+            type = INT_VALUE;
+            intValue = i;
         }
+
+        void setBoolValue(bool b) {
+            type = BOOL_VALUE;
+            boolValue = b;
+        }
+
+        const char* getTextValue() {
+            return textValue;
+        }
+
+        int getIntValue() {
+            return intValue;
+        }
+
+        bool getBoolValue() {
+            return boolValue;
+        }
+
+        RuntimeValue() {}
 
         ~RuntimeValue() {}
 };

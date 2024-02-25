@@ -17,6 +17,8 @@ class Runtime {
         int keywordCode;
         // The current program counter
         int pc;
+        // The value keyword choices
+        TextArray* choices;
 
     public:
 
@@ -36,6 +38,16 @@ class Runtime {
         int getPC() { return pc; }
 
         ///////////////////////////////////////////////////////////////////////
+        // Set up the value key choices
+        void setupChoices() {
+            choices = new TextArray("choices");
+            choices->add("text");
+            choices->add("int");
+            choices->add("boolean");
+            choices->flatten();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Report an unexpected element
         void unexpectedElement(TextArray* command, int n, Text* t) {
             print("Unexpected element at line %s, item %d: %s\n", command->getText(2), n, t->getText());
@@ -44,7 +56,7 @@ class Runtime {
         ///////////////////////////////////////////////////////////////////////
         // Scan a sequence to find the matching '}'
         RuntimeValue* parseSequence(int n) {
-            TextArray* args = new TextArray();
+            TextArray* args = new TextArray("args");
             while (true) {
                 Text* item = command->get(++n);
                 print("%s\n", item->getText());
@@ -65,6 +77,8 @@ class Runtime {
                     //     case _CORE_BOOL_:
                     //         break;
                     // }
+                    delete left;
+                    delete from;
                 } else {
                     if (item->is("}")) {
                         print("Close brace\n");
@@ -72,13 +86,65 @@ class Runtime {
                     }
                 }
             }
+            delete args;
             return nullptr;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get a keyword from an {a}:{b} pair
+        Text* getItemText(int n, bool select) {
+            Text* item = command->get(n);
+            int colon = item->positionOf(':');
+            Text* left = item->left(colon);
+            Text* from = item->from(colon + 1);
+            int code = atoi((select ? from : left)->getText());
+            delete left;
+            delete from;
+            return keyArray->get(code);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Process values recursively
         RuntimeValue* getRuntimeValue(int n) {
-            return nullptr;
+            RuntimeValue* runtimeValue = new RuntimeValue();
+            while (true) {
+                // Get the value type (is this always the first item?)
+                Text* key = getItemText(n, false);
+                if (key->is("type")) {
+                    Text* value = getItemText(n, true);
+                    if (choices->contains(value)) {
+                        key = getItemText(n + 1, false);
+                        if (key->is("content")) {
+                            if (value->is("text")) {
+                                runtimeValue->setTextValue(getItemText(n + 1, true)->getText());
+                                return runtimeValue;
+                            } else if (value->is("int")) {
+                                runtimeValue->setIntValue(atoi(getItemText(n + 1, true)->getText()));
+                                return runtimeValue;
+                            } else if (value->is("boolean")) {
+                                runtimeValue->setBoolValue(getItemText(n + 1, true)->is("true"));
+                                return runtimeValue;
+                            } else{
+                                printf("Unrecognized value type %s in item %s:\n", value->getText(), command->get(n)->getText());
+                                command->dump();
+                                exit;
+                            }
+                        } else {
+                            printf("Unrecognized key %s in item %s:\n", key->getText(), command->get(n)->getText());
+                            command->dump();
+                            exit;
+                        }
+                    } else {
+                        printf("Unrecognized key %s in item %s:\n", key->getText(), command->get(n)->getText());
+                        command->dump();
+                        exit;
+                    }
+                }
+                printf("Expected 'type': got '%s':\n", key->getText());
+                command->dump();
+                exit;
+                return nullptr;
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -95,13 +161,15 @@ class Runtime {
                         // Verify that 'from' is an open brace
                         Text* from = item->from(colon + 1);
                         if (from->is("{")) {
-                            return getRuntimeValue(n);
+                            delete from;
+                            return getRuntimeValue(++n);
                         } else {
-                            print("Item %d of command; expecting '{' but got %s:\n", n, from->getText());
+                            printf("Item %d of command; expecting '{' but got %s:\n", n, from->getText());
                             command->dump();
                             exit;
                         }
                     }
+                    delete left;
                     // Test if we've found an embedded value
                     // if (values->getValueKeywords()->contains(keyArray->get(left)) && from->is("{")) {
                     //     return parseSequence(n);
@@ -116,8 +184,12 @@ class Runtime {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        Runtime() {}
+        Runtime() {
+            setupChoices();
+        }
 
         ///////////////////////////////////////////////////////////////////////
-        ~Runtime() {}
+        ~Runtime() {
+            delete choices;
+        }
 };

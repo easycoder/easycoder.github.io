@@ -1,4 +1,6 @@
 !   Test script
 
     print `Hello: world!`
+    print 12345
+    print true
     exit

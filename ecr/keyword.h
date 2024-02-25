@@ -48,9 +48,11 @@ class KeywordArray {
 
     private:
         
+        const char* name;
         int size = 0;                              // the number of keywords
         Keyword** array = nullptr;                 // the array of keywords
         LinkedList* list = new LinkedList();       // A list to hold new keywords as they are added
+        TextArray* choices;
         
     public:
     
@@ -145,8 +147,21 @@ class KeywordArray {
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // Initializer
+        void init(const char* name) {
+            this->name = name;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Named constructor
+        KeywordArray(const char* name) {
+            init(name);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Default constructor
         KeywordArray() {
+            init("<noname>");
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -154,6 +169,7 @@ class KeywordArray {
         ~KeywordArray() {
             delete array;
             delete list;
-            print("KeywordArray: Destructor executed\n");
+            delete choices;
+            print("KeywordArray: Delete %s\n", name);
         }
 };

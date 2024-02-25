@@ -22,7 +22,11 @@ class Value {
             this->code = code;
         }
 
-        ~Value() {}
+        ~Value() {
+            print("Value: Delete %s\n", name->getText());
+            delete name;
+            delete domain;
+        }
 };
 
 // ValueArray is a memory-efficient class for managing arrays of Values
@@ -30,6 +34,7 @@ class ValueArray {
 
     private:
         
+        const char* name;
         int size = 0;                        // the number of values
         Value** array = nullptr;             // the array of values
         TextArray* valueKeywords;            // An array of value keywords
@@ -62,14 +67,6 @@ class ValueArray {
         void add(const Value* v) {
             list->add(v);
         }
-
-        // void add(Text* name, Text* domain, int code) {
-        //     list->add(new Value(name, domain, code));
-        // }
-
-        // void add(const char* name, int code) {
-        //     add(new Text(name), code);
-        // }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the value keywords
@@ -142,14 +139,27 @@ class ValueArray {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Default constructor
-        ValueArray() {
+        // Initialiser
+        void init() {
             list = new LinkedList();
-            valueKeywords = new TextArray();
+            valueKeywords = new TextArray("valueKeywords");
             valueKeywords->add("value");
             valueKeywords->add("value1");
             valueKeywords->add("value2");
             valueKeywords->flatten();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Named constructor
+        ValueArray(const char* name) {
+            this->name = name;
+            init();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Default constructor
+        ValueArray() {
+            init();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -158,6 +168,6 @@ class ValueArray {
             delete array;
             delete list;
             delete valueKeywords;
-            print("ValueArray: Destructor executed\n");
+            print("ValueArray: Delete %s\n", name);
         }
 };
