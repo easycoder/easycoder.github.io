@@ -133,7 +133,7 @@ class Compiler:
 		command['name'] = name
 		command['elements'] = 1
 		command['index'] = 0
-		command['value'] = [None]
+		command['value'] = []
 		command['used'] = False
 		command['debug'] = False
 		self.addCommand(command)
@@ -174,6 +174,7 @@ class Compiler:
 		if keyword.endswith(':'):
 			command = {}
 			command['domain'] = None
+			command['keyword'] = 'label'
 			command['lino'] = self.tokens[self.index].lino
 			return self.compileLabel(command)
 		else:

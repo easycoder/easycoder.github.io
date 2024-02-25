@@ -1,0 +1,295 @@
+class Text {
+    private:
+        const char* text;
+        int length = 0;
+
+    public:
+
+        ///////////////////////////////////////////////////////////////////////
+        // 1-argument constructor. This creates a copy of the calling data
+        Text(const char* t) {
+            length = strlen(t);
+            char* temp = new char[length + 1];
+            strcpy(temp, (char*)t);
+            temp[length] = '\0';
+            text = temp;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // No-argument constructor
+        Text() {}
+
+        ///////////////////////////////////////////////////////////////////////
+        // Destructor
+        ~Text() {}
+    
+        ///////////////////////////////////////////////////////////////////////
+        // Get the content of this text
+        const char* getText() {
+            return text;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the length of this text
+        int getLength() {
+            return length;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Test if this text is identical to some string
+        bool is(const char* s) {
+            return strcmp(text, s) == 0;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Test if this text is identical to another text
+        bool is(Text* t) {
+            return is(t->text);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Find the position of a character inside this text
+        int positionOf(char c) {
+            for (int n = 0; n < length; n++) {
+                if (text[n] == c) {
+                    return n;
+                }
+            }
+            return -1;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Test if the content of this item has a numeric value
+        bool isNumeric() {
+            for (int n = 0; n < length; n++) {
+                if (!isdigit(text[n])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Replace one character with another. Creates a new Text
+        Text* replaceChar(char from, char to) {
+            char* temp = new char[length + 1];
+            strcpy(temp, text);
+            for (int n = 0; n < length; n++) {
+                if (text[n] == from) {
+                    temp[n] = to;
+                } else {
+                    temp[n] = text[n];
+                }
+                temp[n] = '\0';
+            }
+            return new Text((const char*)temp);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the leftmost N characters as a new Text
+        Text* left(int n) {
+            Text* t = new Text();
+            t->length = n;
+            char* temp = new char[n + 1];
+            strncpy(temp, text, n);
+            temp[n] = '\0';
+            t->text = temp;
+            return t;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the rightmost N characters as a new Text
+        Text* right(int n) {
+            Text* t = new Text();
+            t->length = n;
+            char* temp = new char[n + 1];
+            strncpy(temp, text + length - n, n);
+            temp[n] = '\0';
+            t->text = temp;
+            return t;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get from character N to the end as a new Text
+        Text* from(int n) {
+            Text* t = new Text();
+            if (n > length) {
+                n = length;
+            }
+            t->length = length - n;
+            char* temp = new char[t->length + 1];
+            if (t->length > 0) {
+                strncpy(temp, text + n, t->length);
+            }
+            temp[t->length] = '\0';
+            t->text = temp;
+            return t;
+        }
+};
+
+/*
+    TextArray is a memory-efficient class for managing arrays of strings.
+    A typically usage is to break a piece of text into lines and have them
+    available by line number.
+*/
+
+class TextArray {
+
+    private:
+        int size = 0;                  // the number of items
+        Text** array = nullptr;        // the array of items
+        LinkedList* list;              // A list to hold new data items as they are added
+        
+    public:
+    
+        ///////////////////////////////////////////////////////////////////////
+        // Get the size (the number of elements in the array and list combined)
+        int getSize() {
+            return this->size + list->getSize();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get a specified item.
+        // If the index is greater than the array size but not greater than
+        // the combined size of array and list, return the item from the list.
+        Text* get(int n) {
+            if (n < size) {
+                return array[n];
+            }
+            else if (n < size + list->getSize()) {
+                return (Text*)list->get(n - size);
+            }
+            return nullptr;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the item whose index is passed in as a Text.
+        Text* get(Text* t) {
+            return get(atoi(t->getText()));
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the text of an item
+        const char* getText(int n) {
+            return get(n)->getText();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Add an item. This goes into the linked list.
+        void add(Text* item) {
+            list->add(item);
+        }
+
+        void add(const char* item) {
+            list->add(new Text(item));
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Test if this array contains the given text
+        bool contains(Text* t) {
+            flatten();   // just in case
+            for (int n = 0; n < size; n++) {
+                if ((get(n)->is(t))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Flatten this item by creating a single array to hold all the data.
+        void flatten() {
+            Text** oldArray = array;
+            int oldSize = size;
+            // Create a new array big enough for the old array and the list
+            int total = oldSize + list->getSize();
+            if (total > 0) {
+                array = new Text*[total];
+                // Copy the old array to the new
+                size = 0;
+                while (size < oldSize) {
+                    array[size] = oldArray[size];
+                    size++;
+                }
+                if (oldArray != nullptr) {
+                    delete oldArray;
+                }
+                // Copy the list to the new array
+                int n = 0;
+                while (n < list->getSize()) {
+                    array[size++] = (Text*)list->get(n++);
+                }
+                list->clear();
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Parse text using a specified separator
+        int parse(Text* t, char separator) {
+            const char* content = t->getText();
+            int n = 0;
+            // Convert each separator into null and add the item to the list
+            while (true) {
+                if (content[n] == separator || content[n] == '\0') {
+                    char* cc = new char[n + 1];
+                    memcpy(cc, content, n);
+                    cc[n] = '\0';
+                    if (strlen(cc) > 0) {
+                        add(new Text(cc));
+                    }
+                    delete cc;
+                    if (content[n] == '\0') {
+                        break;
+                    }
+                    content = &content[++n];
+                    n = 0;
+                } else {
+                    n++;
+                }
+            }
+            flatten();
+            return 1;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Print all the values in the array
+        void dump() {
+            print("This is all the items in TextArray:\n");
+            for (int n = 0; n < size; n++) {
+                print("%s\n", getText(n));
+            }
+            print("-----------------\n");
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Provide info about the object
+        void info() {
+            print("TextArray: list size=%d, array size=%d\n", list->getSize(), size);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // TextArray constructor
+        // This takes a single string and breaks it into elements on a specified separator,
+        // typically '\n' or ','.
+        // Note: content is used for the lifetime of the class instance
+        TextArray(const char* data, char separator) {
+            size = 0;
+            list = new LinkedList();
+            parse(new Text(data), separator);
+            flatten();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Default constructor
+        TextArray() {
+            list = new LinkedList();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Destructor
+        ~TextArray() {
+            delete array;
+            delete list;
+            print("TextArray: Destructor executed\n");
+         }
+};

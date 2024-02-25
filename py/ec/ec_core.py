@@ -951,29 +951,29 @@ class Core(Handler):
                 command['name'] = self.getToken()
                 if self.peek() == 'to':
                     self.nextToken()
-                command['elements'] = self.nextValue()
+                command['value'] = self.nextValue()
                 self.add(command)
                 return True
 
         if token == 'property':
             command['type'] = 'property'
-            command['name'] = self.nextValue()
+            command['value1'] = self.nextValue()
             if self.nextIs('of'):
                 if self.nextIsSymbol():
                     command['target'] = self.getSymbolRecord()['name']
                     if self.nextIs('to'):
-                        command['value'] = self.nextValue()
+                        command['value2'] = self.nextValue()
                         self.add(command)
                         return True
 
         if token == 'element':
             command['type'] = 'element'
-            command['index'] = self.nextValue()
+            command['value1'] = self.nextValue()
             if self.nextIs('of'):
                 if self.nextIsSymbol():
                     command['target'] = self.getSymbolRecord()['name']
                     if self.nextIs('to'):
-                        command['value'] = self.nextValue()
+                        command['value2'] = self.nextValue()
                         self.add(command)
                         return True
 
@@ -991,7 +991,7 @@ class Core(Handler):
 
         if cmdType == 'elements':
             symbolRecord = self.getVariable(command['name'])
-            elements = self.getRuntimeValue(command['elements'])
+            elements = self.getRuntimeValue(command['value'])
             currentElements = symbolRecord['elements']
             currentValue = symbolRecord['value']
             if currentValue == None:
@@ -1009,8 +1009,8 @@ class Core(Handler):
             return self.nextPC()
 
         if cmdType == 'element':
-            value = self.getRuntimeValue(command['value'])
-            index = self.getRuntimeValue(command['index'])
+            index = self.getRuntimeValue(command['value1'])
+            value = self.getRuntimeValue(command['value2'])
             target = self.getVariable(command['target'])
             val = self.getSymbolValue(target)
             content = val['content']
@@ -1024,8 +1024,8 @@ class Core(Handler):
             return self.nextPC()
 
         if cmdType == 'property':
-            value = self.getRuntimeValue(command['value'])
-            name = self.getRuntimeValue(command['name'])
+            name = self.getRuntimeValue(command['value1'])
+            value = self.getRuntimeValue(command['value2'])
             target = command['target']
             targetVariable = self.getVariable(target)
             val = self.getSymbolValue(targetVariable)
@@ -1248,7 +1248,6 @@ class Core(Handler):
         code = self.nextCondition()
         if code == None:
             return None
-        # token = self.getToken()
         command['condition'] = code
         test = self.getPC()
         self.addCommand(command)
@@ -1985,68 +1984,70 @@ class Core(Handler):
     #############################################################################
     # Compile a condition
     def compileCondition(self):
-        condition = Condition()
+        condition = {}
         if self.getToken() == 'not':
-            condition.type = 'not'
-            condition.value = self.nextValue()
+            condition['type'] = 'not'
+            condition['value'] = self.nextValue()
             return condition
 
         if self.getToken() == 'file':
             path = self.nextValue()
             if self.peek() == 'exists':
-                condition.type = 'exists'
-                condition.path = path
+                condition['type'] = 'exists'
+                condition['path'] = path
                 self.nextToken()
                 return condition
             return None
+        
+        condition['negate'] = False
 
         value = self.getValue()
         if value == None:
             return None
 
-        condition.value1 = value
+        condition['value1'] = value
         token = self.peek()
-        condition.type = token
+        condition['type'] = token
 
         if token == 'has':
             self.nextToken()
             if self.nextToken() == 'property':
                 prop = self.nextValue()
-                condition.type = 'hasProperty'
-                condition.property = prop
+                condition['type'] = 'hasProperty'
+                condition['property'] = prop
                 return condition
             return None
 
         if token in ['starts', 'ends']:
             self.nextToken()
             if self.nextToken() == 'with':
-                condition.value2 = self.nextValue()
+                condition['value2'] = self.nextValue()
                 return condition
 
         if token == 'includes':
-            condition.value2 = self.nextValue()
+            condition['value2'] = self.nextValue()
             return condition
 
         if token == 'is':
             token = self.nextToken()
             if self.peek() == 'not':
                 self.nextToken()
-                condition.negate = True
+                condition['negate'] = True
             token = self.nextToken()
-            condition.type = token
+            condition['type'] = token
             if token in ['numeric', 'string', 'boolean', 'none', 'list', 'object', 'even', 'odd', 'empty']:
                 return condition
             if token in ['greater', 'less']:
                 if self.nextToken() == 'than':
-                    condition.value2 = self.nextValue()
+                    condition['value2'] = self.nextValue()
                     return condition
-            condition.type = 'is'
-            condition.value2 = self.getValue()
+            condition['type'] = 'is'
+            condition['value2'] = self.getValue()
             return condition
 
-        if condition.value1:
+        if condition['value1']:
             # It's a boolean if
-            condition.type = 'boolean'
+            condition['type'] = 'boolean'
             return condition
 
         self.warning(f'I can\'t get a conditional:')
@@ -2063,87 +2064,87 @@ class Core(Handler):
     # Condition handlers
 
     def c_boolean(self, condition):
-        value = self.getRuntimeValue(condition.value1)
+        value = self.getRuntimeValue(condition['value1'])
         if type(value) == bool:
-            return not value if condition.negate else value
+            return not value if condition['negate'] else value
         if type(value) == str:
-            if value.tolower() == 'true':
-                return False if condition.negate else True
-            if value.tolower() == 'false':
-                return True if condition.negate else False
+            if value.lower() == 'true':
+                return False if condition['negate'] else True
+            if value.lower() == 'false':
+                return True if condition['negate'] else False
         return False
 
     def c_numeric(self, condition):
-        comparison = type(self.getRuntimeValue(condition.value1)) is int
-        return not comparison if condition.negate else comparison
+        comparison = type(self.getRuntimeValue(condition['value1'])) is int
+        return not comparison if condition['negate'] else comparison
 
     def c_string(self, condition):
-        comparison = type(self.getRuntimeValue(condition.value1)) is str
-        return not comparison if condition.negate else comparison
+        comparison = type(self.getRuntimeValue(condition['value1'])) is str
+        return not comparison if condition['negate'] else comparison
 
     def c_list(self, condition):
-        comparison = type(self.getRuntimeValue(condition.value1)) is list
-        return not comparison if condition.negate else comparison
+        comparison = type(self.getRuntimeValue(condition['value1'])) is list
+        return not comparison if condition['negate'] else comparison
 
     def c_object(self, condition):
-        comparison = type(self.getRuntimeValue(condition.value1)) is dict
-        return not comparison if condition.negate else comparison
+        comparison = type(self.getRuntimeValue(condition['value1'])) is dict
+        return not comparison if condition['negate'] else comparison
 
     def c_none(self, condition):
-        comparison = self.getRuntimeValue(condition.value1) is None
-        return not comparison if condition.negate else comparison
+        comparison = self.getRuntimeValue(condition['value1']) is None
+        return not comparison if condition['negate'] else comparison
 
     def c_not(self, condition):
-        return not self.getRuntimeValue(condition.value1)
+        return not self.getRuntimeValue(condition['value1'])
 
     def c_even(self, condition):
-        return self.getRuntimeValue(condition.value1) % 2 == 0
+        return self.getRuntimeValue(condition['value1']) % 2 == 0
 
     def c_odd(self, condition):
-        return self.getRuntimeValue(condition.value1) % 2 == 1
+        return self.getRuntimeValue(condition['value1']) % 2 == 1
 
     def c_is(self, condition):
-        comparison = self.program.compare(condition.value1, condition.value2)
-        return comparison != 0 if condition.negate else comparison == 0
+        comparison = self.program.compare(condition['value1'], condition['value2'])
+        return comparison != 0 if condition['negate'] else comparison == 0
 
     def c_greater(self, condition):
-        comparison = self.program.compare(condition.value1, condition.value2)
-        return comparison <= 0 if condition.negate else comparison > 0
+        comparison = self.program.compare(condition['value1'], condition['value2'])
+        return comparison <= 0 if condition['negate'] else comparison > 0
 
     def c_less(self, condition):
-        comparison = self.program.compare(condition.value1, condition.value2)
-        return comparison >= 0 if condition.negate else comparison < 0
+        comparison = self.program.compare(condition['value1'], condition['value2'])
+        return comparison >= 0 if condition['negate'] else comparison < 0
 
     def c_starts(self, condition):
-        value1 = self.getRuntimeValue(condition.value1)
-        value2 = self.getRuntimeValue(condition.value2)
+        value1 = self.getRuntimeValue(condition['value1'])
+        value2 = self.getRuntimeValue(condition['value2'])
         return value1.startswith(value2)
 
     def c_ends(self, condition):
-        value1 = self.getRuntimeValue(condition.value1)
-        value2 = self.getRuntimeValue(condition.value2)
+        value1 = self.getRuntimeValue(condition['value1'])
+        value2 = self.getRuntimeValue(condition['value2'])
         return value1.endswith(value2)
 
     def c_includes(self, condition):
-        value1 = self.getRuntimeValue(condition.value1)
-        value2 = self.getRuntimeValue(condition.value2)
+        value1 = self.getRuntimeValue(condition['value1'])
+        value2 = self.getRuntimeValue(condition['value2'])
         return value2 in value1
 
     def c_empty(self, condition):
-        value = self.getRuntimeValue(condition.value1)
+        value = self.getRuntimeValue(condition['value1'])
         if value == None:
             comparison = True
         else:
             comparison = len(value) == 0
-        return not comparison if condition.negate else comparison
+        return not comparison if condition['negate'] else comparison
 
     def c_exists(self, condition):
-        path = self.getRuntimeValue(condition.path)
+        path = self.getRuntimeValue(condition['path'])
         return os.path.exists(path)
 
     def c_hasProperty(self, condition):
-        value = self.getRuntimeValue(condition.value1)
-        prop = self.getRuntimeValue(condition.property)
+        value = self.getRuntimeValue(condition['value1'])
+        prop = self.getRuntimeValue(condition['property'])
         try:
             value[prop]
             hasProp = True

@@ -6,7 +6,7 @@
     "lino": 2,
     "type": null,
     "value": {
-      "content": "Hello, world!",
+      "content": "Hello: world!",
       "type": "text"
     }
   },

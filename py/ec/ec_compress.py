@@ -12,7 +12,7 @@ class Compress:
         self.processCompiled(compiled)
 
         # print(self.keys)
-        self.outFile.write(f'-\n{self.keys}--\n')
+        self.outFile.write(f'\n{self.keys}\n')
         self.outFile.close()
 
     # Process the compiled script
@@ -23,10 +23,14 @@ class Compress:
     # Process a single command
     def processCommand(self, command):
         self.first = True
-        # Do the keyword first
-        self.processValue('keyword', command['keyword'])
+        # Do the domain, keyword and line number first
+        domain = self.getShortCode(command['domain'])
+        keyword = self.getShortCode(command['keyword'])
+        # lino = self.getShortCode(command['lino'])
+        lino = command['lino']
+        self.writeToOutFile(f'{lino},{domain},{keyword},')
         for key in command:
-            if key != 'keyword':
+            if not key in ['debug', 'lino', 'domain', 'keyword']:
                 value = command[key]
                 self.processValue(key, value)
         self.writeToOutFile('\n')
@@ -52,18 +56,15 @@ class Compress:
             self.processDictionary(value)
             self.writeToOutFile(',}')
         else:
-            if key == 'lino':
-                self.writeToOutFile(f',#{value}')
+            keyShortCode = self.getShortCode(key)
+            valueShortCode = self.getShortCode(f'{value}')
+            if not self.first:
+                self.writeToOutFile(',')
+            if key == None:
+                self.writeToOutFile(f'{valueShortCode}')
             else:
-                keyShortCode = self.getShortCode(key)
-                valueShortCode = self.getShortCode(f'{value}')
-                if not self.first:
-                    self.writeToOutFile(',')
-                if key == None:
-                    self.writeToOutFile(f'{valueShortCode}')
-                else:
-                    self.writeToOutFile(f'{keyShortCode}:{valueShortCode}')
-                self.first = False
+                self.writeToOutFile(f'{keyShortCode}:{valueShortCode}')
+            self.first = False
     
     # Get a shortcode or add a new one if it doesn't exist
     def getShortCode(self, key):

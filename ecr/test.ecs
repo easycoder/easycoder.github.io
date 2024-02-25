@@ -1,4 +1,4 @@
 !   Test script
 
-    print `Hello, world!`
+    print `Hello: world!`
     exit

@@ -1,20 +1,52 @@
 [
   {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 2,
+    "name": "FileName",
+    "type": "symbol",
+    "used": true,
+    "value": [
+      null
+    ],
+    "valueHolder": true
+  },
+  {
     "debug": true,
     "domain": "core",
-    "keyword": "print",
-    "lino": 2,
+    "keyword": "put",
+    "lino": 4,
+    "target": "FileName",
     "type": null,
     "value": {
-      "content": "Hello, world!",
+      "content": "test.ecs",
       "type": "text"
     }
   },
   {
     "debug": true,
     "domain": "core",
+    "keyword": "print",
+    "lino": 5,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "fileName": {
+        "domain": "core",
+        "name": "FileName",
+        "type": "symbol"
+      },
+      "type": "modification"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
     "keyword": "exit",
-    "lino": 3,
+    "lino": 6,
     "type": null
   }
 ]

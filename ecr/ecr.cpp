@@ -1,118 +1,85 @@
-#include "ecr.h"
+#define DEBUG 1    // set to 1 to debug, 0 for no debugging
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "debug.h"
+#include "definitions.h"
+#include "linkedlist.h"
+#include "text.h"
+#include "keyword.h"
+#include "value.h"
+#include "valuecodes.h"
+#include "runtimevalue.h"
+#include "runtime.h"
+#include "domain/core/core-keywords.h"
+#include "domain/core/core-values.h"
 #include "run.h"
 
 // Main program
-int main(void)
+int main(int argc, char* argv[])
 {
-  char* filename = (char*)"test.eco"; // During development
+    char* ptr1;
+    char* ptr2;
+    int count = 0;
 
-  FILE *f = fopen(filename, "rb");
-  if (f == NULL) {
-    printf("Could not read file %s\n", filename);
-    return 1;
-  }
-  
-  // Get the size of the file
-  fseek(f, 0, SEEK_END);
-  long fsize = ftell(f);
-  rewind(f);
+    char* filename = (char*)"test.eco"; // During development
 
-  // Read the file as a single chunk
-  char* string = (char*)malloc(fsize + 1);
-  if (string != NULL) {
-    fread(string, fsize, 1, f);
-    fclose(f);
-    string[fsize] = 0;
-  } else {
-    printf("Could not allocate memory for %s\n", filename);
-    return 1;
-  }
-
-  // Split the code and key portions
-  char* codes;
-  char* keys;
-  char* keywords;
-  int codeCount = 0;
-  int keyCount = 0;
-  int codeSize;
-  int keySize;
-  int count = 0;
-  int size = 0;
-
-  char* token = strtok(string, "\n");
-  while (token != NULL) {
-    if (strcmp(token, (char*)"-") == 0) {
-      // When - is reached, convert to a list of codes
-      codeCount = count;
-      codeSize = size;
-      codes = (char*)malloc(++codeSize);
-      memcpy(codes, string, codeSize);
-      // Reset the scanner for the keyword list
-      keywords = string + codeSize + 1;
-      count = 0;
-      size = 0;
-      token = strtok(keywords, "\n");
-    } else if (strcmp(token, (char*)"--") == 0) {
-      // When -- is reached, convert to a list of keywords
-      keyCount = count;
-      keySize = size;
-      keys = (char*)malloc(++keySize);
-      memcpy(keys, keywords, keySize);
-      token = strtok(NULL, "\n");
-    } else {
-      // printf("%s\n", token);
-      count++;
-      size += strlen(token) +1;
-      token = strtok(NULL, "\n");
+    FILE *f = fopen(filename, "rb");
+    if (f == NULL) {
+      print("Could not read file %s\n", filename);
+      return 1;
     }
-  }
-  // Build a StringArray for each part
-  
-  char* ptr = codes;
-  for (int n = 0; n < codeCount; n++) {
-    printf("%s\n", ptr);
+    
+    // Get the size of the file
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    rewind(f);
 
-    ptr += strlen(ptr) + 1;
-  }
-  printf("-\n");
-  ptr = keys;
-  for (int n = 0; n < keyCount; n++) {
-    printf("%s\n", ptr);
-    ptr += strlen(ptr) + 1;
-  }
+    // Read the file as a single chunk
+    char* script = new char[fsize + 1];
+    if (script != NULL) {
+      fread(script, fsize, 1, f);
+      fclose(f);
+      script[fsize] = 0;
+    } else {
+      print("Could not allocate memory for %s\n", filename);
+      return 1;
+    };
 
-  // Convert the file to an array of lines
-  // StringArray* lines = getLines(string, NEWLINE);
+    // Split the code and key portions
+    // Codes end with an empty line
+    // Keys end with another empty line
+    int n = 0;
+    char* start = script;
+    while (1) {
+        int m = n;
+        for (; start[n] != '\n'; n++) {}
+        if (n == m) {
+          break;
+        }
+        n++;
+    }
+    start[n++] = '\0';
+    Text* codes = new Text(start);
+    start = &script[n];
+    while (1) {
+        int m = n;
+        for (; start[n] != '\n'; n++) {}
+        if (n == m) {
+          break;
+        }
+        n++;
+    }
+    start[n] = '\0';
+    Text* keys = new Text(start);
+    delete script;
 
-  // Dispose of the original file
-  free(string);
+    // print("codes: %s", codes->getText());
+    // print("keys: %s", keys->getText());
 
+    Run runner = Run(codes, keys);
 
-
-
-  
-/*
-  // Read the compiled script into memory as an array of lines
-  StringArray* codes = readFile((char*)"test.eco");
-  if (codes == NULL) {
-    return 1;
-  }
-  printf("Code lines: %d\n", codes->size);
-
-  // Read the key file into memory as an array of lines
-  StringArray* keys = readFile((char*)"test.keys");
-  if (keys == NULL) {
-    return 1;
-  }
-  printf("Keys: %d\n", keys->size);
-*/
-
-  // debug(codes, keys);
-
-  // int result = run(codes, keys);
-
-  // return result;
-
-  return 0;
-}
+    return 0;
+};

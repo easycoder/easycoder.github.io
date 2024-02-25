@@ -49,6 +49,7 @@ class Program:
 			if self.options['object']:
 				n = scriptName.find('.')
 				f = open(f'{scriptName[0:n]}.json', 'w')
+				# print(self.code)
 				f.write(json.dumps(self.code, sort_keys=True, indent=2))
 				Compress(self.code, scriptName[0:n])
 				f.close()
