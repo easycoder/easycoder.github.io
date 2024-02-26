@@ -17,8 +17,8 @@ class Runtime {
         int keywordCode;
         // The current program counter
         int pc;
-        // The value keyword choices
-        TextArray* choices;
+        // The value types
+        TextArray* valueTypes;
 
     public:
 
@@ -38,13 +38,13 @@ class Runtime {
         int getPC() { return pc; }
 
         ///////////////////////////////////////////////////////////////////////
-        // Set up the value key choices
-        void setupChoices() {
-            choices = new TextArray("choices");
-            choices->add("text");
-            choices->add("int");
-            choices->add("boolean");
-            choices->flatten();
+        // Set up the value types
+        void setupValueTypes() {
+            valueTypes = new TextArray("valueTypes");
+            valueTypes->add("text");
+            valueTypes->add("int");
+            valueTypes->add("boolean");
+            valueTypes->flatten();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -111,38 +111,40 @@ class Runtime {
                 // Get the value type (is this always the first item?)
                 Text* key = getItemText(n, false);
                 if (key->is("type")) {
-                    Text* value = getItemText(n, true);
-                    if (choices->contains(value)) {
+                    Text* valueType = getItemText(n, true);
+                    if (valueTypes->contains(valueType)) {
                         key = getItemText(n + 1, false);
+                        // Get the content
                         if (key->is("content")) {
-                            if (value->is("text")) {
+                            // Deal with each of the value types
+                            if (valueType->is("text")) {
                                 runtimeValue->setTextValue(getItemText(n + 1, true)->getText());
                                 return runtimeValue;
-                            } else if (value->is("int")) {
+                            } else if (valueType->is("int")) {
                                 runtimeValue->setIntValue(atoi(getItemText(n + 1, true)->getText()));
                                 return runtimeValue;
-                            } else if (value->is("boolean")) {
+                            } else if (valueType->is("boolean")) {
                                 runtimeValue->setBoolValue(getItemText(n + 1, true)->is("true"));
                                 return runtimeValue;
                             } else{
-                                printf("Unrecognized value type %s in item %s:\n", value->getText(), command->get(n)->getText());
+                                printf("Unrecognized value type %s in item %s:\n", valueType->getText(), command->get(n)->getText());
                                 command->dump();
-                                exit;
+                                exit(1);
                             }
                         } else {
                             printf("Unrecognized key %s in item %s:\n", key->getText(), command->get(n)->getText());
                             command->dump();
-                            exit;
+                            exit(1);
                         }
                     } else {
                         printf("Unrecognized key %s in item %s:\n", key->getText(), command->get(n)->getText());
                         command->dump();
-                        exit;
+                        exit(1);
                     }
                 }
                 printf("Expected 'type': got '%s':\n", key->getText());
                 command->dump();
-                exit;
+                exit(1);
                 return nullptr;
             }
         }
@@ -166,7 +168,7 @@ class Runtime {
                         } else {
                             printf("Item %d of command; expecting '{' but got %s:\n", n, from->getText());
                             command->dump();
-                            exit;
+                            exit(1);
                         }
                     }
                     delete left;
@@ -185,11 +187,11 @@ class Runtime {
 
         ///////////////////////////////////////////////////////////////////////
         Runtime() {
-            setupChoices();
+            setupValueTypes();
         }
 
         ///////////////////////////////////////////////////////////////////////
         ~Runtime() {
-            delete choices;
+            delete valueTypes;
         }
 };
