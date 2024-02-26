@@ -1,19 +1,31 @@
-2,0,1,2:3,4:{,2:5,6:7,}
-3,0,1,2:3,4:{,2:8,6:9,}
-4,0,1,2:3,4:{,2:10,6:11,}
-5,0,12,2:3
+2,0,1,2:3,4:5,6:7,8:9,10:11,12:[,],13:14
+4,0,15,2:16,12:{,2:17,18:19,}
+5,0,15,2:16,12:{,2:20,18:21,}
+6,0,15,2:16,12:{,2:22,18:5,}
+7,0,23,2:16
 
 core
-print
+variable
 type
-None
+symbol
+valueHolder
+True
+name
+Var1
+elements
+1
+index
+0
 value
+used
+False
+print
+None
 text
 content
 Hello: world!
 int
 12345
 boolean
-True
 exit
 

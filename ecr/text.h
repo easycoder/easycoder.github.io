@@ -37,9 +37,11 @@ class Text {
         ///////////////////////////////////////////////////////////////////////
         // Destructor
         ~Text() {
+            #if DESTROY
             if (strcmp(name, "<noname>") != 0) {
                 print("Text: Delete %s\n", name);
             }
+            #endif
             delete text;
         }
     
@@ -325,6 +327,8 @@ class TextArray {
         ~TextArray() {
             delete array;
             delete list;
+            #if DESTROY
             print("TextArray: Delete %s\n", name);
+            #endif
          }
 };

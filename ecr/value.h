@@ -168,6 +168,8 @@ class ValueArray {
             delete array;
             delete list;
             delete valueKeywords;
+            #if DESTROY
             print("ValueArray: Delete %s\n", name);
+            #endif
         }
 };

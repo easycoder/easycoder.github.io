@@ -170,6 +170,8 @@ class KeywordArray {
             delete array;
             delete list;
             delete choices;
+            #if DESTROY
             print("KeywordArray: Delete %s\n", name);
+            #endif
         }
 };

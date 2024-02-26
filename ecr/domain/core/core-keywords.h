@@ -263,6 +263,7 @@ class CoreKeywords {
             add("stack");
             add("stop");
             add("system");
+            add("take");
             add("variable");
             add("wait");
             add("while");

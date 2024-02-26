@@ -1,5 +1,7 @@
 !   Test script
 
+    variable Var1
+
     print `Hello: world!`
     print 12345
     print true
