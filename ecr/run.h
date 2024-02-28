@@ -9,6 +9,7 @@ class Run {
         CoreKeywords* coreKeywords;
         CoreValues* coreValues;
         int* scriptKeywordCodes;
+        SymbolArray* symbols;
 
         ///////////////////////////////////////////////////////////////////////
         // Set up the runtime
@@ -17,6 +18,7 @@ class Run {
             runtime->setCodeArray(codeArray);
             runtime->setKeyArray(keyArray);
             runtime->setCommands(commands);
+            runtime->setSymbols(symbols);
         }
 
     public:
@@ -25,7 +27,7 @@ class Run {
         // Run a sequence of commands from the current program counter
         int runFrom(Runtime* runtime, int pc) {
             do {
-                print("Run command %d\n", pc);
+                // print("Command %d\n", pc);
                 TextArray* command = commands[pc];
                 runtime->setCommand(command);
                 runtime->setPC(pc);
@@ -110,7 +112,8 @@ class Run {
                     print("No handler found for keyword '%s'\n", tt->getText());
                     return;
                 }
-
+                // Create an array of symbols
+                symbols = new SymbolArray();
             }
             setupRuntime();
             if (runFrom(runtime, 0) < 0) {

@@ -13,6 +13,10 @@ class RuntimeValue {
             return type;
         }
 
+        void setType(int t) {
+            type = t;
+        }
+
         void setTextValue(const char* t) {
             type = TEXT_VALUE;
             textValue = t;
@@ -38,6 +42,21 @@ class RuntimeValue {
 
         bool getBoolValue() {
             return boolValue;
+        }
+
+        RuntimeValue* copy() {
+            RuntimeValue* rtv = new RuntimeValue();
+            if (type == TEXT_VALUE) {
+                char* buf = new char[strlen(textValue) + 1];
+                strcpy(buf, textValue);
+                rtv->setTextValue(buf);
+            } else {
+                rtv->setTextValue(nullptr);
+            }
+            rtv->setIntValue(intValue);
+            rtv->setBoolValue(boolValue);
+            rtv->setType(type);
+            return rtv;
         }
 
         RuntimeValue() {}

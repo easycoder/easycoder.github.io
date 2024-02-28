@@ -166,8 +166,11 @@ class ValueArray {
         // Destructor
         ~ValueArray() {
             delete array;
+            array = nullptr;
             delete list;
+            list = nullptr;
             delete valueKeywords;
+            valueKeywords = nullptr;
             #if DESTROY
             print("ValueArray: Delete %s\n", name);
             #endif

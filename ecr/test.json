@@ -1,55 +1,34 @@
 [
   {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "variable",
-    "lino": 2,
-    "name": "Var1",
-    "type": "symbol",
-    "used": false,
-    "value": [],
-    "valueHolder": true
-  },
-  {
     "debug": true,
     "domain": "core",
     "keyword": "print",
-    "lino": 4,
+    "lino": 16,
     "type": null,
     "value": {
-      "content": "Hello: world!",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 5,
-    "type": null,
-    "value": {
-      "content": 12345,
-      "type": "int"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 6,
-    "type": null,
-    "value": {
-      "content": true,
-      "type": "boolean"
+      "numeric": false,
+      "parts": [
+        {
+          "content": "A",
+          "type": "text"
+        },
+        {
+          "content": "B",
+          "type": "text"
+        },
+        {
+          "content": "C",
+          "type": "text"
+        }
+      ],
+      "type": "cat"
     }
   },
   {
     "debug": true,
     "domain": "core",
     "keyword": "exit",
-    "lino": 7,
+    "lino": 17,
     "type": null
   }
 ]

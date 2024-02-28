@@ -1,17 +1,11 @@
 int core_print(Runtime* runtime) {
-    print("print handler\n");
-    RuntimeValue* value = runtime->getRuntimeValue("value");
-    switch (value->getType()) {
-        case TEXT_VALUE:
-            printf("->%s\n", value->getTextValue());
-            break;
-        case INT_VALUE:
-            printf("->%d\n", value->getIntValue());
-            break;
-        case BOOL_VALUE:
-            printf("->%s\n", value->getBoolValue() ? "true" : "false");
-            break;
-    };
+    #if KEYWORDS
+    printf("Line %s: print\n", runtime->getCommand()->get(0)->getText());
+    #endif
+
+    const char* buf = runtime->getTextValue("value");
+    printf("->%s\n", buf);
+    delete buf;
 
     return runtime->getPC() + 1;
 };

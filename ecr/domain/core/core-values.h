@@ -36,9 +36,9 @@ class CoreValues {
 
         void init(ValueArray* values) {
             this->values = values;
-            add("text", _CORE_TEXT_);
-            add("int", _CORE_INT_);
-            add("bool", _CORE_BOOL_);
+            add("text", TEXT_VALUE);
+            add("int", INT_VALUE);
+            add("bool", BOOL_VALUE);
         };
 
         ///////////////////////////////////////////////////////////////////////

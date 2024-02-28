@@ -26,6 +26,7 @@ class Text {
 
         ///////////////////////////////////////////////////////////////////////
         // 1-argument constructor. This creates a copy of the calling data
+
         Text(const char* t) {
             init(t, "<noname>");
         }
@@ -49,6 +50,13 @@ class Text {
         // Get the content of this text
         const char* getText() {
             return text;
+        }
+    
+        ///////////////////////////////////////////////////////////////////////
+        // Set the content of this text
+        void setText(const char* t) {
+            delete text;
+            init(t, name);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -326,7 +334,9 @@ class TextArray {
         // Destructor
         ~TextArray() {
             delete array;
+            array = nullptr;
             delete list;
+            list = nullptr;
             #if DESTROY
             print("TextArray: Delete %s\n", name);
             #endif

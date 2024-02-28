@@ -1,31 +1,20 @@
-2,0,1,2:3,4:5,6:7,8:9,10:11,12:[,],13:14
-4,0,15,2:16,12:{,2:17,18:19,}
-5,0,15,2:16,12:{,2:20,18:21,}
-6,0,15,2:16,12:{,2:22,18:5,}
-7,0,23,2:16
+16,0,1,2:3,4:{,2:5,6:7,8:[,9:{,2:10,11:12,},9:{,2:10,11:13,},9:{,2:10,11:14,},],}
+17,0,15,2:3
 
 core
-variable
-type
-symbol
-valueHolder
-True
-name
-Var1
-elements
-1
-index
-0
-value
-used
-False
 print
+type
+None
+value
+cat
+numeric
+False
+parts
 None
 text
 content
-Hello: world!
-int
-12345
-boolean
+A
+B
+C
 exit
 
