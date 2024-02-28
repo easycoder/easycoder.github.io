@@ -47,6 +47,7 @@ class Run {
 
         ///////////////////////////////////////////////////////////////////////
         // Parse text using a specified separator
+        // This recurses through values and builds a tree structure
         int parse(Text* t, char separator, TextArray* array) {
             const char* content = t->getText();
             int n = 0;

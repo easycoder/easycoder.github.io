@@ -157,6 +157,16 @@ class Text {
         }
 };
 
+class ListItem {
+
+    private:
+
+
+    public:
+
+
+};
+
 /*
     TextArray is a memory-efficient class for managing arrays of strings.
     A typically usage is to break a piece of text into lines and have them
@@ -167,9 +177,11 @@ class TextArray {
 
     private:
         const char* name;
-        int size = 0;                  // the number of items
-        Text** array = nullptr;        // the array of items
-        LinkedList* list;              // A list to hold new data items as they are added
+        int size = 0;                    // the number of items
+        Text** array = nullptr;          // an array of Text objects
+        TextArray** array2 = nullptr;    // an array of TextArray objects
+        LinkedList* list;                // A list to hold new Text items as they are added
+        LinkedList* list2;               // A list to hold new TextArray items as they are added
         
     public:
     
@@ -180,7 +192,7 @@ class TextArray {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Get a specified item.
+        // Get a specified Text.
         // If the index is greater than the array size but not greater than
         // the combined size of array and list, return the item from the list.
         Text* get(int n) {
@@ -189,6 +201,20 @@ class TextArray {
             }
             else if (n < size + list->getSize()) {
                 return (Text*)list->get(n - size);
+            }
+            return nullptr;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get a specified TextArray.
+        // If the index is greater than the array size but not greater than
+        // the combined size of array and list, return the item from the list.
+        TextArray* getArray(int n) {
+            if (n < size) {
+                return array2[n];
+            }
+            else if (n < size + list2->getSize()) {
+                return (TextArray*)list2->get(n - size);
             }
             return nullptr;
         }
@@ -209,10 +235,16 @@ class TextArray {
         // Add an item. This goes into the linked list.
         void add(Text* item) {
             list->add(item);
+            list2->add(nullptr);
         }
 
         void add(const char* item) {
             list->add(new Text(item));
+        }
+
+        void add(TextArray* array) {
+            list->add(nullptr);
+            list2->add(array);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -231,26 +263,32 @@ class TextArray {
         // Flatten this item by creating a single array to hold all the data.
         void flatten() {
             Text** oldArray = array;
+            TextArray** oldArray2 = array2;
             int oldSize = size;
             // Create a new array big enough for the old array and the list
             int total = oldSize + list->getSize();
             if (total > 0) {
                 array = new Text*[total];
+                array2 = new TextArray*[total];
                 // Copy the old array to the new
                 size = 0;
                 while (size < oldSize) {
                     array[size] = oldArray[size];
+                    array2[size] = oldArray2[size];
                     size++;
                 }
                 if (oldArray != nullptr) {
                     delete oldArray;
+                    delete oldArray2;
                 }
                 // Copy the list to the new array
                 int n = 0;
                 while (n < list->getSize()) {
-                    array[size++] = (Text*)list->get(n++);
+                    array[size] = (Text*)list->get(n);
+                    array2[size++] = (TextArray*)list2->get(n++);
                 }
                 list->clear();
+                list2->clear();
             }
         }
 
@@ -275,12 +313,14 @@ class TextArray {
         TextArray(const char* name) {
             this->name = name;
             list = new LinkedList(name);
+            list2 = new LinkedList(name);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Default constructor
         TextArray() {
             list = new LinkedList("<noname>");
+            list2 = new LinkedList("<noname>");
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -288,8 +328,12 @@ class TextArray {
         ~TextArray() {
             delete array;
             array = nullptr;
+            delete array2;
+            array2 = nullptr;
             delete list;
             list = nullptr;
+            delete list2;
+            list2 = nullptr;
             #if DESTROY
             print("TextArray: Delete %s\n", name);
             #endif
