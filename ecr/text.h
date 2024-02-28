@@ -255,34 +255,6 @@ class TextArray {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Parse text using a specified separator
-        int parse(Text* t, char separator) {
-            const char* content = t->getText();
-            int n = 0;
-            // Convert each separator into null and add the item to the list
-            while (true) {
-                if (content[n] == separator || content[n] == '\0') {
-                    char* cc = new char[n + 1];
-                    memcpy(cc, content, n);
-                    cc[n] = '\0';
-                    if (strlen(cc) > 0) {
-                        add(new Text(cc, cc));
-                    }
-                    delete cc;
-                    if (content[n] == '\0') {
-                        break;
-                    }
-                    content = &content[++n];
-                    n = 0;
-                } else {
-                    n++;
-                }
-            }
-            flatten();
-            return 1;
-        }
-
-        ///////////////////////////////////////////////////////////////////////
         // Print all the values in the array
         void dump() {
             print("This is all the items in TextArray:\n");
@@ -296,25 +268,6 @@ class TextArray {
         // Provide info about the object
         void info() {
             print("TextArray: list size=%d, array size=%d\n", list->getSize(), size);
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Initializer
-        void init(const char* data, char separator, const char* name) {
-            this->name = name;
-            size = 0;
-            list = new LinkedList(name);
-            parse(new Text(data), separator);
-            flatten();
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // TextArray constructor
-        // This takes a single string and breaks it into elements on a specified separator,
-        // typically '\n' or ','.
-        // Note: content is used for the lifetime of the class instance
-        TextArray(const char* data, char separator) {
-            init(data, separator, "<noname>");
         }
 
         ///////////////////////////////////////////////////////////////////////

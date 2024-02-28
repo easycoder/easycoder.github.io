@@ -1,27 +1,158 @@
 [
   {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 2,
+    "name": "Var1",
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 3,
+    "name": "Var2",
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
     "debug": true,
     "domain": "core",
     "keyword": "print",
-    "lino": 16,
+    "lino": 5,
     "type": null,
     "value": {
-      "numeric": false,
-      "parts": [
-        {
-          "content": "A",
-          "type": "text"
-        },
-        {
-          "content": "B",
-          "type": "text"
-        },
-        {
-          "content": "C",
-          "type": "text"
-        }
-      ],
-      "type": "cat"
+      "content": "Hello: world!",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 6,
+    "type": null,
+    "value": {
+      "content": 12345,
+      "type": "int"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 7,
+    "type": null,
+    "value": {
+      "content": true,
+      "type": "boolean"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 8,
+    "target": "Var1",
+    "type": null,
+    "value": {
+      "content": "This is my text",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 9,
+    "target": "Var2",
+    "type": null,
+    "value": {
+      "content": "This is too",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 10,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "Var1",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 11,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "Var2",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 12,
+    "target": "Var2",
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "Var1",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 13,
+    "target": "Var1",
+    "type": null,
+    "value": {
+      "content": "More of the same",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 14,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "Var1",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 15,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "Var2",
+      "type": "symbol"
     }
   },
   {

@@ -1,4 +1,4 @@
-#define DEBUG 0    // set to 1 to debug, 0 for no debugging
+#define DEBUG 1    // set to 1 to debug, 0 for no debugging
 #define DESTROY 0  // set to 1 to show destructors
 #define KEYWORDS 0 // set to 1 to show keywords as they execute
 

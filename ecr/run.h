@@ -46,14 +46,42 @@ class Run {
         };
 
         ///////////////////////////////////////////////////////////////////////
+        // Parse text using a specified separator
+        int parse(Text* t, char separator, TextArray* array) {
+            const char* content = t->getText();
+            int n = 0;
+            // Convert each separator into null and add the item to the list
+            while (true) {
+                if (content[n] == separator || content[n] == '\0') {
+                    char* cc = new char[n + 1];
+                    memcpy(cc, content, n);
+                    cc[n] = '\0';
+                    if (strlen(cc) > 0) {
+                        array->add(new Text(cc, cc));
+                    }
+                    delete cc;
+                    if (content[n] == '\0') {
+                        break;
+                    }
+                    content = &content[++n];
+                    n = 0;
+                } else {
+                    n++;
+                }
+            }
+            array->flatten();
+            return 1;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Constructor
         Run(Text* codes, Text* keys) {
             
             // Convert each part of the scanned script to a TextArray
             codeArray = new TextArray("codeArray");
-            codeArray->parse(codes, '\n');
+            parse(codes, '\n', codeArray);
             keyArray = new TextArray("keyArray");
-            keyArray->parse(keys, '\n');
+            parse(keys, '\n', keyArray);
             delete codes;
             delete keys;
 
@@ -82,7 +110,7 @@ class Run {
             for (int n = 0; n < codeSize; n++) {
                 // First parse each command into its elements
                 TextArray* elements = new TextArray("commandElement");
-                elements->parse(codeArray->get(n), ',');
+                parse(codeArray->get(n), ',', elements);
                 commands[n] = elements;
                 TextArray* cmd = commands[n];
                 // Next, get the initial keyword code for the command
