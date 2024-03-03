@@ -14,6 +14,7 @@
 #include "keyword.h"
 #include "value.h"
 #include "symbol.h"
+#include "command.h"
 #include "runtime.h"
 #include "domain/core/core-keywords.h"
 #include "domain/core/core-values.h"

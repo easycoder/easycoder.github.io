@@ -7,14 +7,14 @@ class Runtime {
         TextArray* codeArray;
         // An array of unique text items found in the script
         TextArray* keyArray;
-        // An array of commands, where each is an array of attributes
-        TextArray** commands;
+        // An array of commands, where each is a single element or an array of elements
+        CommandArray* commands;
         // An array of symbols
         SymbolArray* symbols;
         // An array of keyword objects, one for each element of the code array
         KeywordArray* keywordArray;
         // The command that is to be executed
-        TextArray* command;
+        Command* command;
         // The keyword id for the current command
         int keywordCode;
         // The current program counter
@@ -44,19 +44,20 @@ class Runtime {
         Symbol* getSymbol(const char* key) {
             const char* keyCode = nullptr;
             const char* nameCode = nullptr;
-            Text* item;
+            Element* element;
             Text* left;
             Text* right;
             int index;
             // Get the key of the variable
             for (int index = 0; index < command->getSize(); index++) {
-                item = command->get(index);
-                int colon = item->positionOf(':');
+                element = command->get(index);
+                int colon = element->positionOf(':');
                 if (colon < 0) {
                     continue;
                 }
-                left = item->left(colon);
-                right = item->from(colon + 1);
+                left = element->left(colon);
+                right = element->from(colon + 1);
+                // If this one matches, break out.
                 if (keyArray->get(left)->is(key)) {
                     keyCode = left->getText();
                     nameCode = right->getText();
@@ -87,7 +88,7 @@ class Runtime {
                         strcpy(buf, keyCode);
                         strcat(buf, ":#");
                         sprintf(&buf[strlen(buf)],"%d", s);
-                        item->setText(buf);
+                        element->setElement(new Text(buf));
                         break;
                     }
                 }
@@ -105,16 +106,16 @@ class Runtime {
         // If 'select' is false return the key; if true return the value
         // This will always be a text constant (so it doesn't need to be deleted)
         Text* getItemText(int n, bool select) {
-            Text* item = command->get(n);
-            if (item->is("}")) {
-                return item;
+            Element* element = command->get(n);
+            if (element->is("}")) {
+                return element->getElement();
             }
-            int colon = item->positionOf(':');
+            int colon = element->positionOf(':');
             if (colon < 0) {
                 return nullptr;
             }
-            Text* left = item->left(colon);
-            Text* right = item->from(colon + 1);
+            Text* left = element->left(colon);
+            Text* right = element->from(colon + 1);
             Text* retval;
             if (right->is("{")) {
                 retval = c_openBrace;
@@ -133,14 +134,14 @@ class Runtime {
         TextArray* getCodeArray() { return codeArray; }
         void setKeyArray(TextArray* arg) { keyArray = arg; }
         TextArray* getKeyArray() { return keyArray; }
-        void setCommands(TextArray** arg) { commands = arg; }
-        TextArray** getCommands() { return commands; }
+        void setCommands(CommandArray* arg) { commands = arg; }
+        CommandArray* getCommands() { return commands; }
         void setSymbols(SymbolArray* arg) { symbols = arg; }
         SymbolArray* getSymbols() { return symbols; }
         void setKeywordArray(KeywordArray* arg) { keywordArray = arg; }
         KeywordArray* getKeywordArray() { return keywordArray; }
-        void setCommand(TextArray* arg) { command = arg; }
-        TextArray* getCommand() { return command; }
+        void setCommand(Command* arg) { command = arg; }
+        Command* getCommand() { return command; }
         void setKeywordCode(int arg) { keywordCode = arg; }
         int getKeywordCode() { return keywordCode; }
         void setPC(int arg) { pc = arg; }
@@ -206,17 +207,17 @@ class Runtime {
                         symbol->detach();
                         return symbol->getValue();
                     } else{
-                        printf("Unrecognized value type %s in item %s:\n", valueType->getText(), command->get(n)->getText());
+                        printf("Unrecognized value type %s in item %s:\n", valueType->getText(), command->get(n)->getElement()->getText());
                         command->dump();
                         exit(1);
                     }
                 } else {
-                    printf("Value type %s not found in %s:\n", valueType->getText(), command->get(n)->getText());
+                    printf("Value type %s not found in %s:\n", valueType->getText(), command->get(n)->getElement()->getText());
                     command->dump();
                     exit(1);
                 }
             }
-            printf("Value not found in %s:\n", command->get(n)->getText());
+            printf("Value not found in %s:\n", command->get(n)->getElement()->getText());
             command->dump();
             exit(1);
         }
@@ -227,14 +228,14 @@ class Runtime {
             // Look for this name then process it
             Text* valueType = getCommandProperty(0, "value");
             for (int n = 0; n < command->getSize(); n++) {
-                Text* item = command->get(n);
+                Element* element = command->get(n);
                 // Deal with lines of the form <n>:<m>
-                int colon = item->positionOf(':');
+                int colon = element->positionOf(':');
                 if (colon > 0) {
-                    Text* left = item->left(colon);
+                    Text* left = element->left(colon);
                     if (keyArray->get(left)->is(name)) {
                         // Verify that the right-hand element is an open brace
-                        Text* right = item->from(colon + 1);
+                        Text* right = element->from(colon + 1);
                         if (right->is("{")) {
                             delete right;
                             return getRuntimeValue(++n);
