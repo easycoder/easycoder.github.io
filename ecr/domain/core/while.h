@@ -1,4 +1,4 @@
 int core_while(Runtime* runtime) {
-    print("while handler\n");
+    runtime->notImplemented("while");
     return 0;
 };

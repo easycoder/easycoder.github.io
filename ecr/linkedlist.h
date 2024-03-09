@@ -46,7 +46,6 @@ class LinkedListElement {
 class LinkedList {
 
     private:
-        const char* name;
         int size = 0;                          // the number of items
         LinkedListElement* head = nullptr;
         LinkedListElement* tail = nullptr;
@@ -101,11 +100,6 @@ class LinkedList {
         // Provide info about the list
         void info() {
             print("LinkedList: size=%d\n", size);
-        }
-
-        // Named constructor
-        LinkedList(const char* name) {
-            this->name = name;
         }
 
         // Default constructor

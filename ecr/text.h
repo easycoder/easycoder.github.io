@@ -1,7 +1,6 @@
 class Text {
     private:
 
-        const char* name;
         const char* text;
         int length = 0;
 
@@ -11,13 +10,6 @@ class Text {
         // Get the content of this text
         const char* getText() {
             return text;
-        }
-    
-        ///////////////////////////////////////////////////////////////////////
-        // Set the content of this text
-        void setText(const char* t) {
-            delete text;
-            init(t, name);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -73,8 +65,8 @@ class Text {
                 }
                 temp[n] = '\0';
             }
-            Text* tt = new Text((const char*)temp, "replaceChar");
-            delete temp;
+            Text* tt = new Text((const char*)temp);
+            delete[] temp;
             return tt;
         }
 
@@ -84,8 +76,8 @@ class Text {
             char* t = new char[n + 1];
             strncpy(t, text, n);
             t[n] = '\0';
-            Text* tt = new Text(t, "left");
-            delete t;
+            Text* tt = new Text(t);
+            delete[] t;
             return tt;
         }
 
@@ -95,8 +87,8 @@ class Text {
             char* t = new char[n + 1];
             strncpy(t, text + length - n, n);
             t[n] = '\0';
-            Text* tt = new Text(t, "right");
-            delete t;
+            Text* tt = new Text(t);
+            delete[] t;
             return tt;
         }
 
@@ -112,33 +104,46 @@ class Text {
                 strncpy(t, text + n, len);
             }
             t[len] = '\0';
-            Text* tt = new Text(t, "from");
-            delete t;
+            Text* tt = new Text(t);
+            delete[] t;
             return tt;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Initialize this Text
-        void init(const char* t, const char* name) {
-            this->name = name;
+        void init(const char* t) {
             length = strlen(t);
             char* temp = new char[length + 1];
             strcpy(temp, (char*)t);
             temp[length] = '\0';
             text = temp;
         }
+    
+        ///////////////////////////////////////////////////////////////////////
+        // Set the content of this text
+        void setText(const char* t) {
+            delete text;
+            init(t);
+        }
 
         ///////////////////////////////////////////////////////////////////////
-        // 2-argument constructor. This names itself
-        Text(const char* t, const char* name) {
-            init(t, name);
+        // Print the value of this Text
+        void dump() {
+            print("%s\n", text);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // 1-argument constructor. This creates a copy of the calling data
 
         Text(const char* t) {
-            init(t, "<noname>");
+            init(t);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // 1-argument constructor. This creates a copy of the calling data
+
+        Text(Text* t) {
+            init(t->getText());
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -148,12 +153,7 @@ class Text {
         ///////////////////////////////////////////////////////////////////////
         // Destructor
         ~Text() {
-            #if DESTROY
-            if (strcmp(name, "<noname>") != 0) {
-                print("Text: Delete %s\n", name);
-            }
-            #endif
-            delete text;
+            delete[] text;
         }
 };
 
@@ -166,7 +166,6 @@ class Text {
 class TextArray {
 
     private:
-        const char* name;
         int size = 0;                  // the number of items
         Text** array = nullptr;        // the array of items
         LinkedList* list;              // A list to hold new data items as they are added
@@ -185,6 +184,7 @@ class TextArray {
         // the combined size of array and list, return the item from the list.
         Text* get(int n) {
             if (n < size) {
+                Text* t = array[n];
                 return array[n];
             }
             else if (n < size + list->getSize()) {
@@ -203,6 +203,12 @@ class TextArray {
         // Get the text of an item
         const char* getText(int n) {
             return get(n)->getText();
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the value of an item (known to be numeric)
+        int getValueOf(int n) {
+            return atoi(get(n)->getText());
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -258,7 +264,7 @@ class TextArray {
         // Print all the values in the array
         void dump() {
             print("This is all the items in TextArray:\n");
-            for (int n = 0; n < size; n++) {
+            for (int n = 0; n < getSize(); n++) {
                 print("%s\n", getText(n));
             }
             print("-----------------\n");
@@ -271,16 +277,9 @@ class TextArray {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Named constructor
-        TextArray(const char* name) {
-            this->name = name;
-            list = new LinkedList(name);
-        }
-
-        ///////////////////////////////////////////////////////////////////////
         // Default constructor
         TextArray() {
-            list = new LinkedList("<noname>");
+            list = new LinkedList();
         }
 
         ///////////////////////////////////////////////////////////////////////

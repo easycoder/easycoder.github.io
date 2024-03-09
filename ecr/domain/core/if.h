@@ -1,9 +1,4 @@
-#ifndef CORE_IF
-#define CORE_IF
-
 int core_if(Runtime* runtime) {
-    print("if handler\n");
+    runtime->notImplemented("if");
     return 0;
 };
-
-#endif

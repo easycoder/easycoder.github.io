@@ -1,9 +1,9 @@
 int core_put(Runtime* runtime) {
     #if KEYWORDS
-    printf("Line %s: put\n", runtime->getCommand()->get(0)->getText());
+    printf("Line %s\n", runtime->getLineNumber());
     #endif
 
-    RuntimeValue* runtimeValue = runtime->getRuntimeValue("value");
+    RuntimeValue* runtimeValue = runtime->getCommand()->getRuntimeValue("value");
     runtime->setSymbolValue("target", runtimeValue->copy());
 
     return runtime->getPC() + 1;

@@ -95,14 +95,30 @@ class CoreKeywords {
             WRITE
         };
 
+        int index = 0;
+        int* map;
+        TextArray* keyArray;
         KeywordArray* keywords;
         Text* domain = new Text("core");
 
+        ///////////////////////////////////////////////////////////////////////
+        // Add a keyword. Only add keywords that are found in the key array.
+        // The map contains the index of the variable (and thus its handler)
+        // against the index of its name in the key array.
         void add(const char* name) {
-            Keyword* keyword = new Keyword();
-            keyword->setName(new Text(name));
-            keyword->setDomain(domain);
-            keywords->add(keyword);
+            int size = keyArray->getSize();
+            for (int n = 0; n < size; n++) {
+                if (keyArray->get(n)->is(name)) {
+                    Keyword* keyword = new Keyword();
+                    keyword->setName(new Text(name));
+                    keyword->setDomain(domain);
+                    keyword->setIndex(n);
+                    map[n] = index;
+                    keywords->add(keyword);
+                    break;
+                }
+            }
+            index++;
         }
 
     public:
@@ -124,7 +140,8 @@ class CoreKeywords {
 
         ///////////////////////////////////////////////////////////////////////
         // Run a command. All the information needed is in 'runtime'
-        int run(Runtime* runtime, int index) {
+        int run(Runtime* runtime, int code) {
+            int index = map[code];
             switch (index)
             {
                 case ADD:
@@ -222,7 +239,9 @@ class CoreKeywords {
 
         ///////////////////////////////////////////////////////////////////////
         // Constructor
-        CoreKeywords() {
+        CoreKeywords(TextArray* array) {
+            keyArray = array;
+            map = new int[array->getSize()];
             keywords = new KeywordArray();
             add("add");
             add("append");
@@ -274,6 +293,7 @@ class CoreKeywords {
         ///////////////////////////////////////////////////////////////////////
         // Destructor
         ~CoreKeywords() {
+            delete[] map;
             print("CoreKeywords: Destructor executed\n");
          }
 };

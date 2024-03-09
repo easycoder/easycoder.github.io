@@ -1,5 +1,5 @@
 int core_add(Runtime* runtime) {
-    print("add handler\n");
+    runtime->notImplemented("add");
     return 0;
 };
 

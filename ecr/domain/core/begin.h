@@ -1,4 +1,4 @@
 int core_begin(Runtime* runtime) {
-    print("begin handler\n");
+    runtime->notImplemented("abegindd");
     return 0;
 };

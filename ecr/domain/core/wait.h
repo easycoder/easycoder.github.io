@@ -1,4 +1,4 @@
 int core_wait(Runtime* runtime) {
-    print("wait handler\n");
+    runtime->notImplemented("wait");
     return 0;
 };

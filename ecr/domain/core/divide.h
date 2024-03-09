@@ -1,4 +1,4 @@
 int core_divide(Runtime* runtime) {
-    print("divide handler\n");
+    runtime->notImplemented("divide");
     return 0;
 };

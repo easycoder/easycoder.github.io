@@ -4,6 +4,7 @@ class Keyword {
 
         Text* name;
         Text* domain;
+        int index;
 
     public:
 
@@ -28,13 +29,30 @@ class Keyword {
         ///////////////////////////////////////////////////////////////////////
         // Get the domain of the keyword
         Text* getDomain() {
-            return this->domain;
+            return domain;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Set the index of the keyword
+        void setIndex(int index) {
+            this->index = index;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the index of the keyword
+        int getIndex() {
+            return index;
+        }
+    
+        ///////////////////////////////////////////////////////////////////////
+        // Test if this keyword is a given value
+        bool is(Text* t) {
+            return t->is(name);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Default constructor
-        Keyword() {
-        }
+        Keyword() {}
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor
@@ -117,7 +135,7 @@ class KeywordArray {
                     size++;
                 }
                 if (oldArray != nullptr) {
-                    delete oldArray;
+                    delete[] oldArray;
                 }
                 // Copy the list to the new array
                 int n = 0;

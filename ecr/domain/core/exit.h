@@ -1,6 +1,6 @@
 int core_exit(Runtime* runtime) {
     #if KEYWORDS
-    printf("Line %s: exit\n", runtime->getCommand()->get(0)->getText());
+    printf("Line %s\n", runtime->getLineNumber());
     #endif
     
     return -1;

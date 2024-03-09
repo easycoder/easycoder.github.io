@@ -66,13 +66,13 @@ class Value:
 		if self.peek() == 'cat':
 			value['type'] = 'cat'
 			value['numeric'] = False
-			value['parts'] = [item]
+			value['value'] = [item]
 			while self.peek() == 'cat':
 				self.nextToken()
 				self.nextToken()
 				item = self.getItem()
 				if item != None:
-					value['parts'].append(item)
+					value['value'].append(item)
 		else:
 			value = item
 

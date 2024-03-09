@@ -1,4 +1,4 @@
 int core_end(Runtime* runtime) {
-    print("end handler\n");
+    runtime->notImplemented("end");
     return 0;
 };

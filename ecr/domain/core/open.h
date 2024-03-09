@@ -1,4 +1,4 @@
 int core_open(Runtime* runtime) {
-    print("open handler\n");
+    runtime->notImplemented("open");
     return 0;
 };

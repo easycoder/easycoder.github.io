@@ -1,4 +1,4 @@
 int core_take(Runtime* runtime) {
-    print("take handler\n");
+    runtime->notImplemented("take");
     return 0;
 };

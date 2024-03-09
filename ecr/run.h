@@ -7,17 +7,21 @@ class Run {
         TextArray* keyArray;
         CommandArray* commands;
         CoreKeywords* coreKeywords;
-        int* scriptKeywordCodes;
+        CoreValues* coreValues;
         SymbolArray* symbols;
+        Functions* functions;
 
         ///////////////////////////////////////////////////////////////////////
         // Set up the runtime
         void setupRuntime() {
             runtime = new Runtime();
+            runtime->setFunctions(functions);
             runtime->setCodeArray(codeArray);
             runtime->setKeyArray(keyArray);
             runtime->setCommands(commands);
             runtime->setSymbols(symbols);
+            // Set the value handlers for each domain
+            runtime->setCoreValues(coreValues);
         }
 
     public:
@@ -28,13 +32,16 @@ class Run {
             do {
                 // print("Command %d\n", pc);
                 Command* command = commands->get(pc);
+                command->setKeyArray(keyArray);
+                command->setSymbols(symbols);
+                command->setCoreValues(coreValues);
                 runtime->setCommand(command);
                 runtime->setPC(pc);
-                runtime->setKeywordCode(scriptKeywordCodes[pc]);
+                int c = command->getElementCode(command->getElements(), 2);
                 // Choose the right domain and call its run handler
-                switch (atoi(command->get(1)->getElement()->getText())) {
+                switch (command->getElementCode(command->getElements(), 1)) {
                     case DOMAIN_CORE:
-                        pc = coreKeywords->run(runtime, scriptKeywordCodes[pc]);
+                        pc = coreKeywords->run(runtime, c);
                         break;
                 }
                 if (pc < 0) {
@@ -56,9 +63,9 @@ class Run {
                     memcpy(cc, content, n);
                     cc[n] = '\0';
                     if (strlen(cc) > 0) {
-                        ta->add(new Text(cc, cc));
+                        ta->add(new Text(cc));
                     }
-                    delete cc;
+                    delete[] cc;
                     if (content[n] == '\0') {
                         break;
                     }
@@ -73,31 +80,55 @@ class Run {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Recursive parser
-        Command* parse(TextArray* codes, int* n) {
-            Command* command = new Command();
+        // Value parser
+        ElementArray* parseValue(TextArray* codes, int* n) {
+            ElementArray* value = new ElementArray();
             while (*n < codes->getSize()) {
                 Text* item = codes->get(*n);
+                // print("%s\n", item->getText());
+                if (item->is("}") || item->is("]")) {
+                    break;
+                } else {
+                    int colon = item->positionOf(':');
+                    Text* right = item->from(colon + 1);
+                    if (right->is("{") || right->is("[")) {
+                        (*n)++;
+                        value->add(new Element(item, parseValue(codes, n)));
+                    } else {
+                        value->add(new Element(item));
+                    }
+                    delete right;
+                }
+                (*n)++;
+            }
+            value->flatten();
+            return value;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Command parser
+        Command* parseCommand(TextArray* codes, int* n) {
+            Command* command = new Command(functions);
+            int size = codes->getSize();
+            while (*n < size) {
+                Text* item = codes->get(*n);
+                // print("--- %s\n", item->getText());
+                if (item->is("}") || item->is("]")) {
+                    break;
+                }
                 int colon = item->positionOf(':');
                 if (colon > 0) {
                     Text* left = item->left(colon);
                     Text* right = item->from(colon + 1);
-                    if (right->is("{")) {
-                        command->add(new Element(item));
+                    if (right->is("{") || right->is("[")) {
                         (*n)++;
-                        command->add(new Element(parse(codes, n)));
-                    }
-                    else if (right->is("[")) {
-                        command->add(new Element(item));
+                        command->add(new Element(item, parseValue(codes, n)));
                     } else {
                         command->add(new Element(item));
                     }
-                } else if (item->is("}")) {
-                    break;
-                } else if (item->is("]")) {
-                    break;
-                }
-                else {
+                    delete left;
+                    delete right;
+                } else {
                     command->add(new Element(item));
                 }
                 (*n)++;
@@ -120,68 +151,53 @@ class Run {
             // keyArray->info();
 
             // Initialise the list of domains
-            domains = new TextArray("domains");
+            domains = new TextArray();
             domains->add("core");
             domains->flatten();
 
             // Get the keywords and their handlers.
             // Do this for each domain.
-            coreKeywords = new CoreKeywords();
+            coreKeywords = new CoreKeywords(keyArray);
+            coreValues = new CoreValues(keyArray);
             // coreKeywords->info();
 
+            // Create an array of symbols
+            symbols = new SymbolArray();
+            // Create a "functions" object
+            functions = new Functions(keyArray, symbols);
+
             int codeSize = codeArray->getSize();
-            // Create the command data array
-            commands = new CommandArray();
             // Create the array of commands and a list of initial keywords
-            scriptKeywordCodes = new int[codeSize];
+            commands = new CommandArray();
             for (int n = 0; n < codeSize; n++) {
                 Text* codeLine = codeArray->get(n); 
                 TextArray* ta = split(codeLine, ',');
-                // Get the keyword - item 2 in the command
-                Text* tt = keyArray->get(atoi(ta->get(2)->getText()));
-                // Look up the keyword and save its code as the value for this command
-                bool flag = false;
-                for (int k = 0; k < keyArray->getSize(); k++) {
-                    if (tt->is(keyArray->get(k)->getText())) {
-                        scriptKeywordCodes[n] = k;
-                        flag = true;
-                        break;
-                    }
-                }
-                if (!flag) {
-                    print("No handler found for keyword '%s'\n", tt->getText());
-                    return;
-                }
+                
                 // Parse the command and add it to the command array
                 int *pointer = new int[1];
                 pointer[0] = 0;
-                commands->add(parse(ta, pointer));
+                Command* command = parseCommand(ta, pointer);
+                commands->add(command);
 
+                // Get the line number - item 0 in the command
+                command->setLineNumber(command->getElementCode(command->getElements(), 0));
+                // Get the domain - item 1 in the command
+                int domainIndex = command->getElementCode(command->getElements(), 1);
+                // Get the keyword - item 2 in the command
+                Text* tt = keyArray->get(command->getElementCode(command->getElements(), 2));
 
-
-
-
-                // commands[n] = elements;
-                // TextArray* cmd = commands[n];
-                // // Next, get the initial keyword code for the command
-                // int domainIndex = atoi(cmd->get(1)->getText());
-                // // Get the name of the keyword from the key array
-                // Text* tt = keyArray->get(atoi(cmd->get(2)->getText()));
-                // // Select the domain
-                // KeywordArray* keywords;
-                // switch (domainIndex) {
-                //     case DOMAIN_CORE:
-                //         keywords = coreKeywords->getKeywords();
-                //         break;
-                //     default:
-                //         print("Unknown domain index %d\n", domainIndex);
-                //         return;
-                // }
-                // // Create an array of symbols
-                // symbols = new SymbolArray();
+                // Look up the keyword in this domain and save its code as the value for this command
+                KeywordArray* keywords;
+                switch (domainIndex) {
+                    case DOMAIN_CORE:
+                        keywords = coreKeywords->getKeywords();
+                        break;
+                    default:
+                        print("Unknown domain index %d\n", domainIndex);
+                        exit(1);
+                }
             }
             commands->flatten();
-            commands->dump();
             setupRuntime();
             if (runFrom(runtime, 0) < 0) {
                 print("Program exit requested\n");
@@ -190,7 +206,6 @@ class Run {
                 delete keyArray;
                 delete coreKeywords;
                 delete commands;
-                delete domains;
             }
         };
 

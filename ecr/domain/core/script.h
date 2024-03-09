@@ -1,4 +1,4 @@
 int core_script(Runtime* runtime) {
-    print("script handler\n");
+    runtime->notImplemented("script");
     return 0;
 };

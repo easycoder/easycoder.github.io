@@ -1,11 +1,15 @@
 int core_print(Runtime* runtime) {
     #if KEYWORDS
-    printf("Line %s: print\n", runtime->getCommand()->get(0)->getText());
+    printf("Line %s ", runtime->getLineNumber());
     #endif
 
     const char* buf = runtime->getTextValue("value");
+    if (buf == nullptr) {
+        print("No value at line %s\n", runtime->getLineNumber());
+        exit(1);
+    }
     printf("->%s\n", buf);
-    delete buf;
+    delete[] buf;
 
     return runtime->getPC() + 1;
 };

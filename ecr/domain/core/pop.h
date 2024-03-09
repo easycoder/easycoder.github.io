@@ -1,4 +1,4 @@
 int core_pop(Runtime* runtime) {
-    print("pop handler\n");
+    runtime->notImplemented("pop");
     return 0;
 };

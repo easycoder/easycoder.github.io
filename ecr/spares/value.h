@@ -110,7 +110,7 @@ class ValueArray {
                     size++;
                 }
                 if (oldArray != nullptr) {
-                    delete oldArray;
+                    delete[] oldArray;
                 }
                 // Copy the list to the new array
                 int n = 0;

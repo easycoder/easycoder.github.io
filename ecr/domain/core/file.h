@@ -1,4 +1,4 @@
 int core_file(Runtime* runtime) {
-    print("file handler\n");
+    runtime->notImplemented("file");
     return 0;
 };

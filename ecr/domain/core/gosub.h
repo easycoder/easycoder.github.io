@@ -1,5 +1,4 @@
-
 int core_gosub(Runtime* runtime) {
-    print("gosub handler\n");
+    runtime->notImplemented("gosub");
     return 0;
 };

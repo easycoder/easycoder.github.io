@@ -1,4 +1,4 @@
 int core_index(Runtime* runtime) {
-    print("index handler\n");
+    runtime->notImplemented("index");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_write(Runtime* runtime) {
-    print("write handler\n");
+    runtime->notImplemented("write");
     return 0;
 };

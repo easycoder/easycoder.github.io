@@ -1,4 +1,4 @@
 int core_goto(Runtime* runtime) {
-    print("goto handler\n");
+    runtime->notImplemented("goto");
     return 0;
 };

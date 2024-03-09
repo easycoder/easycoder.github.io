@@ -1,4 +1,4 @@
 int core_split(Runtime* runtime) {
-    print("split handler\n");
+    runtime->notImplemented("split");
     return 0;
 };

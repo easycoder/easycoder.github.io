@@ -1,4 +1,4 @@
 int core_close(Runtime* runtime) {
-    print("close handler\n");
+    runtime->notImplemented("close");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_post(Runtime* runtime) {
-    print("post handler\n");
+    runtime->notImplemented("post");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_return(Runtime* runtime) {
-    print("return handler\n");
+    runtime->notImplemented("return");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_delete(Runtime* runtime) {
-    print("delete handler\n");
+    runtime->notImplemented("delete");
     return 0;
 };

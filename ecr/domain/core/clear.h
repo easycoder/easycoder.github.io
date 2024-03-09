@@ -1,4 +1,4 @@
 int core_clear(Runtime* runtime) {
-    print("clear handler\n");
+    runtime->notImplemented("clear");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_system(Runtime* runtime) {
-    print("system handler\n");
+    runtime->notImplemented("system");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_stop(Runtime* runtime) {
-    print("stop handler\n");
+    runtime->notImplemented("stop");
     return 0;
 };

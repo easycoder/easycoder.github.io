@@ -1,4 +1,4 @@
 int core_replace(Runtime* runtime) {
-    print("replace handler\n");
+    runtime->notImplemented("replace");
     return 0;
 };

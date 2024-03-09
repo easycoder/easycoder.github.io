@@ -1,9 +1,4 @@
-#ifndef CORE_FORK
-#define CORE_FORK
-
 int core_fork(Runtime* runtime) {
-    print("fork handler\n");
+    runtime->notImplemented("fork");
     return 0;
 };
-
-#endif

@@ -1,4 +1,4 @@
 int core_array(Runtime* runtime) {
-    print("array handler\n");
+    runtime->notImplemented("array");
     return 0;
 };

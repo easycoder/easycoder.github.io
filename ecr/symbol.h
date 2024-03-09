@@ -117,7 +117,7 @@ class Symbol {
         ~Symbol() {
             delete name;
             name = nullptr;
-            delete values;
+            delete[] values;
             values = nullptr;
         }
 };
@@ -200,7 +200,7 @@ class SymbolArray {
                     size++;
                 }
                 if (oldArray != nullptr) {
-                    delete oldArray;
+                    delete[] oldArray;
                 }
                 // Copy the list to the new array
                 int n = 0;

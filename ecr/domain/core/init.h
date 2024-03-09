@@ -1,4 +1,4 @@
 int core_init(Runtime* runtime) {
-    print("init handler\n");
+    runtime->notImplemented("init");
     return 0;
 };

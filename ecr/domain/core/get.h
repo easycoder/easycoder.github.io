@@ -1,4 +1,4 @@
 int core_get(Runtime* runtime) {
-    print("get handler\n");
+    runtime->notImplemented("get");
     return 0;
 };

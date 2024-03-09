@@ -1,4 +1,4 @@
 int core_read(Runtime* runtime) {
-    print("read handler\n");
+    runtime->notImplemented("read");
     return 0;
 };

@@ -1,4 +1,4 @@
 int core_stack(Runtime* runtime) {
-    print("stack handler\n");
+    runtime->notImplemented("stack");
     return 0;
 };

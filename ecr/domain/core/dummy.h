@@ -1,4 +1,4 @@
 int core_dummy(Runtime* runtime) {
-    print("dummy handler\n");
+    runtime->notImplemented("dummy");
     return 0;
 };

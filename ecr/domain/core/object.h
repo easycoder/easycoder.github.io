@@ -1,4 +1,4 @@
 int core_object(Runtime* runtime) {
-    print("object handler\n");
+    runtime->notImplemented("object");
     return 0;
 };

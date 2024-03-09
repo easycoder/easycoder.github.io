@@ -1,4 +1,4 @@
 int core_gotoPC(Runtime* runtime) {
-    print("gotoPC handler\n");
+    runtime->notImplemented("gotoPC");
     return 0;
 };

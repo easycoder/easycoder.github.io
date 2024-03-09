@@ -83,7 +83,7 @@ class Program:
 			result = value
 		elif valType == 'cat':
 			content = ''
-			for part in value['parts']:
+			for part in value['value']:
 				val = self.doValue(part)
 				if val == None:
 					val = ''

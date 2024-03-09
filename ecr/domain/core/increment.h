@@ -1,4 +1,4 @@
 int core_increment(Runtime* runtime) {
-    print("increment handler\n");
+    runtime->notImplemented("incrment");
     return 0;
 };

@@ -1,6 +1,6 @@
 #define DEBUG 1    // set to 1 to debug, 0 for no debugging
 #define DESTROY 0  // set to 1 to show destructors
-#define KEYWORDS 0 // set to 1 to show keywords as they execute
+#define KEYWORDS 1 // set to 1 to show keywords as they execute
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,15 +9,16 @@
 #include "debug.h"
 #include "definitions.h"
 #include "linkedlist.h"
-#include "runtimevalue.h"
 #include "text.h"
+#include "element.h"
 #include "keyword.h"
-#include "value.h"
+#include "runtimevalue.h"
 #include "symbol.h"
+#include "functions.h"
+#include "domain/core/core-values.h"
 #include "command.h"
 #include "runtime.h"
 #include "domain/core/core-keywords.h"
-#include "domain/core/core-values.h"
 #include "run.h"
 
 // Main program
@@ -65,7 +66,7 @@ int main(int argc, char* argv[])
         n++;
     }
     script[n++] = '\0';
-    Text* codes = new Text(script,"codes");
+    Text* codes = new Text(script);
     char* keyStart = &script[n];
     while (1) {
         m = n;
@@ -76,8 +77,8 @@ int main(int argc, char* argv[])
         n++;
     }
     script[n] = '\0';
-    Text* keys = new Text(keyStart, "keys");
-    delete script;
+    Text* keys = new Text(keyStart);
+    delete[] script;
     script = nullptr;
 
     // print("codes: %s", codes->getText());
