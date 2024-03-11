@@ -15,10 +15,10 @@
 #include "runtimevalue.h"
 #include "symbol.h"
 #include "functions.h"
-#include "domain/core/core-values.h"
+#include "core-values.h"
 #include "command.h"
 #include "runtime.h"
-#include "domain/core/core-keywords.h"
+#include "core-keywords.h"
 #include "run.h"
 
 // Main program

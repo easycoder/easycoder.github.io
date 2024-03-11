@@ -1,6 +1,3 @@
-#include "symbol.h"
-#include "cat.h"
-
 // Values for the 'core' domain
 class CoreValues {
 
@@ -25,7 +22,7 @@ class CoreValues {
             int size = keyArray->getSize();
             for (int n = 0; n < size; n++) {
                 if (keyArray->get(n)->is(name)) {
-                    printf("Adding %s at position %d pointing to %d\n", name, n, index);
+                    // printf("Adding %s at position %d pointing to %d\n", name, n, index);
                     Keyword* keyword = new Keyword();
                     keyword->setName(new Text(name));
                     keyword->setDomain(domain);
@@ -56,15 +53,26 @@ class CoreValues {
 
         ///////////////////////////////////////////////////////////////////////
         // Run a command. All necessary information is passed in
-        RuntimeValue* run(int code, ElementArray* value, SymbolArray* symbols, Functions* functions) {
+        RuntimeValue* run(int code, Functions* functions, void* data) {
             // functions->showSymbolValues();
             int index = map[code];
             switch (index)
             {
-                case SYMBOL:
-                    return core_symbol(functions);
-                case CAT:
-                    return core_cat(functions);
+                case SYMBOL: {
+                    Symbol* symbol = functions->getSymbol("name");
+                    return symbol->getValue();
+                }
+                case CAT: {
+                    RuntimeValueArray* runtimeValues = (RuntimeValueArray*)data;
+                    Text* value = new Text();
+                    for (int n = 0; n < runtimeValues->getSize(); n++) {
+                        value->append(runtimeValues->get(n)->getTextValue());
+                    }
+                    RuntimeValue* runtimeValue = new RuntimeValue();
+                    runtimeValue->setType(TEXT_VALUE);
+                    runtimeValue->setTextValue(value->getText());
+                    return runtimeValue;
+                }
                 default:
                     print("Unknown keyword code %d in CoreValues\n", index);
                     exit(1);

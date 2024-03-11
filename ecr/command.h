@@ -112,10 +112,15 @@ class Command {
         ///////////////////////////////////////////////////////////////////////
         // Set the value of a variable
         void setSymbolValue(const char* key, RuntimeValue* runtimeValue) {
-            // First we find the variable. Start by flattening the symbol array.
             Symbol* symbol = getSymbol(key);
-            // Put the given value into the symbol
             symbol->setValue(runtimeValue);
+        }
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Get the value of a variable
+        RuntimeValue* getSymbolValue(const char* key) {
+            Symbol* symbol = getSymbol(key);
+            return symbol->getValue();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -154,10 +159,31 @@ class Command {
             RuntimeValue* runtimeValue = new RuntimeValue();
             const char* domain = functions->getValuePropertyCode(value, "domain");
             const char* type = functions->getValuePropertyCode(value, "type");
+            functions->setElements(value);
             // Test for the special case 'cat'
             int t = atoi(type);
             if (strcmp(getKeyArray()->getText(t), "cat") == 0) {
-                return coreValues->run(t, value, getSymbols(), functions);
+                // Find the cat array
+                for (int n = 0; n < value->getSize(); n++) {
+                    Element* el = value->get(n);
+                    // Look for a value part
+                    int colon = el->positionOf(':');
+                    if (colon > 0) {
+                        Text* left = el->left(colon);
+                        if (getKeyArray()->get(atoi(left->getText()))->is("value")) {
+                            delete left;
+                            ElementArray* values = el->getValue();
+                            int size = values->getSize();
+                            RuntimeValueArray* rva = new RuntimeValueArray();
+                            for (int m = 0; m < size; m++) {
+                                RuntimeValue* rv = getRuntimeValue(values->get(m)->getValue());
+                                rva->add(rv);
+                            }
+                            rva->flatten();
+                            return coreValues->run(t, functions, rva);
+                        }
+                    }
+                }
             }
             if (domain == nullptr) {
                 // Here if no domain specified
@@ -183,7 +209,7 @@ class Command {
                 switch (atoi(domain)) {
                     case DOMAIN_CORE:
                         functions->setElements(value);
-                        return coreValues->run(t, value, getSymbols(), functions);
+                        return coreValues->run(t, functions, nullptr);
                 };
             }
             return runtimeValue;
@@ -276,8 +302,6 @@ class Command {
                 case BOOL_VALUE:
                     buf = new char[6];
                     sprintf(buf, "%s", value->getBoolValue() ? "true" : "false");
-                    break;
-                case CAT_VALUE:
                     break;
             };
             return buf;

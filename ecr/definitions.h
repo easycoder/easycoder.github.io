@@ -7,6 +7,5 @@ enum domains {
 enum valueTypes {
     TEXT_VALUE,
     INT_VALUE,
-    BOOL_VALUE,
-    CAT_VALUE
+    BOOL_VALUE
 };

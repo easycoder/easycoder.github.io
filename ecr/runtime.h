@@ -19,27 +19,8 @@ class Runtime {
         Command* command;
         // The current program counter
         int pc;
-        // The value types
-        TextArray* valueTypes;
         // The values in the 'core' domain
         CoreValues* coreValues;
-        // A temporary value to hold the index of a command getCommandProperty
-        int commandPropertyIndex;
-
-        // Constants
-        Text* c_openBrace = new Text("{");
-        Text* c_target = new Text("target");
-
-        ///////////////////////////////////////////////////////////////////////
-        // Set up the value types
-        void setupValueTypes() {
-            valueTypes = new TextArray();
-            valueTypes->add("text");
-            valueTypes->add("int");
-            valueTypes->add("boolean");
-            valueTypes->add("symbol");
-            valueTypes->flatten();
-        }
 
     public:
 
@@ -63,15 +44,33 @@ class Runtime {
         int getPC() { return pc; }
 
         ///////////////////////////////////////////////////////////////////////
+        // Get the runtime value of a named element of a command
+        RuntimeValue* getRuntimeValue(const char* key) {
+            return command->getRuntimeValue(key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Get the runtime value of a named element of a command, as text
         const char* getTextValue(const char* key) {
             return command->getTextValue(key);
         }
         
         ///////////////////////////////////////////////////////////////////////
-        // Set the value of a variable
+        // Set the value of a symbol
         void setSymbolValue(const char* key, RuntimeValue* runtimeValue) {
             command->setSymbolValue(key, runtimeValue);
+        }
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Get the value of a symbol
+        RuntimeValue* getSymbolValue(const char* key) {
+            return command->getSymbolValue(key);
+        }
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Get a symbol
+        Symbol* getSymbol(const char* key) {
+            return command->getSymbol(key);
         }
         
         ///////////////////////////////////////////////////////////////////////
@@ -87,14 +86,8 @@ class Runtime {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        Runtime() {
-            setupValueTypes();
-        }
+        Runtime() {}
 
         ///////////////////////////////////////////////////////////////////////
-        ~Runtime() {
-            delete valueTypes;
-            delete c_openBrace;
-            delete c_target;
-        }
+        ~Runtime() {}
 };

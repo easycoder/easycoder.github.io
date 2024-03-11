@@ -1,18 +1,16 @@
 !   Test script
 
-!    variable Var1
-!    variable Var2
+    variable Name
+    variable N
+    variable M
 
-!    print `Hello: world!`
-!    print 12345
-!    print true
-!    put `This is my text` into Var1
-!    put `This is too` into Var2
-!    print Var1
-!    print Var2
-!    put Var1 into Var2
-!    put `More of the same` into Var1
-!    print Var1
-!    print Var2
-    print `A` cat `B` cat `C`
+    put 0 into N
+    add 1 to N
+    add 2 to N giving M
+
+    put `Graham` into Name
+    print `Hello ` cat Name
+
+    print `N is ` cat N
+    print `M is ` cat M
     exit

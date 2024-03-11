@@ -52,6 +52,8 @@ class Compress:
             self.processList(value)
             self.writeToOutFile(',]')
         elif type(value) is dict:
+            if key == None:
+                key = 'value'
             self.writeToOutFile(f',{self.getShortCode(key)}:{{')
             self.processDictionary(value)
             self.writeToOutFile(',}')

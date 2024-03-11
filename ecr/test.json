@@ -1,25 +1,158 @@
 [
   {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 2,
+    "name": "Name",
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 3,
+    "name": "N",
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 4,
+    "name": "M",
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 6,
+    "target": "N",
+    "type": null,
+    "value": {
+      "content": 0,
+      "type": "int"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "add",
+    "lino": 7,
+    "target": "N",
+    "type": null,
+    "value1": {
+      "content": 1,
+      "type": "int"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "add",
+    "lino": 8,
+    "target": "M",
+    "type": null,
+    "value1": {
+      "content": 2,
+      "type": "int"
+    },
+    "value2": {
+      "domain": "core",
+      "name": "N",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 10,
+    "target": "Name",
+    "type": null,
+    "value": {
+      "content": "Graham",
+      "type": "text"
+    }
+  },
+  {
     "debug": true,
     "domain": "core",
     "keyword": "print",
-    "lino": 16,
+    "lino": 11,
     "type": null,
     "value": {
       "numeric": false,
       "type": "cat",
       "value": [
         {
-          "content": "A",
+          "content": "Hello ",
           "type": "text"
         },
         {
-          "content": "B",
+          "domain": "core",
+          "name": "Name",
+          "type": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 13,
+    "type": null,
+    "value": {
+      "numeric": false,
+      "type": "cat",
+      "value": [
+        {
+          "content": "N is ",
           "type": "text"
         },
         {
-          "content": "C",
+          "domain": "core",
+          "name": "N",
+          "type": "symbol"
+        }
+      ]
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 14,
+    "type": null,
+    "value": {
+      "numeric": false,
+      "type": "cat",
+      "value": [
+        {
+          "content": "M is ",
           "type": "text"
+        },
+        {
+          "domain": "core",
+          "name": "M",
+          "type": "symbol"
         }
       ]
     }
@@ -28,7 +161,7 @@
     "debug": true,
     "domain": "core",
     "keyword": "exit",
-    "lino": 17,
+    "lino": 15,
     "type": null
   }
 ]

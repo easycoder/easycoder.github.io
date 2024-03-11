@@ -1,7 +1,7 @@
 class Text {
     private:
 
-        const char* text;
+        const char* text = nullptr;
         int length = 0;
 
     public:
@@ -107,6 +107,21 @@ class Text {
             Text* tt = new Text(t);
             delete[] t;
             return tt;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Append to this Text
+        void append(const char* t) {
+            if (text == nullptr) {
+                text = t;
+            } else {
+                int len = strlen(text) + strlen(t);
+                char* tt = new char[len + 1];
+                strcpy(tt, text);
+                strcat(tt, t);
+                delete[] text;
+                text = tt;
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////

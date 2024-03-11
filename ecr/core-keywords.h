@@ -1,48 +1,3 @@
-#include "add.h"
-#include "append.h"
-#include "array.h"
-#include "begin.h"
-#include "clear.h"
-#include "close.h"
-#include "decrement.h"
-#include "delete.h"
-#include "divide.h"
-#include "dummy.h"
-#include "end.h"
-#include "exit.h"
-#include "file.h"
-#include "fork.h"
-#include "get.h"
-#include "gosub.h"
-#include "goto.h"
-#include "gotopc.h"
-#include "if.h"
-#include "increment.h"
-#include "index.h"
-#include "init.h"
-#include "multiply.h"
-#include "object.h"
-#include "open.h"
-#include "pop.h"
-#include "post.h"
-#include "print.h"
-#include "push.h"
-#include "put.h"
-#include "read.h"
-#include "replace.h"
-#include "return.h"
-#include "script.h"
-#include "set.h"
-#include "split.h"
-#include "stack.h"
-#include "stop.h"
-#include "system.h"
-#include "take.h"
-#include "variable.h"
-#include "wait.h"
-#include "while.h"
-#include "write.h"
-
 // Keywords for the 'core' domain
 class CoreKeywords {
 
@@ -141,96 +96,124 @@ class CoreKeywords {
         ///////////////////////////////////////////////////////////////////////
         // Run a command. All the information needed is in 'runtime'
         int run(Runtime* runtime, int code) {
+            RuntimeValue* runtimeValue;
+            RuntimeValue* runtimeValue2;
+            int next = runtime->getPC() + 1;
             int index = map[code];
             switch (index)
             {
-                case ADD:
-                    return core_add(runtime);
+                case ADD: {
+                    runtimeValue = runtime->getRuntimeValue("value1");
+                    runtimeValue2 = runtime->getRuntimeValue("value2");
+                    Symbol* target = runtime->getSymbol("target");
+                    if (runtimeValue2 == nullptr) {
+                        runtimeValue2 = target->getValue();
+                    }
+                    runtimeValue->setIntValue(runtimeValue->getIntValue() + runtimeValue2->getIntValue());
+                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    return next;
+                }
                 case APPEND:
-                    return core_append(runtime);
+                    return -1;
                 case ARRAY:
-                    return core_array(runtime);
+                    return -1;
                 case BEGIN:
-                    return core_begin(runtime);
+                    return -1;
                 case CLEAR:
-                    return core_clear(runtime);
+                    return -1;
                 case CLOSE:
-                    return core_close(runtime);
+                    return -1;
                 case DECREMENT:
-                    return core_decrement(runtime);
+                    return -1;
                 case DELETE:
-                    return core_delete(runtime);
+                    return -1;
                 case DUMMY:
-                    return core_dummy(runtime);
+                    return -1;
                 case END:
-                    return core_end(runtime);
-                case EXIT:
-                    return core_exit(runtime);
+                    return -1;
+                case EXIT:{
+                    return -1;
+                }
                 case FILE:
-                    return core_file(runtime);
+                    return -1;
                 case FORK:
-                    return core_fork(runtime);
+                    return -1;
                 case GET:
-                    return core_get(runtime);
+                    return -1;
                 case GOSUB:
-                    return core_gosub(runtime);
+                    return -1;
                 case GO:
                 case GOTO:
-                    return core_goto(runtime);
+                    return -1;
                 case GOTOPC:
-                    return core_gotoPC(runtime);
+                    return -1;
                 case IF:
-                    return core_if(runtime);
+                    return -1;
                 case INCREMENT:
-                    return core_increment(runtime);
+                    return -1;
                 case INDEX:
-                    return core_index(runtime);
+                    return -1;
                 case INIT:
-                    return core_init(runtime);
+                    return -1;
                 case MULTIPLY:
-                    return core_multiply(runtime);
+                    return -1;
                 case OBJECT:
-                    return core_object(runtime);
+                    return -1;
                 case OPEN:
-                    return core_open(runtime);
+                    return -1;
                 case POP:
-                    return core_pop(runtime);
+                    return -1;
                 case POST:
-                    return core_post(runtime);
-                case PRINT:
-                    return core_print(runtime);
+                    return -1;
+                case PRINT:{
+                    const char* buf = runtime->getTextValue("value");
+                    if (buf == nullptr) {
+                        print("No 'value' at line %d\n", atoi(runtime->getLineNumber()) + 1);
+                        exit(1);
+                    }
+                    printf("->%s\n", buf);
+                    delete[] buf;
+                    return next;
+                }
                 case PUSH:
-                    return core_push(runtime);
-                case PUT:
-                    return core_put(runtime);
+                    return -1;
+                case PUT:{
+                    runtimeValue = runtime->getRuntimeValue("value");
+                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    return runtime->getPC() + 1;
+                }
                 case READ:
-                    return core_read(runtime);
+                    return -1;
                 case REPLACE:
-                    return core_replace(runtime);
+                    return -1;
                 case RETURN:
-                    return core_return(runtime);
+                    return -1;
                 case SCRIPT:
-                    return core_script(runtime);
+                    return -1;
                 case SET:
-                    return core_set(runtime);
+                    return -1;
                 case SPLIT:
-                    return core_split(runtime);
+                    return -1;
                 case STACK:
-                    return core_stack(runtime);
+                    return -1;
                 case STOP:
-                    return core_stop(runtime);
+                    return -1;
                 case SYSTEM:
-                    return core_system(runtime);
+                    return -1;
                 case TAKE:
-                    return core_take(runtime);
-                case VARIABLE:
-                    return core_variable(runtime);
+                    return -1;
+                case VARIABLE:{
+                    int pc = runtime->getPC();
+                    Symbol* symbol = new Symbol(runtime->getCommand()->getCommandProperty("name"));
+                    runtime->getSymbols()->add(symbol);
+                    return next;
+                }
                 case WAIT:
-                    return core_wait(runtime);
+                    return -1;
                 case WHILE:
-                    return core_while(runtime);
+                    return -1;
                 case WRITE:
-                    return core_write(runtime);
+                    return -1;
                 default:
                     print("Unknown keyword code %d in core-keywords\n", index);
                     return -1;

@@ -5,6 +5,7 @@ class Functions {
         TextArray* keyArray;
         SymbolArray* symbols;
         ElementArray* elements;
+        TextArray* value;
     
     public:
 
@@ -26,6 +27,10 @@ class Functions {
 
         SymbolArray* getSymbols() {
             return symbols;
+        }
+
+        ElementArray* getElements() {
+            return elements;
         }
 
         ///////////////////////////////////////////////////////////////////////
