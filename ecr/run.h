@@ -2,19 +2,23 @@ class Run {
 
     private:
         TextArray* domains;
+        ThreadArray* threads;
         Runtime* runtime;
         TextArray* codeArray;
         TextArray* keyArray;
         CommandArray* commands;
-        CoreKeywords* coreKeywords;
-        CoreValues* coreValues;
         SymbolArray* symbols;
         Functions* functions;
+        // Domain-specific
+        CoreKeywords* coreKeywords;
+        CoreValues* coreValues;
+        CoreConditions* coreConditions;
 
         ///////////////////////////////////////////////////////////////////////
         // Set up the runtime
         void setupRuntime() {
             runtime = new Runtime();
+            runtime->setThreads(threads);
             runtime->setFunctions(functions);
             runtime->setCodeArray(codeArray);
             runtime->setKeyArray(keyArray);
@@ -44,11 +48,8 @@ class Run {
                         pc = coreKeywords->run(runtime, c);
                         break;
                 }
-                if (pc < 0) {
-                    return pc;
-                }
-            } while (pc > 0);
-            return 0;
+            } while (pc >= 0);
+            return pc;
         };
 
         ///////////////////////////////////////////////////////////////////////
@@ -138,6 +139,17 @@ class Run {
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // Finish execution
+        void finish() {
+            delete domains;
+            delete codeArray;
+            delete keyArray;
+            delete coreKeywords;
+            delete commands;
+            delete threads;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Constructor
         Run(Text* codes, Text* keys) {
             
@@ -198,21 +210,32 @@ class Run {
                 }
             }
             commands->flatten();
+            threads = new ThreadArray();
             setupRuntime();
-            if (runFrom(runtime, 0) < 0) {
-                print("Program exit requested\n");
-                delete domains;
-                delete codeArray;
-                delete keyArray;
-                delete coreKeywords;
-                delete commands;
+
+            // Run until there are no more threads waiting
+            int pc = 0;
+            while (true) {
+                pc = runFrom(runtime, pc);
+                if (pc == FINISHED) {
+                    break;
+                }
+                if (pc > 0) {
+                    continue;
+                }
+                while (pc == STOPPED) {
+                    pc = threads->getNextThread();
+                    if (pc > 0) {
+                        break;
+                    }
+                    // print("Stopped\n");
+                }
             }
+            finish();
         };
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor
-        ~Run() {
-            // print("Run: Destructor executed\n");
-         }
+        ~Run() {}
 };
 

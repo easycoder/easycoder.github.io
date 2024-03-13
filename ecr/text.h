@@ -110,35 +110,29 @@ class Text {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Append to this Text
-        void append(const char* t) {
-            if (text == nullptr) {
-                text = t;
-            } else {
-                int len = strlen(text) + strlen(t);
-                char* tt = new char[len + 1];
-                strcpy(tt, text);
-                strcat(tt, t);
-                delete[] text;
-                text = tt;
-            }
-        }
-
-        ///////////////////////////////////////////////////////////////////////
         // Initialize this Text
         void init(const char* t) {
+            if (text != nullptr) {
+                delete text;
+            }
             length = strlen(t);
             char* temp = new char[length + 1];
             strcpy(temp, (char*)t);
             temp[length] = '\0';
             text = temp;
         }
-    
+
         ///////////////////////////////////////////////////////////////////////
-        // Set the content of this text
-        void setText(const char* t) {
-            delete text;
-            init(t);
+        // Append to this Text.
+        void append(const char* t) {
+            if (text == nullptr) {
+                init(t);
+            } else {
+                char* tt = new char[strlen(text) + strlen(t) + 1];
+                strcpy(tt, text);
+                strcat(tt, t);
+                init(tt);
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -169,6 +163,12 @@ class Text {
         // Destructor
         ~Text() {
             delete[] text;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Copy this Text
+        Text* copy() {
+            return new Text(text);
         }
 };
 

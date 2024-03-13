@@ -88,7 +88,7 @@ class Symbol {
                     printf("%s\n", value->getTextValue());
                     break;
                 case INT_VALUE:
-                    printf("%d\n", value->getIntValue());
+                    printf("%ld\n", value->getIntValue());
                     break;
                 case BOOL_VALUE:
                     printf("%s\n", value->getBoolValue() ? "true" : "false");
@@ -102,7 +102,7 @@ class Symbol {
             index = 0;
             valueHolder = false;
             used = false;
-            values = new RuntimeValue*;
+            values = new RuntimeValue*[1];
             values[0] = nullptr;
         }
 
@@ -191,7 +191,7 @@ class SymbolArray {
             // Create a new array big enough for the old array and the list
             int total = oldSize + list->getSize();
             if (total > 0) {
-                array = new Symbol*[sizeof(void*) * total];
+                array = new Symbol*[total];
                 // Copy the old array to the new
                 size = 0;
                 while (size < oldSize) {

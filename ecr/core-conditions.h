@@ -1,12 +1,11 @@
-// Values for the 'core' domain
-class CoreValues {
+// Conditions for the 'core' domain
+class CoreConditions {
 
     private:
 
         enum coreIndices {
-            SYMBOL,
-            CAT,
-            TIMESTAMP
+            LESS,
+            GREATER
         };
 
         int index = 0;
@@ -53,63 +52,34 @@ class CoreValues {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Run a command. All necessary information is passed in
-        RuntimeValue* run(int code, Functions* functions, void* data) {
-            RuntimeValue* runtimeValue = new RuntimeValue();
-            int index = map[code];
-            switch (index)
-            {
-                case SYMBOL: {
-                    // functions->showSymbolValues();
-                    Symbol* symbol = functions->getSymbol("name");
-                    return symbol->getValue()->copy();
-                }
-                case CAT: {
-                    RuntimeValueArray* runtimeValues = (RuntimeValueArray*)data;
-                    Text* value = new Text();
-                    for (int n = 0; n < runtimeValues->getSize(); n++) {
-                        value->append(runtimeValues->get(n)->getTextValue());
-                    }
-                    runtimeValue->setType(TEXT_VALUE);
-                    runtimeValue->setTextValue(value->getText());
-                    return runtimeValue;
-                }
-                case TIMESTAMP: {
-                    runtimeValue->setType(INT_VALUE);
-                    struct timeval now;
-                    gettimeofday(&now, 0);
-                    long millis = now.tv_sec * 1000 + now.tv_usec / 1000;
-                    runtimeValue->setIntValue(millis);
-                    return runtimeValue;
-                }
-                default:
-                    print("Unknown keyword in CoreValues\n");
-                    exit(1);
+        // Run a condition. All necessary information is passed in
+        bool run(Condition* condition, Functions* functions) {
+            RuntimeValue* value1;
+            RuntimeValue* value2;
+            const char* type = condition->getType();
+            if (strcmp(type, "less") == 0) {
+                value1 = condition->getValue(0);
+                value2 = condition->getValue(1);
+                return (value1->getIntValue() < value2->getIntValue());
             }
-            return nullptr;
+            return false;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Constructor
-        CoreValues(TextArray* array) {
+        CoreConditions(TextArray* array) {
             keyArray = array;
-            int arraySize = array->getSize();
-            map = new int[arraySize];
-            for (int n = 0; n < arraySize; n++) {
-                map[n] = -1;
-            }
+            map = new int[array->getSize()];
             keywords = new KeywordArray();
             add("symbol");
             add("cat");
-            add("timestamp");
             keywords->flatten();
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor
-        ~CoreValues() {
+        ~CoreConditions() {
             delete domain;
-            delete[] map;
-            print("CoreValues: Destructor executed\n");
+            print("CoreConditions: Destructor executed\n");
         }
 };

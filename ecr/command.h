@@ -2,13 +2,28 @@
 class Command {
 
     private:
-        int line;                      // the number of items
+        int line;                             // the number of items
         Functions* functions;
         ElementArray* elements = nullptr;     // an array of Element objects
         CoreValues* coreValues;
+        CoreConditions* coreConditions;
         int* noDomainValueMap;
         KeywordArray* noDomainValueTypes;     // an array of no-domain value types
         int valueIndex = 0;                   // used while building the nodomain array
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Get a key
+        Text* getKey(int index) {
+            return getKeyArray()->get(index);
+        }
+
+        Text* getKey(const char* index) {
+            return getKey(atoi(index));
+        }
+
+        Text* getKey(Text* index) {
+            return getKey(atoi(index->getText()));
+        }
 
         ///////////////////////////////////////////////////////////////////////
         // Get item codes from an {a}:{b} pair
@@ -26,7 +41,7 @@ class Command {
             Text* right = element->from(colon + 1);
             Text* retval = new Text(select ? right : left);
             if (text) {
-                retval = getKeyArray()->get(atoi(retval->getText()));
+                retval = getKey(retval->getText());
             }
             delete left;
             delete right;
@@ -104,6 +119,12 @@ class Command {
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // Set the core conditions
+        void setCoreConditions(CoreConditions* c) {
+            coreConditions = c;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Add an element. This goes into the linked list.
         void add(Element* element) {
             elements->add(element);
@@ -122,13 +143,19 @@ class Command {
             Symbol* symbol = getSymbol(key);
             return symbol->getValue();
         }
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Get the line number
+        const char* getLineNumber() {
+            return elements->get(0)->getElement()->getText();
+        }
 
         ///////////////////////////////////////////////////////////////////////
         // Add a no-domain value type
         void addNoDomainType(const char* name) {
             int size = getKeyArray()->getSize();
             for (int n = 0; n < size; n++) {
-                if (getKeyArray()->get(n)->is(name)) {
+                if (getKey(n)->is(name)) {
                     // printf("Adding %s at position %d pointing to %d\n", name, n, valueIndex);
                     Keyword* keyword = new Keyword();
                     keyword->setName(new Text(name));
@@ -154,6 +181,12 @@ class Command {
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // Get the named parameter
+        Text* getParameter(const char* key) {
+            return functions->getValueProperty(elements, key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // Get the runtime value of a value element
         RuntimeValue* getRuntimeValue(ElementArray* value) {
             RuntimeValue* runtimeValue = new RuntimeValue();
@@ -170,7 +203,7 @@ class Command {
                     int colon = el->positionOf(':');
                     if (colon > 0) {
                         Text* left = el->left(colon);
-                        if (getKeyArray()->get(atoi(left->getText()))->is("value")) {
+                        if (getKey(left->getText())->is("value")) {
                             delete left;
                             ElementArray* values = el->getValue();
                             int size = values->getSize();
@@ -225,12 +258,11 @@ class Command {
                 int colon = element->positionOf(':');
                 if (colon > 0) {
                     Text* left = element->left(colon);
-                    if (getKeyArray()->get(atoi(left->getText()))->is(name)) {
+                    if (getKey(left->getText())->is(name)) {
                         // Verify that the right-hand element is an open brace
                         Text* right = element->from(colon + 1);
                         if (right->is("{")) {
                             delete right;
-                            // print("Process an inner value\n");
                             return getRuntimeValue(element->getValue());
                         } else {
                             printf("Item %d of command; expecting '{' but got %s:\n", n, right->getText());
@@ -242,6 +274,88 @@ class Command {
                 }
             }
             return nullptr;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get a condition
+        bool getCondition(ElementArray* value) {
+            Text* domain = nullptr;
+            Text* type = nullptr;
+            functions->setElements(value);
+            Condition* condition = new Condition();
+            int size = value->getSize();
+            for (int n = 0; n < size; n++) {
+                Element* element = value->get(n);
+                int colon = element->positionOf(':');
+                Text* left = element->left(colon);
+                Text* right = element->from(colon + 1);
+                Text* name = getKey(left->getText());
+                if (right->is("{")) {
+                    condition->addValue(getRuntimeValue(element->getValue()));
+                } else if (name->is("negate")) {
+                    const char* tf = getKey(right->getText())->getText();
+                    if (strcmp(tf, "True") == 0) {
+                        condition->setNegate(true);
+                    }
+                    else {
+                        condition->setNegate(false);
+                    }
+                } else if (name->is("domain")) {
+                    domain = getKey(right->copy());
+                } else if (name->is("type")) {
+                    type = getKey(right->copy());
+                } else {
+                    printf("Unknown property '%s' at line %s\n", getKey(left->getText())->getText(), getLineNumber());
+                    exit(1);
+                }
+                delete left;
+                delete right;
+            }
+
+            if (domain == nullptr) {
+                printf("No domain specified at line %s\n", getLineNumber());
+                exit(1);
+            }
+            if (type == nullptr) {
+                printf("No condition type specified at line %s\n", getLineNumber());
+                exit(1);
+            }
+            condition->flatten();
+            condition->setType(type->getText());
+            functions->setElements(value);
+            if (domain->is("core")) {
+                return coreConditions->run(condition, functions);
+            };
+            return false;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the named runtime condition
+        bool getCondition() {
+            // Look for this name then process it
+            for (int n = 0; n < elements->getSize(); n++) {
+                Element* element = elements->get(n);
+                // Look for a value part
+                int colon = element->positionOf(':');
+                if (colon > 0) {
+                    Text* left = element->left(colon);
+                    if (getKey(left->getText())->is("condition")) {
+                        // Verify that the right-hand element is an open brace
+                        Text* right = element->from(colon + 1);
+                        if (right->is("{")) {
+                            delete right;
+                            // print("Process a condition\n");
+                            return getCondition(element->getValue());
+                        } else {
+                            printf("Item %d of command; expecting '{' but got %s:\n", n, right->getText());
+                            dump();
+                            exit(1);
+                        }
+                    }
+                    delete left;
+                }
+            }
+            return false;
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -264,7 +378,7 @@ class Command {
         Text* getCommandProperty(const char* key) {
             int val = atoi(getCommandPropertyCode(key));
             if (val >= 0) {
-                return getKeyArray()->get(val);
+                return getKey(val);
             }
             return nullptr;
         }
@@ -286,25 +400,25 @@ class Command {
             if (value == nullptr) {
                 return nullptr;
             }
-            char* buf;
-            switch (value->getType()) {
-                case TEXT_VALUE: {
-                        const char* v = value->getTextValue();
-                        int  len = strlen(v);
-                        buf = new char[len + 1];
-                        strcpy(buf, v);
-                    }
-                    break;
-                case INT_VALUE:
-                    buf = new char[12];
-                    sprintf(buf, "%d", value->getIntValue());
-                    break;
-                case BOOL_VALUE:
-                    buf = new char[6];
-                    sprintf(buf, "%s", value->getBoolValue() ? "true" : "false");
-                    break;
-            };
-            return buf;
+            return value->getTextValue();
+            // char* buf;
+            // switch (value->getType()) {
+            //     case TEXT_VALUE: {
+            //             const char* v = value->getTextValue();
+            //             buf = new char[strlen(v) + 1];
+            //             strcpy(buf, v);
+            //         }
+            //         break;
+            //     case INT_VALUE:
+            //         buf = new char[12];
+            //         sprintf(buf, "%d", value->getIntValue());
+            //         break;
+            //     case BOOL_VALUE:
+            //         buf = new char[6];
+            //         sprintf(buf, "%s", value->getBoolValue() ? "true" : "false");
+            //         break;
+            // };
+            // return buf;
         }
 
         ///////////////////////////////////////////////////////////////////////

@@ -1,16 +1,19 @@
 !   Test script
 
-    variable Name
+    variable TS
     variable N
-    variable M
 
+    print `Starting`
+    put the timestamp into TS
     put 0 into N
-    add 1 to N
-    add 2 to N giving M
-
-    put `Graham` into Name
-    print `Hello ` cat Name
-
-    print `N is ` cat N
-    print `M is ` cat M
+    while N is less than 1000
+    begin
+        print `N is ` cat N
+        add 1 to N
+        wait 1
+    end
+    take TS from the timestamp giving TS
+    divide TS by 1000
+    print `Finished in ` cat TS cat ` seconds`
+    
     exit

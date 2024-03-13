@@ -2,6 +2,8 @@ class Runtime {
 
     private:
 
+        // The threads object
+        ThreadArray* threads;
         // The functions object
         Functions* functions;
         // An array containing the commands in the compiled code.
@@ -21,9 +23,13 @@ class Runtime {
         int pc;
         // The values in the 'core' domain
         CoreValues* coreValues;
+        // The conditions in the 'core' domain
+        CoreConditions* coreConditions;
 
     public:
 
+        void setThreads(ThreadArray* arg) { threads = arg; }
+        ThreadArray* getThreads() { return threads; }
         void setFunctions(Functions* arg) { functions = arg; }
         Functions* getFunctions() { return functions; }
         void setCodeArray(TextArray* arg) { codeArray = arg; }
@@ -36,17 +42,32 @@ class Runtime {
         SymbolArray* getSymbols() { return symbols; }
         void setKeywordArray(KeywordArray* arg) { keywordArray = arg; }
         KeywordArray* getKeywordArray() { return keywordArray; }
-        void setCoreValues(CoreValues* arg) { coreValues = arg; }
-        CoreValues* getCoreValues() { return coreValues; }
         void setCommand(Command* arg) { command = arg; }
         Command* getCommand() { return command; }
         void setPC(int arg) { pc = arg; }
         int getPC() { return pc; }
+        // Domain-specific
+        void setCoreValues(CoreValues* arg) { coreValues = arg; }
+        CoreValues* getCoreValues() { return coreValues; }
+        void setCoreConditions(CoreConditions* arg) { coreConditions = arg; }
+        CoreConditions* getCoreConditions() { return coreConditions; }
 
         ///////////////////////////////////////////////////////////////////////
-        // Get the runtime value of a named element of a command
+        // Get the named parameter
+        Text* getParameter(const char* key) {
+            return command->getParameter(key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the named runtime value
         RuntimeValue* getRuntimeValue(const char* key) {
             return command->getRuntimeValue(key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the named runtime condition
+        bool getCondition() {
+            return command->getCondition();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -72,17 +93,17 @@ class Runtime {
         Symbol* getSymbol(const char* key) {
             return command->getSymbol(key);
         }
-        
+
         ///////////////////////////////////////////////////////////////////////
-        // Print the line number
-        const char* getLineNumber() {
-            return command->getElements()->get(0)->getElement()->getText();
+        // Find a named value property
+        Text* getValueProperty(ElementArray* value, const char* key) {
+            return functions->getValueProperty(value, key);
         }
         
         ///////////////////////////////////////////////////////////////////////
-        // Error exit
-        void notImplemented(const char* code) {
-            functions->notImplemented(code);
+        // Get the line number
+        const char* getLineNumber() {
+            return command->getLineNumber();
         }
 
         ///////////////////////////////////////////////////////////////////////

@@ -57,7 +57,7 @@ class Functions {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Find the code for a named value property
+        // Find the key value for a named value property
         const char* getValuePropertyCode(ElementArray* value, const char* key) {
             for (int n = 0; n < value->getSize(); n++) {
                 Text* item = getKeyValue(value->get(n), false, true);
@@ -78,6 +78,7 @@ class Functions {
             if (code != nullptr) {
                 int val = atoi(code);
                 if (val >= 0) {
+                    // print("%d - %s\n", val, keyArray->get(val)->getText());
                     return keyArray->get(val);
                 }
             }
@@ -163,13 +164,6 @@ class Functions {
                 Symbol* symbol = symbols->get(s);
                 symbol->dump();
             }
-        }
-        
-        ///////////////////////////////////////////////////////////////////////
-        // Error exit
-        void notImplemented(const char* code) {
-            printf("'%s' not implemented\n", code);
-            exit(1);
         }
         
         ///////////////////////////////////////////////////////////////////////

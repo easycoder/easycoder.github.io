@@ -1,11 +1,25 @@
-#define DEBUG 1    // set to 1 to debug, 0 for no debugging
-#define DESTROY 0  // set to 1 to show destructors
-#define KEYWORDS 1 // set to 1 to show keywords as they execute
+#define DEBUG 1       // set to 1 to show debug messages
+#define DESTROY 0     // set to 1 to show destructors
+#define LINENUMBERS 0 // set to 1 to show each line number
+#define _LINUX
+//#define _WINDOWS
+//#define _ARDUINO
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/time.h>
+#ifdef _LINUX
+#include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
+#endif
+#ifdef _WINDOWS
+#include <windows.h>
+#endif
+#ifdef _ARDUINO
+#define Sleep(x) delay((x))
+#endif
 #include "debug.h"
 #include "definitions.h"
 #include "linkedlist.h"
@@ -13,9 +27,12 @@
 #include "element.h"
 #include "keyword.h"
 #include "runtimevalue.h"
+#include "condition.h"
 #include "symbol.h"
+#include "thread.h"
 #include "functions.h"
 #include "core-values.h"
+#include "core-conditions.h"
 #include "command.h"
 #include "runtime.h"
 #include "core-keywords.h"
@@ -24,6 +41,7 @@
 // Main program
 int main(int argc, char* argv[])
 {
+    printf("C++ version %ld\n", __cplusplus);
     char* ptr1;
     char* ptr2;
     int count = 0;

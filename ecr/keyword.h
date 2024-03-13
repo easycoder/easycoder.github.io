@@ -126,7 +126,7 @@ class KeywordArray {
             // Create a new array big enough for the old array and the list
             int total = oldSize + list->getSize();
             if (total > 0) {
-                array = new Keyword*[sizeof(void*) * total];
+                array = new Keyword*[total];
                 // Copy the old array to the new
                 size = 0;
                 while (size < oldSize) {

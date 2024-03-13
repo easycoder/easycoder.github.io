@@ -12,6 +12,7 @@ class CoreKeywords {
             CLOSE,
             DECREMENT,
             DELETE,
+            DIVIDE,
             DUMMY,
             END,
             EXIT,
@@ -96,8 +97,8 @@ class CoreKeywords {
         ///////////////////////////////////////////////////////////////////////
         // Run a command. All the information needed is in 'runtime'
         int run(Runtime* runtime, int code) {
-            RuntimeValue* runtimeValue;
-            RuntimeValue* runtimeValue2;
+            RuntimeValue* runtimeValue = nullptr;
+            RuntimeValue* runtimeValue2 = nullptr;
             int next = runtime->getPC() + 1;
             int index = map[code];
             switch (index)
@@ -113,58 +114,55 @@ class CoreKeywords {
                     runtime->setSymbolValue("target", runtimeValue->copy());
                     return next;
                 }
-                case APPEND:
-                    return -1;
-                case ARRAY:
-                    return -1;
-                case BEGIN:
-                    return -1;
-                case CLEAR:
-                    return -1;
-                case CLOSE:
-                    return -1;
-                case DECREMENT:
-                    return -1;
-                case DELETE:
-                    return -1;
-                case DUMMY:
-                    return -1;
-                case END:
-                    return -1;
-                case EXIT:{
-                    return -1;
+                // case APPEND:
+                // case ARRAY:
+                // case BEGIN:
+                // case CLEAR:
+                // case CLOSE:
+                // case DECREMENT:
+                // case DELETE:
+                case DIVIDE: {
+                    runtimeValue = runtime->getRuntimeValue("value1");
+                    runtimeValue2 = runtime->getRuntimeValue("value2");
+                    Symbol* target = runtime->getSymbol("target");
+                    if (runtimeValue2 == nullptr) {
+                        runtimeValue2 = target->getValue();
+                    }
+                    runtimeValue->setIntValue(runtimeValue->getIntValue() / runtimeValue2->getIntValue());
+                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    return next;
                 }
-                case FILE:
-                    return -1;
-                case FORK:
-                    return -1;
-                case GET:
-                    return -1;
-                case GOSUB:
-                    return -1;
-                case GO:
-                case GOTO:
-                    return -1;
+                // case DUMMY:
+                // case END:
+                case EXIT:
+                    return FINISHED;
+                // case FILE:
+                // case FORK:
+                // case GET:
+                // case GOSUB:
+                // case GO:
+                // case GOTO:
                 case GOTOPC:
-                    return -1;
-                case IF:
-                    return -1;
-                case INCREMENT:
-                    return -1;
-                case INDEX:
-                    return -1;
-                case INIT:
-                    return -1;
-                case MULTIPLY:
-                    return -1;
-                case OBJECT:
-                    return -1;
-                case OPEN:
-                    return -1;
-                case POP:
-                    return -1;
-                case POST:
-                    return -1;
+                    return atoi(runtime->getValueProperty(runtime->getCommand()->getElements(), "goto")->getText());
+                // case IF:
+                // case INCREMENT:
+                // case INDEX:
+                // case INIT:
+                case MULTIPLY: {
+                    runtimeValue = runtime->getRuntimeValue("value1");
+                    runtimeValue2 = runtime->getRuntimeValue("value2");
+                    Symbol* target = runtime->getSymbol("target");
+                    if (runtimeValue2 == nullptr) {
+                        runtimeValue2 = target->getValue();
+                    }
+                    runtimeValue->setIntValue(runtimeValue->getIntValue() * runtimeValue2->getIntValue());
+                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    return next;
+                }
+                // case OBJECT:
+                // case OPEN:
+                // case POP:
+                // case POST:
                 case PRINT:{
                     const char* buf = runtime->getTextValue("value");
                     if (buf == nullptr) {
@@ -172,51 +170,56 @@ class CoreKeywords {
                         exit(1);
                     }
                     printf("->%s\n", buf);
-                    delete[] buf;
                     return next;
                 }
-                case PUSH:
-                    return -1;
+                // case PUSH:
                 case PUT:{
                     runtimeValue = runtime->getRuntimeValue("value");
                     runtime->setSymbolValue("target", runtimeValue->copy());
                     return runtime->getPC() + 1;
                 }
-                case READ:
-                    return -1;
-                case REPLACE:
-                    return -1;
-                case RETURN:
-                    return -1;
-                case SCRIPT:
-                    return -1;
-                case SET:
-                    return -1;
-                case SPLIT:
-                    return -1;
-                case STACK:
-                    return -1;
+                // case READ:
+                // case REPLACE:
+                // case RETURN:
+                // case SCRIPT:
+                // case SET:
+                // case SPLIT:
+                // case STACK:
                 case STOP:
-                    return -1;
-                case SYSTEM:
-                    return -1;
-                case TAKE:
-                    return -1;
+                    return STOPPED;
+                // case SYSTEM:
+                case TAKE: {
+                    runtimeValue = runtime->getRuntimeValue("value1");
+                    runtimeValue2 = runtime->getRuntimeValue("value2");
+                    Symbol* target = runtime->getSymbol("target");
+                    if (runtimeValue2 == nullptr) {
+                        runtimeValue2 = target->getValue();
+                    }
+                    runtimeValue->setIntValue(runtimeValue2->getIntValue() - runtimeValue->getIntValue());
+                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    return next;
+                }
                 case VARIABLE:{
-                    int pc = runtime->getPC();
                     Symbol* symbol = new Symbol(runtime->getCommand()->getCommandProperty("name"));
                     runtime->getSymbols()->add(symbol);
                     return next;
                 }
-                case WAIT:
-                    return -1;
-                case WHILE:
-                    return -1;
-                case WRITE:
-                    return -1;
+                case WAIT: {
+                    runtimeValue = runtime->getRuntimeValue("value");
+                    Text* multiplier = runtime->getParameter("multiplier");
+                    long delay = runtimeValue->getIntValue() * atoi(multiplier->getText());
+                    runtime->getThreads()->add(new Thread(delay, next));
+                    return STOPPED;
+                }
+                case WHILE: {
+                    bool condition = runtime->getCondition();
+                    return condition ? next + 1 : next;
+                    // return runtime->getCondition() ? next + 1 : next;
+                }
+                // case WRITE:
                 default:
                     print("Unknown keyword code %d in core-keywords\n", index);
-                    return -1;
+                    return FINISHED;
             }
         }
 
@@ -234,6 +237,7 @@ class CoreKeywords {
             add("close");
             add("decrement");
             add("delete");
+            add("divide");
             add("dummy");
             add("end");
             add("exit");

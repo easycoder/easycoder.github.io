@@ -4,9 +4,9 @@ class RuntimeValue {
 
         int type;
         const char* textValue;
-        int intValue;
+        long intValue;
         bool boolValue;
-        char valuebuf[10];
+        char* valuebuf = new char[10];
 
     public:
 
@@ -23,7 +23,7 @@ class RuntimeValue {
             textValue = t;
         }
 
-        void setIntValue(int i) {
+        void setIntValue(long i) {
             type = INT_VALUE;
             intValue = i;
         }
@@ -38,7 +38,7 @@ class RuntimeValue {
                 case TEXT_VALUE:
                     return textValue;
                 case INT_VALUE:
-                    sprintf(valuebuf, "%d", intValue);
+                    sprintf(valuebuf, "%ld", intValue);
                     return valuebuf;
                 case BOOL_VALUE:
                     return boolValue ? "true" : "false";
@@ -46,7 +46,7 @@ class RuntimeValue {
             return nullptr;
         }
 
-        int getIntValue() {
+        long getIntValue() {
             switch (type) {
                 case TEXT_VALUE:
                     return atoi(textValue);

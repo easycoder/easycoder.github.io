@@ -9,3 +9,6 @@ enum valueTypes {
     INT_VALUE,
     BOOL_VALUE
 };
+
+#define STOPPED -1
+#define FINISHED -2
