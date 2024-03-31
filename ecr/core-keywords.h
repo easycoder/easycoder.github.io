@@ -10,6 +10,7 @@ class CoreKeywords {
             BEGIN,
             CLEAR,
             CLOSE,
+            DEBUG,
             DECREMENT,
             DELETE,
             DIVIDE,
@@ -96,7 +97,7 @@ class CoreKeywords {
 
         ///////////////////////////////////////////////////////////////////////
         // Run a command. All the information needed is in 'runtime'
-        int run(Runtime* runtime, int code) {
+        int run(ElementArray* elements, Runtime* runtime, int code) {
             RuntimeValue* runtimeValue = nullptr;
             RuntimeValue* runtimeValue2 = nullptr;
             int next = runtime->getPC() + 1;
@@ -104,14 +105,13 @@ class CoreKeywords {
             switch (index)
             {
                 case ADD: {
-                    runtimeValue = runtime->getRuntimeValue("value1");
-                    runtimeValue2 = runtime->getRuntimeValue("value2");
-                    Symbol* target = runtime->getSymbol("target");
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    runtimeValue = runtime->getRuntimeValue(elements, "value1");
+                    runtimeValue2 = runtime->getRuntimeValue(elements, "value2");
                     if (runtimeValue2 == nullptr) {
                         runtimeValue2 = target->getValue();
                     }
-                    runtimeValue->setIntValue(runtimeValue->getIntValue() + runtimeValue2->getIntValue());
-                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    target->setIntValue(runtimeValue->getIntValue() + runtimeValue2->getIntValue());
                     return next;
                 }
                 // case APPEND:
@@ -119,17 +119,27 @@ class CoreKeywords {
                 // case BEGIN:
                 // case CLEAR:
                 // case CLOSE:
-                // case DECREMENT:
+                case DEBUG: {
+                    Text* type = runtime->getParameter(elements, "type");
+                    singleStep = (type->is("step"));
+                    return next;
+                }
+                case DECREMENT: {
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    runtimeValue = target->getValue();
+                    runtimeValue->setIntValue(runtimeValue->getIntValue() - 1);
+                    runtime->setSymbolValue(elements, "target", runtimeValue->copy());
+                    return next;
+                }
                 // case DELETE:
                 case DIVIDE: {
-                    runtimeValue = runtime->getRuntimeValue("value1");
-                    runtimeValue2 = runtime->getRuntimeValue("value2");
-                    Symbol* target = runtime->getSymbol("target");
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    runtimeValue = runtime->getRuntimeValue(elements, "value1");
+                    runtimeValue2 = runtime->getRuntimeValue(elements, "value2");
                     if (runtimeValue2 == nullptr) {
                         runtimeValue2 = target->getValue();
                     }
-                    runtimeValue->setIntValue(runtimeValue->getIntValue() / runtimeValue2->getIntValue());
-                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    target->setIntValue(runtimeValue->getIntValue() / runtimeValue2->getIntValue());
                     return next;
                 }
                 // case DUMMY:
@@ -143,83 +153,120 @@ class CoreKeywords {
                 // case GO:
                 // case GOTO:
                 case GOTOPC:
-                    return atoi(runtime->getValueProperty(runtime->getCommand()->getElements(), "goto")->getText());
-                // case IF:
-                // case INCREMENT:
-                // case INDEX:
+                    return atoi(runtime->getValueProperty(elements, "goto")->getText());
+                case IF: {
+                    return runtime->getCondition(elements) ? next + 1 : next;
+                }
+                case INCREMENT: {
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    target->setIntValue(target->getIntValue() + 1);
+                    return next;
+                }
+                case INDEX:{
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    runtimeValue = runtime->getRuntimeValue(elements, "value");
+                    target->setIndex(runtimeValue->getIntValue());
+                    return next;
+                }
                 // case INIT:
                 case MULTIPLY: {
-                    runtimeValue = runtime->getRuntimeValue("value1");
-                    runtimeValue2 = runtime->getRuntimeValue("value2");
-                    Symbol* target = runtime->getSymbol("target");
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    runtimeValue = runtime->getRuntimeValue(elements, "value1");
+                    runtimeValue2 = runtime->getRuntimeValue(elements, "value2");
                     if (runtimeValue2 == nullptr) {
                         runtimeValue2 = target->getValue();
                     }
-                    runtimeValue->setIntValue(runtimeValue->getIntValue() * runtimeValue2->getIntValue());
-                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    target->setIntValue(runtimeValue->getIntValue() * runtimeValue2->getIntValue());
                     return next;
                 }
-                // case OBJECT:
+                case OBJECT:{
+                    Symbol* symbol = new Symbol(runtime->getCommand()->getCommandProperty(elements, "name"));
+                    runtime->getSymbols()->add(symbol);
+                    return next;
+                }
                 // case OPEN:
                 // case POP:
                 // case POST:
                 case PRINT:{
-                    const char* buf = runtime->getTextValue("value");
+                    const char* buf = runtime->getTextValue(elements, "value");
                     if (buf == nullptr) {
-                        print("No 'value' at line %d\n", atoi(runtime->getLineNumber()) + 1);
-                        exit(1);
+                        sprintf(exceptionBuffer, "No 'value' at line %d\n", runtime->getLineNumber(elements) + 1);
+                        throw exceptionBuffer;
                     }
                     printf("->%s\n", buf);
                     return next;
                 }
                 // case PUSH:
                 case PUT:{
-                    runtimeValue = runtime->getRuntimeValue("value");
-                    runtime->setSymbolValue("target", runtimeValue->copy());
-                    return runtime->getPC() + 1;
+                    runtimeValue = runtime->getRuntimeValue(elements, "value");
+                    runtime->setSymbolValue(elements, "target", runtimeValue->copy());
+                    return next;
                 }
                 // case READ:
                 // case REPLACE:
                 // case RETURN:
                 // case SCRIPT:
-                // case SET:
+                case SET: {
+                    Text* type = runtime->getParameter(elements, "type");
+                    if (type->is("elements")) {
+                        Symbol* symbol = runtime->getCommand()->getSymbol(elements, "name");
+                        runtimeValue = runtime->getRuntimeValue(elements, "value");
+                        symbol->setElements(runtimeValue->getIntValue());
+                    } else if (type->is("property")) {
+                        Symbol* target = runtime->getSymbol(elements, "target");
+                        Symbol* object = runtime->getSymbol(elements, "object");
+                        runtimeValue = runtime->getRuntimeValue(elements, "value1");
+                        if (object == nullptr) {
+                            runtimeValue2 = runtime->getRuntimeValue(elements, "value2");
+                            target->setProperty(runtimeValue, runtimeValue2);
+                        } else {
+                            target->setProperty(runtimeValue, object->getProperties());
+                        }
+                    } else if (type->is("setprop")) {
+                        Symbol* source = runtime->getSymbol(elements, "source");
+                        Symbol* target = runtime->getSymbol(elements, "target");
+                        runtimeValue = runtime->getRuntimeValue(elements, "key");
+                        PropertyArray* properties = source->getProperties();
+                        properties->flatten();
+                        Property* property = properties->getProperty(runtimeValue->getTextValue());
+                        target->setProperties(property->getProperties());
+                    }
+                    return next;
+                }
                 // case SPLIT:
                 // case STACK:
                 case STOP:
                     return STOPPED;
                 // case SYSTEM:
                 case TAKE: {
-                    runtimeValue = runtime->getRuntimeValue("value1");
-                    runtimeValue2 = runtime->getRuntimeValue("value2");
-                    Symbol* target = runtime->getSymbol("target");
+                    Symbol* target = runtime->getSymbol(elements, "target");
+                    runtimeValue = runtime->getRuntimeValue(elements, "value1");
+                    runtimeValue2 = runtime->getRuntimeValue(elements, "value2");
                     if (runtimeValue2 == nullptr) {
                         runtimeValue2 = target->getValue();
                     }
-                    runtimeValue->setIntValue(runtimeValue2->getIntValue() - runtimeValue->getIntValue());
-                    runtime->setSymbolValue("target", runtimeValue->copy());
+                    target->setIntValue(runtimeValue2->getIntValue() - runtimeValue->getIntValue());
                     return next;
                 }
                 case VARIABLE:{
-                    Symbol* symbol = new Symbol(runtime->getCommand()->getCommandProperty("name"));
+                    Symbol* symbol = new Symbol(runtime->getCommand()->getCommandProperty(elements, "name"));
                     runtime->getSymbols()->add(symbol);
                     return next;
                 }
                 case WAIT: {
-                    runtimeValue = runtime->getRuntimeValue("value");
-                    Text* multiplier = runtime->getParameter("multiplier");
+                    runtimeValue = runtime->getRuntimeValue(elements, "value");
+                    Text* multiplier = runtime->getParameter(elements, "multiplier");
                     long delay = runtimeValue->getIntValue() * atoi(multiplier->getText());
                     runtime->getThreads()->add(new Thread(delay, next));
                     return STOPPED;
                 }
                 case WHILE: {
-                    bool condition = runtime->getCondition();
-                    return condition ? next + 1 : next;
-                    // return runtime->getCondition() ? next + 1 : next;
+                    return runtime->getCondition(elements) ? next + 1 : next;
                 }
                 // case WRITE:
                 default:
-                    print("Unknown keyword code %d in core-keywords\n", index);
-                    return FINISHED;
+                    sprintf(exceptionBuffer, "Unknown keyword code '%d'\n", code);
+                    throw exceptionBuffer;
             }
         }
 
@@ -235,6 +282,7 @@ class CoreKeywords {
             add("begin");
             add("clear");
             add("close");
+            add("debug");
             add("decrement");
             add("delete");
             add("divide");

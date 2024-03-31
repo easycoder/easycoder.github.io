@@ -8,6 +8,7 @@ class Symbol {
         bool valueHolder;
         bool used;
         RuntimeValue** values = nullptr;
+        PropertyArray** properties;
 
     public:
 
@@ -62,6 +63,59 @@ class Symbol {
             return values[index]->getBoolValue();
         }
 
+        void setElements(int size) {
+            RuntimeValue** vv = new RuntimeValue*[size];
+            int n;
+            for (n = 0; n < elements && n < size; n++) {
+                vv[n] = values[n];
+            }
+            int m = n;
+            // If the new size is smaller, delete higher-order values
+            for (; m < elements; m++) {
+                delete values[m];
+            }
+            // If the new size is greater, add in empty values
+            for (; n < size; n++) {
+                vv[n] = nullptr;
+            }
+            delete[] values;
+            values = vv;
+            elements = size;
+            index = 0;
+        }
+
+        void setProperties(PropertyArray* props) {
+            properties[index] = props;
+        }
+
+        void setProperty(RuntimeValue* key, RuntimeValue* property) {
+            properties[index]->setProperty(new Text(key->getTextValue()), new Text(property->getTextValue()));
+        }
+
+        void setProperty(RuntimeValue* key, PropertyArray* props) {
+            properties[index]->setProperty(new Text(key->getTextValue()), props);
+        }
+
+        void setProperty(Text* key, Text* property) {
+            properties[index]->setProperty(key, property);
+        }
+
+        void setProperty(Text* key, PropertyArray* props) {
+            properties[index]->setProperty(key, props);
+        }
+
+        void setProperty(const char* key, PropertyArray* props) {
+            properties[index]->setProperty(key, props);
+        }
+
+        PropertyArray* getProperties() {
+            return properties[index];
+        }
+
+        void setIndex(int i) {
+            index = i;
+        }
+
         void detach() {
             RuntimeValue* runtimeValue = new RuntimeValue();
             int type = getType();
@@ -104,6 +158,8 @@ class Symbol {
             used = false;
             values = new RuntimeValue*[1];
             values[0] = nullptr;
+            properties = new PropertyArray*[1];
+            properties[0] = new PropertyArray();
         }
 
         Symbol(Text* name) {
@@ -119,6 +175,8 @@ class Symbol {
             name = nullptr;
             delete[] values;
             values = nullptr;
+            delete[] properties;
+            properties = nullptr;
         }
 };
 
@@ -142,7 +200,7 @@ class SymbolArray {
         };
 
         ///////////////////////////////////////////////////////////////////////
-        // Get a specified item.
+        // Get a specified symbol.
         // If the index is greater than the array size but not greater than
         // the combined size of array and list, return the item from the list.
         Symbol* get(int n) {

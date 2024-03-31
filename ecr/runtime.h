@@ -11,8 +11,8 @@ class Runtime {
         TextArray* codeArray;
         // An array of unique text items found in the script
         TextArray* keyArray;
-        // An array of commands, where each is a single element or an array of elements
-        CommandArray* commands;
+        // An array of commands, where each is an array of elements
+        ElementArray** commands;
         // An array of symbols
         SymbolArray* symbols;
         // An array of keyword objects, one for each element of the code array
@@ -36,8 +36,8 @@ class Runtime {
         TextArray* getCodeArray() { return codeArray; }
         void setKeyArray(TextArray* arg) { keyArray = arg; }
         TextArray* getKeyArray() { return keyArray; }
-        void setCommands(CommandArray* arg) { commands = arg; }
-        CommandArray* getCommands() { return commands; }
+        void setCommands(ElementArray** arg) { commands = arg; }
+        ElementArray** getCommands() { return commands; }
         void setSymbols(SymbolArray* arg) { symbols = arg; }
         SymbolArray* getSymbols() { return symbols; }
         void setKeywordArray(KeywordArray* arg) { keywordArray = arg; }
@@ -54,56 +54,56 @@ class Runtime {
 
         ///////////////////////////////////////////////////////////////////////
         // Get the named parameter
-        Text* getParameter(const char* key) {
-            return command->getParameter(key);
+        Text* getParameter(ElementArray* elements, const char* key) {
+            return command->getParameter(elements, key);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the named runtime value
-        RuntimeValue* getRuntimeValue(const char* key) {
-            return command->getRuntimeValue(key);
+        RuntimeValue* getRuntimeValue(ElementArray* elements, const char* key) {
+            return command->getRuntimeValue(elements, key);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the named runtime condition
-        bool getCondition() {
-            return command->getCondition();
+        bool getCondition(ElementArray* elements) {
+            return command->getCondition(elements);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the runtime value of a named element of a command, as text
-        const char* getTextValue(const char* key) {
-            return command->getTextValue(key);
+        const char* getTextValue(ElementArray* elements, const char* key) {
+            return command->getTextValue(elements, key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Find a symbol
+        Symbol* getSymbol(ElementArray* elements, const char* key) {
+            return command->getSymbol(elements, key);
         }
         
         ///////////////////////////////////////////////////////////////////////
         // Set the value of a symbol
-        void setSymbolValue(const char* key, RuntimeValue* runtimeValue) {
-            command->setSymbolValue(key, runtimeValue);
+        void setSymbolValue(ElementArray* elements, const char* key, RuntimeValue* runtimeValue) {
+            command->setSymbolValue(elements, key, runtimeValue);
         }
         
         ///////////////////////////////////////////////////////////////////////
         // Get the value of a symbol
-        RuntimeValue* getSymbolValue(const char* key) {
-            return command->getSymbolValue(key);
-        }
-        
-        ///////////////////////////////////////////////////////////////////////
-        // Get a symbol
-        Symbol* getSymbol(const char* key) {
-            return command->getSymbol(key);
+        RuntimeValue* getSymbolValue(ElementArray* elements, const char* key) {
+            return command->getSymbolValue(elements, key);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Find a named value property
-        Text* getValueProperty(ElementArray* value, const char* key) {
-            return functions->getValueProperty(value, key);
+        Text* getValueProperty(ElementArray* elements, const char* key) {
+            return functions->getValueProperty(elements, key);
         }
         
         ///////////////////////////////////////////////////////////////////////
         // Get the line number
-        const char* getLineNumber() {
-            return command->getLineNumber();
+        int getLineNumber(ElementArray* elements) {
+            return elements->getLineNumber();
         }
 
         ///////////////////////////////////////////////////////////////////////

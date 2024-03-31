@@ -113,7 +113,7 @@ class Text {
         // Initialize this Text
         void init(const char* t) {
             if (text != nullptr) {
-                delete text;
+                delete[] text;
             }
             length = strlen(t);
             char* temp = new char[length + 1];

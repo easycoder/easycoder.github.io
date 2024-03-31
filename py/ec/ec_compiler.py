@@ -134,6 +134,7 @@ class Compiler:
 		command['elements'] = 1
 		command['index'] = 0
 		command['value'] = []
+		command['properties'] = {}
 		command['used'] = False
 		command['debug'] = False
 		self.addCommand(command)

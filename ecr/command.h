@@ -4,7 +4,7 @@ class Command {
     private:
         int line;                             // the number of items
         Functions* functions;
-        ElementArray* elements = nullptr;     // an array of Element objects
+        // ElementArray* elements = nullptr;     // an array of Element objects
         CoreValues* coreValues;
         CoreConditions* coreConditions;
         int* noDomainValueMap;
@@ -51,35 +51,64 @@ class Command {
     public:
 
         ///////////////////////////////////////////////////////////////////////
-        // Get the element array
-        ElementArray* getElements() {
-            return elements;
-        }
-    
-        ///////////////////////////////////////////////////////////////////////
-        // Get the size (the number of elements in the array and list combined)
-        int getSize() {
-            return elements->getSize();
+        // Show the element list in detail
+        void showElements(ElementArray* elements, int indent) {
+            // printf("\n----------\n");
+            for (int m = 0; m < indent; m++) {
+                print("  ");
+            }
+            for (int n = 0; n < elements->getSize(); n++) {
+                Element* element = elements->get(n);
+                ElementArray* value = element->getValue();
+                if (value != nullptr) {
+                    print("\n");
+                    showElements(value, indent + 1);
+                } else {
+                    Text* text = element->getElement();
+                    int p = text->positionOf(':');
+                    if (p > 0) {
+                        Text* left = text->left(p);
+                        Text* right = text->from(p + 1);
+                        print("%s:", getKey(left)->getText());
+                        if (right->is("{")) {
+                            print("{");
+                        } else {
+                            print("%s, ", getKey(right)->getText());
+                        }
+                    }
+                }
+            }
+            print("\n");
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // Get the element array
+        // ElementArray* getElements() {
+        //     return elements;
+        // }
+    
+        ///////////////////////////////////////////////////////////////////////
+        // Get the size (the number of elements in the array and list combined)
+        // int getSize() {
+        //     return elements->getSize();
+        // }
+
+        ///////////////////////////////////////////////////////////////////////
         // Get a specified Element.
-        // If the index is greater than the array size but not greater than
-        // the combined size of array and list, return the item from the list.
-        Element* get(ElementArray* value, int n) {
-            return value->get(n);
+        Element* get(ElementArray* elements, int n) {
+            return elements->get(n);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the text of a specified Element.
-        Text* getElementText(ElementArray* value, int n) {
-            return value->get(n)->getElement();
+        Text* getElementText(ElementArray* elements, int n) {
+            return elements->get(n)->getElement();
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the code of a specified Element (known to be a numeric value).
-        int getElementCode(ElementArray* value, int n) {
-            return atoi(getElementText(value, n)->getText());
+        int getElementCode(ElementArray* elements, int n) {
+            return atoi(getElementText(elements, n)->getText());
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -126,29 +155,35 @@ class Command {
 
         ///////////////////////////////////////////////////////////////////////
         // Add an element. This goes into the linked list.
-        void add(Element* element) {
+        void add(ElementArray* elements, Element* element) {
             elements->add(element);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Find a symbol
+        Symbol* getSymbol(ElementArray* elements, const char* key) {
+            return functions->getSymbol(elements, key);
         }
         
         ///////////////////////////////////////////////////////////////////////
         // Set the value of a variable
-        void setSymbolValue(const char* key, RuntimeValue* runtimeValue) {
-            Symbol* symbol = getSymbol(key);
+        void setSymbolValue(ElementArray* elements, const char* key, RuntimeValue* runtimeValue) {
+            Symbol* symbol = getSymbol(elements, key);
             symbol->setValue(runtimeValue);
         }
         
         ///////////////////////////////////////////////////////////////////////
         // Get the value of a variable
-        RuntimeValue* getSymbolValue(const char* key) {
-            Symbol* symbol = getSymbol(key);
+        RuntimeValue* getSymbolValue(ElementArray* elements, const char* key) {
+            Symbol* symbol = getSymbol(elements, key);
             return symbol->getValue();
         }
         
         ///////////////////////////////////////////////////////////////////////
         // Get the line number
-        const char* getLineNumber() {
-            return elements->get(0)->getElement()->getText();
-        }
+        // int getLineNumber(ElementArray* elements) {
+        //     return atoi(elements->get(0)->getElement()->getText()) + 1;
+        // }
 
         ///////////////////////////////////////////////////////////////////////
         // Add a no-domain value type
@@ -182,23 +217,54 @@ class Command {
 
         ///////////////////////////////////////////////////////////////////////
         // Get the named parameter
-        Text* getParameter(const char* key) {
+        Text* getParameter(ElementArray* elements, const char* key) {
             return functions->getValueProperty(elements, key);
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // Get a named element array
+        ElementArray* getElementArray(ElementArray* elements, const char* name) {
+            // Look for the named array
+            for (int n = 0; n < elements->getSize(); n++) {
+                Element* element = elements->get(n);
+                // Look for a value part
+                int colon = element->positionOf(':');
+                if (colon > 0) {
+                    Text* left = element->left(colon);
+                    if (getKey(left->getText())->is(name)) {
+                        // Verify that the right-hand element is an open brace
+                        Text* right = element->from(colon + 1);
+                        if (right->is("{")) {
+                            delete right;
+                            return element->getValue();
+                        }
+                    }
+                    delete left;
+                }
+            }
+            return nullptr;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get a named element array
+        // ElementArray* getElementArray(const char* name) {
+        //     return getElementArray(elements, name);
+        // }
+
+        ///////////////////////////////////////////////////////////////////////
         // Get the runtime value of a value element
-        RuntimeValue* getRuntimeValue(ElementArray* value) {
+        RuntimeValue* getRuntimeValue(ElementArray* elements) {
             RuntimeValue* runtimeValue = new RuntimeValue();
-            const char* domain = functions->getValuePropertyCode(value, "domain");
-            const char* type = functions->getValuePropertyCode(value, "type");
-            functions->setElements(value);
+            const char* domain = functions->getValuePropertyCode(elements, "domain");
+            const char* type = functions->getValuePropertyCode(elements, "type");
+            functions->setElements(elements);
             // Test for the special case 'cat'
             int t = atoi(type);
-            if (strcmp(getKeyArray()->getText(t), "cat") == 0) {
+            const char* token = getKeyArray()->getText(t);
+            if (strcmp(token, "cat") == 0) {
                 // Find the cat array
-                for (int n = 0; n < value->getSize(); n++) {
-                    Element* el = value->get(n);
+                for (int n = 0; n < elements->getSize(); n++) {
+                    Element* el = elements->get(n);
                     // Look for a value part
                     int colon = el->positionOf(':');
                     if (colon > 0) {
@@ -208,6 +274,7 @@ class Command {
                             ElementArray* values = el->getValue();
                             int size = values->getSize();
                             RuntimeValueArray* rva = new RuntimeValueArray();
+                            // Get the component parts of the 'cat'
                             for (int m = 0; m < size; m++) {
                                 RuntimeValue* rv = getRuntimeValue(values->get(m)->getValue());
                                 rva->add(rv);
@@ -215,12 +282,39 @@ class Command {
                             rva->flatten();
                             return coreValues->run(t, functions, rva);
                         }
+                        delete left;
                     }
                 }
+                sprintf(exceptionBuffer, "Bad value in 'cat'\n");
+                throw exceptionBuffer;
             }
+
+            // Test for the special case 'property'
+            if (strcmp(token, "property") == 0) {
+                Symbol* target = functions->getSymbol(elements, "target");
+                ElementArray* ela = getElementArray(elements, "name");
+                target->getProperties()->flatten();
+                const char* keyValue = getRuntimeValue(ela)->getTextValue();
+                PropertyArray* properties = target->getProperties();
+                properties->dump(true);
+                Property* property = properties->getProperty(keyValue);
+                if (property == nullptr) {
+                    sprintf(exceptionBuffer, "Property '%s' not found\n", keyValue);
+                    throw exceptionBuffer;
+                }
+                Text* value = property->getValue();
+                if (value != nullptr) {
+                    runtimeValue->setType(TEXT_VALUE);
+                    runtimeValue->setTextValue(value->getText());
+                    return runtimeValue;
+                }
+                sprintf(exceptionBuffer, "Property '%s' is an object\n", keyValue);
+                throw exceptionBuffer;
+            }
+
             if (domain == nullptr) {
                 // Here if no domain specified
-                Text* valueProperty = functions->getValueProperty(value, "content");
+                Text* valueProperty = functions->getValueProperty(elements, "content");
                 if (valueProperty == nullptr) {
                     return nullptr;
                 }
@@ -241,7 +335,7 @@ class Command {
                 // Here it's domain-specific
                 switch (atoi(domain)) {
                     case DOMAIN_CORE:
-                        functions->setElements(value);
+                        functions->setElements(elements);
                         return coreValues->run(t, functions, nullptr);
                 };
             }
@@ -250,7 +344,13 @@ class Command {
 
         ///////////////////////////////////////////////////////////////////////
         // Get the runtime value of a named value in a command
-        RuntimeValue* getRuntimeValue(const char* name) {
+        // RuntimeValue* getRuntimeValue(ElementArray* elements, const char* name) {
+        //     return elements == nullptr ? nullptr : getRuntimeValue(elements);
+        // }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Get the runtime value of a named value in a command
+        RuntimeValue* getRuntimeValue(ElementArray* elements, const char* name) {
             // Look for this name then process it
             for (int n = 0; n < elements->getSize(); n++) {
                 Element* element = elements->get(n);
@@ -265,9 +365,9 @@ class Command {
                             delete right;
                             return getRuntimeValue(element->getValue());
                         } else {
-                            printf("Item %d of command; expecting '{' but got %s:\n", n, right->getText());
                             dump();
-                            exit(1);
+                            sprintf(exceptionBuffer, "Expecting '{' but got %s\n", right->getText());
+                            throw exceptionBuffer;
                         }
                     }
                     delete left;
@@ -277,15 +377,15 @@ class Command {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Get a condition
-        bool getCondition(ElementArray* value) {
+        // Process a condition
+        bool processCondition(ElementArray* elements) {
             Text* domain = nullptr;
             Text* type = nullptr;
-            functions->setElements(value);
+            functions->setElements(elements);
             Condition* condition = new Condition();
-            int size = value->getSize();
+            int size = elements->getSize();
             for (int n = 0; n < size; n++) {
-                Element* element = value->get(n);
+                Element* element = elements->get(n);
                 int colon = element->positionOf(':');
                 Text* left = element->left(colon);
                 Text* right = element->from(colon + 1);
@@ -305,24 +405,24 @@ class Command {
                 } else if (name->is("type")) {
                     type = getKey(right->copy());
                 } else {
-                    printf("Unknown property '%s' at line %s\n", getKey(left->getText())->getText(), getLineNumber());
-                    exit(1);
+                    sprintf(exceptionBuffer, "Unknown property '%s' at line %d\n", getKey(left->getText())->getText(), elements->getLineNumber());
+                    throw exceptionBuffer;
                 }
                 delete left;
                 delete right;
             }
 
             if (domain == nullptr) {
-                printf("No domain specified at line %s\n", getLineNumber());
-                exit(1);
+                sprintf(exceptionBuffer, "No domain specified at line %d\n", elements->getLineNumber());
+                throw exceptionBuffer;
             }
             if (type == nullptr) {
-                printf("No condition type specified at line %s\n", getLineNumber());
-                exit(1);
+                sprintf(exceptionBuffer, "No condition type specified at line %d\n", elements->getLineNumber());
+                throw exceptionBuffer;
             }
             condition->flatten();
             condition->setType(type->getText());
-            functions->setElements(value);
+            functions->setElements(elements);
             if (domain->is("core")) {
                 return coreConditions->run(condition, functions);
             };
@@ -331,7 +431,7 @@ class Command {
 
         ///////////////////////////////////////////////////////////////////////
         // Get the named runtime condition
-        bool getCondition() {
+        bool getCondition(ElementArray* elements) {
             // Look for this name then process it
             for (int n = 0; n < elements->getSize(); n++) {
                 Element* element = elements->get(n);
@@ -345,11 +445,11 @@ class Command {
                         if (right->is("{")) {
                             delete right;
                             // print("Process a condition\n");
-                            return getCondition(element->getValue());
+                            return processCondition(element->getValue());
                         } else {
-                            printf("Item %d of command; expecting '{' but got %s:\n", n, right->getText());
                             dump();
-                            exit(1);
+                            sprintf(exceptionBuffer, "Item %d of command; expecting '{' but got %s:\n", n, right->getText());
+                            throw exceptionBuffer;
                         }
                     }
                     delete left;
@@ -360,8 +460,8 @@ class Command {
 
         ///////////////////////////////////////////////////////////////////////
         // Find the code for a named value property
-        const char* getCommandPropertyCode(const char* key) {
-            for (int n = 0; n < getSize(); n++) {
+        const char* getCommandPropertyCode(ElementArray* elements, const char* key) {
+            for (int n = 0; n < elements->getSize(); n++) {
                 Text* item = getKeyValue(elements->get(n), false, true);
                 if (item == nullptr) {
                     continue;
@@ -375,78 +475,54 @@ class Command {
 
         ///////////////////////////////////////////////////////////////////////
         // Find a named value property
-        Text* getCommandProperty(const char* key) {
-            int val = atoi(getCommandPropertyCode(key));
+        Text* getCommandProperty(ElementArray* elements, const char* key) {
+            int val = atoi(getCommandPropertyCode(elements, key));
             if (val >= 0) {
                 return getKey(val);
             }
             return nullptr;
         }
 
-        Text* getCommandProperty(Text* key) {
-            return getCommandProperty(key->getText());
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Find a symbol
-        Symbol* getSymbol(const char* key) {
-            return functions->getSymbol(elements, key);
+        Text* getCommandProperty(ElementArray* elements, Text* key) {
+            return getCommandProperty(elements, key->getText());
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Get the runtime value of a named element of a command, as text
-        const char* getTextValue(const char* key) {
-            RuntimeValue* value = getRuntimeValue(key);
+        const char* getTextValue(ElementArray* elements, const char* key) {
+            RuntimeValue* value = getRuntimeValue(elements, key);
             if (value == nullptr) {
                 return nullptr;
             }
             return value->getTextValue();
-            // char* buf;
-            // switch (value->getType()) {
-            //     case TEXT_VALUE: {
-            //             const char* v = value->getTextValue();
-            //             buf = new char[strlen(v) + 1];
-            //             strcpy(buf, v);
-            //         }
-            //         break;
-            //     case INT_VALUE:
-            //         buf = new char[12];
-            //         sprintf(buf, "%d", value->getIntValue());
-            //         break;
-            //     case BOOL_VALUE:
-            //         buf = new char[6];
-            //         sprintf(buf, "%s", value->getBoolValue() ? "true" : "false");
-            //         break;
-            // };
-            // return buf;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Flatten the element array
-        void flatten() {
-            elements->flatten();
-        }
+        // void flatten() {
+        //     elements->flatten();
+        // }
 
         ///////////////////////////////////////////////////////////////////////
         // Print all the elements in the command
         void dump() {
-            elements->dump();
+            // elements->dump();
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Default constructor
         Command(Functions* functions) {
             this->functions = functions;
-            functions->setElements(elements = new ElementArray());
+            // functions->setElements(elements = new ElementArray());
             setupNoDomainKeyArray();
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor
         ~Command() {
-            delete elements;
-            elements = nullptr;
-            delete noDomainValueTypes;
+            // delete elements;
+            // elements = nullptr;
+            // delete noDomainValueTypes;
             noDomainValueTypes = nullptr;
             delete[] noDomainValueMap;
          }

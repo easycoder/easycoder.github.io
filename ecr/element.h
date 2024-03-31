@@ -49,9 +49,8 @@ class Element {
             if (element != nullptr) {
                 return element->positionOf(c);
             }
-            printf("Element->positionOf: No element\n");
-            exit(1);
-            return -1;
+            sprintf(exceptionBuffer, "Element->positionOf: No element\n");
+            throw exceptionBuffer;
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -98,13 +97,13 @@ class Element {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Constructor
+        // Constructor for a simple element
         Element(Text* t) {
             element = t;
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Constructor
+        // Constructor for a value
         Element(Text* t, ElementArray* val) {
            element = t;
            value = val;
@@ -151,6 +150,12 @@ class ElementArray {
         // Add a value. This goes into the linked list.
         void add(Element* element) {
             list->add(element);
+        }
+        
+        ///////////////////////////////////////////////////////////////////////
+        // Get the line number
+        int getLineNumber() {
+            return atoi(array[0]->getElement()->getText()) + 1;
         }
 
         ///////////////////////////////////////////////////////////////////////

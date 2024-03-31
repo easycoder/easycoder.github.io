@@ -10,6 +10,7 @@ class EasyCoder:
 
 	def __init__(self):
 		self.version = 1
+
 	print(os.getcwd())
 
 	if (len(sys.argv) > 1):

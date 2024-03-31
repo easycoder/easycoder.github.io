@@ -1,34 +1,242 @@
 [
   {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 2,
+    "name": "TS",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 3,
+    "name": "N",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "object",
+    "lino": 4,
+    "name": "X",
+    "properties": {},
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "object",
+    "lino": 5,
+    "name": "Y",
+    "properties": {},
+    "type": "symbol",
+    "used": true,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 6,
+    "name": "Start",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 7,
+    "name": "Finish",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "variable",
+    "lino": 8,
+    "name": "Array",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": true
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "debug",
+    "lino": 44,
+    "type": "step"
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 45,
+    "target": "X",
+    "type": null,
+    "value": {
+      "content": 123,
+      "type": "int"
+    }
+  },
+  {
     "debug": true,
     "domain": "core",
     "keyword": "print",
-    "lino": 16,
+    "lino": 46,
     "type": null,
     "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "content": "A",
-          "type": "text"
-        },
-        {
-          "content": "B",
-          "type": "text"
-        },
-        {
-          "content": "C",
-          "type": "text"
-        }
-      ]
+      "domain": "core",
+      "name": "X",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "set",
+    "lino": 47,
+    "object": null,
+    "target": "X",
+    "type": "property",
+    "value1": {
+      "content": "name",
+      "type": "text"
+    },
+    "value2": {
+      "content": "Fred",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 48,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": {
+        "content": "name",
+        "type": "text"
+      },
+      "target": "X",
+      "type": "property"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 49,
+    "target": "Y",
+    "type": null,
+    "value": {
+      "content": "abc",
+      "type": "text"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "set",
+    "lino": 50,
+    "object": "X",
+    "target": "Y",
+    "type": "property",
+    "value1": {
+      "content": "X",
+      "type": "text"
+    },
+    "value2": null
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 51,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": "Y",
+      "type": "symbol"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "put",
+    "lino": 52,
+    "target": "X",
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": {
+        "content": "X",
+        "type": "text"
+      },
+      "target": "Y",
+      "type": "property"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "print",
+    "lino": 53,
+    "type": null,
+    "value": {
+      "domain": "core",
+      "name": {
+        "content": "name",
+        "type": "text"
+      },
+      "target": "X",
+      "type": "property"
     }
   },
   {
     "debug": true,
     "domain": "core",
     "keyword": "exit",
-    "lino": 17,
+    "lino": 68,
     "type": null
   }
 ]

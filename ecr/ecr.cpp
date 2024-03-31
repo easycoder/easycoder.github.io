@@ -1,6 +1,5 @@
-#define DEBUG 1       // set to 1 to show debug messages
-#define DESTROY 0     // set to 1 to show destructors
-#define LINENUMBERS 0 // set to 1 to show each line number
+#define DEBUGGING 1          // set to 1 to show debug messages
+#define DESTROY 0            // set to 1 to show destructors
 #define _LINUX
 //#define _WINDOWS
 //#define _ARDUINO
@@ -20,10 +19,15 @@
 #ifdef _ARDUINO
 #define Sleep(x) delay((x))
 #endif
+
+bool singleStep = false;
+char exceptionBuffer[80];
+
 #include "debug.h"
 #include "definitions.h"
 #include "linkedlist.h"
 #include "text.h"
+#include "property.h"
 #include "element.h"
 #include "keyword.h"
 #include "runtimevalue.h"
@@ -102,7 +106,6 @@ int main(int argc, char* argv[])
     // print("codes: %s", codes->getText());
     // print("keys: %s", keys->getText());
 
-    Run runner = Run(codes, keys);
-
+    Run(codes, keys);
     return 0;
 };

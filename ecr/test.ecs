@@ -2,18 +2,67 @@
 
     variable TS
     variable N
+    object X
+    object Y
+    object Z
+    variable Start
+    variable Finish
+    variable Array
 
-    print `Starting`
-    put the timestamp into TS
+	print `FOR loop counting to 500,000`
+	put now into Start
+	put 0 into N
+	while N is less than 500000 increment N
+   put now into Finish
+	take Start from Finish giving N
+	print N cat ` seconds`
+
+	print `Compare 500,000 long integers for equality`
+	put now into Start
+	put 0 into N
+	while N is less than 500000
+	begin
+		increment N
+	end
+	put now into Finish
+	take Start from Finish giving N
+	print N cat ` seconds`
+
+	print `Allocate and initialize a 500,000 element array`
+	put now into Start
+	set the elements of Array to 500000
+	put 0 into N
+	while N is less than 500000
+	begin
+		index Array to N
+		put N into Array
+		increment N
+	end
+	put now into Finish
+	take Start from Finish giving N
+	print N cat ` seconds`
+
+    print `Properties`
+    put `abc` into X
+    print `X is ` cat X
+	set property `name` of X to `Fred`
+	print `property 'name' of X is ` cat property `name` of X
+    put `def` into Y
+    set property `X` of Y to X
+    print `Y is ` cat Y
+    set Z to property `X` of Y
+    print `property 'name' of Z is ` cat property `name` of Z
+
+    print `Counting`
+    put now into TS
     put 0 into N
-    while N is less than 1000
+    while N is less than 10
     begin
         print `N is ` cat N
         add 1 to N
         wait 1
     end
-    take TS from the timestamp giving TS
-    divide TS by 1000
+    take TS from now giving TS
     print `Finished in ` cat TS cat ` seconds`
     
     exit

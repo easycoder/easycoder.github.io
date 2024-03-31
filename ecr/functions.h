@@ -100,7 +100,8 @@ class Functions {
             Text* right;
             int index;
             // Get the key of the variable
-            for (int index = 0; index < elements->getSize(); index++) {
+            int size = elements->getSize();
+            for (index = 0; index < size; index++) {
                 element = elements->get(index);
                 int colon = element->positionOf(':');
                 if (colon < 0) {
@@ -112,6 +113,9 @@ class Functions {
                 if (keyArray->get(left)->is(key)) {
                     keyCode = left->getText();
                     nameCode = right->getText();
+                    if (keyArray->get(atoi(nameCode))->is("None")) {
+                        return nullptr;
+                    }
                     break;
                 } else {
                     delete left;
@@ -119,10 +123,13 @@ class Functions {
                     continue;
                 }
             }
+            if (index == size) {
+                return nullptr;
+            }
             if (nameCode == nullptr) {
-                printf("Key '%s' not found in element array\n", key);
                 elements->dump();
-                exit(1);
+                sprintf(exceptionBuffer, "Key '%s' not found in element array\n", key);
+                throw exceptionBuffer;
             }
             // Now we have the key code, so check if it has a # prefix
             Symbol* symbol;

@@ -177,10 +177,10 @@ class Core(Handler):
     def k_debug(self, command):
         token = self.peek()
         if token in ['step', 'stop', 'program', 'custom']:
-            command['mode'] = token
+            command['type'] = token
             self.nextToken()
         elif token == 'stack':
-            command['mode'] = self.nextToken()
+            command['type'] = self.nextToken()
             if (self.nextIsSymbol()):
                 command['stack'] = self.getToken()
                 if self.peek() == 'as':
@@ -191,23 +191,23 @@ class Core(Handler):
             else:
                 return False
         else:
-            command['mode'] = None
+            command['type'] = None
         self.add(command)
         return True
 
     def r_debug(self, command):
-        if command['mode'] == 'step':
+        if command['type'] == 'step':
             self.program.debugStep = True
-        elif command['mode'] == 'stop':
+        elif command['type'] == 'stop':
             self.program.debugStep = False
-        elif command['mode'] == 'program':
+        elif command['type'] == 'program':
             for item in self.code:
                 print(json.dumps(item, indent = 2))
-        elif command['mode'] == 'stack':
+        elif command['motypede'] == 'stack':
             stackRecord = self.getVariable(command['stack'])
             value = self.getSymbolValue(stackRecord)
             print(f'{self.getRuntimeValue(command["as"])}:',json.dumps(self.getSymbolValue(stackRecord), indent = 2))
-        elif command['mode'] == 'custom':
+        elif command['type'] == 'custom':
             # Custom debugging code goes in here
             record = self.getVariable('Script')
             print('(Debug) Script:',record)
@@ -642,7 +642,7 @@ class Core(Handler):
 
     # Define an object variable
     def k_object(self, command):
-        return self.compileVariable(command)
+        return self.compileVariable(command, True)
 
     def r_object(self, command):
         return self.nextPC()
@@ -843,10 +843,14 @@ class Core(Handler):
         if value == None:
             return -1
         symbolRecord = self.getVariable(command['target'])
-        if not symbolRecord['valueHolder']:
-            RuntimeError(self.program, f'{symbolRecord["name"]} does not hold a value')
-            return -1
-        self.putSymbolValue(symbolRecord, value)
+        if symbolRecord['keyword'] == 'object' and value['type'] == 'dict':
+            key = value['key']
+            symbolRecord['properties'][key] = value['content']
+        else:
+            if not symbolRecord['valueHolder']:
+                RuntimeError(self.program, f'{symbolRecord["name"]} does not hold a value')
+                return -1
+            self.putSymbolValue(symbolRecord, value)
         return self.nextPC()
 
     # Read from a file
@@ -934,6 +938,22 @@ class Core(Handler):
         if self.nextIsSymbol():
             target = self.getSymbolRecord()
             if target['valueHolder']:
+                if (target['keyword'] == 'object'):
+                    # It must be a property assignment
+                    # set {object} to property {key} of {object}
+                    if (self.nextIs('to')):
+                        if (self.nextIs('property')):
+                            command['key'] = self.nextValue()
+                            if (self.nextIs('of')):
+                                if (self.nextIsSymbol()):
+                                    source = self.getSymbolRecord()
+                                    if (source['keyword'] == 'object'):
+                                        command['target'] = target['name']
+                                        command['source'] = source['name']
+                                        command['type'] = 'setprop'
+                                        self.add(command)
+                                        return True
+                    return False
                 command['type'] = 'set'
                 command['target'] = target['name']
                 self.add(command)
@@ -960,11 +980,27 @@ class Core(Handler):
             command['value1'] = self.nextValue()
             if self.nextIs('of'):
                 if self.nextIsSymbol():
-                    command['target'] = self.getSymbolRecord()['name']
-                    if self.nextIs('to'):
-                        command['value2'] = self.nextValue()
-                        self.add(command)
-                        return True
+                    target = self.getSymbolRecord()
+                    command['target'] = target['name']
+                    vartype = target['keyword']
+                    if vartype == 'variable' and self.program.options['object']:
+                        FatalError(self.program.compiler, f'In ECR, variables cannot have properties')
+                    if vartype == 'object':
+                        if self.nextIs('to'):
+                            if self.nextIsSymbol():
+                                var = self.getSymbolRecord()
+                                if var['keyword'] == 'object':
+                                    # Set an object as a property
+                                    command['object'] = var['name']
+                                    command['value2'] = None
+                                    self.add(command)
+                                    return True
+                            # Set a value as a property
+                            command['object'] = None
+                            command['value2'] = self.getValue()
+                            self.add(command)
+                            return True
+        return False
 
         if token == 'element':
             command['type'] = 'element'
@@ -1024,23 +1060,42 @@ class Core(Handler):
             return self.nextPC()
 
         if cmdType == 'property':
-            name = self.getRuntimeValue(command['value1'])
+            key = self.getRuntimeValue(command['value1'])
             value = self.getRuntimeValue(command['value2'])
             target = command['target']
             targetVariable = self.getVariable(target)
-            val = self.getSymbolValue(targetVariable)
-            try:
-                content = val['content']
-            except:
-                RuntimeError(self.program, f'{target} is not an object')
-            if content == '':
-                content = {}
-            try:
-                content[name] = value
-            except:
-                RuntimeError(self.program, f'{target} is not an object')
-            val['content'] = content
-            self.putSymbolValue(targetVariable, val)
+            vartype = targetVariable['keyword']
+            if vartype == 'variable':
+                val = self.getSymbolValue(targetVariable)
+                try:
+                    content = val['content']
+                except:
+                    RuntimeError(self.program, f'{target} is not an object')
+                if content == '':
+                    content = {}
+                try:
+                    content[key] = value
+                except:
+                    RuntimeError(self.program, f"Can't set a property of '{target}'")
+                val['content'] = content
+                self.putSymbolValue(targetVariable, val)
+            elif vartype == 'object':
+                print('Type is object')
+                if command['object']:
+                    # The property is another object symbol
+                    objectVar = self.getVariable(command['object'])
+                    targetVariable['properties'][key] = objectVar['properties']
+                else:
+                    targetVariable['properties'][key] = value
+            else:
+                RuntimeError(self.program, f"'{target}' is not a variable or an object")
+            return self.nextPC()
+
+        if cmdType == 'setprop':
+            targetVariable = self.getVariable(command['target'])
+            sourceVariable = self.getVariable(command['source'])
+            key = self.getRuntimeValue(command['key'])
+            targetVariable['properties'] = sourceVariable['properties'][key]
             return self.nextPC()
 
     # Split a string into a variable with several elements
@@ -1342,7 +1397,7 @@ class Core(Handler):
                 value['type'] = 'module'
                 return value
 
-            if keyword == 'variable':
+            if keyword in ['object', 'variable']:
                 value['type'] = 'symbol'
                 return value
             return None
@@ -1835,21 +1890,36 @@ class Core(Handler):
         return value
 
     def v_property(self, v):
-        propertyValue = self.getRuntimeValue(v['name'])
+        propertyName = self.getRuntimeValue(v['name'])
         targetName = v['target']
         target = self.getVariable(targetName)
-        targetValue = self.getRuntimeValue(target)
-        try:
-            val = targetValue[propertyValue]
-        except:
-            RuntimeError(self.program, f'{targetName} does not have the property \'{propertyValue}\'')
-            return None
         value = {}
-        value['content'] = val
-        if isinstance(v, numbers.Number):
-            value['type'] = 'int'
-        else:
-            value['type'] = 'text'
+        vartype = target['keyword']
+        if vartype == 'object':
+            try:
+                val = target['properties'][propertyName]
+                value['content'] = val
+            except:
+                RuntimeError(self.program, f'{targetName} does not have the property \'{propertyValue}\'')
+            if isinstance(val, dict):
+                value['type'] = 'dict'
+                value['key'] = propertyName
+            elif isinstance(val, numbers.Number):
+                value['type'] = 'int'
+            else:
+                value['type'] = 'text'
+        elif vartype == 'variable':
+            try:
+                val = targetValue[propertyValue]
+            except:
+                RuntimeError(self.program, f'{targetName} does not have the property \'{propertyValue}\'')
+                return None
+            value = {}
+            value['content'] = val
+            if isinstance(v, numbers.Number):
+                value['type'] = 'int'
+            else:
+                value['type'] = 'text'
         return value
 
     def v_right(self, v):
@@ -1898,7 +1968,7 @@ class Core(Handler):
 
     def v_symbol(self, symbolRecord):
         result = {}
-        if symbolRecord['keyword'] == 'variable':
+        if symbolRecord['keyword'] in ['object', 'variable']:
             symbolValue = self.getSymbolValue(symbolRecord)
             return symbolValue
             # if symbolValue == None:

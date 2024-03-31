@@ -6,9 +6,10 @@ class Run {
         Runtime* runtime;
         TextArray* codeArray;
         TextArray* keyArray;
-        CommandArray* commands;
+        ElementArray** commands;
         SymbolArray* symbols;
         Functions* functions;
+        ElementArray* currentElements;
         // Domain-specific
         CoreKeywords* coreKeywords;
         CoreValues* coreValues;
@@ -35,17 +36,21 @@ class Run {
         int runFrom(Runtime* runtime, int pc) {
             do {
                 // print("Command %d\n", pc);
-                Command* command = commands->get(pc);
+                currentElements = commands[pc];
+                Command* command = new Command(functions);
                 command->setKeyArray(keyArray);
                 command->setSymbols(symbols);
                 command->setCoreValues(coreValues);
                 runtime->setCommand(command);
                 runtime->setPC(pc);
-                int c = command->getElementCode(command->getElements(), 2);
+                if (singleStep) {
+                    print("Line %d\n", runtime->getLineNumber(currentElements));
+                }
+                int c = command->getElementCode(currentElements, 2);
                 // Choose the right domain and call its run handler
-                switch (command->getElementCode(command->getElements(), 1)) {
+                switch (command->getElementCode(currentElements, 1)) {
                     case DOMAIN_CORE:
-                        pc = coreKeywords->run(runtime, c);
+                        pc = coreKeywords->run(currentElements, runtime, c);
                         break;
                 }
             } while (pc >= 0);
@@ -83,7 +88,7 @@ class Run {
         ///////////////////////////////////////////////////////////////////////
         // Value parser
         ElementArray* parseValue(TextArray* codes, int* n) {
-            ElementArray* value = new ElementArray();
+            ElementArray* elements = new ElementArray();
             while (*n < codes->getSize()) {
                 Text* item = codes->get(*n);
                 // print("%s\n", item->getText());
@@ -94,22 +99,22 @@ class Run {
                     Text* right = item->from(colon + 1);
                     if (right->is("{") || right->is("[")) {
                         (*n)++;
-                        value->add(new Element(item, parseValue(codes, n)));
+                        elements->add(new Element(item, parseValue(codes, n)));
                     } else {
-                        value->add(new Element(item));
+                        elements->add(new Element(item));
                     }
                     delete right;
                 }
                 (*n)++;
             }
-            value->flatten();
-            return value;
+            elements->flatten();
+            return elements;
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Command parser
-        Command* parseCommand(TextArray* codes, int* n) {
-            Command* command = new Command(functions);
+        ElementArray* parseCommand(TextArray* codes, int* n) {
+            ElementArray* elements = new ElementArray();
             int size = codes->getSize();
             while (*n < size) {
                 Text* item = codes->get(*n);
@@ -123,19 +128,19 @@ class Run {
                     Text* right = item->from(colon + 1);
                     if (right->is("{") || right->is("[")) {
                         (*n)++;
-                        command->add(new Element(item, parseValue(codes, n)));
+                        elements->add(new Element(item, parseValue(codes, n)));
                     } else {
-                        command->add(new Element(item));
+                        elements->add(new Element(item));
                     }
                     delete left;
                     delete right;
                 } else {
-                    command->add(new Element(item));
+                    elements->add(new Element(item));
                 }
                 (*n)++;
             }
-            command->flatten();
-            return command;
+            elements->flatten();
+            return elements;
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -150,8 +155,8 @@ class Run {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Constructor
-        Run(Text* codes, Text* keys) {
+        // Run a script
+        void run(Text* codes, Text* keys) {
             
             // Convert each part of the scanned script to a TextArray
             codeArray = split(codes, '\n');
@@ -180,23 +185,23 @@ class Run {
 
             int codeSize = codeArray->getSize();
             // Create the array of commands and a list of initial keywords
-            commands = new CommandArray();
+            commands = new ElementArray*[codeSize];
             for (int n = 0; n < codeSize; n++) {
                 Text* codeLine = codeArray->get(n); 
                 TextArray* ta = split(codeLine, ',');
                 
-                // Parse the command and add it to the command array
+                // Parse each command and add it to the command array
                 int *pointer = new int[1];
                 pointer[0] = 0;
-                Command* command = parseCommand(ta, pointer);
-                commands->add(command);
+                ElementArray* elements = parseCommand(ta, pointer);
+                elements->flatten();
+                commands[n] = elements;
+                Command* command = new Command(functions);
 
-                // Get the line number - item 0 in the command
-                command->setLineNumber(command->getElementCode(command->getElements(), 0));
                 // Get the domain - item 1 in the command
-                int domainIndex = command->getElementCode(command->getElements(), 1);
+                int domainIndex = command->getElementCode(elements, 1);
                 // Get the keyword - item 2 in the command
-                Text* tt = keyArray->get(command->getElementCode(command->getElements(), 2));
+                Text* tt = keyArray->get(command->getElementCode(elements, 2));
 
                 // Look up the keyword in this domain and save its code as the value for this command
                 KeywordArray* keywords;
@@ -209,7 +214,6 @@ class Run {
                         exit(1);
                 }
             }
-            commands->flatten();
             threads = new ThreadArray();
             setupRuntime();
 
@@ -233,6 +237,20 @@ class Run {
             }
             finish();
         };
+
+        ///////////////////////////////////////////////////////////////////////
+        // Constructor
+        Run(Text* codes, Text* keys) {
+            try {
+                run(codes, keys);
+            }
+            catch (const char* ex) {
+                printf("Line %d: %s\n", runtime->getLineNumber(currentElements), ex);
+            }
+            catch (...) {
+                printf("Line %d: Unknown exception\n", runtime->getLineNumber(currentElements));
+            }
+        }
 
         ///////////////////////////////////////////////////////////////////////
         // Destructor

@@ -6,7 +6,9 @@ class CoreValues {
         enum coreIndices {
             SYMBOL,
             CAT,
-            TIMESTAMP
+            TIMESTAMP,
+            NOW,
+            EMPTY
         };
 
         int index = 0;
@@ -71,7 +73,8 @@ class CoreValues {
                         value->append(runtimeValues->get(n)->getTextValue());
                     }
                     runtimeValue->setType(TEXT_VALUE);
-                    runtimeValue->setTextValue(value->getText());
+                    runtimeValue->setTextValue(value->copy()->getText());
+                    delete value;
                     return runtimeValue;
                 }
                 case TIMESTAMP: {
@@ -80,6 +83,18 @@ class CoreValues {
                     gettimeofday(&now, 0);
                     long millis = now.tv_sec * 1000 + now.tv_usec / 1000;
                     runtimeValue->setIntValue(millis);
+                    return runtimeValue;
+                }
+                case NOW: {
+                    runtimeValue->setType(INT_VALUE);
+                    struct timeval now;
+                    gettimeofday(&now, 0);
+                    runtimeValue->setIntValue(now.tv_sec);
+                    return runtimeValue;
+                }
+                case EMPTY: {
+                    runtimeValue->setType(TEXT_VALUE);
+                    runtimeValue->setTextValue("");
                     return runtimeValue;
                 }
                 default:
@@ -102,6 +117,8 @@ class CoreValues {
             add("symbol");
             add("cat");
             add("timestamp");
+            add("now");
+            add("empty");
             keywords->flatten();
         }
 
