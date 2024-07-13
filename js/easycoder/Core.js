@@ -3047,15 +3047,16 @@ const EasyCoder_Core = {
 				if (property && propertyContent) {
 					if (typeof propertyContent === `object`) {
 						content = propertyContent[property];
-					} else if ([`{`, `]`].includes(propertyContent.charAt(0))) {
-						try {
-							content = JSON.parse(propertyContent);
-							content = content[property];
-						} catch (err) {
-							program.runtimeError(program[program.pc].lino, `${err.message}: ${propertyContent}`);
-						}
-						if (content == undefined) {
-							content = ``;
+					} else {
+						content = ``;
+						propertyContent = ``+propertyContent;
+						if (propertyContent != `` && [`{`, `]`].includes(propertyContent.charAt(0))) {
+							try {
+								content = JSON.parse(propertyContent);
+								content = content[property];
+							} catch (err) {
+								program.runtimeError(program[program.pc].lino, `${err.message}: ${propertyContent}`);
+							}
 						}
 					}
 				}
