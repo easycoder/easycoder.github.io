@@ -10,6 +10,7 @@ class Run {
         SymbolArray* symbols;
         Functions* functions;
         ElementArray* currentElements;
+        int codeSize;
         // Domain-specific
         CoreKeywords* coreKeywords;
         CoreValues* coreValues;
@@ -25,6 +26,7 @@ class Run {
             runtime->setKeyArray(keyArray);
             runtime->setCommands(commands);
             runtime->setSymbols(symbols);
+            runtime->setCodeSize(codeSize);
             // Set the value handlers for each domain
             runtime->setCoreValues(coreValues);
         }
@@ -35,7 +37,7 @@ class Run {
         // Run a sequence of commands from the current program counter
         int runFrom(Runtime* runtime, int pc) {
             do {
-                // print("Command %d\n", pc);
+                print("Command %d\n", pc);
                 currentElements = commands[pc];
                 Command* command = new Command(functions);
                 command->setKeyArray(keyArray);
@@ -183,10 +185,11 @@ class Run {
             // Create a "functions" object
             functions = new Functions(keyArray, symbols);
 
-            int codeSize = codeArray->getSize();
+            codeSize = codeArray->getSize();
             // Create the array of commands and a list of initial keywords
             commands = new ElementArray*[codeSize];
             for (int n = 0; n < codeSize; n++) {
+                print("Parse line %d\n", n);
                 Text* codeLine = codeArray->get(n); 
                 TextArray* ta = split(codeLine, ',');
                 
@@ -199,6 +202,7 @@ class Run {
                 Command* command = new Command(functions);
 
                 // Get the domain - item 1 in the command
+                elements->dump();
                 int domainIndex = command->getElementCode(elements, 1);
                 // Get the keyword - item 2 in the command
                 Text* tt = keyArray->get(command->getElementCode(elements, 2));

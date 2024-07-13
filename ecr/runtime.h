@@ -19,6 +19,8 @@ class Runtime {
         KeywordArray* keywordArray;
         // The command that is to be executed
         Command* command;
+        // The number of code lines
+        int codeSize;
         // The current program counter
         int pc;
         // The values in the 'core' domain
@@ -44,6 +46,8 @@ class Runtime {
         KeywordArray* getKeywordArray() { return keywordArray; }
         void setCommand(Command* arg) { command = arg; }
         Command* getCommand() { return command; }
+        void setCodeSize(int arg) { codeSize = arg; }
+        int getCodeSize() { return codeSize; }
         void setPC(int arg) { pc = arg; }
         int getPC() { return pc; }
         // Domain-specific
@@ -98,6 +102,35 @@ class Runtime {
         // Find a named value property
         Text* getValueProperty(ElementArray* elements, const char* key) {
             return functions->getValueProperty(elements, key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Find the code for a named value property
+        Text* getCommandProperty(ElementArray* elements, const char* key) {
+            return command->getCommandProperty(elements, key);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // Find a label
+        Symbol* getLabel(const char* name) {
+            for (int n = 0; n < codeSize; n++) {
+                ElementArray* elements = commands[n];
+                command->showElements(elements, 0);
+                const char* keyword = command->getCommandPropertyCode(elements, "keyword");
+                if (keyword == nullptr) {
+                    continue;
+                }
+                if (strcmp(keyword, "label") == 0) {
+                    RuntimeValue* value = getRuntimeValue(elements, "name");
+                    if (value->getTextValue() != nullptr) {
+                        Symbol* symbol = getSymbol(elements, name);
+                        if (symbol != nullptr) {
+                            return symbol;
+                        }
+                    }
+                }
+            }
+            return nullptr;
         }
         
         ///////////////////////////////////////////////////////////////////////

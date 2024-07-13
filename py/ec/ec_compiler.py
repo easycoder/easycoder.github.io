@@ -174,7 +174,7 @@ class Compiler:
 		# print(f'Compile keyword "{keyword}"')
 		if keyword.endswith(':'):
 			command = {}
-			command['domain'] = None
+			command['domain'] = 'core'
 			command['keyword'] = 'label'
 			command['lino'] = self.tokens[self.index].lino
 			return self.compileLabel(command)

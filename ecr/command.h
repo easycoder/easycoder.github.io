@@ -51,9 +51,8 @@ class Command {
     public:
 
         ///////////////////////////////////////////////////////////////////////
-        // Show the element list in detail
+        // Show an element list in detail
         void showElements(ElementArray* elements, int indent) {
-            // printf("\n----------\n");
             for (int m = 0; m < indent; m++) {
                 print("  ");
             }
@@ -80,18 +79,6 @@ class Command {
             }
             print("\n");
         }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Get the element array
-        // ElementArray* getElements() {
-        //     return elements;
-        // }
-    
-        ///////////////////////////////////////////////////////////////////////
-        // Get the size (the number of elements in the array and list combined)
-        // int getSize() {
-        //     return elements->getSize();
-        // }
 
         ///////////////////////////////////////////////////////////////////////
         // Get a specified Element.
@@ -458,6 +445,20 @@ class Command {
             return false;
         }
 
+        // ///////////////////////////////////////////////////////////////////////
+        // // Find a label
+        // Symbol* getLabel(const char* name) {
+        //     for (int n = 0; n < elements->getSize(); n++) {
+        //         Element* element = elements->get(n);
+        //         if (element == nullptr) {
+        //             continue;
+        //         // } else if (element->is(name)) {
+        //         //     return value->getText();
+        //         }
+        //     }
+        //     return nullptr;
+        // }
+
         ///////////////////////////////////////////////////////////////////////
         // Find the code for a named value property
         const char* getCommandPropertyCode(ElementArray* elements, const char* key) {
@@ -498,12 +499,6 @@ class Command {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        // Flatten the element array
-        // void flatten() {
-        //     elements->flatten();
-        // }
-
-        ///////////////////////////////////////////////////////////////////////
         // Print all the elements in the command
         void dump() {
             // elements->dump();
@@ -525,103 +520,5 @@ class Command {
             // delete noDomainValueTypes;
             noDomainValueTypes = nullptr;
             delete[] noDomainValueMap;
-         }
-};
-
-// CommandArray is a memory-efficient class for managing arrays of commands.
-class CommandArray {
-
-    private:
-        int size = 0;                  // the number of items
-        Command** array = nullptr;     // the array of items
-        LinkedList* list;              // A list to hold new data items as they are added
-        
-    public:
-    
-        ///////////////////////////////////////////////////////////////////////
-        // Get the size (the number of elements in the array and list combined)
-        int getSize() {
-            return this->size + list->getSize();
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Get a specified item.
-        // If the index is greater than the array size but not greater than
-        // the combined size of array and list, return the item from the list.
-        Command* get(int n) {
-            if (n < size) {
-                return array[n];
-            }
-            else if (n < size + list->getSize()) {
-                return (Command*)list->get(n - size);
-            }
-            return nullptr;
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Add a command. This goes into the linked list.
-        void add(Command* command) {
-            list->add(command);
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Flatten this item by creating a single array to hold all the data.
-        void flatten() {
-            Command** oldArray = array;
-            int oldSize = size;
-            // Create a new array big enough for the old array and the list
-            int total = oldSize + list->getSize();
-            if (total > 0) {
-                array = new Command*[total];
-                // Copy the old array to the new
-                size = 0;
-                while (size < oldSize) {
-                    array[size] = oldArray[size];
-                    size++;
-                }
-                if (oldArray != nullptr) {
-                    delete[] oldArray;
-                }
-                // Copy the list to the new array
-                int n = 0;
-                while (n < list->getSize()) {
-                    array[size++] = (Command*)list->get(n++);
-                }
-                list->clear();
-            }
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Provide info about the object
-        void info() {
-            print("CommandArray: list size=%d, array size=%d\n", list->getSize(), size);
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Print all the values in the array
-        void dump() {
-            for (int n = 0; n < size; n++) {
-                print("Command %d: ", n);
-                get(n)->dump();
-            }
-            print("\n");
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Default constructor
-        CommandArray() {
-            list = new LinkedList();
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // Destructor
-        ~CommandArray() {
-            delete array;
-            array = nullptr;
-            delete list;
-            list = nullptr;
-            #if DESTROY
-            print("CommandArray: Delete %s\n", name);
-            #endif
          }
 };

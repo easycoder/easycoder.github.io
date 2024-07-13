@@ -147,7 +147,12 @@ class CoreKeywords {
                 case EXIT:
                     return FINISHED;
                 // case FILE:
-                // case FORK:
+                case FORK: {
+                    runtime->getThreads()->add(new Thread(0, next));
+                    Text* name = runtime->getCommandProperty(elements, "fork");
+                    Symbol* label = runtime->getLabel(name->getText());
+                    return next;
+                }
                 // case GET:
                 // case GOSUB:
                 // case GO:
@@ -208,7 +213,10 @@ class CoreKeywords {
                 // case SCRIPT:
                 case SET: {
                     Text* type = runtime->getParameter(elements, "type");
-                    if (type->is("elements")) {
+                    if (type->is("set")) {
+                        Symbol* target = runtime->getSymbol(elements, "target");
+                        target->setBoolValue(true);
+                    } else if (type->is("elements")) {
                         Symbol* symbol = runtime->getCommand()->getSymbol(elements, "name");
                         runtimeValue = runtime->getRuntimeValue(elements, "value");
                         symbol->setElements(runtimeValue->getIntValue());

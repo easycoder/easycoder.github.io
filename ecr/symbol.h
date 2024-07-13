@@ -36,15 +36,30 @@ class Symbol {
         }
 
         void setTextValue(const char* v) {
-            values[index]->setTextValue(v);
+            if (values[index] != nullptr) {
+                delete values[index];
+            }
+            RuntimeValue* rv = new RuntimeValue();
+            rv->setTextValue(v);
+            values[index]= rv;
         }
 
         void setIntValue(int v) {
-            values[index]->setIntValue(v);
+            if (values[index] != nullptr) {
+                delete values[index];
+            }
+            RuntimeValue* rv = new RuntimeValue();
+            rv->setIntValue(v);
+            values[index]= rv;
         }
 
         void setBoolValue(bool v) {
-            values[index]->setBoolValue(v);
+            if (values[index] != nullptr) {
+                delete values[index];
+            }
+            RuntimeValue* rv = new RuntimeValue();
+            rv->setBoolValue(v);
+            values[index]= rv;
         }
 
         RuntimeValue* getValue() {

@@ -20,6 +20,10 @@ class Condition {
             this->negate = negate;
         }
 
+        bool isNegate() {
+            return negate;
+        }
+
         void addValue(RuntimeValue* value) {
             values->add(value);
         }

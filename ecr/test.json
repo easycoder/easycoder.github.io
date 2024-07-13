@@ -6,7 +6,7 @@
     "index": 0,
     "keyword": "variable",
     "lino": 2,
-    "name": "TS",
+    "name": "N",
     "properties": {},
     "type": "symbol",
     "used": true,
@@ -20,91 +20,7 @@
     "index": 0,
     "keyword": "variable",
     "lino": 3,
-    "name": "N",
-    "properties": {},
-    "type": "symbol",
-    "used": true,
-    "value": [],
-    "valueHolder": true
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "object",
-    "lino": 4,
-    "name": "X",
-    "properties": {},
-    "type": "symbol",
-    "used": true,
-    "value": [],
-    "valueHolder": true
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "object",
-    "lino": 5,
-    "name": "Y",
-    "properties": {},
-    "type": "symbol",
-    "used": true,
-    "value": [],
-    "valueHolder": true
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "object",
-    "lino": 6,
-    "name": "Z",
-    "properties": {},
-    "type": "symbol",
-    "used": true,
-    "value": [],
-    "valueHolder": true
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "variable",
-    "lino": 7,
-    "name": "Start",
-    "properties": {},
-    "type": "symbol",
-    "used": true,
-    "value": [],
-    "valueHolder": true
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "variable",
-    "lino": 8,
-    "name": "Finish",
-    "properties": {},
-    "type": "symbol",
-    "used": true,
-    "value": [],
-    "valueHolder": true
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "elements": 1,
-    "index": 0,
-    "keyword": "variable",
-    "lino": 9,
-    "name": "Array",
+    "name": "M",
     "properties": {},
     "type": "symbol",
     "used": true,
@@ -114,638 +30,84 @@
   {
     "debug": true,
     "domain": "core",
+    "keyword": "debug",
+    "lino": 5,
+    "type": "step"
+  },
+  {
+    "debug": true,
+    "domain": "core",
     "keyword": "print",
-    "lino": 11,
+    "lino": 7,
     "type": null,
     "value": {
-      "content": "FOR loop counting to 500,000",
+      "content": "Test multitasking",
       "type": "text"
     }
   },
   {
     "debug": true,
     "domain": "core",
-    "keyword": "put",
-    "lino": 12,
-    "target": "Start",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
+    "fork": "Concurrent",
+    "keyword": "fork",
+    "lino": 8,
+    "type": null
   },
   {
     "debug": true,
     "domain": "core",
     "keyword": "put",
+    "lino": 9,
+    "target": "N",
+    "type": null,
+    "value": {
+      "content": 0,
+      "type": "int"
+    }
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "label",
+    "lino": 10,
+    "name": "Loop1:",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": false
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "gosub": "Print",
+    "keyword": "gosub",
+    "lino": 11,
+    "type": null
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "wait",
+    "lino": 12,
+    "multiplier": 10,
+    "type": null,
+    "value": {
+      "content": 10,
+      "type": "int"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "add",
     "lino": 13,
     "target": "N",
     "type": null,
-    "value": {
-      "content": 0,
-      "type": "int"
-    }
-  },
-  {
-    "condition": {
-      "domain": "core",
-      "negate": false,
-      "type": "less",
-      "value1": {
-        "domain": "core",
-        "name": "N",
-        "type": "symbol"
-      },
-      "value2": {
-        "content": 500000,
-        "type": "int"
-      }
-    },
-    "debug": true,
-    "domain": "core",
-    "keyword": "while",
-    "lino": 14,
-    "type": null
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "goto": 15,
-    "keyword": "gotoPC",
-    "lino": 14
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "increment",
-    "lino": 14,
-    "target": "N",
-    "type": null
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "goto": 11,
-    "keyword": "gotoPC",
-    "lino": 14
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 15,
-    "target": "Finish",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "take",
-    "lino": 16,
-    "target": "N",
-    "type": null,
     "value1": {
-      "domain": "core",
-      "name": "Start",
-      "type": "symbol"
-    },
-    "value2": {
-      "domain": "core",
-      "name": "Finish",
-      "type": "symbol"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 17,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "domain": "core",
-          "name": "N",
-          "type": "symbol"
-        },
-        {
-          "content": " seconds",
-          "type": "text"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 19,
-    "type": null,
-    "value": {
-      "content": "Compare 500,000 long integers for equality",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 20,
-    "target": "Start",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 21,
-    "target": "N",
-    "type": null,
-    "value": {
-      "content": 0,
-      "type": "int"
-    }
-  },
-  {
-    "condition": {
-      "domain": "core",
-      "negate": false,
-      "type": "less",
-      "value1": {
-        "domain": "core",
-        "name": "N",
-        "type": "symbol"
-      },
-      "value2": {
-        "content": 500000,
-        "type": "int"
-      }
-    },
-    "debug": true,
-    "domain": "core",
-    "keyword": "while",
-    "lino": 22,
-    "type": null
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "goto": 25,
-    "keyword": "gotoPC",
-    "lino": 22
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "increment",
-    "lino": 24,
-    "target": "N",
-    "type": null
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "goto": 21,
-    "keyword": "gotoPC",
-    "lino": 22
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 26,
-    "target": "Finish",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "take",
-    "lino": 27,
-    "target": "N",
-    "type": null,
-    "value1": {
-      "domain": "core",
-      "name": "Start",
-      "type": "symbol"
-    },
-    "value2": {
-      "domain": "core",
-      "name": "Finish",
-      "type": "symbol"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 28,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "domain": "core",
-          "name": "N",
-          "type": "symbol"
-        },
-        {
-          "content": " seconds",
-          "type": "text"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 30,
-    "type": null,
-    "value": {
-      "content": "Allocate and initialize a 500,000 element array",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 31,
-    "target": "Start",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "set",
-    "lino": 32,
-    "name": "Array",
-    "type": "elements",
-    "value": {
-      "content": 500000,
-      "type": "int"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 33,
-    "target": "N",
-    "type": null,
-    "value": {
-      "content": 0,
-      "type": "int"
-    }
-  },
-  {
-    "condition": {
-      "domain": "core",
-      "negate": false,
-      "type": "less",
-      "value1": {
-        "domain": "core",
-        "name": "N",
-        "type": "symbol"
-      },
-      "value2": {
-        "content": 500000,
-        "type": "int"
-      }
-    },
-    "debug": true,
-    "domain": "core",
-    "keyword": "while",
-    "lino": 34,
-    "type": null
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "goto": 38,
-    "keyword": "gotoPC",
-    "lino": 34
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "index",
-    "lino": 36,
-    "target": "Array",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "name": "N",
-      "type": "symbol"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 37,
-    "target": "Array",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "name": "N",
-      "type": "symbol"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "increment",
-    "lino": 38,
-    "target": "N",
-    "type": null
-  },
-  {
-    "debug": false,
-    "domain": "core",
-    "goto": 32,
-    "keyword": "gotoPC",
-    "lino": 34
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 40,
-    "target": "Finish",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "take",
-    "lino": 41,
-    "target": "N",
-    "type": null,
-    "value1": {
-      "domain": "core",
-      "name": "Start",
-      "type": "symbol"
-    },
-    "value2": {
-      "domain": "core",
-      "name": "Finish",
-      "type": "symbol"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 42,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "domain": "core",
-          "name": "N",
-          "type": "symbol"
-        },
-        {
-          "content": " seconds",
-          "type": "text"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 44,
-    "type": null,
-    "value": {
-      "content": "Properties",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 45,
-    "target": "X",
-    "type": null,
-    "value": {
-      "content": "abc",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 46,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "content": "X is ",
-          "type": "text"
-        },
-        {
-          "domain": "core",
-          "name": "X",
-          "type": "symbol"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "set",
-    "lino": 47,
-    "object": null,
-    "target": "X",
-    "type": "property",
-    "value1": {
-      "content": "name",
-      "type": "text"
-    },
-    "value2": {
-      "content": "Fred",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 48,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "content": "property 'name' of X is ",
-          "type": "text"
-        },
-        {
-          "domain": "core",
-          "name": {
-            "content": "name",
-            "type": "text"
-          },
-          "target": "X",
-          "type": "property"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 49,
-    "target": "Y",
-    "type": null,
-    "value": {
-      "content": "def",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "set",
-    "lino": 50,
-    "object": "X",
-    "target": "Y",
-    "type": "property",
-    "value1": {
-      "content": "X",
-      "type": "text"
-    },
-    "value2": null
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 51,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "content": "Y is ",
-          "type": "text"
-        },
-        {
-          "domain": "core",
-          "name": "Y",
-          "type": "symbol"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "key": {
-      "content": "X",
-      "type": "text"
-    },
-    "keyword": "set",
-    "lino": 52,
-    "source": "Y",
-    "target": "Z",
-    "type": "setprop"
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 53,
-    "type": null,
-    "value": {
-      "numeric": false,
-      "type": "cat",
-      "value": [
-        {
-          "content": "property 'name' of Z is ",
-          "type": "text"
-        },
-        {
-          "domain": "core",
-          "name": {
-            "content": "name",
-            "type": "text"
-          },
-          "target": "Z",
-          "type": "property"
-        }
-      ]
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "print",
-    "lino": 55,
-    "type": null,
-    "value": {
-      "content": "Counting",
-      "type": "text"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 56,
-    "target": "TS",
-    "type": null,
-    "value": {
-      "domain": "core",
-      "type": "now"
-    }
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "put",
-    "lino": 57,
-    "target": "N",
-    "type": null,
-    "value": {
-      "content": 0,
+      "content": 1,
       "type": "int"
     }
   },
@@ -766,29 +128,58 @@
     },
     "debug": true,
     "domain": "core",
-    "keyword": "while",
-    "lino": 58,
+    "keyword": "if",
+    "lino": 14,
     "type": null
   },
   {
     "debug": false,
     "domain": "core",
-    "goto": 60,
+    "goto": 13,
     "keyword": "gotoPC",
-    "lino": 58
+    "lino": 14
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "goto": "Loop1",
+    "keyword": "goto",
+    "lino": 14,
+    "type": null
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "exit",
+    "lino": 15,
+    "type": null
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "label",
+    "lino": 17,
+    "name": "Print:",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": false
   },
   {
     "debug": true,
     "domain": "core",
     "keyword": "print",
-    "lino": 60,
+    "lino": 18,
     "type": null,
     "value": {
       "numeric": false,
       "type": "cat",
       "value": [
         {
-          "content": "N is ",
+          "content": "N = ",
           "type": "text"
         },
         {
@@ -802,73 +193,68 @@
   {
     "debug": true,
     "domain": "core",
-    "keyword": "add",
-    "lino": 61,
-    "target": "N",
-    "type": null,
-    "value1": {
-      "content": 1,
-      "type": "int"
-    }
+    "keyword": "return",
+    "lino": 19,
+    "type": null
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "elements": 1,
+    "index": 0,
+    "keyword": "label",
+    "lino": 21,
+    "name": "Concurrent:",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": false
   },
   {
     "debug": true,
     "domain": "core",
-    "keyword": "wait",
-    "lino": 62,
-    "multiplier": 1000,
+    "keyword": "put",
+    "lino": 22,
+    "target": "M",
     "type": null,
     "value": {
-      "content": 1,
+      "content": 0,
       "type": "int"
     }
   },
   {
     "debug": false,
     "domain": "core",
-    "goto": 54,
-    "keyword": "gotoPC",
-    "lino": 58
-  },
-  {
-    "debug": true,
-    "domain": "core",
-    "keyword": "take",
-    "lino": 64,
-    "target": "TS",
-    "type": null,
-    "value1": {
-      "domain": "core",
-      "name": "TS",
-      "type": "symbol"
-    },
-    "value2": {
-      "domain": "core",
-      "type": "now"
-    }
+    "elements": 1,
+    "index": 0,
+    "keyword": "label",
+    "lino": 23,
+    "name": "Loop2:",
+    "properties": {},
+    "type": "symbol",
+    "used": false,
+    "value": [],
+    "valueHolder": false
   },
   {
     "debug": true,
     "domain": "core",
     "keyword": "print",
-    "lino": 65,
+    "lino": 24,
     "type": null,
     "value": {
       "numeric": false,
       "type": "cat",
       "value": [
         {
-          "content": "Finished in ",
+          "content": "         M = ",
           "type": "text"
         },
         {
           "domain": "core",
-          "name": "TS",
+          "name": "M",
           "type": "symbol"
-        },
-        {
-          "content": " seconds",
-          "type": "text"
         }
       ]
     }
@@ -876,8 +262,68 @@
   {
     "debug": true,
     "domain": "core",
-    "keyword": "exit",
-    "lino": 67,
+    "keyword": "wait",
+    "lino": 25,
+    "multiplier": 10,
+    "type": null,
+    "value": {
+      "content": 20,
+      "type": "int"
+    }
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "add",
+    "lino": 26,
+    "target": "M",
+    "type": null,
+    "value1": {
+      "content": 1,
+      "type": "int"
+    }
+  },
+  {
+    "condition": {
+      "domain": "core",
+      "negate": false,
+      "type": "less",
+      "value1": {
+        "domain": "core",
+        "name": "M",
+        "type": "symbol"
+      },
+      "value2": {
+        "content": 10,
+        "type": "int"
+      }
+    },
+    "debug": true,
+    "domain": "core",
+    "keyword": "if",
+    "lino": 27,
+    "type": null
+  },
+  {
+    "debug": false,
+    "domain": "core",
+    "goto": 26,
+    "keyword": "gotoPC",
+    "lino": 27
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "goto": "Loop2",
+    "keyword": "goto",
+    "lino": 27,
+    "type": null
+  },
+  {
+    "debug": true,
+    "domain": "core",
+    "keyword": "stop",
+    "lino": 28,
     "type": null
   }
 ]
