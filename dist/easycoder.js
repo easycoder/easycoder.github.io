@@ -7626,9 +7626,8 @@ const EasyCoder_Rest = {
 			}
 
 			const url = program.getValue(command.url);
-			// Default is the path for a WordPress installation
 			if (!EasyCoder_Rest.restPath) {
-				EasyCoder_Rest.restPath = `/wp-content/plugins/easycoder/rest.php`;
+				EasyCoder_Rest.restPath = `.`;
 			}
 			let path = url;
 			if (!url.startsWith(`http`)) {
