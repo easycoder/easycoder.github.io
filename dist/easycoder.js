@@ -4322,7 +4322,7 @@ const EasyCoder_Browser = {
 			}
 			const command = program[program.pc];
 			let state = program.getValue(command.state);
-			if (state != ``) {
+			if (state == ``) {
 				state = `{"script":"${program.script}"}`;
 			}
 			let title = program.getValue(command.title);
