@@ -1186,7 +1186,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const value = program.getFormattedValue(command.value);
-			console.log(`-> ` + value);
+			console.log(`(${program.script}:${command.lino}): ` + value);
 			return command.pc + 1;
 		}
 	},
