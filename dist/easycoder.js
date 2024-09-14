@@ -1905,8 +1905,9 @@ const EasyCoder_Core = {
 
 		compile: compiler => {
 			const lino = compiler.getLino();
+			var targetRecord = null;
 			if (compiler.nextIsSymbol()) {
-				const targetRecord = compiler.getSymbolRecord();
+				targetRecord = compiler.getSymbolRecord();
 			}
 			item = compiler.getValue();
 			let on = `\n`;
@@ -1915,8 +1916,11 @@ const EasyCoder_Core = {
 			}
 			if ([`giving`, `into`].includes(compiler.getToken())) {
 				if (compiler.nextIsSymbol()) {
-					const targetRecord = compiler.getSymbolRecord();
+					targetRecord = compiler.getSymbolRecord();
 				}
+			}
+			if (targetRecord == null) {
+				throw new Error(`No target variable given`);
 			}
 			if (targetRecord.keyword === `variable`) {
 				compiler.next();
