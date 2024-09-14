@@ -2756,7 +2756,17 @@ const EasyCoder_Core = {
 						type: `${type}number`,
 						timestamp
 					};
-				}
+				} else {
+					var timestamp = null;
+					if (compiler.nextTokenIs(`of`)) {
+						timestamp = compiler.getNextValue();
+					}
+					return {
+						domain: `core`,
+						type,
+						timestamp
+					}
+					}
 			}
 			return null;
 		},
