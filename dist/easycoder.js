@@ -1937,7 +1937,6 @@ const EasyCoder_Core = {
 				return true;
 			}
 			throw new Error(`'{targetRecord.name}' is not a variable`);
-			return false;
 		},
 
 		run: program => {
@@ -2736,10 +2735,8 @@ const EasyCoder_Core = {
 			case `hour`:
 			case `minute`:
 			case `second`:
-				compiler.next();
 				var timestamp = null;
-				if (compiler.tokenIs() == `of`) {
-					compiler.next();
+				if (compiler.nextIs() == `of`) {
 					timestamp = compiler.getNextValue();
 				}
 				return {
@@ -2750,10 +2747,8 @@ const EasyCoder_Core = {
 			case `day`:
 			case `month`:
 				if (compiler.nextTokenIs(`number`)) {
-					compiler.next();
 					var timestamp = null;
-					if (compiler.tokenIs() == `of`) {
-						compiler.next();
+					if (compiler.nextIs() == `of`) {
 						timestamp = compiler.getNextValue();
 					}
 					return {
@@ -2762,7 +2757,6 @@ const EasyCoder_Core = {
 						timestamp
 					};
 				}
-				return null;
 			}
 			return null;
 		},
