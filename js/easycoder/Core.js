@@ -1917,13 +1917,15 @@ const EasyCoder_Core = {
 			if ([`giving`, `into`].includes(compiler.getToken())) {
 				if (compiler.nextIsSymbol()) {
 					targetRecord = compiler.getSymbolRecord();
+					compiler.next();
+				} else {
+					return false;
 				}
 			}
 			if (targetRecord == null) {
 				throw new Error(`No target variable given`);
 			}
 			if (targetRecord.keyword === `variable`) {
-				compiler.next();
 				compiler.addCommand({
 					domain: `core`,
 					keyword: `split`,
@@ -1934,6 +1936,7 @@ const EasyCoder_Core = {
 				});
 				return true;
 			}
+			throw new Error(`'{targetRecord.name}' is not a variable`);
 			return false;
 		},
 
