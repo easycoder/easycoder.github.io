@@ -2736,7 +2736,7 @@ const EasyCoder_Core = {
 			case `minute`:
 			case `second`:
 				var timestamp = null;
-				if (compiler.nextIs(`of`)) {
+				if (compiler.nextTokenIs(`of`)) {
 					timestamp = compiler.getNextValue();
 				}
 				return {
@@ -2748,7 +2748,7 @@ const EasyCoder_Core = {
 			case `month`:
 				if (compiler.nextTokenIs(`number`)) {
 					var timestamp = null;
-					if (compiler.nextIs(`of`)) {
+					if (compiler.nextTokenIs(`of`)) {
 						timestamp = compiler.getNextValue();
 					}
 					return {
