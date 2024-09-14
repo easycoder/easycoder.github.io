@@ -3141,6 +3141,26 @@ const EasyCoder_Core = {
 					numeric: true,
 					content: year
 				};
+			case `month`:
+				var month = new Date().getMonth();
+				if (value.timestamp) {
+					month = new Date(program.getValue(value.timestamp) * 1000).getMonth();
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: month
+				};
+			case `day`:
+				var day = new Date().getDay();
+				if (value.timestamp) {
+					day = new Date(program.getValue(value.timestamp) * 1000).getDay();
+				}
+				return {
+					type: `constant`,
+					numeric: true,
+					content: day
+				};
 			case `hour`:
 				var hour = new Date().getHours();
 				if (value.timestamp) {
