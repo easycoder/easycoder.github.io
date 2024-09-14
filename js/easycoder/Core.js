@@ -1908,7 +1908,7 @@ const EasyCoder_Core = {
 			if (compiler.nextIsSymbol()) {
 				const targetRecord = compiler.getSymbolRecord();
 			}
-			item = compiler.getNextValue();
+			item = compiler.getValue();
 			let on = `\n`;
 			if (compiler.tokenIs(`on`)) {
 				on = compiler.getNextValue();

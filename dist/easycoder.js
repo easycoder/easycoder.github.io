@@ -1908,7 +1908,7 @@ const EasyCoder_Core = {
 			if (compiler.nextIsSymbol()) {
 				const targetRecord = compiler.getSymbolRecord();
 			}
-			item = compiler.getNextValue();
+			item = compiler.getValue();
 			let on = `\n`;
 			if (compiler.tokenIs(`on`)) {
 				on = compiler.getNextValue();
@@ -8920,7 +8920,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `240713`;
+EasyCoder.version = `240914`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
