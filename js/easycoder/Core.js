@@ -1905,6 +1905,9 @@ const EasyCoder_Core = {
 
 		compile: compiler => {
 			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const targetRecord = compiler.getSymbolRecord();
+			}
 			item = compiler.getNextValue();
 			let on = `\n`;
 			if (compiler.tokenIs(`on`)) {
@@ -1913,19 +1916,19 @@ const EasyCoder_Core = {
 			if ([`giving`, `into`].includes(compiler.getToken())) {
 				if (compiler.nextIsSymbol()) {
 					const targetRecord = compiler.getSymbolRecord();
-					if (targetRecord.keyword === `variable`) {
-						compiler.next();
-						compiler.addCommand({
-							domain: `core`,
-							keyword: `split`,
-							lino,
-							item,
-							on,
-							target: targetRecord.name
-						});
-						return true;
-					}
 				}
+			}
+			if (targetRecord.keyword === `variable`) {
+				compiler.next();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `split`,
+					lino,
+					item,
+					on,
+					target: targetRecord.name
+				});
+				return true;
 			}
 			return false;
 		},
