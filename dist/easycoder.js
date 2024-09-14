@@ -2758,7 +2758,7 @@ const EasyCoder_Core = {
 					};
 				} else {
 					var timestamp = null;
-					if (compiler.nextTokenIs(`of`)) {
+					if (compiler.tokenIs(`of`)) {
 						timestamp = compiler.getNextValue();
 					}
 					return {
