@@ -1910,7 +1910,11 @@ const EasyCoder_Core = {
 				targetRecord = compiler.getSymbolRecord();
 			}
 			item = compiler.getValue();
-			let on = `\n`;
+			let on = {
+				type: `constant`,
+				numeric: false,
+				content: `\n`
+			};
 			if (compiler.tokenIs(`on`)) {
 				on = compiler.getNextValue();
 			}

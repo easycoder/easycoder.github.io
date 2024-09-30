@@ -1910,7 +1910,11 @@ const EasyCoder_Core = {
 				targetRecord = compiler.getSymbolRecord();
 			}
 			item = compiler.getValue();
-			let on = `\n`;
+			let on = {
+				type: `constant`,
+				numeric: false,
+				content: `\n`
+			};
 			if (compiler.tokenIs(`on`)) {
 				on = compiler.getNextValue();
 			}
@@ -8951,7 +8955,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `240914`;
+EasyCoder.version = `240930`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
