@@ -2493,6 +2493,39 @@ const EasyCoder_Core = {
 					radius_t
 				};
 			}
+			if (token === `acos`) {
+				compiler.next();
+				const dy = compiler.getValue();
+				const dx = compiler.getValue();
+				return {
+					domain: `core`,
+					type: `acos`,
+					dy,
+					dx
+				};
+			}
+			if (token === `asin`) {
+				compiler.next();
+				const dy = compiler.getValue();
+				const dx = compiler.getValue();
+				return {
+					domain: `core`,
+					type: `asin`,
+					dy,
+					dx
+				};
+			}
+			if (token === `atan`) {
+				compiler.next();
+				const dy = compiler.getValue();
+				const dx = compiler.getValue();
+				return {
+					domain: `core`,
+					type: `atan`,
+					dy,
+					dx
+				};
+			}
 			if ([`now`, `timestamp`, `today`, `newline`, `backtick`, `break`, `empty`, `uuid`].includes(token)) {
 				compiler.next();
 				return {
@@ -2826,6 +2859,30 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: true,
 					content: parseInt(Math.tan(parseFloat(angle_t) * 0.01745329) * radius_t, 10)
+				};
+			case `acos`:
+				const cdy = program.getValue(value.dy);
+				const cdx = program.getValue(value.dx);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: parseInt(Math.acos(cdy, cdx) * (180/Math.PI), 10)
+				};
+			case `asin`:
+				const ady = program.getValue(value.dy);
+				const adx = program.getValue(value.dx);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: parseInt(Math.asin(ady, adx) * (180/Math.PI), 10)
+				};
+			case `atan`:
+				const tdy = program.getValue(value.dy);
+				const tdx = program.getValue(value.dx);
+				return {
+					type: `constant`,
+					numeric: true,
+					content: parseInt(Math.atan(tdy, tdx) * (180/Math.PI), 10)
 				};
 			case `valueOf`:
 				const v = parseInt(program.getValue(value.value));
