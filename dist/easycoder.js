@@ -2866,7 +2866,7 @@ const EasyCoder_Core = {
 				return {
 					type: `constant`,
 					numeric: true,
-					content: parseInt(Math.acos(cdy, cdx) * (180/Math.PI), 10)
+					content: parseInt(Math.acos(cdy / cdx) * (180/Math.PI), 10)
 				};
 			case `asin`:
 				const ady = program.getValue(value.dy);
@@ -2874,7 +2874,7 @@ const EasyCoder_Core = {
 				return {
 					type: `constant`,
 					numeric: true,
-					content: parseInt(Math.asin(ady, adx) * (180/Math.PI), 10)
+					content: parseInt(Math.asin(ady / adx) * (180/Math.PI), 10)
 				};
 			case `atan`:
 				const tdy = program.getValue(value.dy);
@@ -2882,7 +2882,7 @@ const EasyCoder_Core = {
 				return {
 					type: `constant`,
 					numeric: true,
-					content: parseInt(Math.atan(tdy, tdx) * (180/Math.PI), 10)
+					content: parseInt(Math.atan2(tdy, tdx) * (180/Math.PI), 10)
 				};
 			case `valueOf`:
 				const v = parseInt(program.getValue(value.value));
@@ -9012,7 +9012,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `240930`;
+EasyCoder.version = `241002`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
