@@ -5277,7 +5277,19 @@ const EasyCoder_Browser = {
 			const to = program.getValue(command.to);
 			if (command.name) {
 				const symbolRecord = program.getSymbolRecord(command.name);
-				symbolRecord.element[symbolRecord.index].scrollTo(0, to);
+				const div = symbolRecord.element[symbolRecord.index];
+
+				// Method 1: Standard smooth scroll
+				div.scrollTo({ top: 0, behavior: 'smooth' });
+
+				// Method 2: Immediate fallback
+				div.scrollTop = 0;
+
+				// Method 3: Force reflow by accessing layout properties
+				void div.offsetHeight; // This triggers a reflow
+
+				// Final attempt
+				div.scrollTop = 0;
 			} else {
 				window.scrollTo(0, to);
 			}
@@ -9012,7 +9024,7 @@ const EasyCoder = {
 		}
 	},
 };
-EasyCoder.version = `241002`;
+EasyCoder.version = `250824`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 

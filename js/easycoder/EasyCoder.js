@@ -1,4 +1,4 @@
-EasyCoder.version = `241002`;
+EasyCoder.version = `250824`;
 EasyCoder.timestamp = Date.now();
 console.log(`EasyCoder loaded; waiting for page`);
 
