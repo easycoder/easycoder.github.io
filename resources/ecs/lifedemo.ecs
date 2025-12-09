@@ -78,11 +78,11 @@
 
 Start:
 !	Set up the screen
-    set the style of Screen to `height:50%`
-    put the height of Screen into Height
-    put Height into Width
+    set the style of Screen to `width:100%`
+    put the width of Screen into Width
+    put Width into Height
     create CellPanel in Screen
-    set style `width` of CellPanel to `100%`
+    set style `width` of CellPanel to `50%`
     set style `height` of CellPanel to Height cat `px`
     set the style of CellPanel to
     	`width:100%;height:` cat Height cat `px;position:relative`
