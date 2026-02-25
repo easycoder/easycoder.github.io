@@ -1508,7 +1508,7 @@ const EasyCoder_Core = {
 				} else if (compiler.isSymbol) {
 					const moduleRecord = compiler.getSymbolRecord();
 					if (moduleRecord.keyword !== `module`) {
-						throw new Error(`'${moduleRecord.name}' is not a module`);
+						return false;
 					}
 					recipient = moduleRecord.name;
 				}
