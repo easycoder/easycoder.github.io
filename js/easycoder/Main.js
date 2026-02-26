@@ -6,7 +6,8 @@ const EasyCoder = {
 		core: EasyCoder_Core,
 		browser: EasyCoder_Browser,
 		json: EasyCoder_Json,
-		rest: EasyCoder_Rest
+		rest: EasyCoder_Rest,
+		mqtt: EasyCoder_MQTT
 	},
 
 	elementId: 0,
@@ -107,6 +108,16 @@ const EasyCoder = {
 		if (v.type === `boolean`) {
 			return v.content ? `true` : `false`;
 		}
+		if (v.content === null || typeof v.content === `undefined`) {
+			return ``;
+		}
+		if (typeof v.content === `object`) {
+			try {
+				return JSON.stringify(v.content, null, 2);
+			} catch (err) {
+				return String(v.content);
+			}
+		}
 		if (this.isJsonString(v.content)) {
 			try {
 				const parsed = JSON.parse(v.content);
@@ -179,6 +190,9 @@ const EasyCoder = {
 	},
 
 	isJsonString: function (str) {
+		if (typeof str !== `string` || str.length === 0) {
+			return false;
+		}
 		if ([`{`, `[`].includes(str[0])) {
 			try {
 				JSON.parse(str);

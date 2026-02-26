@@ -98,11 +98,35 @@ const EasyCoder_Value = {
 		//  console.log('Value:doValue:value: '+JSON.stringify(value,null,2));
 		// See if it's a constant string, a variable or something else
 		if (typeof value.type === `undefined`) {
-			program.runtimeError(program[program.pc].lino, `Undefined value (variable not initialized?)`);
-			return null;
+			if (typeof value === `number`) {
+				value = {
+					type: `numeric`,
+					content: value
+				};
+			} else if (typeof value === `string` && value.length === 1) {
+				value = {
+					type: `char`,
+					content: value
+				};
+			} else {
+				program.runtimeError(program[program.pc].lino, `Undefined value (variable not initialized?)`);
+				return null;
+			}
 		}
 		const type = value.type;
 		switch (type) {
+		case `numeric`:
+			return {
+				type: `constant`,
+				numeric: true,
+				content: value.content
+			};
+		case `char`:
+			return {
+				type: `constant`,
+				numeric: false,
+				content: value.content
+			};
 		case `cat`:
 			return {
 				type: `constant`,

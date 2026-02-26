@@ -7,7 +7,7 @@ cp -r js/plugins/* dist/plugins
 cp -r server/* dist
 
 echo "Merge into a single file"
-cat js/easycoder/Core.js js/easycoder/Browser.js js/easycoder/Json.js js/easycoder/Rest.js js/easycoder/Compare.js js/easycoder/Condition.js js/easycoder/Value.js js/easycoder/Run.js js/easycoder/Compile.js js/easycoder/Main.js js/easycoder/EasyCoder.js > dist/easycoder.js
+cat js/easycoder/Core.js js/easycoder/Browser.js js/easycoder/Json.js js/easycoder/MQTT.js js/easycoder/Rest.js js/easycoder/Compare.js js/easycoder/Condition.js js/easycoder/Value.js js/easycoder/Run.js js/easycoder/Compile.js js/easycoder/Main.js js/easycoder/EasyCoder.js > dist/easycoder.js
 
 echo "Minimise with closure"
 npx google-closure-compiler --js=dist/easycoder.js --js_output_file=dist/easycoder-min.js --language_in ECMASCRIPT_2018
