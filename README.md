@@ -32,6 +32,30 @@ There's a lot more information on [our website](https://easycoder.github.io), wh
 
 [Developer Manual](developer/README.md)
 
+## Debug Output Routing ##
+
+EasyCoder runtime/debug output now goes through `EasyCoder.writeToDebugConsole`.
+
+- By default, output is written to the in-page debug console (`easycoder-debug-console`).
+- If the URL contains `?vscodeDebugConsole=1`, output is sent to `console.log`, which is useful when debugging from VS Code's debug console.
+- You can also enable this persistently with local storage:
+
+```js
+localStorage.setItem('easycoder.vscodeDebugConsole', '1');
+```
+
+Disable it with:
+
+```js
+localStorage.removeItem('easycoder.vscodeDebugConsole');
+```
+
+## Sensitive Data ##
+
+Do not store long-lived secrets (for example MQTT/Flespi tokens) in browser local storage where possible. Local storage is readable by page JavaScript and is vulnerable if any script on the page is compromised.
+
+Prefer server-side storage or OS-level secure storage (keychain/credential store), and issue short-lived credentials to the browser when needed.
+
 ## The Codex ##
 
 The Codex is a page on [our website](https://easycoder.github.io) that provides a tutorial series plus a programming playground to try out code and a complete programmers' reference to the **_EasyCoder_** language.

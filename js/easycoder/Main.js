@@ -5,12 +5,99 @@ const EasyCoder = {
 	domain: {
 		core: EasyCoder_Core,
 		browser: EasyCoder_Browser,
-		json: EasyCoder_Json,
-		rest: EasyCoder_Rest,
+		json: EasyCoder_JSON,
+		rest: EasyCoder_REST,
 		mqtt: EasyCoder_MQTT
 	},
 
 	elementId: 0,
+	attachWaitMs: 3000,
+	timingEnabled: false,
+	startupTraceCache: null,
+
+	isStartupTraceEnabled: function () {
+		if (this.startupTraceCache !== null) {
+			return this.startupTraceCache;
+		}
+		let enabled = false;
+		try {
+			const params = new URLSearchParams(window.location.search);
+			if (params.has(`easycoderStartupTrace`)) {
+				const value = (params.get(`easycoderStartupTrace`) || ``).toLowerCase();
+				enabled = value === `1` || value === `true`;
+				this.startupTraceCache = enabled;
+				return enabled;
+			}
+			const stored = window.localStorage ? window.localStorage.getItem(`easycoder.startupTrace`) : null;
+			if (stored !== null) {
+				const value = stored.toLowerCase();
+				enabled = value === `1` || value === `true`;
+			}
+		} catch (err) {
+			enabled = false;
+		}
+		this.startupTraceCache = enabled;
+		return enabled;
+	},
+
+	writeStartupTrace: function (message) {
+		if (this.isStartupTraceEnabled()) {
+			this.writeToDebugConsole(message);
+		}
+	},
+
+	getDebugConsoleElement: function () {
+		const host = document.getElementById(`stuff`);
+		let debugConsole = document.getElementById(`easycoder-debug-console`);
+		if (host) {
+			if (!debugConsole || debugConsole.parentElement !== host) {
+				if (debugConsole && debugConsole.parentElement) {
+					debugConsole.parentElement.removeChild(debugConsole);
+				}
+				debugConsole = document.createElement(`pre`);
+				debugConsole.id = `easycoder-debug-console`;
+				debugConsole.style.display = `none`;
+				host.appendChild(debugConsole);
+			}
+			debugConsole.style.display = `none`;
+			return debugConsole;
+		}
+		if (debugConsole) {
+			debugConsole.style.display = `none`;
+			return debugConsole;
+		}
+		if (!document.body) {
+			return null;
+		}
+		debugConsole = document.createElement(`pre`);
+		debugConsole.id = `easycoder-debug-console`;
+		debugConsole.style.display = `none`;
+		document.body.appendChild(debugConsole);
+		return debugConsole;
+	},
+
+	writeToDebugConsole: function (message) {
+		const params = new URLSearchParams(window.location.search);
+		let usePageDebugConsole = params.get(`pageDebugConsole`) === `1`;
+		if (!usePageDebugConsole) {
+			try {
+				const stored = window.localStorage ? window.localStorage.getItem(`easycoder.pageDebugConsole`) : null;
+				usePageDebugConsole = stored === `1` || stored === `true`;
+			} catch (err) {
+				usePageDebugConsole = false;
+			}
+		}
+		if (usePageDebugConsole) {
+			const debugConsole = this.getDebugConsoleElement();
+			if (debugConsole) {
+				const prefix = debugConsole.textContent && debugConsole.textContent.length ? `\n` : ``;
+				debugConsole.textContent += `${prefix}${message}`;
+				debugConsole.scrollTop = debugConsole.scrollHeight;
+				return;
+			}
+		}
+		console.log(message);
+	},
 
 	runtimeError: function (lino, message) {
 		this.lino = lino;
@@ -30,13 +117,13 @@ const EasyCoder = {
 
 	reportError: function (err, program, source) {
 		if (!err.message) {
-			console.log(`An error occurred - origin was ${err.path[0]}`);
+			EasyCoder.writeToDebugConsole(`An error occurred - origin was ${err.path[0]}`);
 			return;
 		}
 		if (!this.compiling && !program) {
 			const errString = `Error: ${err.message}`;
 			alert(errString);
-			console.log(errString);
+			EasyCoder.writeToDebugConsole(errString);
 			return;
 		}
 		const {
@@ -63,7 +150,7 @@ const EasyCoder = {
 				errString += `${warning}\n`;
 			}
 		}
-		console.log(errString);
+		EasyCoder.writeToDebugConsole(errString);
 		alert(errString);
 	},
 
@@ -179,7 +266,7 @@ const EasyCoder = {
 			return;
 		}
 		element.onload = function () {
-			console.log(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
+			EasyCoder.writeToDebugConsole(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
 			cb();
 		};
 		document.head.appendChild(element);
@@ -354,7 +441,7 @@ const EasyCoder = {
 				EasyCoder.scriptIndex++;
 			}
 			const finishCompile = Date.now();
-			console.log(`${finishCompile - this.timestamp} ms: ` +
+			EasyCoder.writeToDebugConsole(`${finishCompile - this.timestamp} ms: ` +
 				`Compiled ${program.script}: ${source.scriptLines.length} lines (${source.tokens.length} tokens) in ` +
 				`${finishCompile - startCompile} ms`);
 		} catch (err) {
@@ -388,9 +475,11 @@ const EasyCoder = {
 		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);
+		EasyCoder.writeStartupTrace(`EasyCoder.start invoked (${script.length} source lines)`);
 		if (!this.tokenising) {
 			try {
 				this.tokeniseAndCompile(script);
+				EasyCoder.writeStartupTrace(`tokeniseAndCompile completed`);
 			} catch (err) {
 				this.reportError(err, null, source);
 			}

@@ -259,7 +259,7 @@ const EasyCoder_Compiler = {
 			}
 			this.rewindTo(mark);
 		}
-		console.log(`No handler found`);
+		EasyCoder.writeToDebugConsole(`No handler found`);
 		throw new Error(`I don't understand '${token}...'`);
 	},
 
@@ -320,7 +320,7 @@ const EasyCoder_Compiler = {
 		for (const symbol in this.symbols) {
 			const record = this.program[this.symbols[symbol].pc];
 			if (record.isSymbol && !record.used && !record.exporter) {
-				console.log(`Symbol '${record.name}' has not been used.`);
+				EasyCoder.writeToDebugConsole(`Symbol '${record.name}' has not been used.`);
 			}
 		}
 		return this.program;

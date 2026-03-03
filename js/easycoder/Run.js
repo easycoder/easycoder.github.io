@@ -51,7 +51,7 @@ const EasyCoder_Run = {
 					}
 					catch (e) {
 					}
-					console.log(`${program.script}: Line ${lino}: `
+					EasyCoder.writeToDebugConsole(`${program.script}: Line ${lino}: `
 					+ `${domain}:${program[program.pc].keyword} - ${line}`);
 				}
 				const handler = program.domain[domain];
@@ -138,13 +138,13 @@ const EasyCoder_Run = {
 									EasyCoder_Run.run(program, program.resume);
 								} catch (err) {
 									const message = `Error in run handler: ` + err.message;
-									console.log(message);
+										EasyCoder.writeToDebugConsole(message);
 									alert(message);
 								}
 							};
 
 							step.onclick = function () {
-								console.log(`step`);
+									EasyCoder.writeToDebugConsole(`step`);
 								step.blur();
 								program.tracing = true;
 								const content = document.getElementById(`easycoder-tracer-content`);
@@ -153,7 +153,7 @@ const EasyCoder_Run = {
 									program.run(program.resume);
 								} catch (err) {
 									const message = `Error in step handler: ` + err.message;
-									console.log(message);
+										EasyCoder.writeToDebugConsole(message);
 									alert(message);
 								}
 							};

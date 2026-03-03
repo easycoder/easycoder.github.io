@@ -79,7 +79,7 @@ const EasyCoder_MQTT = {
             }
 
             this.connected = true;
-            console.log(`Client ${this.clientID} connected`);
+            EasyCoder.writeToDebugConsole(`Client ${this.clientID} connected`);
             
             // Subscribe to all topics
             for (const topicName of this.topics) {
@@ -87,7 +87,7 @@ const EasyCoder_MQTT = {
                 const topic = topicRecord.object;
                 const qos = topic.getQoS();
                 this.client.subscribe(topic.getName(), { qos });
-                console.log(`Subscribed to topic: ${topic.getName()} with QoS ${qos}`);
+                EasyCoder.writeToDebugConsole(`Subscribed to topic: ${topic.getName()} with QoS ${qos}`);
             }
 
             this._queueProgramCallback(this.onConnectPC);
@@ -111,7 +111,7 @@ const EasyCoder_MQTT = {
 
                             if (this.chunkedMessages[topic]) {
                                 this.chunkedMessages[topic][partNum] = data;
-                                console.log(`Received chunk ${partNum}/${totalChunks - 1} on topic ${topic}`);
+                                // EasyCoder.writeToDebugConsole(`Received chunk ${partNum}/${totalChunks - 1} on topic ${topic}`);
                             }
                         }
                     }
@@ -217,12 +217,12 @@ const EasyCoder_MQTT = {
             const messageLen = messageBytes.length;
             const numChunks = Math.ceil(messageLen / chunkSize);
 
-            console.log(`Sending message (${messageLen} bytes) in ${numChunks} chunks of size ${chunkSize} to topic ${topic} with QoS ${qos}`);
+            // EasyCoder.writeToDebugConsole(`Sending message (${messageLen} bytes) in ${numChunks} chunks of size ${chunkSize} to topic ${topic} with QoS ${qos}`);
 
             this._sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks);
 
             this.lastSendTime = (Date.now() - sendStart) / 1000;
-            console.log(`Message transmission complete in ${this.lastSendTime.toFixed(3)} seconds`);
+            // EasyCoder.writeToDebugConsole(`Message transmission complete in ${this.lastSendTime.toFixed(3)} seconds`);
         }
 
         _sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks) {
@@ -241,7 +241,7 @@ const EasyCoder_MQTT = {
                 const headerBytes = new TextEncoder().encode(header);
                 const chunkMsg = this._concatBytes([headerBytes, chunkData]);
                 this.client.publish(topic, chunkMsg, { qos });
-                console.log(`Sent chunk ${i}/${numChunks - 1} to topic ${topic} with QoS ${qos}: ${chunkMsg.byteLength} bytes`);
+                // EasyCoder.writeToDebugConsole(`Sent chunk ${i}/${numChunks - 1} to topic ${topic} with QoS ${qos}: ${chunkMsg.byteLength} bytes`);
             }
         }
 
@@ -543,18 +543,19 @@ const EasyCoder_MQTT = {
                 if (compiler.nextIsSymbol()) {
                     const record = compiler.getSymbolRecord();
                     command.to = record.name;
+                    compiler.nextToken()
 
                     // Parse optional parameters
                     while (true) {
-                        const token = compiler.peek();
+                        const token = compiler.getToken();
                         if (token === 'sender' || token === 'action' || 
                             token === 'qos' || token === 'message') {
-                            compiler.next();
                             
                             if (token === 'sender') {
                                 if (compiler.nextIsSymbol()) {
                                     const rec = compiler.getSymbolRecord();
                                     command.sender = rec.name;
+                                    compiler.nextToken();
                                 }
                             } else if (token === 'action') {
                                 command.action = compiler.getNextValue();
@@ -642,6 +643,7 @@ const EasyCoder_MQTT = {
             }
 
             const topicName = topic.getName();
+            // EasyCoder.writeToDebugConsole(`MQTT Publish to ${topicName} with QoS ${qos}: ${JSON.stringify(payload)}`);
             program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024);
 
             return command.pc + 1;

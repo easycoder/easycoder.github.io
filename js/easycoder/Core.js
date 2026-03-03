@@ -367,13 +367,13 @@ const EasyCoder_Core = {
 			const item = command.item;
 			switch (item) {
 			case `symbols`:
-				console.log(`Symbols: ${JSON.stringify(program.symbols, null, 2)}`);
+				EasyCoder.writeToDebugConsole(`Symbols: ${JSON.stringify(program.symbols, null, 2)}`);
 				break;
 			case `symbol`:
 				const record = program.getSymbolRecord(command.name);
 				const exporter = record.exporter.script;
 				delete record.exporter;
-				console.log(`Symbol: ${JSON.stringify(record, null, 2)}`);
+				EasyCoder.writeToDebugConsole(`Symbol: ${JSON.stringify(record, null, 2)}`);
 				record.exporter.script = exporter;
 				break;
 			case `step`:
@@ -383,11 +383,11 @@ const EasyCoder_Core = {
 				program.debugStep = false;
 				break;
 			case `program`:
-				console.log(`Debug program: ${JSON.stringify(program, null, 2)}`);
+				EasyCoder.writeToDebugConsole(`Debug program: ${JSON.stringify(program, null, 2)}`);
 				break;
 			default:
 				if (item.content >= 0) {
-					console.log(`Debug item ${item.content}: ${JSON.stringify(program[item.content], null, 2)}`);
+					EasyCoder.writeToDebugConsole(`Debug item ${item.content}: ${JSON.stringify(program[item.content], null, 2)}`);
 				}
 				break;
 			}
@@ -727,7 +727,7 @@ const EasyCoder_Core = {
 			try {
 				program.run(program.symbols[command.label].pc);
 			} catch (err) {
-				console.log(err.message);
+				EasyCoder.writeToDebugConsole(err.message);
 				alert(err.message);
 			}
 			return command.pc + 1;
@@ -1186,7 +1186,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const value = program.getFormattedValue(command.value);
-			console.log(`(${program.script}:${command.lino}): ` + value);
+			EasyCoder.writeToDebugConsole(`(${program.script}:${command.lino}): ` + value);
 			return command.pc + 1;
 		}
 	},
@@ -2118,7 +2118,7 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
-			console.log(`Test`);
+			EasyCoder.writeToDebugConsole(`Test`);
 			return program[program.pc].pc + 1;
 		}
 	},
@@ -2561,6 +2561,24 @@ const EasyCoder_Core = {
 								domain: `core`,
 								type: `element`,
 								element,
+								symbol: symbolRecord.name
+							};
+						}
+					}
+				}
+				return null;
+			}
+			if (token === `item`) {
+				const item = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const symbolRecord = compiler.getSymbolRecord();
+						compiler.next();
+						if (symbolRecord.keyword === `variable`) {
+							return {
+								domain: `core`,
+								type: `item`,
+								item,
 								symbol: symbolRecord.name
 							};
 						}
@@ -3114,6 +3132,24 @@ const EasyCoder_Core = {
 					numeric: false,
 					content: typeof elementContent === `object` ?
 						JSON.stringify(elementContent) : elementContent
+				};
+			case `item`:
+				const item = program.getValue(value.item);
+				const itemRecord = program.getSymbolRecord(value.symbol);
+				var itemContent = ``;
+				try {
+					const rawContent = program.getValue(itemRecord.value[itemRecord.index]);
+					itemContent = JSON.parse(rawContent)[item];
+					// EasyCoder.writeToDebugConsole(itemContent)
+				} catch (err) {
+					program.runtimeError(program[program.pc].lino, `Can't parse JSON`);
+					return null;
+				}
+				return {
+					type: `constant`,
+					numeric: false,
+					content: typeof itemContent === `object` ?
+						JSON.stringify(itemContent) : itemContent
 				};
 			case `property`:
 				const property = program.getValue(value.property);

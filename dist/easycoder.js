@@ -367,13 +367,13 @@ const EasyCoder_Core = {
 			const item = command.item;
 			switch (item) {
 			case `symbols`:
-				console.log(`Symbols: ${JSON.stringify(program.symbols, null, 2)}`);
+				EasyCoder.writeToDebugConsole(`Symbols: ${JSON.stringify(program.symbols, null, 2)}`);
 				break;
 			case `symbol`:
 				const record = program.getSymbolRecord(command.name);
 				const exporter = record.exporter.script;
 				delete record.exporter;
-				console.log(`Symbol: ${JSON.stringify(record, null, 2)}`);
+				EasyCoder.writeToDebugConsole(`Symbol: ${JSON.stringify(record, null, 2)}`);
 				record.exporter.script = exporter;
 				break;
 			case `step`:
@@ -383,11 +383,11 @@ const EasyCoder_Core = {
 				program.debugStep = false;
 				break;
 			case `program`:
-				console.log(`Debug program: ${JSON.stringify(program, null, 2)}`);
+				EasyCoder.writeToDebugConsole(`Debug program: ${JSON.stringify(program, null, 2)}`);
 				break;
 			default:
 				if (item.content >= 0) {
-					console.log(`Debug item ${item.content}: ${JSON.stringify(program[item.content], null, 2)}`);
+					EasyCoder.writeToDebugConsole(`Debug item ${item.content}: ${JSON.stringify(program[item.content], null, 2)}`);
 				}
 				break;
 			}
@@ -727,7 +727,7 @@ const EasyCoder_Core = {
 			try {
 				program.run(program.symbols[command.label].pc);
 			} catch (err) {
-				console.log(err.message);
+				EasyCoder.writeToDebugConsole(err.message);
 				alert(err.message);
 			}
 			return command.pc + 1;
@@ -1186,7 +1186,7 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const value = program.getFormattedValue(command.value);
-			console.log(`(${program.script}:${command.lino}): ` + value);
+			EasyCoder.writeToDebugConsole(`(${program.script}:${command.lino}): ` + value);
 			return command.pc + 1;
 		}
 	},
@@ -2118,7 +2118,7 @@ const EasyCoder_Core = {
 		},
 
 		run: program => {
-			console.log(`Test`);
+			EasyCoder.writeToDebugConsole(`Test`);
 			return program[program.pc].pc + 1;
 		}
 	},
@@ -2561,6 +2561,24 @@ const EasyCoder_Core = {
 								domain: `core`,
 								type: `element`,
 								element,
+								symbol: symbolRecord.name
+							};
+						}
+					}
+				}
+				return null;
+			}
+			if (token === `item`) {
+				const item = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					if (compiler.nextIsSymbol()) {
+						const symbolRecord = compiler.getSymbolRecord();
+						compiler.next();
+						if (symbolRecord.keyword === `variable`) {
+							return {
+								domain: `core`,
+								type: `item`,
+								item,
 								symbol: symbolRecord.name
 							};
 						}
@@ -3115,6 +3133,24 @@ const EasyCoder_Core = {
 					content: typeof elementContent === `object` ?
 						JSON.stringify(elementContent) : elementContent
 				};
+			case `item`:
+				const item = program.getValue(value.item);
+				const itemRecord = program.getSymbolRecord(value.symbol);
+				var itemContent = ``;
+				try {
+					const rawContent = program.getValue(itemRecord.value[itemRecord.index]);
+					itemContent = JSON.parse(rawContent)[item];
+					// EasyCoder.writeToDebugConsole(itemContent)
+				} catch (err) {
+					program.runtimeError(program[program.pc].lino, `Can't parse JSON`);
+					return null;
+				}
+				return {
+					type: `constant`,
+					numeric: false,
+					content: typeof itemContent === `object` ?
+						JSON.stringify(itemContent) : itemContent
+				};
 			case `property`:
 				const property = program.getValue(value.property);
 				const propertyRecord = program.getSymbolRecord(value.symbol);
@@ -3478,6 +3514,13 @@ const EasyCoder_Browser = {
 
 	name: `EasyCoder_Browser`,
 
+	renderMarkdownToHtml: (markdown) => {
+		if (typeof EasyCoder_Markdown !== `undefined` && EasyCoder_Markdown && typeof EasyCoder_Markdown.renderToHtml === `function`) {
+			return EasyCoder_Markdown.renderToHtml(markdown);
+		}
+		return `${markdown == null ? `` : markdown}`;
+	},
+
 	A: {
 
 		compile: (compiler) => {
@@ -3513,6 +3556,24 @@ const EasyCoder_Browser = {
 	},
 
 	Attach: {
+
+		nowMs: () => {
+			if (typeof performance !== `undefined` && typeof performance.now === `function`) {
+				return performance.now();
+			}
+			return Date.now();
+		},
+
+		reportTiming: (message) => {
+			if (!(typeof EasyCoder !== `undefined` && EasyCoder.timingEnabled)) {
+				return;
+			}
+			if (typeof EasyCoder !== `undefined` && typeof EasyCoder.writeToDebugConsole === `function`) {
+				EasyCoder.writeToDebugConsole(message);
+			} else {
+				console.log(message);
+			}
+		},
 
 		compile: (compiler) => {
 			const lino = compiler.getLino();
@@ -3606,7 +3667,19 @@ const EasyCoder_Browser = {
 				};
 			} else {
 				content = program.value.evaluate(program, command.cssId).content;
-				EasyCoder_Browser.Attach.getElementById(program, command, content, 100);
+				const waitMs = (typeof EasyCoder !== `undefined` && Number.isFinite(EasyCoder.attachWaitMs))
+					? EasyCoder.attachWaitMs
+					: 1000;
+				const waitUntil = Date.now() + waitMs;
+				const trace = {
+					id: content,
+					type: command.type,
+					symbol: command.symbol,
+					startedAt: EasyCoder_Browser.Attach.nowMs(),
+					lookupAttempts: 0,
+					waitMs
+				};
+				EasyCoder_Browser.Attach.getElementById(program, command, content, waitUntil, trace);
 				return 0;
 			}
 			if (command.type === `popup`) {
@@ -3622,35 +3695,82 @@ const EasyCoder_Browser = {
 			return command.pc + 1;
 		},
 
-		getElementById: (program, command, id, retries) => {
-            const element = document.getElementById(id);
-            if (element) {
-				if (program.run) {
-					const target = program.getSymbolRecord(command.symbol);
-					target.element[target.index] = element;
-					target.value[target.index] = {
-						type: `constant`,
-						numeric: false,
-						id
-					};
-					program.run(command.pc + 1);
+		getElementById: (program, command, id, waitUntil, trace) => {
+			trace.lookupAttempts += 1;
+			const element = document.getElementById(id);
+			if (element) {
+				const isImageTarget = [`img`, `image`].includes(command.type);
+				if (isImageTarget && !EasyCoder_Browser.Attach.isImageReady(element)) {
+					EasyCoder_Browser.Attach.waitForImageReady(program, command, id, element, waitUntil, trace);
+				} else {
+					EasyCoder_Browser.Attach.completeAttach(program, command, element, id, trace);
 				}
-            } else {
-                if (retries > 0) {
-                    setTimeout(function() {
-                        EasyCoder_Browser.Attach.getElementById(program, command, id, --retries);
-                    }, 10);
-                } else {
-					if (!element) {
-						if (command.onError) {
-							program.run(command.onError);
-						} else {
-							program.runtimeError(command.lino, `No such element: '${id}'`);
-						}
-					}
+			} else if (Date.now() < waitUntil) {
+				const retry = () => EasyCoder_Browser.Attach.getElementById(program, command, id, waitUntil, trace);
+				if (typeof window !== `undefined` && typeof window.requestAnimationFrame === `function`) {
+					window.requestAnimationFrame(retry);
+				} else {
+					setTimeout(retry, 16);
 				}
-            }
-        }
+			} else {
+				const elapsed = Math.round(EasyCoder_Browser.Attach.nowMs() - trace.startedAt);
+				EasyCoder_Browser.Attach.reportTiming(`[AttachTiming] FAILED id='${id}' symbol='${trace.symbol}' type='${trace.type}' attempts=${trace.lookupAttempts} elapsed=${elapsed}ms waitLimit=${trace.waitMs}ms`);
+				if (command.onError) {
+					program.run(command.onError);
+				} else {
+					program.runtimeError(command.lino, `No such element: '${id}'`);
+				}
+			}
+		},
+
+		completeAttach: (program, command, element, id, trace) => {
+			if (program.run) {
+				const elapsed = Math.round(EasyCoder_Browser.Attach.nowMs() - trace.startedAt);
+				EasyCoder_Browser.Attach.reportTiming(`[AttachTiming] id='${id}' symbol='${trace.symbol}' type='${trace.type}' attempts=${trace.lookupAttempts} elapsed=${elapsed}ms`);
+				const target = program.getSymbolRecord(command.symbol);
+				target.element[target.index] = element;
+				target.value[target.index] = {
+					type: `constant`,
+					numeric: false,
+					id
+				};
+				program.run(command.pc + 1);
+			}
+		},
+
+		isImageReady: (element) => {
+			if (!element) {
+				return false;
+			}
+			if (element.tagName !== `IMG`) {
+				return true;
+			}
+			return element.complete;
+		},
+
+		waitForImageReady: (program, command, id, element, waitUntil, trace) => {
+			if (EasyCoder_Browser.Attach.isImageReady(element) || Date.now() >= waitUntil) {
+				EasyCoder_Browser.Attach.completeAttach(program, command, element, id, trace);
+				return;
+			}
+			let finished = false;
+			let timer = null;
+			const finish = () => {
+				if (finished) {
+					return;
+				}
+				finished = true;
+				element.removeEventListener(`load`, finish);
+				element.removeEventListener(`error`, finish);
+				if (timer) {
+					clearTimeout(timer);
+				}
+				EasyCoder_Browser.Attach.completeAttach(program, command, element, id, trace);
+			};
+			element.addEventListener(`load`, finish);
+			element.addEventListener(`error`, finish);
+			timer = setTimeout(finish, Math.max(0, waitUntil - Date.now()));
+		}
 	},
 
 	Audioclip: {
@@ -4031,8 +4151,17 @@ const EasyCoder_Browser = {
 		run: (program) => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			const target = document.getElementById(symbol.value[symbol.index].content);
-			target.disabled = `true`;
+			let target = symbol.element[symbol.index];
+			if (!target) {
+				const symbolValue = symbol.value[symbol.index] || {};
+				const targetId = symbolValue.content || symbolValue.id;
+				target = targetId ? document.getElementById(targetId) : null;
+			}
+			if (!target) {
+				program.runtimeError(command.lino, `Variable '${symbol.name}' is not attached to a DOM element.`);
+				return 0;
+			}
+			target.disabled = true;
 			return command.pc + 1;
 		}
 	},
@@ -4071,7 +4200,16 @@ const EasyCoder_Browser = {
 		run: (program) => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			const target = document.getElementById(symbol.value[symbol.index].content);
+			let target = symbol.element[symbol.index];
+			if (!target) {
+				const symbolValue = symbol.value[symbol.index] || {};
+				const targetId = symbolValue.content || symbolValue.id;
+				target = targetId ? document.getElementById(targetId) : null;
+			}
+			if (!target) {
+				program.runtimeError(command.lino, `Variable '${symbol.name}' is not attached to a DOM element.`);
+				return 0;
+			}
 			target.disabled = false;
 			return command.pc + 1;
 		}
@@ -4977,7 +5115,7 @@ const EasyCoder_Browser = {
 								program.run(program.onKeyPc);
 							}, 1);
 						} catch (err) {
-							console.log(`Error: ${err.message}`);
+							EasyCoder.writeToDebugConsole(`Error: ${err.message}`);
 						}
 					}
 					return true;
@@ -5201,6 +5339,57 @@ const EasyCoder_Browser = {
 				break;
 			}
 			return command.pc + 1;
+		}
+	},
+
+	Render: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			const script = compiler.getNextValue();
+			if (compiler.tokenIs(`in`)) {
+				if (compiler.nextIsSymbol()) {
+					const parentRecord = compiler.getSymbolRecord();
+					if (parentRecord.extra === `dom`) {
+						compiler.next();
+						compiler.addCommand({
+							domain: `browser`,
+							keyword: `render`,
+							lino,
+							parent: parentRecord.name,
+							script
+						});
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			if (typeof Webson === `undefined`) {
+				program.runtimeError(command.lino, `Webson engine is not loaded`);
+				return 0;
+			}
+			const parent = program.getSymbolRecord(command.parent);
+			const element = parent.element[parent.index];
+			const script = program.getValue(command.script);
+			Webson.render(element, `main`, script, {
+				debug: 0,
+				state: `default`,
+				timingEnabled: typeof EasyCoder !== `undefined` && !!EasyCoder.timingEnabled,
+				timingReporter: typeof EasyCoder !== `undefined` && typeof EasyCoder.writeToDebugConsole === `function`
+					? (message) => EasyCoder.writeToDebugConsole(message)
+					: null
+			})
+				.then(() => {
+					program.run(command.pc + 1);
+				})
+				.catch((err) => {
+					program.runtimeError(command.lino, err.message ? err.message : String(err));
+				});
+			return 0;
 		}
 	},
 
@@ -5689,7 +5878,11 @@ const EasyCoder_Browser = {
 					target.value = value;
 					break;
 				default:
-					target.innerHTML = value;
+					if (target && target.dataset && target.dataset.markdown === `1`) {
+						target.innerHTML = EasyCoder_Browser.renderMarkdownToHtml(value);
+					} else {
+						target.innerHTML = value;
+					}
 					break;
 				}
 				break;
@@ -6007,14 +6200,14 @@ const EasyCoder_Browser = {
 			const command = program[program.pc];
 			switch (command.variant) {
 			case `setup`:
-				console.log(`Set up tracer`);
+				EasyCoder.writeToDebugConsole(`Set up tracer`);
 				program.tracer = {
 					variables: command.variables,
 					alignment: command.alignment
 				};
 				break;
 			case `run`:
-				console.log(`Run tracer`);
+				EasyCoder.writeToDebugConsole(`Run tracer`);
 				if (!program.tracer) {
 					program.tracer = {
 						variables: [],
@@ -6124,16 +6317,16 @@ const EasyCoder_Browser = {
 					setProgress(0);
 					setStatus(``);
 					if (response) {
-						console.log(response);
+						EasyCoder.writeToDebugConsole(response);
 					}
 				}, false);
 				ajax.addEventListener(`error`, function () {
 					setStatus(`Upload failed`);
-					console.log(`Upload failed`);
+					EasyCoder.writeToDebugConsole(`Upload failed`);
 				}, false);
 				ajax.addEventListener(`abort`, function () {
 					setStatus(`Upload aborted`);
-					console.log(`Upload aborted`);
+					EasyCoder.writeToDebugConsole(`Upload aborted`);
 				}, false);
 				ajax.onreadystatechange = function () {
 					if (this.readyState === 4) {
@@ -6167,7 +6360,7 @@ const EasyCoder_Browser = {
 				program.ajaxCommand = command;
 				const postpath = path.startsWith(`http`)
 					? path
-					: `${window.location.origin}/${EasyCoder_Rest.restPath}/${path}`;
+					: `${window.location.origin}/${EasyCoder.REST.restPath}/${path}`;
 				ajax.open(`POST`, postpath);
 				ajax.send(formData);
 			}
@@ -6269,6 +6462,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Put;
 		case `remove`:
 			return EasyCoder_Browser.Remove;
+		case `render`:
+			return EasyCoder_Browser.Render;
 		case `request`:
 			return EasyCoder_Browser.Request;
 		case `select`:
@@ -6614,6 +6809,13 @@ const EasyCoder_Browser = {
 					program.runtimeError(program[program.pc].lino,
 						`Variable '${symbolRecord.name}' is not attached to a DOM element.`);
 					return null;
+				}
+				if (value.type === `input` && target.type === `checkbox`) {
+					return {
+						type: `boolean`,
+						numeric: false,
+						content: target.checked
+					};
 				}
 				return {
 					type: `constant`,
@@ -7052,13 +7254,198 @@ window.onpopstate = function (event) {
 				program.run(program.onBrowserBack);
 			}
 		} else {
-			console.log(`No script property in window state object`);
+			EasyCoder.writeToDebugConsole(`No script property in window state object`);
 		}
 	}
 };
-const EasyCoder_Json = {
+const EasyCoder_Markdown = {
 
-	name: `EasyCoder_Json`,
+	escapeHtml: (text) => {
+		return `${text}`
+			.replace(/&/g, `&amp;`)
+			.replace(/</g, `&lt;`)
+			.replace(/>/g, `&gt;`)
+			.replace(/\"/g, `&quot;`)
+			.replace(/'/g, `&#39;`);
+	},
+
+	normalizeColor: (value) => {
+		const color = `${value || ``}`.trim();
+		if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(color)) {
+			return color;
+		}
+		if (/^[a-zA-Z]+$/.test(color)) {
+			return color.toLowerCase();
+		}
+		return null;
+	},
+
+	normalizeFontFamily: (value) => {
+		const key = `${value || ``}`.trim().toLowerCase();
+		const map = {
+			sansserif: `sans-serif`,
+			serif: `serif`,
+			monospace: `monospace`,
+			system: `system-ui`
+		};
+		return map[key] || null;
+	},
+
+	applyExtendedInline: (html) => {
+		let output = html;
+		output = output.replace(/\[\[color=([^\]]+)\]\]([\s\S]*?)\[\[\/color\]\]/gi,
+			(match, rawColor, content) => {
+				const color = EasyCoder_Markdown.normalizeColor(rawColor);
+				if (!color) {
+					return content;
+				}
+				return `<span style="color:${color};">${content}</span>`;
+			});
+		output = output.replace(/\[\[font=([^\]]+)\]\]([\s\S]*?)\[\[\/font\]\]/gi,
+			(match, rawFont, content) => {
+				const fontFamily = EasyCoder_Markdown.normalizeFontFamily(rawFont);
+				if (!fontFamily) {
+					return content;
+				}
+				return `<span style="font-family:${fontFamily};">${content}</span>`;
+			});
+		return output;
+	},
+
+	renderToHtml: (markdown) => {
+		const source = `${markdown == null ? `` : markdown}`.replace(/\r\n?/g, `\n`);
+		const parseInline = (text) => {
+			let html = EasyCoder_Markdown.escapeHtml(text);
+			html = html.replace(/`([^`]+)`/g, `<code>$1</code>`);
+			html = html.replace(/\*\*([^*]+)\*\*/g, `<strong>$1</strong>`);
+			html = html.replace(/__([^_]+)__/g, `<strong>$1</strong>`);
+			html = html.replace(/(^|[^*])\*([^*]+)\*/g, `$1<em>$2</em>`);
+			html = html.replace(/(^|[^_])_([^_]+)_/g, `$1<em>$2</em>`);
+			html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`);
+			html = EasyCoder_Markdown.applyExtendedInline(html);
+			return html;
+		};
+
+		const out = [];
+		let inCodeBlock = false;
+		let inBlockquote = false;
+		let listType = ``;
+		const closeList = () => {
+			if (listType) {
+				out.push(`</${listType}>`);
+				listType = ``;
+			}
+		};
+		const closeBlockquote = () => {
+			if (inBlockquote) {
+				closeList();
+				out.push(`</blockquote>`);
+				inBlockquote = false;
+			}
+		};
+
+		for (const rawLine of source.split(`\n`)) {
+			const line = rawLine;
+			if (line.trim().startsWith(`\`\`\``)) {
+				closeBlockquote();
+				closeList();
+				if (!inCodeBlock) {
+					out.push(`<pre><code>`);
+					inCodeBlock = true;
+				} else {
+					out.push(`</code></pre>`);
+					inCodeBlock = false;
+				}
+				continue;
+			}
+			if (inCodeBlock) {
+				out.push(`${EasyCoder_Markdown.escapeHtml(line)}\n`);
+				continue;
+			}
+
+			if (line.trim() === ``) {
+				closeBlockquote();
+				closeList();
+				continue;
+			}
+
+			const quote = /^>\s?(.*)$/.exec(line);
+			if (quote) {
+				closeList();
+				if (!inBlockquote) {
+					out.push(`<blockquote>`);
+					inBlockquote = true;
+				}
+				out.push(`<p>${parseInline(quote[1])}</p>`);
+				continue;
+			}
+			closeBlockquote();
+
+			const heading = /^(#{1,6})\s+(.*)$/.exec(line);
+			if (heading) {
+				closeList();
+				const level = heading[1].length;
+				out.push(`<h${level} style="font-family:sans-serif;">${parseInline(heading[2])}</h${level}>`);
+				continue;
+			}
+
+			const ulist = /^[-*]\s+(.*)$/.exec(line);
+			if (ulist) {
+				if (listType !== `ul`) {
+					closeList();
+					listType = `ul`;
+					out.push(`<ul>`);
+				}
+				out.push(`<li>${parseInline(ulist[1])}</li>`);
+				continue;
+			}
+
+			const olist = /^\d+\.\s+(.*)$/.exec(line);
+			if (olist) {
+				if (listType !== `ol`) {
+					closeList();
+					listType = `ol`;
+					out.push(`<ol>`);
+				}
+				out.push(`<li>${parseInline(olist[1])}</li>`);
+				continue;
+			}
+
+			closeList();
+			out.push(`<p>${parseInline(line)}</p>`);
+		}
+
+		closeList();
+		closeBlockquote();
+		if (inCodeBlock) {
+			out.push(`</code></pre>`);
+		}
+		return out.join(`\n`);
+	}
+};
+const EasyCoder_JSON = {
+
+	name: `EasyCoder_JSON`,
+
+	normalizeComparable: (entry) => {
+		if (typeof entry !== `string`) {
+			return entry;
+		}
+		const trimmed = entry.trim();
+		if ((trimmed.startsWith(`"`) && trimmed.endsWith(`"`)) ||
+			(trimmed.startsWith(`'`) && trimmed.endsWith(`'`))) {
+			try {
+				return JSON.parse(trimmed.replace(/^'/, `"`).replace(/'$/, `"`));
+			} catch (err) {
+				return trimmed.substring(1, trimmed.length - 1);
+			}
+		}
+		return entry;
+	},
+
+	areComparableEqual: (left, right) => {
+		return EasyCoder_JSON.normalizeComparable(left) === EasyCoder_JSON.normalizeComparable(right);
+	},
 
 	Json: {
 
@@ -7434,11 +7821,18 @@ const EasyCoder_Json = {
 			case `split`:
 				content = program.getValue(command.item);
 				const on = program.getValue(command.on);
+				let splitItems;
+				try {
+					const parsed = JSON.parse(content);
+					splitItems = Array.isArray(parsed) ? parsed : content.split(on);
+				} catch (err) {
+					splitItems = content.split(on);
+				}
 				targetRecord = program.getSymbolRecord(command.target);
 				targetRecord.value[targetRecord.index] = {
 					type: `constant`,
 					numeric: false,
-					content: JSON.stringify(content.split(on))
+					content: JSON.stringify(splitItems)
 				};
 				break;
 			case `replace`:
@@ -7461,7 +7855,7 @@ const EasyCoder_Json = {
 	getHandler: (name) => {
 		switch (name) {
 		case `json`:
-			return EasyCoder_Json.Json;
+			return EasyCoder_JSON.Json;
 		default:
 			return null;
 		}
@@ -7469,7 +7863,7 @@ const EasyCoder_Json = {
 
 	run: (program) => {
 		const command = program[program.pc];
-		const handler = EasyCoder_Json.getHandler(command.keyword);
+		const handler = EasyCoder_JSON.getHandler(command.keyword);
 		if (!handler) {
 			program.runtimeError(command.lino, `Unknown keyword '${command.keyword}' in 'json' package`);
 		}
@@ -7576,8 +7970,8 @@ const EasyCoder_Json = {
 			case `index`:
 				const item = program.getValue(value.item);
 				const list = JSON.parse(program.getValue(value.list));
-				content = list.findIndex(function (value) {
-					return value === item;
+				content = list.findIndex(function (entry) {
+					return EasyCoder_JSON.areComparableEqual(entry, item);
 				});
 				return {
 					type: `constant`,
@@ -7676,7 +8070,7 @@ const EasyCoder_MQTT = {
             }
 
             this.connected = true;
-            console.log(`Client ${this.clientID} connected`);
+            EasyCoder.writeToDebugConsole(`Client ${this.clientID} connected`);
             
             // Subscribe to all topics
             for (const topicName of this.topics) {
@@ -7684,7 +8078,7 @@ const EasyCoder_MQTT = {
                 const topic = topicRecord.object;
                 const qos = topic.getQoS();
                 this.client.subscribe(topic.getName(), { qos });
-                console.log(`Subscribed to topic: ${topic.getName()} with QoS ${qos}`);
+                EasyCoder.writeToDebugConsole(`Subscribed to topic: ${topic.getName()} with QoS ${qos}`);
             }
 
             this._queueProgramCallback(this.onConnectPC);
@@ -7708,7 +8102,7 @@ const EasyCoder_MQTT = {
 
                             if (this.chunkedMessages[topic]) {
                                 this.chunkedMessages[topic][partNum] = data;
-                                console.log(`Received chunk ${partNum}/${totalChunks - 1} on topic ${topic}`);
+                                // EasyCoder.writeToDebugConsole(`Received chunk ${partNum}/${totalChunks - 1} on topic ${topic}`);
                             }
                         }
                     }
@@ -7814,12 +8208,12 @@ const EasyCoder_MQTT = {
             const messageLen = messageBytes.length;
             const numChunks = Math.ceil(messageLen / chunkSize);
 
-            console.log(`Sending message (${messageLen} bytes) in ${numChunks} chunks of size ${chunkSize} to topic ${topic} with QoS ${qos}`);
+            // EasyCoder.writeToDebugConsole(`Sending message (${messageLen} bytes) in ${numChunks} chunks of size ${chunkSize} to topic ${topic} with QoS ${qos}`);
 
             this._sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks);
 
             this.lastSendTime = (Date.now() - sendStart) / 1000;
-            console.log(`Message transmission complete in ${this.lastSendTime.toFixed(3)} seconds`);
+            // EasyCoder.writeToDebugConsole(`Message transmission complete in ${this.lastSendTime.toFixed(3)} seconds`);
         }
 
         _sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks) {
@@ -7838,7 +8232,7 @@ const EasyCoder_MQTT = {
                 const headerBytes = new TextEncoder().encode(header);
                 const chunkMsg = this._concatBytes([headerBytes, chunkData]);
                 this.client.publish(topic, chunkMsg, { qos });
-                console.log(`Sent chunk ${i}/${numChunks - 1} to topic ${topic} with QoS ${qos}: ${chunkMsg.byteLength} bytes`);
+                // EasyCoder.writeToDebugConsole(`Sent chunk ${i}/${numChunks - 1} to topic ${topic} with QoS ${qos}: ${chunkMsg.byteLength} bytes`);
             }
         }
 
@@ -8140,18 +8534,19 @@ const EasyCoder_MQTT = {
                 if (compiler.nextIsSymbol()) {
                     const record = compiler.getSymbolRecord();
                     command.to = record.name;
+                    compiler.nextToken()
 
                     // Parse optional parameters
                     while (true) {
-                        const token = compiler.peek();
+                        const token = compiler.getToken();
                         if (token === 'sender' || token === 'action' || 
                             token === 'qos' || token === 'message') {
-                            compiler.next();
                             
                             if (token === 'sender') {
                                 if (compiler.nextIsSymbol()) {
                                     const rec = compiler.getSymbolRecord();
                                     command.sender = rec.name;
+                                    compiler.nextToken();
                                 }
                             } else if (token === 'action') {
                                 command.action = compiler.getNextValue();
@@ -8239,6 +8634,7 @@ const EasyCoder_MQTT = {
             }
 
             const topicName = topic.getName();
+            // EasyCoder.writeToDebugConsole(`MQTT Publish to ${topicName} with QoS ${qos}: ${JSON.stringify(payload)}`);
             program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024);
 
             return command.pc + 1;
@@ -8385,14 +8781,9 @@ const EasyCoder_MQTT = {
         return handler.run(program);
     }
 };
+const EasyCoder_REST = {
 
-// Register the MQTT domain
-if (typeof EasyCoder !== 'undefined') {
-    EasyCoder.domain.mqtt = EasyCoder_MQTT;
-}
-const EasyCoder_Rest = {
-
-	name: `EasyCoder_Rest`,
+	name: `EasyCoder_REST`,
 
 	Rest: {
 
@@ -8523,24 +8914,24 @@ const EasyCoder_Rest = {
 		run: (program) => {
 			const command = program[program.pc];
 			if (command.request == `path`) {
-				EasyCoder_Rest.restPath = program.getValue(command.path);
+				EasyCoder_REST.restPath = program.getValue(command.path);
 				return command.pc + 1;
 			}
 
 			const url = program.getValue(command.url);
-			if (!EasyCoder_Rest.restPath) {
-				EasyCoder_Rest.restPath = `.`;
+			if (!EasyCoder_REST.restPath) {
+				EasyCoder_REST.restPath = `.`;
 			}
 			let path = url;
 			if (!url.startsWith(`http`)) {
 				if (url[0] == `/`) {
 					path = url.substr(1);
 				} else {
-					path = `${EasyCoder_Rest.restPath}/${url}`;
+					path = `${EasyCoder_REST.restPath}/${url}`;
 				}
 			}
 
-			const request = EasyCoder_Rest.Rest.createCORSRequest(command.request, path);
+			const request = EasyCoder_REST.Rest.createCORSRequest(command.request, path);
 			if (!request) {
 				program.runtimeError(command.lino, `CORS not supported`);
 				return;
@@ -8594,7 +8985,7 @@ const EasyCoder_Rest = {
 				break;
 			case `post`:
 				const value = program.getValue(command.value);
-				console.log(`POST to ${path}`);
+				EasyCoder.writeToDebugConsole(`POST to ${path}`);
 				//console.log(`value=${value}`);
 				request.setRequestHeader(`Content-type`, `application/json; charset=UTF-8`);
 				for (key of Object.keys(command.args)) {
@@ -8611,7 +9002,7 @@ const EasyCoder_Rest = {
 	getHandler: (name) => {
 		switch (name) {
 		case `rest`:
-			return EasyCoder_Rest.Rest;
+			return EasyCoder_REST.Rest;
 		default:
 			return null;
 		}
@@ -8619,7 +9010,7 @@ const EasyCoder_Rest = {
 
 	run: (program) => {
 		const command = program[program.pc];
-		const handler = EasyCoder_Rest.getHandler(command.keyword);
+		const handler = EasyCoder_REST.getHandler(command.keyword);
 		if (!handler) {
 			program.runtimeError(command.lino, `Unknown keyword '${command.keyword}' in 'rest' package`);
 		}
@@ -8994,7 +9385,7 @@ const EasyCoder_Run = {
 					}
 					catch (e) {
 					}
-					console.log(`${program.script}: Line ${lino}: `
+					EasyCoder.writeToDebugConsole(`${program.script}: Line ${lino}: `
 					+ `${domain}:${program[program.pc].keyword} - ${line}`);
 				}
 				const handler = program.domain[domain];
@@ -9081,13 +9472,13 @@ const EasyCoder_Run = {
 									EasyCoder_Run.run(program, program.resume);
 								} catch (err) {
 									const message = `Error in run handler: ` + err.message;
-									console.log(message);
+										EasyCoder.writeToDebugConsole(message);
 									alert(message);
 								}
 							};
 
 							step.onclick = function () {
-								console.log(`step`);
+									EasyCoder.writeToDebugConsole(`step`);
 								step.blur();
 								program.tracing = true;
 								const content = document.getElementById(`easycoder-tracer-content`);
@@ -9096,7 +9487,7 @@ const EasyCoder_Run = {
 									program.run(program.resume);
 								} catch (err) {
 									const message = `Error in step handler: ` + err.message;
-									console.log(message);
+										EasyCoder.writeToDebugConsole(message);
 									alert(message);
 								}
 							};
@@ -9390,7 +9781,7 @@ const EasyCoder_Compiler = {
 			}
 			this.rewindTo(mark);
 		}
-		console.log(`No handler found`);
+		EasyCoder.writeToDebugConsole(`No handler found`);
 		throw new Error(`I don't understand '${token}...'`);
 	},
 
@@ -9451,7 +9842,7 @@ const EasyCoder_Compiler = {
 		for (const symbol in this.symbols) {
 			const record = this.program[this.symbols[symbol].pc];
 			if (record.isSymbol && !record.used && !record.exporter) {
-				console.log(`Symbol '${record.name}' has not been used.`);
+				EasyCoder.writeToDebugConsole(`Symbol '${record.name}' has not been used.`);
 			}
 		}
 		return this.program;
@@ -9464,11 +9855,99 @@ const EasyCoder = {
 	domain: {
 		core: EasyCoder_Core,
 		browser: EasyCoder_Browser,
-		json: EasyCoder_Json,
-		rest: EasyCoder_Rest
+		json: EasyCoder_JSON,
+		rest: EasyCoder_REST,
+		mqtt: EasyCoder_MQTT
 	},
 
 	elementId: 0,
+	attachWaitMs: 3000,
+	timingEnabled: false,
+	startupTraceCache: null,
+
+	isStartupTraceEnabled: function () {
+		if (this.startupTraceCache !== null) {
+			return this.startupTraceCache;
+		}
+		let enabled = false;
+		try {
+			const params = new URLSearchParams(window.location.search);
+			if (params.has(`easycoderStartupTrace`)) {
+				const value = (params.get(`easycoderStartupTrace`) || ``).toLowerCase();
+				enabled = value === `1` || value === `true`;
+				this.startupTraceCache = enabled;
+				return enabled;
+			}
+			const stored = window.localStorage ? window.localStorage.getItem(`easycoder.startupTrace`) : null;
+			if (stored !== null) {
+				const value = stored.toLowerCase();
+				enabled = value === `1` || value === `true`;
+			}
+		} catch (err) {
+			enabled = false;
+		}
+		this.startupTraceCache = enabled;
+		return enabled;
+	},
+
+	writeStartupTrace: function (message) {
+		if (this.isStartupTraceEnabled()) {
+			this.writeToDebugConsole(message);
+		}
+	},
+
+	getDebugConsoleElement: function () {
+		const host = document.getElementById(`stuff`);
+		let debugConsole = document.getElementById(`easycoder-debug-console`);
+		if (host) {
+			if (!debugConsole || debugConsole.parentElement !== host) {
+				if (debugConsole && debugConsole.parentElement) {
+					debugConsole.parentElement.removeChild(debugConsole);
+				}
+				debugConsole = document.createElement(`pre`);
+				debugConsole.id = `easycoder-debug-console`;
+				debugConsole.style.display = `none`;
+				host.appendChild(debugConsole);
+			}
+			debugConsole.style.display = `none`;
+			return debugConsole;
+		}
+		if (debugConsole) {
+			debugConsole.style.display = `none`;
+			return debugConsole;
+		}
+		if (!document.body) {
+			return null;
+		}
+		debugConsole = document.createElement(`pre`);
+		debugConsole.id = `easycoder-debug-console`;
+		debugConsole.style.display = `none`;
+		document.body.appendChild(debugConsole);
+		return debugConsole;
+	},
+
+	writeToDebugConsole: function (message) {
+		const params = new URLSearchParams(window.location.search);
+		let usePageDebugConsole = params.get(`pageDebugConsole`) === `1`;
+		if (!usePageDebugConsole) {
+			try {
+				const stored = window.localStorage ? window.localStorage.getItem(`easycoder.pageDebugConsole`) : null;
+				usePageDebugConsole = stored === `1` || stored === `true`;
+			} catch (err) {
+				usePageDebugConsole = false;
+			}
+		}
+		if (usePageDebugConsole) {
+			const debugConsole = this.getDebugConsoleElement();
+			if (debugConsole) {
+				const prefix = debugConsole.textContent && debugConsole.textContent.length ? `\n` : ``;
+				debugConsole.textContent += `${prefix}${message}`;
+				debugConsole.scrollTop = debugConsole.scrollHeight;
+				return;
+			}
+		}
+		console.log(message);
+	},
 
 	runtimeError: function (lino, message) {
 		this.lino = lino;
@@ -9488,13 +9967,13 @@ const EasyCoder = {
 
 	reportError: function (err, program, source) {
 		if (!err.message) {
-			console.log(`An error occurred - origin was ${err.path[0]}`);
+			EasyCoder.writeToDebugConsole(`An error occurred - origin was ${err.path[0]}`);
 			return;
 		}
 		if (!this.compiling && !program) {
 			const errString = `Error: ${err.message}`;
 			alert(errString);
-			console.log(errString);
+			EasyCoder.writeToDebugConsole(errString);
 			return;
 		}
 		const {
@@ -9521,7 +10000,7 @@ const EasyCoder = {
 				errString += `${warning}\n`;
 			}
 		}
-		console.log(errString);
+		EasyCoder.writeToDebugConsole(errString);
 		alert(errString);
 	},
 
@@ -9637,7 +10116,7 @@ const EasyCoder = {
 			return;
 		}
 		element.onload = function () {
-			console.log(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
+			EasyCoder.writeToDebugConsole(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
 			cb();
 		};
 		document.head.appendChild(element);
@@ -9812,7 +10291,7 @@ const EasyCoder = {
 				EasyCoder.scriptIndex++;
 			}
 			const finishCompile = Date.now();
-			console.log(`${finishCompile - this.timestamp} ms: ` +
+			EasyCoder.writeToDebugConsole(`${finishCompile - this.timestamp} ms: ` +
 				`Compiled ${program.script}: ${source.scriptLines.length} lines (${source.tokens.length} tokens) in ` +
 				`${finishCompile - startCompile} ms`);
 		} catch (err) {
@@ -9846,9 +10325,11 @@ const EasyCoder = {
 		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);
+		EasyCoder.writeStartupTrace(`EasyCoder.start invoked (${script.length} source lines)`);
 		if (!this.tokenising) {
 			try {
 				this.tokeniseAndCompile(script);
+				EasyCoder.writeStartupTrace(`tokeniseAndCompile completed`);
 			} catch (err) {
 				this.reportError(err, null, source);
 			}
@@ -9858,22 +10339,28 @@ const EasyCoder = {
 };
 EasyCoder.version = `250824`;
 EasyCoder.timestamp = Date.now();
-console.log(`EasyCoder loaded; waiting for page`);
+EasyCoder.writeStartupTrace(`EasyCoder loaded; waiting for page`);
 
 function EasyCoder_Startup() {
-	console.log(`${Date.now() - EasyCoder.timestamp} ms: Start EasyCoder`);
+	EasyCoder.writeStartupTrace(`window.onload fired`);
+	EasyCoder.writeStartupTrace(`${Date.now() - EasyCoder.timestamp} ms: Start EasyCoder`);
 	EasyCoder.timestamp = Date.now();
 	EasyCoder.scripts = {};
 	window.EasyCoder = EasyCoder;
 	const script = document.getElementById(`easycoder-script`);
 	if (script) {
+		EasyCoder.writeStartupTrace(`Found #easycoder-script (${script.innerText.split(`\n`).length} lines)`);
 		script.style.display = `none`;
 		try {
+			EasyCoder.writeStartupTrace(`Calling EasyCoder.start`);
 			EasyCoder.start(script.innerText);
+			EasyCoder.writeStartupTrace(`EasyCoder.start returned`);
 		}
 		catch (err) {
 			EasyCoder.reportError(err);
 		}
+	} else {
+		EasyCoder.writeStartupTrace(`No #easycoder-script element found`);
 	}
 }
 

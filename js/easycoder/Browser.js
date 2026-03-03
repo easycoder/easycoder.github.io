@@ -2,6 +2,13 @@ const EasyCoder_Browser = {
 
 	name: `EasyCoder_Browser`,
 
+	renderMarkdownToHtml: (markdown) => {
+		if (typeof EasyCoder_Markdown !== `undefined` && EasyCoder_Markdown && typeof EasyCoder_Markdown.renderToHtml === `function`) {
+			return EasyCoder_Markdown.renderToHtml(markdown);
+		}
+		return `${markdown == null ? `` : markdown}`;
+	},
+
 	A: {
 
 		compile: (compiler) => {
@@ -37,6 +44,24 @@ const EasyCoder_Browser = {
 	},
 
 	Attach: {
+
+		nowMs: () => {
+			if (typeof performance !== `undefined` && typeof performance.now === `function`) {
+				return performance.now();
+			}
+			return Date.now();
+		},
+
+		reportTiming: (message) => {
+			if (!(typeof EasyCoder !== `undefined` && EasyCoder.timingEnabled)) {
+				return;
+			}
+			if (typeof EasyCoder !== `undefined` && typeof EasyCoder.writeToDebugConsole === `function`) {
+				EasyCoder.writeToDebugConsole(message);
+			} else {
+				console.log(message);
+			}
+		},
 
 		compile: (compiler) => {
 			const lino = compiler.getLino();
@@ -130,7 +155,19 @@ const EasyCoder_Browser = {
 				};
 			} else {
 				content = program.value.evaluate(program, command.cssId).content;
-				EasyCoder_Browser.Attach.getElementById(program, command, content, 100);
+				const waitMs = (typeof EasyCoder !== `undefined` && Number.isFinite(EasyCoder.attachWaitMs))
+					? EasyCoder.attachWaitMs
+					: 1000;
+				const waitUntil = Date.now() + waitMs;
+				const trace = {
+					id: content,
+					type: command.type,
+					symbol: command.symbol,
+					startedAt: EasyCoder_Browser.Attach.nowMs(),
+					lookupAttempts: 0,
+					waitMs
+				};
+				EasyCoder_Browser.Attach.getElementById(program, command, content, waitUntil, trace);
 				return 0;
 			}
 			if (command.type === `popup`) {
@@ -146,35 +183,82 @@ const EasyCoder_Browser = {
 			return command.pc + 1;
 		},
 
-		getElementById: (program, command, id, retries) => {
-            const element = document.getElementById(id);
-            if (element) {
-				if (program.run) {
-					const target = program.getSymbolRecord(command.symbol);
-					target.element[target.index] = element;
-					target.value[target.index] = {
-						type: `constant`,
-						numeric: false,
-						id
-					};
-					program.run(command.pc + 1);
+		getElementById: (program, command, id, waitUntil, trace) => {
+			trace.lookupAttempts += 1;
+			const element = document.getElementById(id);
+			if (element) {
+				const isImageTarget = [`img`, `image`].includes(command.type);
+				if (isImageTarget && !EasyCoder_Browser.Attach.isImageReady(element)) {
+					EasyCoder_Browser.Attach.waitForImageReady(program, command, id, element, waitUntil, trace);
+				} else {
+					EasyCoder_Browser.Attach.completeAttach(program, command, element, id, trace);
 				}
-            } else {
-                if (retries > 0) {
-                    setTimeout(function() {
-                        EasyCoder_Browser.Attach.getElementById(program, command, id, --retries);
-                    }, 10);
-                } else {
-					if (!element) {
-						if (command.onError) {
-							program.run(command.onError);
-						} else {
-							program.runtimeError(command.lino, `No such element: '${id}'`);
-						}
-					}
+			} else if (Date.now() < waitUntil) {
+				const retry = () => EasyCoder_Browser.Attach.getElementById(program, command, id, waitUntil, trace);
+				if (typeof window !== `undefined` && typeof window.requestAnimationFrame === `function`) {
+					window.requestAnimationFrame(retry);
+				} else {
+					setTimeout(retry, 16);
 				}
-            }
-        }
+			} else {
+				const elapsed = Math.round(EasyCoder_Browser.Attach.nowMs() - trace.startedAt);
+				EasyCoder_Browser.Attach.reportTiming(`[AttachTiming] FAILED id='${id}' symbol='${trace.symbol}' type='${trace.type}' attempts=${trace.lookupAttempts} elapsed=${elapsed}ms waitLimit=${trace.waitMs}ms`);
+				if (command.onError) {
+					program.run(command.onError);
+				} else {
+					program.runtimeError(command.lino, `No such element: '${id}'`);
+				}
+			}
+		},
+
+		completeAttach: (program, command, element, id, trace) => {
+			if (program.run) {
+				const elapsed = Math.round(EasyCoder_Browser.Attach.nowMs() - trace.startedAt);
+				EasyCoder_Browser.Attach.reportTiming(`[AttachTiming] id='${id}' symbol='${trace.symbol}' type='${trace.type}' attempts=${trace.lookupAttempts} elapsed=${elapsed}ms`);
+				const target = program.getSymbolRecord(command.symbol);
+				target.element[target.index] = element;
+				target.value[target.index] = {
+					type: `constant`,
+					numeric: false,
+					id
+				};
+				program.run(command.pc + 1);
+			}
+		},
+
+		isImageReady: (element) => {
+			if (!element) {
+				return false;
+			}
+			if (element.tagName !== `IMG`) {
+				return true;
+			}
+			return element.complete;
+		},
+
+		waitForImageReady: (program, command, id, element, waitUntil, trace) => {
+			if (EasyCoder_Browser.Attach.isImageReady(element) || Date.now() >= waitUntil) {
+				EasyCoder_Browser.Attach.completeAttach(program, command, element, id, trace);
+				return;
+			}
+			let finished = false;
+			let timer = null;
+			const finish = () => {
+				if (finished) {
+					return;
+				}
+				finished = true;
+				element.removeEventListener(`load`, finish);
+				element.removeEventListener(`error`, finish);
+				if (timer) {
+					clearTimeout(timer);
+				}
+				EasyCoder_Browser.Attach.completeAttach(program, command, element, id, trace);
+			};
+			element.addEventListener(`load`, finish);
+			element.addEventListener(`error`, finish);
+			timer = setTimeout(finish, Math.max(0, waitUntil - Date.now()));
+		}
 	},
 
 	Audioclip: {
@@ -555,8 +639,17 @@ const EasyCoder_Browser = {
 		run: (program) => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			const target = document.getElementById(symbol.value[symbol.index].content);
-			target.disabled = `true`;
+			let target = symbol.element[symbol.index];
+			if (!target) {
+				const symbolValue = symbol.value[symbol.index] || {};
+				const targetId = symbolValue.content || symbolValue.id;
+				target = targetId ? document.getElementById(targetId) : null;
+			}
+			if (!target) {
+				program.runtimeError(command.lino, `Variable '${symbol.name}' is not attached to a DOM element.`);
+				return 0;
+			}
+			target.disabled = true;
 			return command.pc + 1;
 		}
 	},
@@ -595,7 +688,16 @@ const EasyCoder_Browser = {
 		run: (program) => {
 			const command = program[program.pc];
 			const symbol = program.getSymbolRecord(command.symbol);
-			const target = document.getElementById(symbol.value[symbol.index].content);
+			let target = symbol.element[symbol.index];
+			if (!target) {
+				const symbolValue = symbol.value[symbol.index] || {};
+				const targetId = symbolValue.content || symbolValue.id;
+				target = targetId ? document.getElementById(targetId) : null;
+			}
+			if (!target) {
+				program.runtimeError(command.lino, `Variable '${symbol.name}' is not attached to a DOM element.`);
+				return 0;
+			}
 			target.disabled = false;
 			return command.pc + 1;
 		}
@@ -1501,7 +1603,7 @@ const EasyCoder_Browser = {
 								program.run(program.onKeyPc);
 							}, 1);
 						} catch (err) {
-							console.log(`Error: ${err.message}`);
+							EasyCoder.writeToDebugConsole(`Error: ${err.message}`);
 						}
 					}
 					return true;
@@ -1725,6 +1827,57 @@ const EasyCoder_Browser = {
 				break;
 			}
 			return command.pc + 1;
+		}
+	},
+
+	Render: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			const script = compiler.getNextValue();
+			if (compiler.tokenIs(`in`)) {
+				if (compiler.nextIsSymbol()) {
+					const parentRecord = compiler.getSymbolRecord();
+					if (parentRecord.extra === `dom`) {
+						compiler.next();
+						compiler.addCommand({
+							domain: `browser`,
+							keyword: `render`,
+							lino,
+							parent: parentRecord.name,
+							script
+						});
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			if (typeof Webson === `undefined`) {
+				program.runtimeError(command.lino, `Webson engine is not loaded`);
+				return 0;
+			}
+			const parent = program.getSymbolRecord(command.parent);
+			const element = parent.element[parent.index];
+			const script = program.getValue(command.script);
+			Webson.render(element, `main`, script, {
+				debug: 0,
+				state: `default`,
+				timingEnabled: typeof EasyCoder !== `undefined` && !!EasyCoder.timingEnabled,
+				timingReporter: typeof EasyCoder !== `undefined` && typeof EasyCoder.writeToDebugConsole === `function`
+					? (message) => EasyCoder.writeToDebugConsole(message)
+					: null
+			})
+				.then(() => {
+					program.run(command.pc + 1);
+				})
+				.catch((err) => {
+					program.runtimeError(command.lino, err.message ? err.message : String(err));
+				});
+			return 0;
 		}
 	},
 
@@ -2213,7 +2366,11 @@ const EasyCoder_Browser = {
 					target.value = value;
 					break;
 				default:
-					target.innerHTML = value;
+					if (target && target.dataset && target.dataset.markdown === `1`) {
+						target.innerHTML = EasyCoder_Browser.renderMarkdownToHtml(value);
+					} else {
+						target.innerHTML = value;
+					}
 					break;
 				}
 				break;
@@ -2531,14 +2688,14 @@ const EasyCoder_Browser = {
 			const command = program[program.pc];
 			switch (command.variant) {
 			case `setup`:
-				console.log(`Set up tracer`);
+				EasyCoder.writeToDebugConsole(`Set up tracer`);
 				program.tracer = {
 					variables: command.variables,
 					alignment: command.alignment
 				};
 				break;
 			case `run`:
-				console.log(`Run tracer`);
+				EasyCoder.writeToDebugConsole(`Run tracer`);
 				if (!program.tracer) {
 					program.tracer = {
 						variables: [],
@@ -2648,16 +2805,16 @@ const EasyCoder_Browser = {
 					setProgress(0);
 					setStatus(``);
 					if (response) {
-						console.log(response);
+						EasyCoder.writeToDebugConsole(response);
 					}
 				}, false);
 				ajax.addEventListener(`error`, function () {
 					setStatus(`Upload failed`);
-					console.log(`Upload failed`);
+					EasyCoder.writeToDebugConsole(`Upload failed`);
 				}, false);
 				ajax.addEventListener(`abort`, function () {
 					setStatus(`Upload aborted`);
-					console.log(`Upload aborted`);
+					EasyCoder.writeToDebugConsole(`Upload aborted`);
 				}, false);
 				ajax.onreadystatechange = function () {
 					if (this.readyState === 4) {
@@ -2691,7 +2848,7 @@ const EasyCoder_Browser = {
 				program.ajaxCommand = command;
 				const postpath = path.startsWith(`http`)
 					? path
-					: `${window.location.origin}/${EasyCoder_Rest.restPath}/${path}`;
+					: `${window.location.origin}/${EasyCoder.REST.restPath}/${path}`;
 				ajax.open(`POST`, postpath);
 				ajax.send(formData);
 			}
@@ -2793,6 +2950,8 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Put;
 		case `remove`:
 			return EasyCoder_Browser.Remove;
+		case `render`:
+			return EasyCoder_Browser.Render;
 		case `request`:
 			return EasyCoder_Browser.Request;
 		case `select`:
@@ -3138,6 +3297,13 @@ const EasyCoder_Browser = {
 					program.runtimeError(program[program.pc].lino,
 						`Variable '${symbolRecord.name}' is not attached to a DOM element.`);
 					return null;
+				}
+				if (value.type === `input` && target.type === `checkbox`) {
+					return {
+						type: `boolean`,
+						numeric: false,
+						content: target.checked
+					};
 				}
 				return {
 					type: `constant`,
@@ -3576,7 +3742,7 @@ window.onpopstate = function (event) {
 				program.run(program.onBrowserBack);
 			}
 		} else {
-			console.log(`No script property in window state object`);
+			EasyCoder.writeToDebugConsole(`No script property in window state object`);
 		}
 	}
 };
