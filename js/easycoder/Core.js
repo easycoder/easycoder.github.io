@@ -2541,7 +2541,7 @@ const EasyCoder_Core = {
 					value
 				};
 			}
-			if ([`encode`, `decode`, `lowercase`, `hash`, `reverse`].includes(token)) {
+			if ([`encode`, `decode`, `lowercase`, `hash`, `reverse`, `trim`].includes(token)) {
 				compiler.next();
 				const value = compiler.getValue();
 				return {
@@ -3096,6 +3096,12 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: false,
 					content: program.getValue(value.value).split(``).reverse().join(``)
+				};
+			case `trim`:
+				return {
+					type: `constant`,
+					numeric: false,
+					content: program.getValue(value.value).trim()
 				};
 			case `lowercase`:
 				return {

@@ -1856,14 +1856,14 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			const command = program[program.pc];
-			if (typeof Webson === `undefined`) {
+			if (typeof EasyCoder_Webson === `undefined`) {
 				program.runtimeError(command.lino, `Webson engine is not loaded`);
 				return 0;
 			}
 			const parent = program.getSymbolRecord(command.parent);
 			const element = parent.element[parent.index];
 			const script = program.getValue(command.script);
-			Webson.render(element, `main`, script, {
+			EasyCoder_Webson.render(element, `main`, script, {
 				debug: 0,
 				state: `default`,
 				timingEnabled: typeof EasyCoder !== `undefined` && !!EasyCoder.timingEnabled,

@@ -16,6 +16,100 @@ const EasyCoder_MQTT = {
 
     name: `EasyCoder_MQTT`,
 
+    mqttClauseKeywords: new Set(['token', 'id', 'broker', 'port', 'subscribe', 'action']),
+
+    base64UrlToBytes: function(value) {
+        const b64 = value.replace(/-/g, '+').replace(/_/g, '/')
+            + '='.repeat((4 - (value.length % 4)) % 4);
+        const binary = atob(b64);
+        const bytes = new Uint8Array(binary.length);
+        for (let n = 0; n < binary.length; n++) {
+            bytes[n] = binary.charCodeAt(n);
+        }
+        return bytes;
+    },
+
+    pkcs7Unpad: function(bytes) {
+        if (!bytes || bytes.length === 0) {
+            throw new Error('Invalid Fernet payload');
+        }
+        const pad = bytes[bytes.length - 1];
+        if (pad < 1 || pad > 16 || pad > bytes.length) {
+            throw new Error('Invalid Fernet padding');
+        }
+        for (let n = bytes.length - pad; n < bytes.length; n++) {
+            if (bytes[n] !== pad) {
+                throw new Error('Invalid Fernet padding');
+            }
+        }
+        return bytes.slice(0, bytes.length - pad);
+    },
+
+    decryptFernetToken: async function(encryptedToken, key) {
+        if (typeof window === 'undefined' || !window.crypto || !window.crypto.subtle) {
+            throw new Error('Fernet decryption requires browser Web Crypto support');
+        }
+
+        const tokenBytes = EasyCoder_MQTT.base64UrlToBytes(encryptedToken);
+        const keyBytes = EasyCoder_MQTT.base64UrlToBytes(key);
+
+        if (keyBytes.length !== 32) {
+            throw new Error('Invalid Fernet key length');
+        }
+        if (tokenBytes.length < 1 + 8 + 16 + 32) {
+            throw new Error('Invalid Fernet token length');
+        }
+
+        const version = tokenBytes[0];
+        if (version !== 0x80) {
+            throw new Error('Unsupported Fernet token version');
+        }
+
+        const signingKey = keyBytes.slice(0, 16);
+        const encryptionKey = keyBytes.slice(16, 32);
+        const hmacStart = tokenBytes.length - 32;
+        const signedPart = tokenBytes.slice(0, hmacStart);
+        const providedHmac = tokenBytes.slice(hmacStart);
+
+        const hmacKey = await crypto.subtle.importKey(
+            'raw',
+            signingKey,
+            { name: 'HMAC', hash: 'SHA-256' },
+            false,
+            ['verify']
+        );
+
+        const valid = await crypto.subtle.verify('HMAC', hmacKey, providedHmac, signedPart);
+        if (!valid) {
+            throw new Error('Invalid Fernet signature');
+        }
+
+        const iv = tokenBytes.slice(1 + 8, 1 + 8 + 16);
+        const ciphertext = tokenBytes.slice(1 + 8 + 16, hmacStart);
+
+        const aesKey = await crypto.subtle.importKey(
+            'raw',
+            encryptionKey,
+            { name: 'AES-CBC' },
+            false,
+            ['decrypt']
+        );
+
+        let plainBytes;
+        try {
+            plainBytes = new Uint8Array(await crypto.subtle.decrypt(
+                { name: 'AES-CBC', iv },
+                aesKey,
+                ciphertext
+            ));
+        } catch (error) {
+            throw new Error('Fernet decryption failed');
+        }
+
+        // Web Crypto AES-CBC already applies PKCS#7 unpadding.
+        return new TextDecoder().decode(plainBytes);
+    },
+
     // MQTT Client class
     MQTTClient: class {
         constructor() {
@@ -394,7 +488,7 @@ const EasyCoder_MQTT = {
     },
 
     /////////////////////////////////////////////////////////////////////////////
-    // Command: mqtt token {token} id {clientID} broker {broker} port {port} subscribe {topic} [and {topic} ...]
+    // Command: mqtt token {token} [{secretKey}] id {clientID} broker {broker} port {port} subscribe {topic} [and {topic} ...]
     MQTT: {
         compile: compiler => {
             const lino = compiler.getLino();
@@ -411,6 +505,9 @@ const EasyCoder_MQTT = {
                 const token = compiler.getToken();
                 if (token === 'token') {
                     command.token = compiler.getNextValue();
+                    if (!EasyCoder_MQTT.mqttClauseKeywords.has(compiler.getToken())) {
+                        command.tokenKey = compiler.getValue();
+                    }
                 } else if (token === 'id') {
                     command.clientID = compiler.getNextValue();
                 } else if (token === 'broker') {
@@ -461,21 +558,42 @@ const EasyCoder_MQTT = {
                 program.runtimeError(command.lino, 'MQTT client already defined');
             }
 
-            const token = program.getValue(command.token);
             const clientID = program.getValue(command.clientID);
             const broker = program.getValue(command.broker);
             const port = program.getValue(command.port);
             const topics = command.topics;
 
-            const client = new EasyCoder_MQTT.MQTTClient();
-            try {
-                client.create(program, token, clientID, broker, port, topics);
-            } catch (error) {
-                program.runtimeError(command.lino, error.message || String(error));
-            }
-            program.mqttClient = client;
-            program.mqttRequires = command.requires;
+            const finalizeClient = token => {
+                const client = new EasyCoder_MQTT.MQTTClient();
+                try {
+                    client.create(program, token, clientID, broker, port, topics);
+                } catch (error) {
+                    program.runtimeError(command.lino, error.message || String(error));
+                    return false;
+                }
+                program.mqttClient = client;
+                program.mqttRequires = command.requires;
+                return true;
+            };
 
+            const tokenValue = program.getValue(command.token);
+            if (command.tokenKey) {
+                const tokenKey = program.getValue(command.tokenKey);
+                EasyCoder_MQTT.decryptFernetToken(tokenValue, tokenKey)
+                    .then(plainToken => {
+                        if (finalizeClient(plainToken)) {
+                            program.run(command.pc + 1);
+                        }
+                    })
+                    .catch(error => {
+                        program.runtimeError(command.lino, error.message || String(error));
+                    });
+                return 0;
+            }
+
+            if (!finalizeClient(tokenValue)) {
+                return 0;
+            }
             return command.pc + 1;
         }
     },
