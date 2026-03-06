@@ -1,0 +1,486 @@
+{
+    "#doc": "The top-level layout script",
+    "#element": "div",
+    "@id": "doclet-screen",
+    "width": "100%",
+    "height": "100%",
+    "position": "relative",
+    "text-align": "center",
+    "display": "flex",
+    "flex-direction": "column",
+    "font-size": "<#parent_width/27>",
+    "#": ["$Title", "$Topics", "$QueryPanel", "$ResultsPanel", "$TopicsDialog", "$NewDocletDialog", "$DocletViewer"],
+
+    "$Topics": {
+        "#element": "div",
+        "@id": "TopicsPanel",
+        "position": "relative",
+        "height": "2.6em",
+        "flex": "0 0 2.6em",
+        "display": "flex",
+        "flex-direction": "row",
+        "align-items": "center",
+        "gap": "0.5em",
+        "padding": "0.3em 0.4em",
+        "box-sizing": "border-box",
+        "#": ["$TopicList", "$ChooseButton"],
+
+        "$TopicList": {
+            "#element": "div",
+            "@id": "TopicList",
+            "#content": "No topics chosen",
+            "color": "#800",
+            "flex": 1,
+            "text-align": "left",
+            "overflow": "hidden",
+            "white-space": "nowrap",
+            "text-overflow": "ellipsis"
+        },
+
+        "$ChooseButton": {
+            "#element": "button",
+            "@id": "ChooseTopicsButton",
+            "#content": "Choose",
+            "height": "2em",
+            "padding": "0 1em",
+            "cursor": "pointer"
+        }
+    },
+
+    "$Title": {
+        "#element": "div",
+        "@id": "titles",
+        "position": "relative",
+        "padding-bottom": "0.5em",
+        "border": "2px solid #328080",
+        "background-image": "linear-gradient(to bottom, rgba(255,150,150,1), rgba(150,255,200,1))",
+        "#": ["$Title"],
+
+        "$Title": {
+            "#element": "div",
+            "#content": "Doclet reader",
+            "@id": "rbr-banner",
+            "font-size": "2em",
+            "font-weight": "bold",
+            "user-select": "none",
+            "color": "#450"
+        }
+    },
+
+    "$QueryPanel": {
+        "#element": "div",
+        "@id": "QueryPanel",
+        "position": "relative",
+        "height": "3em",
+        "flex": "0 0 3em",
+        "display": "flex",
+        "flex-direction": "row",
+        "align-items": "center",
+        "gap": "0.5em",
+        "padding": "0.4em",
+        "box-sizing": "border-box",
+        "#": ["$QueryInput", "$SendButton", "$NewButton"],
+
+        "$QueryInput": {
+            "#element": "input",
+            "@id": "QueryInput",
+            "@type": "text",
+            "@placeholder": "Enter query",
+            "flex": 1,
+            "height": "2.2em",
+            "box-sizing": "border-box",
+            "padding": "0 0.6em"
+        },
+
+        "$SendButton": {
+            "#element": "button",
+            "@id": "SendQueryButton",
+            "#content": "Send",
+            "height": "2.2em",
+            "padding": "0 1em",
+            "cursor": "pointer"
+        },
+
+        "$NewButton": {
+            "#element": "button",
+            "@id": "NewDocletButton",
+            "#content": "New",
+            "height": "2.2em",
+            "padding": "0 1em",
+            "cursor": "pointer"
+        }
+    },
+
+    "$ResultsPanel": {
+        "#element": "div",
+        "@id": "ResultsPanel",
+        "position": "relative",
+        "flex": 1,
+        "min-height": 0,
+        "padding": "0.4em",
+        "box-sizing": "border-box",
+        "#": ["$ResultsList"],
+
+        "$ResultsList": {
+            "#element": "div",
+            "@id": "DocletListPanel",
+            "height": "100%",
+            "overflow-y": "auto",
+            "display": "flex",
+            "flex-direction": "column",
+            "gap": "0.3em",
+            "#": ["$DocletItem"],
+
+            "$DocletItem": {
+                "#element": "button",
+                "@id": "DocletButton-/SEQ/",
+                "#content": "doclet-/SEQ/",
+                "display": "none",
+                "text-align": "left",
+                "cursor": "pointer"
+            }
+        }
+    },
+
+    "$TopicsDialog": {
+        "#element": "div",
+        "@id": "TopicsDialogMask",
+        "position": "absolute",
+        "top": 0,
+        "left": 0,
+        "width": "100%",
+        "height": "100%",
+        "display": "none",
+        "justify-content": "center",
+        "align-items": "center",
+        "background": "rgba(0,0,0,0.25)",
+        "z-index": 20,
+        "#": ["$TopicsDialog"],
+
+        "$TopicsDialog": {
+            "#element": "div",
+            "@id": "TopicsDialog",
+            "width": "80%",
+            "max-height": "70%",
+            "display": "flex",
+            "flex-direction": "column",
+            "padding": "0.6em",
+            "box-sizing": "border-box",
+            "background": "white",
+            "border": "1px solid gray",
+            "#": ["$TopicsDialogList", "$TopicsDialogButtons"],
+
+            "$TopicsDialogList": {
+                "#element": "div",
+                "@id": "TopicsDialogList",
+                "flex": 1,
+                "min-height": 0,
+                "overflow-y": "auto",
+                "text-align": "left",
+                "#": ["$TopicItem", "$TopicItemTemplate"],
+
+                "$TopicItem": {
+                    "#element": "div",
+                    "@id": "TopicItem-/SEQ/",
+                    "display": "flex",
+                    "align-items": "center",
+                    "gap": "0.5em",
+                    "padding": "0.2em 0",
+                    "#": ["$TopicCheckbox", "$TopicName"],
+
+                    "$TopicCheckbox": {
+                        "#element": "input",
+                        "@id": "TopicCheckbox-/SEQ/",
+                        "@type": "checkbox"
+                    },
+
+                    "$TopicName": {
+                        "#element": "span",
+                        "@id": "TopicName-/SEQ/",
+                        "#content": "topic-/SEQ/"
+                    }
+                },
+
+                "$TopicItemTemplate": {
+                    "#element": "div",
+                    "@id": "TopicItemTemplate",
+                    "display": "none",
+                    "#": ["$TopicItemTemplateRow"],
+
+                    "$TopicItemTemplateRow": {
+                        "#element": "div",
+                        "@id": "TopicItem-__SEQ__",
+                        "display": "flex",
+                        "align-items": "center",
+                        "gap": "0.5em",
+                        "padding": "0.2em 0",
+                        "#": ["$TopicItemTemplateCheckbox", "$TopicItemTemplateName"],
+
+                        "$TopicItemTemplateCheckbox": {
+                            "#element": "input",
+                            "@id": "TopicCheckbox-__SEQ__",
+                            "@type": "checkbox",
+                            "@value": "__VALUE__"
+                        },
+
+                        "$TopicItemTemplateName": {
+                            "#element": "span",
+                            "#content": "__TEXT__"
+                        }
+                    }
+                }
+            },
+
+            "$TopicsDialogButtons": {
+                "#element": "div",
+                "display": "flex",
+                "flex-direction": "row",
+                "gap": "0.5em",
+                "padding-top": "0.6em",
+                "#": ["$TopicsDialogSelectAllButton", "$TopicsDialogDeselectAllButton", "$TopicsDialogOKButton"],
+
+                "$TopicsDialogSelectAllButton": {
+                    "#element": "button",
+                    "@id": "TopicsDialogSelectAllButton",
+                    "#content": "Select All",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                },
+
+                "$TopicsDialogDeselectAllButton": {
+                    "#element": "button",
+                    "@id": "TopicsDialogDeselectAllButton",
+                    "#content": "Deselect All",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                },
+
+                "$TopicsDialogOKButton": {
+                    "#element": "button",
+                    "@id": "TopicsDialogOKButton",
+                    "#content": "OK",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                }
+            }
+        }
+    },
+
+    "$NewDocletDialog": {
+        "#element": "div",
+        "@id": "NewDocletDialogMask",
+        "position": "absolute",
+        "top": 0,
+        "left": 0,
+        "width": "100%",
+        "height": "100%",
+        "display": "none",
+        "justify-content": "center",
+        "align-items": "center",
+        "background": "rgba(0,0,0,0.25)",
+        "z-index": 20,
+        "#": ["$NewDocletDialog"],
+
+        "$NewDocletDialog": {
+            "#element": "div",
+            "@id": "NewDocletDialog",
+            "width": "80%",
+            "max-height": "70%",
+            "display": "flex",
+            "flex-direction": "column",
+            "padding": "0.6em",
+            "box-sizing": "border-box",
+            "background": "white",
+            "border": "1px solid gray",
+            "#": ["$NewDocletDialogTitle", "$NewDocletDialogList", "$NewDocletDialogButtons"],
+
+            "$NewDocletDialogTitle": {
+                "#element": "div",
+                "#content": "Choose topic for new doclet",
+                "text-align": "left",
+                "font-weight": "bold",
+                "padding-bottom": "0.5em"
+            },
+
+            "$NewDocletDialogList": {
+                "#element": "div",
+                "@id": "NewDocletDialogList",
+                "flex": 1,
+                "min-height": 0,
+                "overflow-y": "auto",
+                "text-align": "left",
+                "#": ["$NewTopicItemTemplate"],
+
+                "$NewTopicItemTemplate": {
+                    "#element": "div",
+                    "@id": "NewTopicItemTemplate",
+                    "display": "none",
+                    "#": ["$NewTopicItemTemplateRow"],
+
+                    "$NewTopicItemTemplateRow": {
+                        "#element": "div",
+                        "@id": "NewTopicItem-__SEQ__",
+                        "display": "flex",
+                        "align-items": "center",
+                        "gap": "0.5em",
+                        "padding": "0.2em 0",
+                        "#": ["$NewTopicItemTemplateRadio", "$NewTopicItemTemplateName"],
+
+                        "$NewTopicItemTemplateRadio": {
+                            "#element": "input",
+                            "@id": "NewTopicRadio-__SEQ__",
+                            "@type": "radio",
+                            "@name": "new-doclet-topic",
+                            "@value": "__VALUE__"
+                        },
+
+                        "$NewTopicItemTemplateName": {
+                            "#element": "span",
+                            "#content": "__TEXT__"
+                        }
+                    }
+                }
+            },
+
+            "$NewDocletDialogButtons": {
+                "#element": "div",
+                "display": "flex",
+                "flex-direction": "row",
+                "gap": "0.5em",
+                "padding-top": "0.6em",
+                "#": ["$NewDocletCancelButton", "$NewDocletCreateButton"],
+
+                "$NewDocletCancelButton": {
+                    "#element": "button",
+                    "@id": "NewDocletCancelButton",
+                    "#content": "Cancel",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                },
+
+                "$NewDocletCreateButton": {
+                    "#element": "button",
+                    "@id": "NewDocletCreateButton",
+                    "#content": "Create",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                }
+            }
+        }
+    },
+
+    "$DocletViewer": {
+        "#element": "div",
+        "@id": "DocletViewMask",
+        "position": "fixed",
+        "top": 0,
+        "left": 0,
+        "width": "100vw",
+        "height": "100dvh",
+        "display": "none",
+        "justify-content": "stretch",
+        "align-items": "stretch",
+        "overflow": "hidden",
+        "overscroll-behavior": "none",
+        "background": "rgba(0,0,0,0.25)",
+        "z-index": 21,
+        "#": ["$DocletViewDialog"],
+
+        "$DocletViewDialog": {
+            "#element": "div",
+            "@id": "DocletViewDialog",
+            "width": "100%",
+            "height": "100dvh",
+            "max-height": "100dvh",
+            "display": "flex",
+            "flex-direction": "column",
+            "padding": "0.6em",
+            "box-sizing": "border-box",
+            "overflow": "hidden",
+            "overscroll-behavior": "none",
+            "background": "white",
+            "border": "0",
+            "#": ["$DocletViewContent", "$DocletEditTextarea", "$DocletViewButtonsRow"],
+
+            "$DocletViewContent": {
+                "#element": "div",
+                "@id": "DocletViewContent",
+                "@data-markdown": "1",
+                "flex": 1,
+                "min-height": 0,
+                "overflow-y": "auto",
+                "overscroll-behavior-y": "contain",
+                "text-align": "left",
+                "padding": "0.2em"
+            },
+
+            "$DocletEditTextarea": {
+                "#element": "textarea",
+                "@id": "DocletEditTextarea",
+                "display": "none",
+                "flex": 1,
+                "min-height": 0,
+                "width": "100%",
+                "box-sizing": "border-box",
+                "resize": "none",
+                "overflow-y": "auto",
+                "overscroll-behavior-y": "contain",
+                "font-family": "monospace",
+                "line-height": "1.35"
+            },
+
+            "$DocletViewButtonsRow": {
+                "#element": "div",
+                "display": "flex",
+                "flex-direction": "row",
+                "gap": "0.5em",
+                "padding-top": "0.6em",
+                "#": ["$DocletViewEditButton", "$DocletViewDeleteButton", "$DocletViewSaveButton", "$DocletViewCloseButton"],
+
+                "$DocletViewEditButton": {
+                    "#element": "button",
+                    "@id": "DocletViewEditButton",
+                    "#content": "Edit",
+                    "@disabled": "disabled",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                },
+
+                "$DocletViewDeleteButton": {
+                    "#element": "button",
+                    "@id": "DocletViewDeleteButton",
+                    "#content": "Delete",
+                    "@disabled": "disabled",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                },
+
+                "$DocletViewSaveButton": {
+                    "#element": "button",
+                    "@id": "DocletViewSaveButton",
+                    "#content": "Save",
+                    "@disabled": "disabled",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                },
+
+                "$DocletViewCloseButton": {
+                    "#element": "button",
+                    "@id": "DocletViewCloseButton",
+                    "#content": "Close",
+                    "flex": 1,
+                    "padding": "0.3em 0.5em",
+                    "cursor": "pointer"
+                }
+            }
+        }
+    }
+}

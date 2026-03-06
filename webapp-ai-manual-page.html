@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Building Smartphone Webapps with AI + EasyCoder + Webson</title>
+  <meta name="description" content="A practical guide for teams building smartphone-first webapps with AI assistance using EasyCoder and Webson." />
+  <style>
+    :root {
+      --bg: #0f1424;
+      --panel: #161d34;
+      --panel-2: #121a30;
+      --text: #eaf0ff;
+      --muted: #b8c2df;
+      --accent: #7ca5ff;
+      --line: #2b3555;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.58 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .wrap {
+      width: min(980px, 94vw);
+      margin: 26px auto 44px;
+      display: grid;
+      gap: 14px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .hero {
+      background: linear-gradient(180deg, #1a2445 0%, var(--panel) 100%);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      line-height: 1.25;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+    p { margin: 6px 0; }
+    .muted { color: var(--muted); }
+    .lead {
+      font-size: 1.02rem;
+      max-width: 70ch;
+    }
+    ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+    li { margin: 4px 0; }
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .chapter {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .chapter p { margin: 4px 0; }
+    .kicker {
+      color: var(--accent);
+      font-size: .88rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      margin-bottom: 6px;
+    }
+    .links {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    a {
+      color: #a8c1ff;
+      text-decoration-color: rgba(168, 193, 255, .55);
+      text-underline-offset: 2px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      background: #23345e;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%;
+      min-height: 170px;
+      resize: vertical;
+      background: #0d1220;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .status {
+      color: var(--muted);
+      font-size: .92rem;
+      align-self: center;
+    }
+    footer {
+      color: var(--muted);
+      text-align: center;
+      font-size: .86rem;
+      padding-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card hero">
+      <div class="kicker">Public Guide</div>
+      <h1>Building Smartphone Webapps with AI + EasyCoder + Webson</h1>
+      <p class="lead">A practical manual for teams that want fast delivery without losing clarity, reliability, or control.</p>
+      <p class="muted">This page is a concise overview for interested parties. Share it directly, and provide the full manual on request.</p>
+      <div class="links">
+        <div>Full manual URL: <a href="FULL_MANUAL_URL">FULL_MANUAL_URL</a></div>
+        <div>Contact: <a href="mailto:CONTACT_EMAIL">CONTACT_EMAIL</a></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Who this is for</h2>
+      <ul>
+        <li>Product teams building smartphone-first webapps.</li>
+        <li>Developers and technical founders adopting AI-assisted delivery.</li>
+        <li>Leaders who want repeatable process, not prompt roulette.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>What the manual covers (Chapters 1–8)</h2>
+      <div class="grid">
+        <article class="chapter">
+          <h3>1. AI-Native Manifesto</h3>
+          <p class="muted">Why constrained, readable systems can outperform heavyweight stacks for focused product delivery.</p>
+        </article>
+        <article class="chapter">
+          <h3>2. MVP Blueprint</h3>
+          <p class="muted">MapIntel app scope, state/event model, data contract, and milestone plan.</p>
+        </article>
+        <article class="chapter">
+          <h3>3. Build Walkthrough</h3>
+          <p class="muted">Blank workspace to working MVP, including primer URL workflow and prompt packs.</p>
+        </article>
+        <article class="chapter">
+          <h3>4. Troubleshooting Playbook</h3>
+          <p class="muted">Root-cause debugging loop for stale state, duplicates, race conditions, and startup mismatch.</p>
+        </article>
+        <article class="chapter">
+          <h3>5. Production Habits</h3>
+          <p class="muted">Release checks, observability, change control, and maintenance cadence post-MVP.</p>
+        </article>
+        <article class="chapter">
+          <h3>6. Team Playbook</h3>
+          <p class="muted">Roles, handoff sequence, escalation triggers, and decision rules for small teams.</p>
+        </article>
+        <article class="chapter">
+          <h3>7. Prompt Engineering</h3>
+          <p class="muted">Reusable prompt templates, anti-patterns, quality gates, and escalation prompts.</p>
+        </article>
+        <article class="chapter">
+          <h3>8. End-to-End Case Study</h3>
+          <p class="muted">How the full method performs in a realistic product cycle from bootstrap to stabilization.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>One-Page Operating Model</h2>
+      <ul>
+        <li>Start with a human-facing entry page and an agent-facing primer markdown.</li>
+        <li>Ship in small steps, with one intent per change.</li>
+        <li>Require human understanding before acceptance.</li>
+        <li>Guard against stale responses, duplicates, and unclear state transitions.</li>
+        <li>Use explicit roles, handoffs, and escalation rules.</li>
+        <li>Mature beyond MVP with release discipline and observability.</li>
+        <li>Standardize prompting as a team delivery discipline.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Provide the full guide on request</h2>
+      <p class="muted">Use or edit the message below, then send it to interested teams.</p>
+      <textarea id="requestText">Thanks for your interest in our manual:
+"Building Smartphone Webapps with AI + EasyCoder + Webson".
+
+This guide includes:
+- practical architecture and workflow guidance,
+- chapter-by-chapter implementation and stabilization methods,
+- a reusable team operating model for AI-assisted delivery.
+
+Reply to this email and I will send the full manual.
+
+Contact: CONTACT_EMAIL
+Manual overview page: PUBLIC_PAGE_URL
+Full manual URL: FULL_MANUAL_URL</textarea>
+      <div class="actions">
+        <button id="copyBtn" type="button">Copy request message</button>
+        <button id="selectBtn" type="button">Select message</button>
+        <span class="status" id="status"></span>
+      </div>
+    </section>
+
+    <footer>Replace placeholders: FULL_MANUAL_URL, CONTACT_EMAIL, PUBLIC_PAGE_URL</footer>
+  </main>
+
+  <script>
+    const requestEl = document.getElementById('requestText');
+    const statusEl = document.getElementById('status');
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(requestEl.value);
+        statusEl.textContent = 'Message copied';
+      } catch {
+        statusEl.textContent = 'Copy failed — use Select message';
+      }
+    });
+
+    document.getElementById('selectBtn').addEventListener('click', () => {
+      requestEl.focus();
+      requestEl.select();
+      statusEl.textContent = 'Message selected';
+    });
+  </script>
+</body>
+</html>

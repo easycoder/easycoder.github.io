@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EasyCoder Primer: MapIntel</title>
+  <style>
+    :root {
+      --bg: #0f1424;
+      --panel: #161d34;
+      --text: #eaf0ff;
+      --muted: #b8c2df;
+      --accent: #7ca5ff;
+      --line: #2b3555;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .wrap { width: min(900px, 94vw); margin: 24px auto 40px; display: grid; gap: 14px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.35rem, 4vw, 1.95rem); }
+    h2 { margin: 0 0 8px; color: var(--accent); font-size: 1.1rem; }
+    p { margin: 6px 0; }
+    .muted { color: var(--muted); }
+    ul { margin: 6px 0 0 20px; }
+    li { margin: 4px 0; }
+    .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .code {
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #0d1220;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    textarea {
+      width: 100%; min-height: 210px; resize: vertical;
+      background: #0d1220; color: var(--text);
+      border: 1px solid var(--line); border-radius: 10px;
+      padding: 10px; font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    button {
+      background: #23345e; color: var(--text);
+      border: 1px solid var(--line); border-radius: 9px;
+      padding: 9px 12px; cursor: pointer; font-weight: 600;
+    }
+    footer { color: var(--muted); text-align: center; font-size: .86rem; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Build Software, Not Just Prompts</h1>
+      <p>This project is for people who want to become stronger programmers in the AI era.</p>
+      <p class="muted">No shortcuts, no “overnight success” claims — just practical learning through real product work.</p>
+    </section>
+
+    <section class="card">
+      <h2>What you learn</h2>
+      <ul>
+        <li>How to structure a real smartphone webapp.</li>
+        <li>How to work effectively with an AI coding agent.</li>
+        <li>How to review and understand each change.</li>
+      </ul>
+      <p class="muted">This is a guided route into software work. It still requires effort, careful review, and practice.</p>
+    </section>
+
+    <section class="card">
+      <h2>Initial prompt (copy/paste)</h2>
+      <textarea id="prompt">I want to learn practical software development by building a smartphone-first Map Intelligence app.
+
+Use this agent primer markdown URL as authoritative setup context:
+<PRIMER_MD_URL>
+
+Start from an empty workspace.
+Explain your plan briefly.
+Set up the initial project and then explain what you created in plain language.
+Raise the issue of local browser testing early, recommend the best option for this environment, and implement it if needed.</textarea>
+      <div class="row">
+        <button id="copyBtn" type="button">Copy prompt</button>
+        <button id="selectBtn" type="button">Select prompt</button>
+        <span id="status" class="muted"></span>
+      </div>
+    </section>
+
+    <footer>Primer v2 • concise, serious, learner-focused</footer>
+  </main>
+
+  <script>
+    const promptEl = document.getElementById('prompt');
+    const statusEl = document.getElementById('status');
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(promptEl.value);
+        statusEl.textContent = 'Prompt copied';
+      } catch {
+        statusEl.textContent = 'Copy failed — use Select prompt';
+      }
+    });
+    document.getElementById('selectBtn').addEventListener('click', () => {
+      promptEl.focus();
+      promptEl.select();
+      statusEl.textContent = 'Prompt selected';
+    });
+  </script>
+</body>
+</html>

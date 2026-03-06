@@ -171,6 +171,10 @@ const EasyCoder_Compiler = {
 		this.index = index;
 	},
 
+	rewindto: function(index) {
+		this.rewindTo(index);
+	},
+
 	completeHandler: function() {
 		const lino = this.getLino();
 		// Add a 'goto' to skip the action
@@ -260,7 +264,11 @@ const EasyCoder_Compiler = {
 			this.rewindTo(mark);
 		}
 		EasyCoder.writeToDebugConsole(`No handler found`);
-		throw new Error(`I don't understand '${token}...'`);
+		const lino = this.getLino() + 1;
+		if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(token) && !(token in this.symbols)) {
+			throw new Error(`Unknown symbol or keyword '${token}' at line ${lino}`);
+		}
+		throw new Error(`I don't understand '${token}...' at line ${lino}`);
 	},
 
 	compileOne: function() {
