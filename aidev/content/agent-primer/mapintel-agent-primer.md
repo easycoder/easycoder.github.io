@@ -28,6 +28,114 @@ Explain each file in plain language:
 
 Keep `index.html` minimal. Do not embed all app logic in HTML unless explicitly requested.
 
+## 2A) Required Minimal Templates (Milestone Zero)
+
+Goal of Milestone Zero:
+
+- prove EasyCoder runtime loads,
+- prove Webson JSON loads,
+- prove `render` executes,
+- intentionally show a blank-looking screen where real feature work starts.
+- preserve a mobile/desktop decision point so later milestones can diverge layout intentionally.
+
+Agent instruction:
+
+- On first bootstrap, create these three files with equivalent minimal content.
+- Do not add extra UI features before this baseline is verified.
+- Keep mobile detection in the baseline script, even if both branches initially render a blank screen.
+
+`index.html` (loader only):
+
+Use URL-based runtime loading by default for empty-workspace bootstrap. Relative `js/easycoder/...` paths are valid only when those files are present locally.
+Use a clean CDN URL by default (no fixed `?ver=` token). If cache bypass is needed during troubleshooting, use a fresh value (for example a timestamp) intentionally.
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>MapIntel (Bootstrap)</title>
+	<script src="https://easycoder.github.io/dist/easycoder.js"></script>
+	<!-- If working inside this repo with local runtime files, local imports are also valid. -->
+</head>
+<body>
+	<pre id="easycoder-script" style="display:none">
+! MapIntel loader
+
+		script Loader
+		variable Script
+		rest get Script from `mapintel.ecs?v=` cat now
+		run Script
+	</pre>
+</body>
+</html>
+```
+
+`mapintel.ecs` (load and render Webson):
+
+```text
+! mapintel.ecs
+
+		script MapIntel
+
+		div Body
+		variable Mobile
+		variable H
+		variable N
+		variable MainScreenWebson
+
+		clear Mobile
+		if mobile
+		begin
+			if portrait
+			begin
+				set Mobile
+			end
+		end
+
+		create Body
+		if Mobile
+		begin
+			set style `width` of Body to `100%`
+			set style `height` of Body to `100vh`
+			set style `margin` of Body to `0`
+		end
+		else
+		begin
+			put the height of the window into H
+			multiply H by 9 giving N
+			divide N by 16
+			set style `width` of Body to N cat `px`
+			set style `height` of Body to `100vh`
+			set style `margin` of Body to `0 auto`
+			set style `border` of Body to `1px solid lightgray`
+		end
+
+		rest get MainScreenWebson from `mapintel.json?v=` cat now
+				or stop
+		render MainScreenWebson in Body
+```
+
+`mapintel.json` (valid Webson with intentionally empty output):
+
+```json
+{
+	"type": "div",
+	"style": {
+		"width": "100%",
+		"height": "100%",
+		"background": "#ffffff"
+	},
+	"items": []
+}
+```
+
+Expected result:
+
+- Page appears blank (white) but is successfully rendered through Webson.
+- This confirms the runtime wiring is correct before adding map/panel behavior.
+
 ## 3) Repo Orientation (Current Workspace)
 
 Authoritative external references (do not infer these from the primer page URL):
