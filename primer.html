@@ -24,7 +24,6 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
-  <div id="App"></div>
   <pre id="easycoder-script" style="display:none">
 !  Doclets web reader loader
 
@@ -34,15 +33,5 @@
         rest get Script from `aidev/project.ecs?v=` cat now
         run Script
   </pre>
-  <script>
-    // Load and render Webson layout
-    fetch('aidev/project.json')
-      .then(response => response.json())
-      .then(layout => {
-        if (window.Webson) {
-          Webson.render(layout, document.getElementById('App'));
-        }
-      });
-  </script>
 </body>
 </html>
