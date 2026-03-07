@@ -223,6 +223,49 @@ EasyCoder.domain.webson = EasyCoder_Webson;
         await Webson.build(parent, name, JSON.parse(script), symbols);
     },
 
+    // Cache for external text files
+    textCache: {},
+
+    // Load text content from file (cached)
+    loadTextFile: async (path) => {
+        if (typeof Webson.textCache[path] !== `undefined`) {
+            return Webson.textCache[path];
+        }
+        const response = await fetch(path);
+        if (!response.ok) {
+            throw Error(`Unable to load text file '${path}' (${response.status})`);
+        }
+        const text = await response.text();
+        Webson.textCache[path] = text;
+        return text;
+    },
+
+    // Resolve $variables backed by external text files
+    resolveFileBackedSymbols: async (items, symbols, element) => {
+        for (const key of Object.keys(items)) {
+            if (key[0] !== `$`) {
+                continue;
+            }
+            const def = items[key];
+            if (typeof def !== `object` || Array.isArray(def) || def === null) {
+                continue;
+            }
+            const filePathSpec = typeof def[`#textFile`] !== `undefined`
+                ? def[`#textFile`]
+                : def[`#file`];
+            if (typeof filePathSpec === `undefined`) {
+                continue;
+            }
+            const filePath = Webson.expand(element, filePathSpec, symbols);
+            const text = await Webson.loadTextFile(filePath);
+            items[key] = text;
+            symbols[key] = text;
+            if (symbols[`#debug`] >= 2) {
+                console.log(`File variable ${key}: ${filePath}`);
+            }
+        }
+    },
+
     waitForElementReady: (element) => {
         if (!element || element.tagName !== `IMG`) {
             return Promise.resolve();
@@ -261,6 +304,7 @@ EasyCoder.domain.webson = EasyCoder_Webson;
         }
         const symbols = JSON.parse(JSON.stringify(parentSymbols));
         Webson.getDefinitions(items, symbols);
+        await Webson.resolveFileBackedSymbols(items, symbols, parent);
         if (typeof items[`#debug`] !== `undefined`) {
             symbols[`#debug`] = items[`#debug`];
         }

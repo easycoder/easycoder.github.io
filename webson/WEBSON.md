@@ -22,6 +22,13 @@ A Webson script is a JSON object.
 - other keys: CSS style properties (`width`, `display`, `font-size`, ...)
 - `$...`: named values or reusable blocks (local symbol table)
 
+File-backed text symbols are also supported:
+
+- `$Name: { "#textFile": "path/to/file.txt" }`
+- alias: `$Name: { "#file": "path/to/file.txt" }`
+
+When used, Webson fetches the file text once (cached) and stores it in `$Name`.
+
 ## Minimal example
 
 ```json
@@ -75,6 +82,20 @@ Forms supported:
 - object: `{ "Name": "path/to/file.json" }`
 - array of include objects
 - plain string path
+
+### File-backed `$` symbols
+
+Use this when large text is easier to maintain in separate files.
+
+Example:
+
+```json
+{
+  "$Prompt": { "#textFile": "content/initial-prompt.txt" },
+  "#element": "textarea",
+  "#content": "$Prompt"
+}
+```
 
 ### `#switch`
 State-based branch selection.

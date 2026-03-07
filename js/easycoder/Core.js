@@ -1572,7 +1572,21 @@ const EasyCoder_Core = {
 						});
 						return true;
 					}
-					const value = [];
+					const value = [compiler.getValue()];
+					const mark = compiler.getIndex();
+					try {
+						value.push(compiler.getValue());
+					} catch (err) {
+						compiler.rewindTo(mark);
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `put`,
+							lino,
+							value: value[0],
+							target: targetRecord.name
+						});
+						return true;
+					}
 					while (true) {
 						const mark = compiler.getIndex();
 						try {

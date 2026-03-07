@@ -1572,7 +1572,21 @@ const EasyCoder_Core = {
 						});
 						return true;
 					}
-					const value = [];
+					const value = [compiler.getValue()];
+					const mark = compiler.getIndex();
+					try {
+						value.push(compiler.getValue());
+					} catch (err) {
+						compiler.rewindTo(mark);
+						compiler.addCommand({
+							domain: `core`,
+							keyword: `put`,
+							lino,
+							value: value[0],
+							target: targetRecord.name
+						});
+						return true;
+					}
 					while (true) {
 						const mark = compiler.getIndex();
 						try {
@@ -7582,6 +7596,49 @@ const EasyCoder_Markdown = {
         await EasyCoder_Webson.build(parent, name, JSON.parse(script), symbols);
     },
 
+    // Cache for external text files
+    textCache: {},
+
+    // Load text content from file (cached)
+    loadTextFile: async (path) => {
+        if (typeof EasyCoder_Webson.textCache[path] !== `undefined`) {
+            return EasyCoder_Webson.textCache[path];
+        }
+        const response = await fetch(path);
+        if (!response.ok) {
+            throw Error(`Unable to load text file '${path}' (${response.status})`);
+        }
+        const text = await response.text();
+        EasyCoder_Webson.textCache[path] = text;
+        return text;
+    },
+
+    // Resolve $variables backed by external text files
+    resolveFileBackedSymbols: async (items, symbols, element) => {
+        for (const key of Object.keys(items)) {
+            if (key[0] !== `$`) {
+                continue;
+            }
+            const def = items[key];
+            if (typeof def !== `object` || Array.isArray(def) || def === null) {
+                continue;
+            }
+            const filePathSpec = typeof def[`#textFile`] !== `undefined`
+                ? def[`#textFile`]
+                : def[`#file`];
+            if (typeof filePathSpec === `undefined`) {
+                continue;
+            }
+            const filePath = EasyCoder_Webson.expand(element, filePathSpec, symbols);
+            const text = await EasyCoder_Webson.loadTextFile(filePath);
+            items[key] = text;
+            symbols[key] = text;
+            if (symbols[`#debug`] >= 2) {
+                console.log(`File variable ${key}: ${filePath}`);
+            }
+        }
+    },
+
     waitForElementReady: (element) => {
         if (!element || element.tagName !== `IMG`) {
             return Promise.resolve();
@@ -7643,6 +7700,7 @@ const EasyCoder_Markdown = {
         }
         const symbols = JSON.parse(JSON.stringify(parentSymbols));
         EasyCoder_Webson.getDefinitions(items, symbols);
+        await EasyCoder_Webson.resolveFileBackedSymbols(items, symbols, parent);
         if (typeof items[`#debug`] !== `undefined`) {
             symbols[`#debug`] = items[`#debug`];
         }

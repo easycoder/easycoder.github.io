@@ -1,486 +1,797 @@
 {
-    "#doc": "The top-level layout script",
+  "#doc": "MapIntel Primer page rendered via Webson",
+  "#element": "div",
+  "@id": "PrimerPage",
+  "position": "relative",
+  "width": "100%",
+  "height": "100%",
+  "min-height": "100%",
+  "box-sizing": "border-box",
+  "display": "flex",
+  "flex-direction": "column",
+  "background": "#0f1424",
+  "color": "#eaf0ff",
+  "font-family": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  "font-size": "16px",
+  "line-height": "1.5",
+  "overflow-y": "auto",
+  "padding": "0.9em",
+  "gap": "0.9em",
+  "#": [
+    "$TabBar",
+    "$PrimerContainer",
+    "$ManualContainer"
+  ],
+
+  "$TabBar": {
     "#element": "div",
-    "@id": "doclet-screen",
-    "width": "100%",
-    "height": "100%",
-    "position": "relative",
-    "text-align": "center",
+    "@id": "TabBar",
+    "display": "flex",
+    "gap": "0.5em",
+    "margin-bottom": "0.1em",
+    "#": [
+      "$TabPrimer",
+      "$TabManual"
+    ],
+
+    "$TabPrimer": {
+      "#element": "button",
+      "@id": "TabPrimer",
+      "#content": "Primer",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabManual": {
+      "#element": "button",
+      "@id": "TabManual",
+      "#content": "AI Manual",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    }
+  },
+
+  "$PrimerContainer": {
+    "#element": "div",
+    "@id": "PrimerContainer",
     "display": "flex",
     "flex-direction": "column",
-    "font-size": "<#parent_width/27>",
-    "#": ["$Title", "$Topics", "$QueryPanel", "$ResultsPanel", "$TopicsDialog", "$NewDocletDialog", "$DocletViewer"],
+    "gap": "0.9em",
+    "#": [
+      "$HeroCard",
+      "$LearnCard",
+      "$NeedCard",
+      "$PromptCard",
+      "$AuthorPanel",
+      "$Footer"
+    ]
+  },
 
-    "$Topics": {
-        "#element": "div",
-        "@id": "TopicsPanel",
-        "position": "relative",
-        "height": "2.6em",
-        "flex": "0 0 2.6em",
-        "display": "flex",
-        "flex-direction": "row",
-        "align-items": "center",
-        "gap": "0.5em",
-        "padding": "0.3em 0.4em",
-        "box-sizing": "border-box",
-        "#": ["$TopicList", "$ChooseButton"],
+  "$ManualContainer": {
+    "#element": "div",
+    "@id": "ManualContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$ManualStatus",
+      "$RetryManualButton",
+      "$ManualChapterList",
+      "$ManualBackButton",
+      "$ManualBody"
+    ],
 
-        "$TopicList": {
-            "#element": "div",
-            "@id": "TopicList",
-            "#content": "No topics chosen",
-            "color": "#800",
-            "flex": 1,
-            "text-align": "left",
-            "overflow": "hidden",
-            "white-space": "nowrap",
-            "text-overflow": "ellipsis"
-        },
-
-        "$ChooseButton": {
-            "#element": "button",
-            "@id": "ChooseTopicsButton",
-            "#content": "Choose",
-            "height": "2em",
-            "padding": "0 1em",
-            "cursor": "pointer"
-        }
+    "$ManualStatus": {
+      "#element": "div",
+      "@id": "ManualStatus",
+      "#content": "",
+      "color": "#b8c2df"
     },
 
-    "$Title": {
-        "#element": "div",
-        "@id": "titles",
-        "position": "relative",
-        "padding-bottom": "0.5em",
-        "border": "2px solid #328080",
-        "background-image": "linear-gradient(to bottom, rgba(255,150,150,1), rgba(150,255,200,1))",
-        "#": ["$Title"],
-
-        "$Title": {
-            "#element": "div",
-            "#content": "Doclet reader",
-            "@id": "rbr-banner",
-            "font-size": "2em",
-            "font-weight": "bold",
-            "user-select": "none",
-            "color": "#450"
-        }
+    "$RetryManualButton": {
+      "#element": "button",
+      "@id": "RetryManualButton",
+      "#content": "Retry load",
+      "display": "none",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.5em 0.8em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-bottom": "0.2em",
+      "width": "fit-content"
     },
 
-    "$QueryPanel": {
-        "#element": "div",
-        "@id": "QueryPanel",
-        "position": "relative",
-        "height": "3em",
-        "flex": "0 0 3em",
-        "display": "flex",
-        "flex-direction": "row",
-        "align-items": "center",
-        "gap": "0.5em",
-        "padding": "0.4em",
-        "box-sizing": "border-box",
-        "#": ["$QueryInput", "$SendButton", "$NewButton"],
+    "$ManualChapterList": {
+      "#element": "div",
+      "@id": "ManualChapterList",
+      "display": "flex",
+      "flex-direction": "column",
+      "gap": "0.35em",
+      "margin-bottom": "0.35em",
+      "#": [
+        "$ManualChapter1",
+        "$ManualChapter2",
+        "$ManualChapter3",
+        "$ManualChapter4",
+        "$ManualChapter5",
+        "$ManualChapter6",
+        "$ManualChapter7",
+        "$ManualChapter8"
+      ],
 
-        "$QueryInput": {
-            "#element": "input",
-            "@id": "QueryInput",
-            "@type": "text",
-            "@placeholder": "Enter query",
-            "flex": 1,
-            "height": "2.2em",
-            "box-sizing": "border-box",
-            "padding": "0 0.6em"
-        },
+      "$ManualChapter1": {
+        "#element": "button",
+        "@id": "ManualChapter1",
+        "#content": "Chapter 1 — AI-Native Webapp Development",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
 
-        "$SendButton": {
-            "#element": "button",
-            "@id": "SendQueryButton",
-            "#content": "Send",
-            "height": "2.2em",
-            "padding": "0 1em",
-            "cursor": "pointer"
-        },
+      "$ManualChapter2": {
+        "#element": "button",
+        "@id": "ManualChapter2",
+        "#content": "Chapter 2 — Idea to First Working Screen",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
 
-        "$NewButton": {
-            "#element": "button",
-            "@id": "NewDocletButton",
-            "#content": "New",
-            "height": "2.2em",
-            "padding": "0 1em",
-            "cursor": "pointer"
-        }
+      "$ManualChapter3": {
+        "#element": "button",
+        "@id": "ManualChapter3",
+        "#content": "Chapter 3 — Build Walkthrough",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter4": {
+        "#element": "button",
+        "@id": "ManualChapter4",
+        "#content": "Chapter 4 — Troubleshooting and Stabilization",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter5": {
+        "#element": "button",
+        "@id": "ManualChapter5",
+        "#content": "Chapter 5 — From MVP to Production Habits",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter6": {
+        "#element": "button",
+        "@id": "ManualChapter6",
+        "#content": "Chapter 6 — Team Playbook",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter7": {
+        "#element": "button",
+        "@id": "ManualChapter7",
+        "#content": "Chapter 7 — Prompt Engineering",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter8": {
+        "#element": "button",
+        "@id": "ManualChapter8",
+        "#content": "Chapter 8 — MapIntel End-to-End",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      }
     },
 
-    "$ResultsPanel": {
-        "#element": "div",
-        "@id": "ResultsPanel",
-        "position": "relative",
-        "flex": 1,
-        "min-height": 0,
-        "padding": "0.4em",
-        "box-sizing": "border-box",
-        "#": ["$ResultsList"],
-
-        "$ResultsList": {
-            "#element": "div",
-            "@id": "DocletListPanel",
-            "height": "100%",
-            "overflow-y": "auto",
-            "display": "flex",
-            "flex-direction": "column",
-            "gap": "0.3em",
-            "#": ["$DocletItem"],
-
-            "$DocletItem": {
-                "#element": "button",
-                "@id": "DocletButton-/SEQ/",
-                "#content": "doclet-/SEQ/",
-                "display": "none",
-                "text-align": "left",
-                "cursor": "pointer"
-            }
-        }
+    "$ManualBackButton": {
+      "#element": "button",
+      "@id": "ManualBackButton",
+      "#content": "Back",
+      "display": "none",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.5em 0.8em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-bottom": "0.2em",
+      "width": "fit-content"
     },
 
-    "$TopicsDialog": {
-        "#element": "div",
-        "@id": "TopicsDialogMask",
-        "position": "absolute",
-        "top": 0,
-        "left": 0,
-        "width": "100%",
-        "height": "100%",
-        "display": "none",
-        "justify-content": "center",
-        "align-items": "center",
-        "background": "rgba(0,0,0,0.25)",
-        "z-index": 20,
-        "#": ["$TopicsDialog"],
-
-        "$TopicsDialog": {
-            "#element": "div",
-            "@id": "TopicsDialog",
-            "width": "80%",
-            "max-height": "70%",
-            "display": "flex",
-            "flex-direction": "column",
-            "padding": "0.6em",
-            "box-sizing": "border-box",
-            "background": "white",
-            "border": "1px solid gray",
-            "#": ["$TopicsDialogList", "$TopicsDialogButtons"],
-
-            "$TopicsDialogList": {
-                "#element": "div",
-                "@id": "TopicsDialogList",
-                "flex": 1,
-                "min-height": 0,
-                "overflow-y": "auto",
-                "text-align": "left",
-                "#": ["$TopicItem", "$TopicItemTemplate"],
-
-                "$TopicItem": {
-                    "#element": "div",
-                    "@id": "TopicItem-/SEQ/",
-                    "display": "flex",
-                    "align-items": "center",
-                    "gap": "0.5em",
-                    "padding": "0.2em 0",
-                    "#": ["$TopicCheckbox", "$TopicName"],
-
-                    "$TopicCheckbox": {
-                        "#element": "input",
-                        "@id": "TopicCheckbox-/SEQ/",
-                        "@type": "checkbox"
-                    },
-
-                    "$TopicName": {
-                        "#element": "span",
-                        "@id": "TopicName-/SEQ/",
-                        "#content": "topic-/SEQ/"
-                    }
-                },
-
-                "$TopicItemTemplate": {
-                    "#element": "div",
-                    "@id": "TopicItemTemplate",
-                    "display": "none",
-                    "#": ["$TopicItemTemplateRow"],
-
-                    "$TopicItemTemplateRow": {
-                        "#element": "div",
-                        "@id": "TopicItem-__SEQ__",
-                        "display": "flex",
-                        "align-items": "center",
-                        "gap": "0.5em",
-                        "padding": "0.2em 0",
-                        "#": ["$TopicItemTemplateCheckbox", "$TopicItemTemplateName"],
-
-                        "$TopicItemTemplateCheckbox": {
-                            "#element": "input",
-                            "@id": "TopicCheckbox-__SEQ__",
-                            "@type": "checkbox",
-                            "@value": "__VALUE__"
-                        },
-
-                        "$TopicItemTemplateName": {
-                            "#element": "span",
-                            "#content": "__TEXT__"
-                        }
-                    }
-                }
-            },
-
-            "$TopicsDialogButtons": {
-                "#element": "div",
-                "display": "flex",
-                "flex-direction": "row",
-                "gap": "0.5em",
-                "padding-top": "0.6em",
-                "#": ["$TopicsDialogSelectAllButton", "$TopicsDialogDeselectAllButton", "$TopicsDialogOKButton"],
-
-                "$TopicsDialogSelectAllButton": {
-                    "#element": "button",
-                    "@id": "TopicsDialogSelectAllButton",
-                    "#content": "Select All",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                },
-
-                "$TopicsDialogDeselectAllButton": {
-                    "#element": "button",
-                    "@id": "TopicsDialogDeselectAllButton",
-                    "#content": "Deselect All",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                },
-
-                "$TopicsDialogOKButton": {
-                    "#element": "button",
-                    "@id": "TopicsDialogOKButton",
-                    "#content": "OK",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                }
-            }
-        }
-    },
-
-    "$NewDocletDialog": {
-        "#element": "div",
-        "@id": "NewDocletDialogMask",
-        "position": "absolute",
-        "top": 0,
-        "left": 0,
-        "width": "100%",
-        "height": "100%",
-        "display": "none",
-        "justify-content": "center",
-        "align-items": "center",
-        "background": "rgba(0,0,0,0.25)",
-        "z-index": 20,
-        "#": ["$NewDocletDialog"],
-
-        "$NewDocletDialog": {
-            "#element": "div",
-            "@id": "NewDocletDialog",
-            "width": "80%",
-            "max-height": "70%",
-            "display": "flex",
-            "flex-direction": "column",
-            "padding": "0.6em",
-            "box-sizing": "border-box",
-            "background": "white",
-            "border": "1px solid gray",
-            "#": ["$NewDocletDialogTitle", "$NewDocletDialogList", "$NewDocletDialogButtons"],
-
-            "$NewDocletDialogTitle": {
-                "#element": "div",
-                "#content": "Choose topic for new doclet",
-                "text-align": "left",
-                "font-weight": "bold",
-                "padding-bottom": "0.5em"
-            },
-
-            "$NewDocletDialogList": {
-                "#element": "div",
-                "@id": "NewDocletDialogList",
-                "flex": 1,
-                "min-height": 0,
-                "overflow-y": "auto",
-                "text-align": "left",
-                "#": ["$NewTopicItemTemplate"],
-
-                "$NewTopicItemTemplate": {
-                    "#element": "div",
-                    "@id": "NewTopicItemTemplate",
-                    "display": "none",
-                    "#": ["$NewTopicItemTemplateRow"],
-
-                    "$NewTopicItemTemplateRow": {
-                        "#element": "div",
-                        "@id": "NewTopicItem-__SEQ__",
-                        "display": "flex",
-                        "align-items": "center",
-                        "gap": "0.5em",
-                        "padding": "0.2em 0",
-                        "#": ["$NewTopicItemTemplateRadio", "$NewTopicItemTemplateName"],
-
-                        "$NewTopicItemTemplateRadio": {
-                            "#element": "input",
-                            "@id": "NewTopicRadio-__SEQ__",
-                            "@type": "radio",
-                            "@name": "new-doclet-topic",
-                            "@value": "__VALUE__"
-                        },
-
-                        "$NewTopicItemTemplateName": {
-                            "#element": "span",
-                            "#content": "__TEXT__"
-                        }
-                    }
-                }
-            },
-
-            "$NewDocletDialogButtons": {
-                "#element": "div",
-                "display": "flex",
-                "flex-direction": "row",
-                "gap": "0.5em",
-                "padding-top": "0.6em",
-                "#": ["$NewDocletCancelButton", "$NewDocletCreateButton"],
-
-                "$NewDocletCancelButton": {
-                    "#element": "button",
-                    "@id": "NewDocletCancelButton",
-                    "#content": "Cancel",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                },
-
-                "$NewDocletCreateButton": {
-                    "#element": "button",
-                    "@id": "NewDocletCreateButton",
-                    "#content": "Create",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                }
-            }
-        }
-    },
-
-    "$DocletViewer": {
-        "#element": "div",
-        "@id": "DocletViewMask",
-        "position": "fixed",
-        "top": 0,
-        "left": 0,
-        "width": "100vw",
-        "height": "100dvh",
-        "display": "none",
-        "justify-content": "stretch",
-        "align-items": "stretch",
-        "overflow": "hidden",
-        "overscroll-behavior": "none",
-        "background": "rgba(0,0,0,0.25)",
-        "z-index": 21,
-        "#": ["$DocletViewDialog"],
-
-        "$DocletViewDialog": {
-            "#element": "div",
-            "@id": "DocletViewDialog",
-            "width": "100%",
-            "height": "100dvh",
-            "max-height": "100dvh",
-            "display": "flex",
-            "flex-direction": "column",
-            "padding": "0.6em",
-            "box-sizing": "border-box",
-            "overflow": "hidden",
-            "overscroll-behavior": "none",
-            "background": "white",
-            "border": "0",
-            "#": ["$DocletViewContent", "$DocletEditTextarea", "$DocletViewButtonsRow"],
-
-            "$DocletViewContent": {
-                "#element": "div",
-                "@id": "DocletViewContent",
-                "@data-markdown": "1",
-                "flex": 1,
-                "min-height": 0,
-                "overflow-y": "auto",
-                "overscroll-behavior-y": "contain",
-                "text-align": "left",
-                "padding": "0.2em"
-            },
-
-            "$DocletEditTextarea": {
-                "#element": "textarea",
-                "@id": "DocletEditTextarea",
-                "display": "none",
-                "flex": 1,
-                "min-height": 0,
-                "width": "100%",
-                "box-sizing": "border-box",
-                "resize": "none",
-                "overflow-y": "auto",
-                "overscroll-behavior-y": "contain",
-                "font-family": "monospace",
-                "line-height": "1.35"
-            },
-
-            "$DocletViewButtonsRow": {
-                "#element": "div",
-                "display": "flex",
-                "flex-direction": "row",
-                "gap": "0.5em",
-                "padding-top": "0.6em",
-                "#": ["$DocletViewEditButton", "$DocletViewDeleteButton", "$DocletViewSaveButton", "$DocletViewCloseButton"],
-
-                "$DocletViewEditButton": {
-                    "#element": "button",
-                    "@id": "DocletViewEditButton",
-                    "#content": "Edit",
-                    "@disabled": "disabled",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                },
-
-                "$DocletViewDeleteButton": {
-                    "#element": "button",
-                    "@id": "DocletViewDeleteButton",
-                    "#content": "Delete",
-                    "@disabled": "disabled",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                },
-
-                "$DocletViewSaveButton": {
-                    "#element": "button",
-                    "@id": "DocletViewSaveButton",
-                    "#content": "Save",
-                    "@disabled": "disabled",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                },
-
-                "$DocletViewCloseButton": {
-                    "#element": "button",
-                    "@id": "DocletViewCloseButton",
-                    "#content": "Close",
-                    "flex": 1,
-                    "padding": "0.3em 0.5em",
-                    "cursor": "pointer"
-                }
-            }
-        }
+    "$ManualBody": {
+      "#element": "div",
+      "@id": "ManualBody",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff"
     }
+  },
+
+  "$HeroCard": {
+    "#element": "div",
+    "@id": "HeroCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$HeroTitle",
+      "$HeroText1",
+      "$HeroText2"
+    ],
+
+    "$HeroTitle": {
+      "#element": "div",
+      "@id": "HeroTitle",
+      "#content": "Build Software, Not Just Prompts",
+      "font-size": "1.6em",
+      "font-weight": "700",
+      "line-height": "1.25",
+      "margin-bottom": "0.45em"
+    },
+
+    "$HeroText1Content": {
+      "#textFile": "content/primer/hero-text-1.txt"
+    },
+
+    "$HeroText2Content": {
+      "#textFile": "content/primer/hero-text-2.txt"
+    },
+
+    "$HeroText1": {
+      "#element": "div",
+      "@id": "HeroText1",
+      "#content": "$HeroText1Content",
+      "margin-bottom": "0.35em"
+    },
+
+    "$HeroText2": {
+      "#element": "div",
+      "@id": "HeroText2",
+      "#content": "$HeroText2Content",
+      "color": "#b8c2df"
+    }
+  },
+
+  "$LearnCard": {
+    "#element": "div",
+    "@id": "LearnCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$LearnTitle",
+      "$LearnList",
+      "$LearnNote"
+    ],
+
+    "$LearnTitle": {
+      "#element": "div",
+      "@id": "LearnTitle",
+      "#content": "What you learn",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$LearnNoteContent": {
+      "#textFile": "content/primer/learn-note.txt"
+    },
+
+    "$LearnList": {
+      "#element": "ul",
+      "@id": "LearnList",
+      "margin": "0.2em 0 0 1.2em",
+      "padding": "0",
+      "#": [
+        "$LearnItem1",
+        "$LearnItem2",
+        "$LearnItem3"
+      ],
+
+      "$LearnItem1": {
+        "#element": "li",
+        "#content": "How to structure a real smartphone webapp.",
+        "margin": "0.25em 0"
+      },
+
+      "$LearnItem2": {
+        "#element": "li",
+        "#content": "How to work effectively with an AI coding agent.",
+        "margin": "0.25em 0"
+      },
+
+      "$LearnItem3": {
+        "#element": "li",
+        "#content": "How to review and understand each change.",
+        "margin": "0.25em 0"
+      }
+    },
+
+    "$LearnNote": {
+      "#element": "div",
+      "@id": "LearnNote",
+      "#content": "$LearnNoteContent",
+      "color": "#b8c2df",
+      "margin-top": "0.45em"
+    }
+  },
+
+  "$NeedCard": {
+    "#element": "div",
+    "@id": "NeedCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$NeedTitle",
+      "$NeedText1",
+      "$NeedList",
+      "$NeedText2"
+    ],
+
+    "$NeedTitle": {
+      "#element": "div",
+      "@id": "NeedTitle",
+      "#content": "What you will need",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$NeedText1Content": {
+      "#textFile": "content/primer/need-text-1.txt"
+    },
+
+    "$NeedText2Content": {
+      "#textFile": "content/primer/need-text-2.txt"
+    },
+
+    "$NeedText1": {
+      "#element": "div",
+      "@id": "NeedText1",
+      "#content": "$NeedText1Content",
+      "margin-bottom": "0.35em"
+    },
+
+    "$NeedList": {
+      "#element": "ul",
+      "@id": "NeedList",
+      "margin": "0.2em 0 0 1.2em",
+      "padding": "0",
+      "#": [
+        "$NeedItem1",
+        "$NeedItem2",
+        "$NeedItem3"
+      ],
+
+      "$NeedItem1": {
+        "#element": "li",
+        "#content": "An AI-boosted text editor (for example VS Code, or any equivalent).",
+        "margin": "0.25em 0"
+      },
+
+      "$NeedItem2": {
+        "#element": "li",
+        "#content": "A modern web browser for local testing.",
+        "margin": "0.25em 0"
+      },
+
+      "$NeedItem3": {
+        "#element": "li",
+        "#content": "A willingness to read every change and learn by doing.",
+        "margin": "0.25em 0"
+      }
+    },
+
+    "$NeedText2": {
+      "#element": "div",
+      "@id": "NeedText2",
+      "#content": "$NeedText2Content",
+      "color": "#b8c2df",
+      "margin-top": "0.45em"
+    }
+  },
+
+  "$PromptCard": {
+    "#element": "div",
+    "@id": "PromptCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$PromptTitle",
+      "$PromptArea",
+      "$ButtonRow"
+    ],
+
+    "$PromptTitle": {
+      "#element": "div",
+      "@id": "PromptTitle",
+      "#content": "Initial prompt (copy/paste)",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.45em"
+    },
+
+    "$InitialPrompt": {
+      "#textFile": "content/primer/initial-prompt.txt"
+    },
+
+    "$PromptArea": {
+      "#element": "textarea",
+      "@id": "PromptText",
+      "#content": "$InitialPrompt",
+      "width": "100%",
+      "min-height": "13.5em",
+      "resize": "vertical",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "10px",
+      "box-sizing": "border-box",
+      "padding": "0.7em",
+      "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+      "font-size": "14px",
+      "line-height": "1.45"
+    },
+
+    "$ButtonRow": {
+      "#element": "div",
+      "@id": "ButtonRow",
+      "display": "flex",
+      "flex-wrap": "wrap",
+      "gap": "0.5em",
+      "margin-top": "0.7em",
+      "align-items": "center",
+      "#": [
+        "$CopyButton",
+        "$SelectButton",
+        "$StatusText"
+      ],
+
+      "$CopyButton": {
+        "#element": "button",
+        "@id": "CopyPromptButton",
+        "#content": "Copy prompt",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.6em 0.9em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$SelectButton": {
+        "#element": "button",
+        "@id": "SelectPromptButton",
+        "#content": "Select prompt",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.6em 0.9em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$StatusText": {
+        "#element": "span",
+        "@id": "PromptStatus",
+        "#content": "",
+        "color": "#b8c2df"
+      }
+    }
+  },
+
+  "$AuthorPanel": {
+    "#element": "div",
+    "@id": "AuthorPanel",
+    "display": "none",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$AuthorTitle",
+      "$AuthorHelp",
+      "$AuthorLinks",
+      "$AuthorControls",
+      "$AuthorItemName",
+      "$AuthorEditor",
+      "$AuthorStatus",
+      "$ExitAuthorButton"
+    ],
+
+    "$AuthorTitle": {
+      "#element": "div",
+      "@id": "AuthorTitle",
+      "#content": "Author mode",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$AuthorHelp": {
+      "#element": "div",
+      "@id": "AuthorHelp",
+      "#content": "Choose a content item, then load either the current file or the original markdown source.",
+      "color": "#b8c2df",
+      "margin-bottom": "0.55em"
+    },
+
+    "$AuthorLinks": {
+      "#element": "div",
+      "@id": "AuthorLinks",
+      "display": "flex",
+      "flex-direction": "column",
+      "gap": "0.35em",
+      "margin-bottom": "0.7em",
+      "#": [
+        "$EditHeroText1",
+        "$EditHeroText2",
+        "$EditLearnNote",
+        "$EditNeedText1",
+        "$EditNeedText2",
+        "$EditInitialPrompt"
+      ],
+
+      "$EditHeroText1": {
+        "#element": "button",
+        "@id": "EditHeroText1",
+        "#content": "hero-text-1",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditHeroText2": {
+        "#element": "button",
+        "@id": "EditHeroText2",
+        "#content": "hero-text-2",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditLearnNote": {
+        "#element": "button",
+        "@id": "EditLearnNote",
+        "#content": "learn-note",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditNeedText1": {
+        "#element": "button",
+        "@id": "EditNeedText1",
+        "#content": "need-text-1",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditNeedText2": {
+        "#element": "button",
+        "@id": "EditNeedText2",
+        "#content": "need-text-2",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditInitialPrompt": {
+        "#element": "button",
+        "@id": "EditInitialPrompt",
+        "#content": "initial-prompt",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      }
+    },
+
+    "$AuthorControls": {
+      "#element": "div",
+      "@id": "AuthorControls",
+      "display": "flex",
+      "flex-wrap": "wrap",
+      "gap": "0.5em",
+      "margin-bottom": "0.5em",
+      "#": [
+        "$LoadCurrentButton",
+        "$LoadOriginalButton",
+        "$SaveContentButton"
+      ],
+
+      "$LoadCurrentButton": {
+        "#element": "button",
+        "@id": "LoadCurrentButton",
+        "#content": "Load current item",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.55em 0.85em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$LoadOriginalButton": {
+        "#element": "button",
+        "@id": "LoadOriginalButton",
+        "#content": "Load original .md",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.55em 0.85em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$SaveContentButton": {
+        "#element": "button",
+        "@id": "SaveContentButton",
+        "#content": "Save changes",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.55em 0.85em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      }
+    },
+
+    "$AuthorItemName": {
+      "#element": "div",
+      "@id": "AuthorItemName",
+      "#content": "Item: initial-prompt",
+      "font-size": "0.92em",
+      "color": "#b8c2df",
+      "margin-bottom": "0.35em"
+    },
+
+    "$AuthorEditor": {
+      "#element": "textarea",
+      "@id": "AuthorEditor",
+      "#content": "",
+      "width": "100%",
+      "min-height": "16em",
+      "resize": "vertical",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "10px",
+      "box-sizing": "border-box",
+      "padding": "0.7em",
+      "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+      "font-size": "13px",
+      "line-height": "1.45"
+    },
+
+    "$AuthorStatus": {
+      "#element": "div",
+      "@id": "AuthorStatus",
+      "#content": "",
+      "color": "#b8c2df",
+      "margin-top": "0.45em"
+    },
+
+    "$ExitAuthorButton": {
+      "#element": "button",
+      "@id": "ExitAuthorButton",
+      "#content": "Exit author mode",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.85em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-top": "0.6em"
+    }
+  },
+
+  "$Footer": {
+    "#element": "div",
+    "@id": "Footer",
+    "#content": "Primer v2 \u2022 concise, serious, learner-focused",
+    "color": "#b8c2df",
+    "text-align": "center",
+    "font-size": "0.86em",
+    "padding": "0.35em 0 0.2em",
+    "cursor": "pointer"
+  }
 }
