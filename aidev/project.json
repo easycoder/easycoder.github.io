@@ -289,11 +289,11 @@
     },
 
     "$HeroText1Content": {
-      "#textFile": "content/primer/hero-text-1.txt"
+      "#textFile": "aidev/content/primer/hero-text-1.txt"
     },
 
     "$HeroText2Content": {
-      "#textFile": "content/primer/hero-text-2.txt"
+      "#textFile": "aidev/content/primer/hero-text-2.txt"
     },
 
     "$HeroText1": {
@@ -335,7 +335,7 @@
     },
 
     "$LearnNoteContent": {
-      "#textFile": "content/primer/learn-note.txt"
+      "#textFile": "aidev/content/primer/learn-note.txt"
     },
 
     "$LearnList": {
@@ -402,11 +402,11 @@
     },
 
     "$NeedText1Content": {
-      "#textFile": "content/primer/need-text-1.txt"
+      "#textFile": "aidev/content/primer/need-text-1.txt"
     },
 
     "$NeedText2Content": {
-      "#textFile": "content/primer/need-text-2.txt"
+      "#textFile": "aidev/content/primer/need-text-2.txt"
     },
 
     "$NeedText1": {
@@ -479,7 +479,7 @@
     },
 
     "$InitialPrompt": {
-      "#textFile": "content/primer/initial-prompt.txt"
+      "#textFile": "aidev/content/primer/initial-prompt.txt"
     },
 
     "$PromptArea": {

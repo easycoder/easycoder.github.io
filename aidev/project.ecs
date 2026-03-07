@@ -110,7 +110,7 @@ SetupScreen:
     set style `height` of Body to `calc(100vh - 1em)`
 
 !	Render the main screen layout
-    rest get MainScreenWebson from `project.json?v=` cat now
+    rest get MainScreenWebson from `aidev/project.json?v=` cat now
 		or go to AbandonShip
 	render MainScreenWebson in Body
 
@@ -164,7 +164,7 @@ SetupScreen:
     clear ManualLoaded
     put `primer` into ActiveTab
     put `initial-prompt` into SelectedItem
-    put `content/primer/initial-prompt.txt` into SelectedPath
+    put `aidev/content/primer/initial-prompt.txt` into SelectedPath
     gosub to ShowPrimerTab
     set style `display` of AuthorPanel to `none`
 
@@ -213,49 +213,49 @@ SetupScreen:
 
     on click ManualChapter1
     begin
-        put `content/ai-manual/chapters/ch01.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch01.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter2
     begin
-        put `content/ai-manual/chapters/ch02.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch02.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter3
     begin
-        put `content/ai-manual/chapters/ch03.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch03.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter4
     begin
-        put `content/ai-manual/chapters/ch04.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch04.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter5
     begin
-        put `content/ai-manual/chapters/ch05.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch05.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter6
     begin
-        put `content/ai-manual/chapters/ch06.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch06.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter7
     begin
-        put `content/ai-manual/chapters/ch07.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch07.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter8
     begin
-        put `content/ai-manual/chapters/ch08.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch08.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
@@ -275,42 +275,42 @@ SetupScreen:
     on click EditHeroText1
     begin
         put `hero-text-1` into SelectedItem
-        put `content/primer/hero-text-1.txt` into SelectedPath
+        put `aidev/content/primer/hero-text-1.txt` into SelectedPath
         gosub to LoadCurrentItem
     end
 
     on click EditHeroText2
     begin
         put `hero-text-2` into SelectedItem
-        put `content/primer/hero-text-2.txt` into SelectedPath
+        put `aidev/content/primer/hero-text-2.txt` into SelectedPath
         gosub to LoadCurrentItem
     end
 
     on click EditLearnNote
     begin
         put `learn-note` into SelectedItem
-        put `content/primer/learn-note.txt` into SelectedPath
+        put `aidev/content/primer/learn-note.txt` into SelectedPath
         gosub to LoadCurrentItem
     end
 
     on click EditNeedText1
     begin
         put `need-text-1` into SelectedItem
-        put `content/primer/need-text-1.txt` into SelectedPath
+        put `aidev/content/primer/need-text-1.txt` into SelectedPath
         gosub to LoadCurrentItem
     end
 
     on click EditNeedText2
     begin
         put `need-text-2` into SelectedItem
-        put `content/primer/need-text-2.txt` into SelectedPath
+        put `aidev/content/primer/need-text-2.txt` into SelectedPath
         gosub to LoadCurrentItem
     end
 
     on click EditInitialPrompt
     begin
         put `initial-prompt` into SelectedItem
-        put `content/primer/initial-prompt.txt` into SelectedPath
+        put `aidev/content/primer/initial-prompt.txt` into SelectedPath
         gosub to LoadCurrentItem
     end
 
@@ -318,7 +318,7 @@ SetupScreen:
 
     on click LoadOriginalButton
     begin
-        rest get OriginalMarkdown from `content/agent-primer/mapintel-agent-primer.md?v=` cat now
+        rest get OriginalMarkdown from `aidev/content/agent-primer/mapintel-agent-primer.md?v=` cat now
             or begin
                 set the content of AuthorStatus to
                     `Original markdown is not reachable from this server context.`
@@ -407,7 +407,7 @@ EnsureManualLoaded:
     set style `display` of RetryManualButton to `none`
     set style `display` of ManualBackButton to `none`
     set style `display` of ManualChapterList to `flex`
-    rest get ManualMarkdown from `content/ai-manual/overview.md?v=` cat now
+    rest get ManualMarkdown from `aidev/content/ai-manual/overview.md?v=` cat now
         or begin
             set the content of ManualStatus to
                 `AI manual is not reachable from this server context.`
@@ -463,7 +463,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch01.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch01.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -472,7 +472,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch02.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch02.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -481,7 +481,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch03.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch03.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -490,7 +490,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch04.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch04.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -499,7 +499,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch05.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch05.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -508,7 +508,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch06.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch06.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -517,7 +517,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch07.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch07.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -526,7 +526,7 @@ RestoreFromLocation:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch08.md` into ManualChapterPath
+        put `aidev/content/ai-manual/chapters/ch08.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
