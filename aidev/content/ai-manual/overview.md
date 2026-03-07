@@ -2,11 +2,6 @@
 
 A practical manual for teams that want fast delivery without losing clarity, reliability, or control.
 
-This page is a concise overview for interested parties. Share it directly, and provide the full manual on request.
-
-- Full manual URL: FULL_MANUAL_URL
-- Contact: CONTACT_EMAIL
-
 ## Who this is for
 
 - Product teams building smartphone-first webapps.
@@ -48,25 +43,3 @@ How the full method performs in a realistic product cycle from bootstrap to stab
 - Use explicit roles, handoffs, and escalation rules.
 - Mature beyond MVP with release discipline and observability.
 - Standardize prompting as a team delivery discipline.
-
-## Provide the full guide on request
-
-Use or edit this message, then send it to interested teams.
-
-```text
-Thanks for your interest in our manual:
-"Building Smartphone Webapps with AI + EasyCoder + Webson".
-
-This guide includes:
-- practical architecture and workflow guidance,
-- chapter-by-chapter implementation and stabilization methods,
-- a reusable team operating model for AI-assisted delivery.
-
-Reply to this email and I will send the full manual.
-
-Contact: CONTACT_EMAIL
-Manual overview page: PUBLIC_PAGE_URL
-Full manual URL: FULL_MANUAL_URL
-```
-
-Replace placeholders: FULL_MANUAL_URL, CONTACT_EMAIL, PUBLIC_PAGE_URL
