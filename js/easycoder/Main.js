@@ -232,10 +232,26 @@ const EasyCoder = {
 	},
 
 	run: function (pc) {
-		if (pc) {
+		if (typeof pc !== `undefined` && pc !== null) {
 			this.program = this;
 			EasyCoder_Run.run(this, pc);
 		}
+	},
+
+	queueIntent: function (pc) {
+		if (typeof pc === `undefined` || pc === null) {
+			return;
+		}
+		if (this.tracing) {
+			if (!this.intentQueue) {
+				this.intentQueue = [];
+			}
+			if (!this.intentQueue.includes(pc)) {
+				this.intentQueue.push(pc);
+			}
+			return;
+		}
+		this.run(pc);
 	},
 
 	exit: function () {
@@ -341,6 +357,7 @@ const EasyCoder = {
 		program.compare = EasyCoder_Compare;
 		program.source = source;
 		program.run = this.run;
+		program.queueIntent = this.queueIntent;
 		program.exit = this.exit;
 		program.runScript = this.runScript;
 		program.evaluate = this.evaluate;

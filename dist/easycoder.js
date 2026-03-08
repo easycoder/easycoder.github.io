@@ -631,7 +631,14 @@ const EasyCoder_Core = {
 			const cb = command.pc + 2;
 			const rate = program.getValue(command.rate) * command.multiplier;
 			const theProgram = program;
+			if (!theProgram.everyCallbacks) {
+				theProgram.everyCallbacks = {};
+			}
+			theProgram.everyCallbacks[cb] = true;
 			setInterval(function() {
+				if (!theProgram.running || theProgram.tracing) {
+					return;
+				}
 				theProgram.run(cb);
 			}, rate);
 			return command.pc + 1;
@@ -1185,9 +1192,36 @@ const EasyCoder_Core = {
 
 		run: program => {
 			const command = program[program.pc];
-			const value = program.getFormattedValue(command.value);
-			EasyCoder.writeToDebugConsole(`(${program.script}:${command.lino}): ` + value);
+			const raw = program.getFormattedValue(command.value);
+			const value = (raw === null || typeof raw === `undefined` || raw === ``) ? `<empty>` : raw;
+			if (command.log) {
+				const now = new Date();
+				const hh = String(now.getHours()).padStart(2, `0`);
+				const mm = String(now.getMinutes()).padStart(2, `0`);
+				const ss = String(now.getSeconds()).padStart(2, `0`);
+				const ms = String(now.getMilliseconds()).padStart(3, `0`);
+				EasyCoder.writeToDebugConsole(`${hh}:${mm}:${ss}.${ms}:${program.script}:${command.lino}->${value}`);
+			} else {
+				EasyCoder.writeToDebugConsole(value);
+			}
 			return command.pc + 1;
+		}
+	},
+
+	Log: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			const value = compiler.getValue();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `print`,
+				lino,
+				value,
+				log: true
+			});
+			return true;
 		}
 	},
 
@@ -2332,6 +2366,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Index;
 		case `module`:
 			return EasyCoder_Core.Module;
+		case `log`:
+			return EasyCoder_Core.Log;
 		case `multiply`:
 			return EasyCoder_Core.Multiply;
 		case `negate`:
@@ -3363,7 +3399,23 @@ const EasyCoder_Core = {
 					return null;
 				}
 			}
+			if (compiler.tokenIs(`tracing`)) {
+				compiler.next();
+				return {
+					domain: `core`,
+					type: `tracing`,
+					sense: true
+				};
+			}
 			if (compiler.tokenIs(`not`)) {
+				if (compiler.nextTokenIs(`tracing`)) {
+					compiler.next();
+					return {
+						domain: `core`,
+						type: `tracing`,
+						sense: false
+					};
+				}
 				const value = compiler.getNextValue();
 				return {
 					domain: `core`,
@@ -3484,6 +3536,8 @@ const EasyCoder_Core = {
 		test: (program, condition) => {
 			var comparison;
 			switch (condition.type) {
+			case `tracing`:
+				return condition.sense ? !!program.tracing : !program.tracing;
 			case `boolean`:
 				return program.getValue(condition.value);
 			case `numeric`:
@@ -9936,8 +9990,29 @@ const EasyCoder_Run = {
 	name: `EasyCoder_Run`,
 
 	run: (program, pc) =>{
+		if (typeof pc === `undefined` || pc === null) {
+			return;
+		}
 
-		const queue = [];
+		// While tracer is paused, suppress only periodic `every` callbacks.
+		// Other async continuations (e.g. attach completion) must still resume.
+		if (
+			program.tracing &&
+			typeof program.resume !== `undefined` &&
+			pc !== program.resume &&
+			program.everyCallbacks &&
+			program.everyCallbacks[pc]
+		) {
+			return;
+		}
+
+		if (!program.runQueue) {
+			program.runQueue = [];
+		}
+		if (typeof program.runningQueue === `undefined`) {
+			program.runningQueue = false;
+		}
+		const queue = program.runQueue;
 
 		const minIndent = (scriptLines) => {
 			let count = 9999;
@@ -9957,16 +10032,28 @@ const EasyCoder_Run = {
 			return 0;
 		};
 
-		if (queue.length) {
+		if (program.runningQueue) {
 			queue.push(pc);
 			return;
 		}
+		program.runningQueue = true;
 		program.register(program);
 		queue.push(pc);
-		while (queue.length > 0) {
-			program.pc = queue.shift();
-			program.watchdog = 0;
-			while (program.running) {
+		if (!program.tracing && program.intentQueue && program.intentQueue.length > 0) {
+			while (program.intentQueue.length > 0) {
+				queue.push(program.intentQueue.shift());
+			}
+		}
+		try {
+			while (queue.length > 0) {
+				let pausedForTrace = false;
+				program.pc = queue.shift();
+				program.watchdog = 0;
+				while (program.running) {
+				const activeCommand = program[program.pc];
+				if (activeCommand && activeCommand.lino) {
+					program.lastLino = activeCommand.lino;
+				}
 				if (program.watchdog > 1000000) {
 					program.lino = program[program.pc].lino;
 					program.reportError(
@@ -10004,6 +10091,7 @@ const EasyCoder_Run = {
 					const command = program[program.pc];
 					const scriptLines = program.source.scriptLines;
 					const minSpace = minIndent(scriptLines);
+					const displayLino = command && command.lino ? command.lino : (program.lastLino || 0);
 					const tracer = document.getElementById(`easycoder-tracer`);
 					if (!tracer) {
 						program.runtimeError(command.lino, `Element 'easycoder-tracer' was not found`);
@@ -10013,6 +10101,8 @@ const EasyCoder_Run = {
 					tracer.style.visibility = `visible`;
 					var variables = ``;
 					if (program.tracer) {
+						// Drop stale callbacks so step resumes from the traced instruction path.
+						queue.length = 0;
 						const content = document.getElementById(`easycoder-tracer-content`);
 						if (content) {
 							program.tracer.variables.forEach(function (name, index, array) {
@@ -10049,10 +10139,10 @@ const EasyCoder_Run = {
 							variables += `<hr>`;
 							var trace = ``;
 							for (var n = 5; n > 0; n--) {
-								if (command.lino) {
-									const text = scriptLines[command.lino - n].line.substr(minSpace);
+								if (displayLino && scriptLines[displayLino - n]) {
+									const text = scriptLines[displayLino - n].line.substr(minSpace);
 									trace += `<input type="text" name="${n}"` +
-                  `value="${command.lino - n + 1}: ${text.split(`\\s`).join(` `)}"` +
+								  `value="${displayLino - n + 1}: ${text.split(`\\s`).join(` `)}"` +
                   `style="width:100%;border:none;enabled:false">`;
 								}
 								trace += `<br>`;
@@ -10083,7 +10173,7 @@ const EasyCoder_Run = {
 								const content = document.getElementById(`easycoder-tracer-content`);
 								content.style.display = `block`;
 								try {
-									program.run(program.resume);
+									EasyCoder_Run.run(program, program.resume);
 								} catch (err) {
 									const message = `Error in step handler: ` + err.message;
 										EasyCoder.writeToDebugConsole(message);
@@ -10095,9 +10185,16 @@ const EasyCoder_Run = {
 						program.resume = program.pc;
 						program.pc = 0;
 					}
+					pausedForTrace = true;
+					break;
+				}
+				}
+				if (pausedForTrace) {
 					break;
 				}
 			}
+		} finally {
+			program.runningQueue = false;
 		}
 	},
 
@@ -10689,10 +10786,26 @@ const EasyCoder = {
 	},
 
 	run: function (pc) {
-		if (pc) {
+		if (typeof pc !== `undefined` && pc !== null) {
 			this.program = this;
 			EasyCoder_Run.run(this, pc);
 		}
+	},
+
+	queueIntent: function (pc) {
+		if (typeof pc === `undefined` || pc === null) {
+			return;
+		}
+		if (this.tracing) {
+			if (!this.intentQueue) {
+				this.intentQueue = [];
+			}
+			if (!this.intentQueue.includes(pc)) {
+				this.intentQueue.push(pc);
+			}
+			return;
+		}
+		this.run(pc);
 	},
 
 	exit: function () {
@@ -10798,6 +10911,7 @@ const EasyCoder = {
 		program.compare = EasyCoder_Compare;
 		program.source = source;
 		program.run = this.run;
+		program.queueIntent = this.queueIntent;
 		program.exit = this.exit;
 		program.runScript = this.runScript;
 		program.evaluate = this.evaluate;

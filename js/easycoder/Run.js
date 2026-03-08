@@ -3,8 +3,29 @@ const EasyCoder_Run = {
 	name: `EasyCoder_Run`,
 
 	run: (program, pc) =>{
+		if (typeof pc === `undefined` || pc === null) {
+			return;
+		}
 
-		const queue = [];
+		// While tracer is paused, suppress only periodic `every` callbacks.
+		// Other async continuations (e.g. attach completion) must still resume.
+		if (
+			program.tracing &&
+			typeof program.resume !== `undefined` &&
+			pc !== program.resume &&
+			program.everyCallbacks &&
+			program.everyCallbacks[pc]
+		) {
+			return;
+		}
+
+		if (!program.runQueue) {
+			program.runQueue = [];
+		}
+		if (typeof program.runningQueue === `undefined`) {
+			program.runningQueue = false;
+		}
+		const queue = program.runQueue;
 
 		const minIndent = (scriptLines) => {
 			let count = 9999;
@@ -24,16 +45,28 @@ const EasyCoder_Run = {
 			return 0;
 		};
 
-		if (queue.length) {
+		if (program.runningQueue) {
 			queue.push(pc);
 			return;
 		}
+		program.runningQueue = true;
 		program.register(program);
 		queue.push(pc);
-		while (queue.length > 0) {
-			program.pc = queue.shift();
-			program.watchdog = 0;
-			while (program.running) {
+		if (!program.tracing && program.intentQueue && program.intentQueue.length > 0) {
+			while (program.intentQueue.length > 0) {
+				queue.push(program.intentQueue.shift());
+			}
+		}
+		try {
+			while (queue.length > 0) {
+				let pausedForTrace = false;
+				program.pc = queue.shift();
+				program.watchdog = 0;
+				while (program.running) {
+				const activeCommand = program[program.pc];
+				if (activeCommand && activeCommand.lino) {
+					program.lastLino = activeCommand.lino;
+				}
 				if (program.watchdog > 1000000) {
 					program.lino = program[program.pc].lino;
 					program.reportError(
@@ -71,6 +104,7 @@ const EasyCoder_Run = {
 					const command = program[program.pc];
 					const scriptLines = program.source.scriptLines;
 					const minSpace = minIndent(scriptLines);
+					const displayLino = command && command.lino ? command.lino : (program.lastLino || 0);
 					const tracer = document.getElementById(`easycoder-tracer`);
 					if (!tracer) {
 						program.runtimeError(command.lino, `Element 'easycoder-tracer' was not found`);
@@ -80,6 +114,8 @@ const EasyCoder_Run = {
 					tracer.style.visibility = `visible`;
 					var variables = ``;
 					if (program.tracer) {
+						// Drop stale callbacks so step resumes from the traced instruction path.
+						queue.length = 0;
 						const content = document.getElementById(`easycoder-tracer-content`);
 						if (content) {
 							program.tracer.variables.forEach(function (name, index, array) {
@@ -116,10 +152,10 @@ const EasyCoder_Run = {
 							variables += `<hr>`;
 							var trace = ``;
 							for (var n = 5; n > 0; n--) {
-								if (command.lino) {
-									const text = scriptLines[command.lino - n].line.substr(minSpace);
+								if (displayLino && scriptLines[displayLino - n]) {
+									const text = scriptLines[displayLino - n].line.substr(minSpace);
 									trace += `<input type="text" name="${n}"` +
-                  `value="${command.lino - n + 1}: ${text.split(`\\s`).join(` `)}"` +
+								  `value="${displayLino - n + 1}: ${text.split(`\\s`).join(` `)}"` +
                   `style="width:100%;border:none;enabled:false">`;
 								}
 								trace += `<br>`;
@@ -150,7 +186,7 @@ const EasyCoder_Run = {
 								const content = document.getElementById(`easycoder-tracer-content`);
 								content.style.display = `block`;
 								try {
-									program.run(program.resume);
+									EasyCoder_Run.run(program, program.resume);
 								} catch (err) {
 									const message = `Error in step handler: ` + err.message;
 										EasyCoder.writeToDebugConsole(message);
@@ -162,9 +198,16 @@ const EasyCoder_Run = {
 						program.resume = program.pc;
 						program.pc = 0;
 					}
+					pausedForTrace = true;
+					break;
+				}
+				}
+				if (pausedForTrace) {
 					break;
 				}
 			}
+		} finally {
+			program.runningQueue = false;
 		}
 	},
 

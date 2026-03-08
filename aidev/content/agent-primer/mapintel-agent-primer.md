@@ -157,6 +157,41 @@ Runtime components are in `js/easycoder/` (for example `Core.js`, `Browser.js`, 
 
 Rule: treat this primer as the authority for repository/doc URLs. Do not derive repo paths from the primer markdown URL itself.
 
+## 3A) Google Maps API Key Prerequisite
+
+If a milestone introduces Google Maps rendering (for example via `gmap` plugin behavior), the agent must raise the API key requirement early.
+
+When to raise it:
+
+- after Milestone Zero is verified,
+- before implementing any map-rendering feature that depends on Google Maps JavaScript API.
+
+What the agent should tell the user:
+
+1. A Google Maps API key is required for map display in browser apps.
+2. The key should be restricted (HTTP referrers and API scope) before production use.
+3. The key should not be hard-coded in committed source for shared/public repos.
+4. Preferred UX for training apps: read key from browser storage; if absent, prompt user and save it.
+
+How to get a key (Google Cloud Console):
+
+1. Create/select a Google Cloud project.
+2. Enable billing for that project.
+3. Enable required APIs (at minimum: Maps JavaScript API; add others only if needed).
+4. Go to "APIs & Services" -> "Credentials" -> "Create credentials" -> "API key".
+5. Restrict the key:
+	- Application restrictions: HTTP referrers (web sites)
+	- API restrictions: limit to required Maps APIs
+6. Add local dev referrers (for example `http://localhost:*` and `http://127.0.0.1:*`) while testing.
+
+Agent behavior for key wiring:
+
+- Default pattern: check browser local storage first (for example `localStorage.getItem('mapintel.googleMapsApiKey')`).
+- If missing, prompt the user in-app for the key, validate non-empty input, then store it (for example `localStorage.setItem('mapintel.googleMapsApiKey', key)`).
+- Allow user to update/replace the stored key from settings or a developer action.
+- Prefer a placeholder pattern in templates only when no runtime key flow is implemented yet, e.g. `YOUR_GOOGLE_MAPS_API_KEY`.
+- Explain exactly where the key is read/stored and how to verify map load success/failure.
+
 ## 4) Working Model the Agent Should Apply
 
 Follow this sequence:

@@ -631,7 +631,14 @@ const EasyCoder_Core = {
 			const cb = command.pc + 2;
 			const rate = program.getValue(command.rate) * command.multiplier;
 			const theProgram = program;
+			if (!theProgram.everyCallbacks) {
+				theProgram.everyCallbacks = {};
+			}
+			theProgram.everyCallbacks[cb] = true;
 			setInterval(function() {
+				if (!theProgram.running || theProgram.tracing) {
+					return;
+				}
 				theProgram.run(cb);
 			}, rate);
 			return command.pc + 1;
@@ -1185,9 +1192,36 @@ const EasyCoder_Core = {
 
 		run: program => {
 			const command = program[program.pc];
-			const value = program.getFormattedValue(command.value);
-			EasyCoder.writeToDebugConsole(`(${program.script}:${command.lino}): ` + value);
+			const raw = program.getFormattedValue(command.value);
+			const value = (raw === null || typeof raw === `undefined` || raw === ``) ? `<empty>` : raw;
+			if (command.log) {
+				const now = new Date();
+				const hh = String(now.getHours()).padStart(2, `0`);
+				const mm = String(now.getMinutes()).padStart(2, `0`);
+				const ss = String(now.getSeconds()).padStart(2, `0`);
+				const ms = String(now.getMilliseconds()).padStart(3, `0`);
+				EasyCoder.writeToDebugConsole(`${hh}:${mm}:${ss}.${ms}:${program.script}:${command.lino}->${value}`);
+			} else {
+				EasyCoder.writeToDebugConsole(value);
+			}
 			return command.pc + 1;
+		}
+	},
+
+	Log: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			const value = compiler.getValue();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `print`,
+				lino,
+				value,
+				log: true
+			});
+			return true;
 		}
 	},
 
@@ -2332,6 +2366,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Index;
 		case `module`:
 			return EasyCoder_Core.Module;
+		case `log`:
+			return EasyCoder_Core.Log;
 		case `multiply`:
 			return EasyCoder_Core.Multiply;
 		case `negate`:
@@ -3363,7 +3399,23 @@ const EasyCoder_Core = {
 					return null;
 				}
 			}
+			if (compiler.tokenIs(`tracing`)) {
+				compiler.next();
+				return {
+					domain: `core`,
+					type: `tracing`,
+					sense: true
+				};
+			}
 			if (compiler.tokenIs(`not`)) {
+				if (compiler.nextTokenIs(`tracing`)) {
+					compiler.next();
+					return {
+						domain: `core`,
+						type: `tracing`,
+						sense: false
+					};
+				}
 				const value = compiler.getNextValue();
 				return {
 					domain: `core`,
@@ -3484,6 +3536,8 @@ const EasyCoder_Core = {
 		test: (program, condition) => {
 			var comparison;
 			switch (condition.type) {
+			case `tracing`:
+				return condition.sense ? !!program.tracing : !program.tracing;
 			case `boolean`:
 				return program.getValue(condition.value);
 			case `numeric`:
