@@ -1,48 +1,60 @@
 # MapIntel Agent Primer (Authoritative Context)
 
-Use this file as the machine-facing source of truth when helping users build or extend the MapIntel project.
+Use this file as the machine-facing source of truth when helping users progress from a beginner starter app to the MapIntel capstone.
+
+## Primer Selection (Use This or General Variant)
+
+Choose primer based on user intent:
+
+1. Use this file (`mapintel-agent-primer.md`) when the user is working on the MapIntel learning path in this repository.
+2. Use `general-agent-primer.md` when an experienced user wants to start a new project with no MapIntel-specific scope.
+
+Decision rule:
+
+- If the request mentions MapIntel, TicTacToe-to-MapIntel progression, or repository-specific milestones, stay in this primer.
+- If the request is domain-neutral (for example, "start a new app"), switch to the general-purpose primer.
 
 ## 1) What the Agent Must Understand
 
-MapIntel is a smartphone-first webapp built with:
+Training path for this project is now two-stage:
 
-- EasyCoder for app behavior and flow (`.ecs` scripts)
-- Webson for UI structure and styling (`.json` layouts)
-- Plain `index.html` as a loader/entry page
+1. Beginner entry point: build TicTacToe first.
+2. Final aim: build MapIntel after core skills are established.
 
-The goal is not only to generate code, but to help users learn practical software development through small, testable milestones.
+Use EasyCoder for behavior/state flow (`.ecs`), Webson for UI (`.json`), and a minimal `index.html` loader.
 
-## 2) Core Outcome Expected from Bootstrap
+The goal is to help users learn practical development through small, testable milestones before moving to the larger MapIntel scope.
+
+## 2) Core Outcome Expected from Beginner Bootstrap
 
 When a user starts from an empty workspace, bootstrap these files first:
 
 1. `index.html`
-2. `mapintel.ecs`
-3. `mapintel.json`
+2. `tictactoe.ecs`
+3. `tictactoe.json`
 
 Explain each file in plain language:
 
-- `index.html`: lightweight loader and runtime entry point
-- `mapintel.ecs`: EasyCoder behavior/state flow
-- `mapintel.json`: Webson UI layout and style model
+- `index.html`: lightweight loader and runtime entry point.
+- `tictactoe.ecs`: EasyCoder behavior/state flow.
+- `tictactoe.json`: Webson UI layout and style model.
 
 Keep `index.html` minimal. Do not embed all app logic in HTML unless explicitly requested.
 
-## 2A) Required Minimal Templates (Milestone Zero)
+## 2A) Required Minimal Templates (Milestone Zero: TicTacToe Wiring)
 
 Goal of Milestone Zero:
 
 - prove EasyCoder runtime loads,
 - prove Webson JSON loads,
 - prove `render` executes,
-- intentionally show a blank-looking screen where real feature work starts.
-- preserve a mobile/desktop decision point so later milestones can diverge layout intentionally.
+- show a visible starter screen for a TicTacToe app,
+- keep behavior and UI separated so later milestones can add game logic cleanly.
 
 Agent instruction:
 
 - On first bootstrap, create these three files with equivalent minimal content.
-- Do not add extra UI features before this baseline is verified.
-- Keep mobile detection in the baseline script, even if both branches initially render a blank screen.
+- Do not add full game rules before baseline wiring is verified.
 
 `index.html` (loader only):
 
@@ -55,86 +67,101 @@ Use a clean CDN URL by default (no fixed `?ver=` token). If cache bypass is need
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>MapIntel (Bootstrap)</title>
+	<title>TicTacToe (Bootstrap)</title>
 	<script src="https://easycoder.github.io/dist/easycoder.js"></script>
-	<!-- If working inside this repo with local runtime files, local imports are also valid. -->
 </head>
 <body>
 	<pre id="easycoder-script" style="display:none">
-! MapIntel loader
+! TicTacToe loader
 
 		script Loader
 		variable Script
-		rest get Script from `mapintel.ecs?v=` cat now
+		rest get Script from `tictactoe.ecs?v=` cat now
 		run Script
 	</pre>
 </body>
 </html>
 ```
 
-`mapintel.ecs` (load and render Webson):
+`tictactoe.ecs` (load and render Webson):
 
 ```text
-! mapintel.ecs
+! tictactoe.ecs
 
-		script MapIntel
+		script TicTacToe
 
 		div Body
-		variable Mobile
-		variable H
-		variable N
-		variable MainScreenWebson
-
-		clear Mobile
-		if mobile
-		begin
-			if portrait
-			begin
-				set Mobile
-			end
-		end
+		variable ScreenWebson
 
 		create Body
-		if Mobile
-		begin
-			set style `width` of Body to `100%`
-			set style `height` of Body to `100vh`
-			set style `margin` of Body to `0`
-		end
-		else
-		begin
-			put the height of the window into H
-			multiply H by 9 giving N
-			divide N by 16
-			set style `width` of Body to N cat `px`
-			set style `height` of Body to `100vh`
-			set style `margin` of Body to `0 auto`
-			set style `border` of Body to `1px solid lightgray`
-		end
+		set style `width` of Body to `100%`
+		set style `min-height` of Body to `100vh`
+		set style `margin` of Body to `0`
 
-		rest get MainScreenWebson from `mapintel.json?v=` cat now
+		rest get ScreenWebson from `tictactoe.json?v=` cat now
 				or stop
-		render MainScreenWebson in Body
+		render ScreenWebson in Body
 ```
 
-`mapintel.json` (valid Webson with intentionally empty output):
+`tictactoe.json` (valid Webson starter UI):
 
 ```json
 {
 	"type": "div",
 	"style": {
 		"width": "100%",
-		"height": "100%",
-		"background": "#ffffff"
+		"minHeight": "100vh",
+		"display": "flex",
+		"flexDirection": "column",
+		"alignItems": "center",
+		"justifyContent": "center",
+		"fontFamily": "sans-serif",
+		"background": "#f6f7fb",
+		"color": "#1e2430"
 	},
-	"items": []
+	"items": [
+		{
+			"type": "h1",
+			"value": "TicTacToe"
+		},
+		{
+			"type": "p",
+			"value": "Bootstrap complete. Next milestone: add a 3x3 board and turn state."
+		}
+	]
 }
 ```
 
 Expected result:
 
-- Page appears blank (white) but is successfully rendered through Webson.
-- This confirms the runtime wiring is correct before adding map/panel behavior.
+- A simple TicTacToe starter screen is rendered through Webson.
+- This confirms runtime wiring before adding board clicks, turns, and win logic.
+
+## 2B) Milestone Progression (Beginner to Capstone)
+
+Use this default teaching sequence:
+
+1. TicTacToe wiring: loader + ECS + Webson render.
+2. TicTacToe board: render 3x3 interactive cells.
+3. TicTacToe game logic: turns, win/draw detection, restart.
+4. TicTacToe refactor: clear state transitions and readable naming.
+5. Transition milestone: map TicTacToe lessons to MapIntel architecture.
+6. MapIntel bootstrap: begin `mapintel.ecs` + `mapintel.json` work.
+
+## 2C) TicTacToe Board Model Requirement
+
+For TicTacToe board implementation, require this pattern:
+
+1. Use one array-style variable to represent all 9 cells.
+2. Use one Webson cell template pattern to render the grid (repeated by index).
+3. Drive click handling and updates by cell index, not by separate per-cell variable names.
+
+Do not create nine separate variables (for example `Cell1` ... `Cell9`).
+
+Reason:
+
+- This is the expected EasyCoder training pattern.
+- It keeps state transitions, win checks, and reset logic compact and readable.
 
 ## 3) Repo Orientation (Current Workspace)
 
@@ -146,24 +173,24 @@ Authoritative external references (do not infer these from the primer page URL):
 
 Relevant references in this repository:
 
-- `AI/WEBAPP_AI_MANUAL.md`: full process and MapIntel case study
-- `AI/mapintel-agent-primer.md`: alternate agent-facing starter version
-- `mapintel-primer.html`: human-facing primer page
-- `webson/WEBSON.md`: Webson quick reference and render model
-- `aidev/project.ecs`: working EasyCoder flow for the primer app
-- `project.json`: Webson content/layout used by the primer app
+- `AI/WEBAPP_AI_MANUAL.md`: full process and MapIntel case study.
+- `AI/mapintel-agent-primer.md`: alternate agent-facing starter version.
+- `mapintel-primer.html`: human-facing primer page.
+- `webson/WEBSON.md`: Webson quick reference and render model.
+- `aidev/project.ecs`: working EasyCoder flow for the primer app.
+- `project.json`: Webson content/layout used by the primer app.
 
 Runtime components are in `js/easycoder/` (for example `Core.js`, `Browser.js`, `Webson.js`, `EasyCoder.js`).
 
 Rule: treat this primer as the authority for repository/doc URLs. Do not derive repo paths from the primer markdown URL itself.
 
-## 3A) Google Maps API Key Prerequisite
+## 3A) MapIntel Google Maps API Key Prerequisite (Capstone Stage)
 
-If a milestone introduces Google Maps rendering (for example via `gmap` plugin behavior), the agent must raise the API key requirement early.
+If a milestone introduces Google Maps rendering (for example via `gmap` plugin behavior), raise the API key requirement early.
 
 When to raise it:
 
-- after Milestone Zero is verified,
+- after TicTacToe milestones are complete and MapIntel bootstrap is verified,
 - before implementing any map-rendering feature that depends on Google Maps JavaScript API.
 
 What the agent should tell the user:
@@ -180,8 +207,8 @@ How to get a key (Google Cloud Console):
 3. Enable required APIs (at minimum: Maps JavaScript API; add others only if needed).
 4. Go to "APIs & Services" -> "Credentials" -> "Create credentials" -> "API key".
 5. Restrict the key:
-	- Application restrictions: HTTP referrers (web sites)
-	- API restrictions: limit to required Maps APIs
+	- Application restrictions: HTTP referrers (web sites).
+	- API restrictions: limit to required Maps APIs.
 6. Add local dev referrers (for example `http://localhost:*` and `http://127.0.0.1:*`) while testing.
 
 Agent behavior for key wiring:
@@ -196,12 +223,13 @@ Agent behavior for key wiring:
 
 Follow this sequence:
 
-1. Restate intent and constraints briefly.
-2. Propose a short plan (small reviewable steps).
-3. Create/update files needed for the current milestone only.
-4. Explain what changed and why.
-5. Raise local browser testing early, pick the best option for this environment, and implement it if needed.
-6. Suggest the next milestone.
+1. Identify current stage (TicTacToe beginner milestone or MapIntel capstone milestone).
+2. Restate intent and constraints briefly.
+3. Propose a short plan (small reviewable steps).
+4. Create/update files needed for the current milestone only.
+5. Explain what changed and why.
+6. Raise local browser testing early, pick the best option for this environment, and implement it if needed.
+7. Suggest the next milestone.
 
 Prefer explicit state transitions and readable naming over hidden side effects.
 
@@ -226,7 +254,17 @@ Then open `http://localhost:5500/` in a browser.
 - Behavior, events, and state machine logic belong in EasyCoder scripts.
 - Keep DOM IDs stable once behavior is attached.
 - Make loading/error/empty states explicit.
-- For early bootstrap, an empty-looking screen can be normal before UI and behavior are wired.
+- Keep milestones small and testable, especially in TicTacToe before transitioning to MapIntel.
+
+## 6A) Debugging Discipline for Trainees
+
+When trainees are introduced to this environment, bugs and mistakes are expected.
+Do not default to "let the agent find out why". Encourage trainees to investigate first.
+
+Use this 2-step method:
+
+1. If the program stops for no apparent reason and the location is unknown, put `debug step` at the top of the script. The trace output should indicate where execution is stopping.
+2. Use the built-in tracer keyword `trace` to halt the program at a chosen line and optionally display selected script variables while stepping forward from that point.
 
 ## 7) Agent Response Quality Bar
 
@@ -243,10 +281,11 @@ To be "ready to answer user prompts", the agent should consistently:
 
 Typical prompt themes:
 
-- "Set up the initial template"
-- "Why is my screen blank?"
-- "Add map click -> details panel flow"
-- "How should I structure states?"
+- "Set up the initial TicTacToe template"
+- "Why is my TicTacToe screen blank?"
+- "Add board click -> turn update flow"
+- "How should I structure game states?"
+- "How do I transition from TicTacToe to MapIntel?"
 - "How do I run this locally?"
 
 Expected response behavior:
@@ -260,11 +299,10 @@ Expected response behavior:
 
 Before claiming completion, confirm:
 
-1. Required files exist and match their roles.
+1. Required files exist and match their roles for the current milestone.
 2. Loader path and runtime includes are valid.
 3. Webson render path is wired from EasyCoder.
 4. Testing path is explained and runnable.
 5. User received a plain-language summary and next step.
 
-If all items pass, the agent is ready to handle normal MapIntel prompts reliably.
-
+If all items pass, the agent is ready to handle beginner TicTacToe prompts and later MapIntel prompts reliably.

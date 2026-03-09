@@ -266,7 +266,9 @@ To make this repeatable for non-expert users, provide a user-friendly primer web
 Use two separate files:
 
 - Marketing page URL (human-facing), e.g. `https://easycoder.github.io/learn-to-program.html`
-- Agent primer URL (machine-facing markdown), e.g. `https://easycoder.github.io/mapintel-agent-primer.md`
+- Agent primer URL (machine-facing markdown), chosen by intent:
+  - `https://easycoder.github.io/mapintel-agent-primer.md` for this repo's guided path (TicTacToe first, then MapIntel)
+  - `https://easycoder.github.io/general-agent-primer.md` for experienced users starting a domain-neutral project
 
 That page should do two things:
 
@@ -297,6 +299,7 @@ Starter assets are available at:
 
 - `AI/mapintel-primer.html` (human-facing page)
 - `AI/mapintel-agent-primer.md` (agent-facing instructions)
+- `general-agent-primer.md` (general-purpose agent-facing instructions)
 
 Use these as working bases and adjust paths/content for your environment before publishing both URLs.
 
@@ -305,19 +308,25 @@ Use these as working bases and adjust paths/content for your environment before 
 After receiving the initial prompt, the agent should explicitly state it will set up the template and then create:
 
 - `index.html`
-- `mapintel.ecs`
-- `mapintel.json`
+- `tictactoe.ecs`
+- `tictactoe.json`
 
 It should briefly explain each file:
 
 - `index.html`: loader/entry page that boots the app.
-- `mapintel.ecs`: EasyCoder script containing app behavior and flow.
-- `mapintel.json`: Webson UI layout and styling model.
+- `tictactoe.ecs`: EasyCoder script containing app behavior and flow.
+- `tictactoe.json`: Webson UI layout and styling model.
+
+TicTacToe board model rule (must be explicit in agent output):
+
+- Use one array-style variable for all 9 board cells.
+- Use one repeated Webson cell template driven by index.
+- Do not create nine separate variables for cells.
 
 Important note for users:
 
 - `index.html` can technically contain the full script, but keeping it as a loader preserves separation of concerns and keeps the main logic free of embedded HTML.
-- If the template is run from a server before behavior/UI are added, an empty-looking screen is expected.
+- In early TicTacToe milestones, a minimal starter screen is expected before full game logic is added.
 
 Tooling note:
 
@@ -334,6 +343,19 @@ Use the agent primer at <PRIMER_MD_URL> as authoritative context.
 
 Explain your plan briefly.
 Bootstrap the project from the primer instructions.
+Then explain what you created in plain language.
+
+Raise local browser testing early, choose the best option for this environment, and implement it if needed."
+
+Beginner path variant prompt text:
+
+"You are helping me build a beginner TicTacToe app using EasyCoder + Webson, with MapIntel as a later capstone.
+Start from an empty workspace.
+Use the agent primer at <PRIMER_MD_URL> as authoritative context.
+
+Explain your plan briefly.
+Bootstrap TicTacToe from the primer instructions.
+When implementing the 3x3 board, use one array-style variable and one repeated Webson template; do not create nine separate cell variables.
 Then explain what you created in plain language.
 
 Raise local browser testing early, choose the best option for this environment, and implement it if needed."

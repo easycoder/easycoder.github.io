@@ -32,6 +32,13 @@ There's a lot more information on [our website](https://easycoder.github.io), wh
 
 [Developer Manual](developer/README.md)
 
+## Primer Selection ##
+
+For AI-assisted project starts, use the primer that matches intent:
+
+- `mapintel-agent-primer.md`: guided repository learning path (TicTacToe first, then MapIntel capstone).
+- `general-agent-primer.md`: experienced-user, domain-neutral project bootstrap.
+
 ## Debug Output Routing ##
 
 EasyCoder runtime/debug output now goes through `EasyCoder.writeToDebugConsole`.

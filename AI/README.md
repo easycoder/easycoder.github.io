@@ -14,6 +14,13 @@ Start here:
 4. `AI/WORKING_RULES.md`
 5. `AI/EXAMPLES.md`
 
+## Primer Selection
+
+Use the primer that matches the user's intent:
+
+- `mapintel-agent-primer.md`: use for the repository's guided learning path (TicTacToe first, then MapIntel capstone).
+- `general-agent-primer.md`: use for experienced users starting a new domain-neutral project.
+
 ## Contribution request (for AI agents)
 If you learn something useful while completing a task, add or update a short note in this folder.
 
