@@ -248,6 +248,62 @@ In this repo, a common option is:
 
 Then open `http://localhost:5500/` in a browser.
 
+## 5A) VS Code Debug Scaffold Defaults (Generated Projects)
+
+When generating starter projects that include `.vscode/tasks.json` and `.vscode/launch.json`, apply these defaults to prevent cross-machine Syncthing breakage and shell-quoting failures:
+
+1. Chromium debug profile path must be machine-local, not repo-local.
+2. Do not hardcode a machine-specific browser binary path.
+3. Use quote-safe shell commands without nested `bash -lc` wrappers.
+4. Include `.stignore` defaults for ephemeral runtime artifacts.
+5. Include README notes that explain Syncthing-safe behavior.
+
+`tasks.json` pattern (replace `<project>` and `<port>`):
+
+```json
+{
+	"label": "start: chromium debug 9224",
+	"type": "shell",
+	"command": "LEGACY_SYNCED_PROFILE=\"${workspaceFolder}/.vscode/chromium-debug-profile-9224\"; PROFILE_DIR=\"${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224\"; rm -rf \"$LEGACY_SYNCED_PROFILE\" \"$PROFILE_DIR\" >/dev/null 2>&1 || true; BROWSER_BIN=\"$(command -v chromium-browser || command -v chromium || command -v google-chrome || command -v google-chrome-stable)\"; if [ -z \"$BROWSER_BIN\" ]; then echo \"No supported Chromium/Chrome executable found (tried: chromium-browser, chromium, google-chrome, google-chrome-stable).\" >&2; exit 127; fi; \"$BROWSER_BIN\" --remote-debugging-port=9224 --no-first-run --no-default-browser-check --disable-background-networking --disable-component-update --disable-sync --metrics-recording-only --user-data-dir=\"$PROFILE_DIR\" \"http://localhost:<port>/index.html\"",
+	"isBackground": true
+}
+```
+
+Important details:
+
+- Required profile location format: `${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224`.
+- Always remove legacy synced path on start: `${workspaceFolder}/.vscode/chromium-debug-profile-9224`.
+- Browser discovery must use `command -v ...` fallback chain, not a hardcoded absolute path.
+
+Quote-safe stop task pattern:
+
+```json
+{
+	"label": "stop: chromium debug 9224",
+	"type": "shell",
+	"command": "pkill -u \"$USER\" -f -- \"--remote-debugging-port=9224\" >/dev/null 2>&1 || true"
+}
+```
+
+Shell style rule:
+
+- Do not generate nested `bash -lc '...'` command strings inside tasks.
+- Prefer direct `"command"` plus `"args"` for simple commands, or one flat POSIX-shell command string for multi-step setup.
+
+`.stignore` defaults for generated projects:
+
+```text
+# Syncthing ignore rules for machine-local runtime artifacts.
+# Keep workspace configs synced, but avoid syncing ephemeral browser profiles.
+.vscode/chromium-debug-profile-9224/
+```
+
+README boilerplate notes to include in generated projects:
+
+- Chromium debug profile is created under `${TMPDIR:-/tmp}` per machine/user, not in the repo.
+- Legacy synced profile path `.vscode/chromium-debug-profile-9224/` is cleaned automatically on start.
+- `.stignore` excludes `.vscode/chromium-debug-profile-9224/` if that folder reappears.
+
 ## 6) Architecture Rules of Thumb
 
 - UI structure belongs in Webson JSON.

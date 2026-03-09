@@ -53,6 +53,55 @@ Raise testing early and keep it concrete:
 - If no tests exist, provide a manual verification checklist.
 - Prefer fast local verification loops over broad unscoped testing.
 
+## 5A) Generated VS Code Scaffolding Rules
+
+When scaffolding `.vscode/tasks.json` and `.vscode/launch.json` for browser-debug workflows, use these defaults:
+
+1. Keep Chromium profile machine-local, not repository-local.
+2. Avoid hardcoded machine-specific browser paths.
+3. Avoid nested `bash -lc` quoting.
+4. Add `.stignore` entries for ephemeral runtime artifacts.
+5. Include short README notes about Syncthing-safe behavior.
+
+Required profile path format:
+
+- `${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224`
+
+Required start behavior:
+
+- On start, remove legacy synced profile path: `${workspaceFolder}/.vscode/chromium-debug-profile-9224`.
+- Resolve browser executable with `command -v` fallback chain (for example: `chromium-browser`, `chromium`, `google-chrome`, `google-chrome-stable`).
+
+Quote-safe stop pattern:
+
+```json
+{
+	"label": "stop: chromium debug 9224",
+	"type": "shell",
+	"command": "pkill -u \"$USER\" -f -- \"--remote-debugging-port=9224\" >/dev/null 2>&1 || true"
+}
+```
+
+Shell command style:
+
+- For simple commands, prefer `command` + `args` (for example `python3 -m http.server <port>`).
+- For multi-step startup commands, use one flat shell command string.
+- Do not wrap task commands inside nested `bash -lc '...'` strings.
+
+Default `.stignore` snippet:
+
+```text
+# Syncthing ignore rules for machine-local runtime artifacts.
+# Keep workspace configs synced, but avoid syncing ephemeral browser profiles.
+.vscode/chromium-debug-profile-9224/
+```
+
+Default README notes:
+
+- Chromium debug profile is created under `${TMPDIR:-/tmp}` per machine/user, not in the repo.
+- Legacy synced profile path `.vscode/chromium-debug-profile-9224/` is cleaned automatically on start.
+- `.stignore` excludes `.vscode/chromium-debug-profile-9224/` if that folder reappears.
+
 ## 6) Debugging Discipline (Teach Investigation)
 
 Do not default to "let the agent find out why". Encourage the user to investigate first.

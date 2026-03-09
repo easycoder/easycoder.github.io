@@ -48,6 +48,62 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 - Choose an approach based on the current environment.
 - If a helper is needed, create one (for example `serve.py`) and explain exactly how to run it.
 
+## VS Code debug scaffold defaults (generated projects)
+
+When generating starter projects that include `.vscode/tasks.json` and `.vscode/launch.json`, apply these defaults to avoid Syncthing cross-machine breakage and shell quoting failures:
+
+1. Use a machine-local Chromium profile, never a repo-local profile.
+2. Detect browser executable dynamically (no hardcoded absolute path).
+3. Avoid nested `bash -lc` quoting patterns in tasks.
+4. Add `.stignore` ignore rules for ephemeral runtime artifacts.
+5. Add README notes describing Syncthing-safe behavior.
+
+`tasks.json` pattern (replace `<project>` and `<port>`):
+
+```json
+{
+   "label": "start: chromium debug 9224",
+   "type": "shell",
+   "command": "LEGACY_SYNCED_PROFILE=\"${workspaceFolder}/.vscode/chromium-debug-profile-9224\"; PROFILE_DIR=\"${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224\"; rm -rf \"$LEGACY_SYNCED_PROFILE\" \"$PROFILE_DIR\" >/dev/null 2>&1 || true; BROWSER_BIN=\"$(command -v chromium-browser || command -v chromium || command -v google-chrome || command -v google-chrome-stable)\"; if [ -z \"$BROWSER_BIN\" ]; then echo \"No supported Chromium/Chrome executable found (tried: chromium-browser, chromium, google-chrome, google-chrome-stable).\" >&2; exit 127; fi; \"$BROWSER_BIN\" --remote-debugging-port=9224 --no-first-run --no-default-browser-check --disable-background-networking --disable-component-update --disable-sync --metrics-recording-only --user-data-dir=\"$PROFILE_DIR\" \"http://localhost:<port>/index.html\"",
+   "isBackground": true
+}
+```
+
+Required behavior:
+
+- Profile path format: `${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224`.
+- Cleanup on start: `${workspaceFolder}/.vscode/chromium-debug-profile-9224`.
+- Browser executable lookup: `command -v chromium-browser || command -v chromium || command -v google-chrome || command -v google-chrome-stable`.
+
+Quote-safe stop task:
+
+```json
+{
+   "label": "stop: chromium debug 9224",
+   "type": "shell",
+   "command": "pkill -u \"$USER\" -f -- \"--remote-debugging-port=9224\" >/dev/null 2>&1 || true"
+}
+```
+
+Shell style:
+
+- Do not generate nested `bash -lc '...'` wrappers.
+- Use direct `command` + `args` for simple tasks, or one flat shell command for multi-step startup.
+
+`.stignore` default:
+
+```text
+# Syncthing ignore rules for machine-local runtime artifacts.
+# Keep workspace configs synced, but avoid syncing ephemeral browser profiles.
+.vscode/chromium-debug-profile-9224/
+```
+
+README notes to include:
+
+- Chromium debug profile is created under `${TMPDIR:-/tmp}` per machine/user, not in the repo.
+- Legacy synced profile path `.vscode/chromium-debug-profile-9224/` is cleaned automatically on start.
+- `.stignore` excludes `.vscode/chromium-debug-profile-9224/` if that folder reappears.
+
 ## Context paths (fill for your environment)
 
 - EasyCoder location: `<EASYCODER_PATH>`
