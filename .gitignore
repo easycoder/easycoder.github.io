@@ -1,3 +1,9 @@
 dev
-.vscode
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
+# Ephemeral runtime artifacts
+.vscode/chromium-debug-profile-9224/
+.vscode/chromium-vscode-profile/

@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug aidev (Chromium)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:5500/aidev/index.html",
+      "webRoot": "${workspaceFolder}",
+      "runtimeExecutable": "/usr/bin/chromium-browser",
+      "runtimeArgs": [
+        "--no-first-run",
+        "--no-default-browser-check"
+      ],
+      "breakOnLoad": true,
+      "stopOnEntry": true,
+      "disableNetworkCache": true,
+      "userDataDir": "${workspaceFolder}/.vscode/chromium-vscode-profile",
+      "preLaunchTask": "serve: easycoder.github.io"
+    }
+  ]
+}

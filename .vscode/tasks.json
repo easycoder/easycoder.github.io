@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "serve: easycoder.github.io",
+      "type": "shell",
+      "command": "python3",
+      "args": [
+        "-m",
+        "http.server",
+        "5500"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "file": 1,
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Serving HTTP on"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "stop: easycoder server",
+      "type": "shell",
+      "command": "pkill",
+      "args": [
+        "-f",
+        "python3 -m http.server 5500"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
