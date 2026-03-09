@@ -7,12 +7,13 @@ Purpose:
 - Capture project-specific conventions and pitfalls
 - Keep a living knowledge base that improves over time
 
-Start here:
-1. `AI/PROJECT_OVERVIEW.md`
-2. `AI/ARCHITECTURE.md`
-3. `AI/EASYCODER_AND_WEBSON.md`
-4. `AI/WORKING_RULES.md`
-5. `AI/EXAMPLES.md`
+Start here (mandatory order):
+1. `AI/EASYCODER_CODING_GUIDELINES.md`
+2. `AI/PROJECT_OVERVIEW.md`
+3. `AI/ARCHITECTURE.md`
+4. `AI/EASYCODER_AND_WEBSON.md`
+5. `AI/WORKING_RULES.md`
+6. `AI/EXAMPLES.md`
 
 ## Primer Selection
 

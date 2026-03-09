@@ -1298,6 +1298,26 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Release: {
+
+		compile: compiler => {
+			if (compiler.getToken()== `parent`) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `core`,
+						keyword: `set`,
+						lino,
+						request: `setReady`
+					});
+					return true;
+				}
+				else {
+					return false
+				}
+		}
+	},
+
+
 	Replace: {
 
 		compile: compiler => {
@@ -1536,17 +1556,21 @@ const EasyCoder_Core = {
 				message = compiler.getValue();
 			}
 			if (compiler.tokenIs(`to`)) {
-				var recipient;
-				if (compiler.nextTokenIs(`parent`)) {
-					recipient = `parent`;
-				} else if (compiler.isSymbol) {
+				let recipient;
+				compiler.next();
+				if ([`parent`, `sender`].includes(compiler.getToken())) {
+					recipient = compiler.getToken();
+					compiler.next();
+				} else if (compiler.isSymbol()) {
 					const moduleRecord = compiler.getSymbolRecord();
 					if (moduleRecord.keyword !== `module`) {
 						return false;
 					}
 					recipient = moduleRecord.name;
+					compiler.next();
+				} else {
+					return false;
 				}
-				compiler.next();
 				compiler.addCommand({
 					domain: `core`,
 					keyword: `send`,
@@ -1561,22 +1585,25 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const message = program.getValue(command.message);
+			let target = null;
 			if (command.recipient === `parent`) {
 				if (program.parent) {
-					const parent = EasyCoder.scripts[program.parent];
-					const onMessage = parent.onMessage;
-					if (onMessage) {
-						parent.message = message;
-						parent.run(parent.onMessage);
-					}
+					target = EasyCoder.scripts[program.parent];
+				}
+			} else if (command.recipient === `sender`) {
+				if (program.sender) {
+					target = EasyCoder.scripts[program.sender];
 				}
 			} else {
 				const recipient = program.getSymbolRecord(command.recipient);
 				if (recipient.program) {
-					let rprog = EasyCoder.scripts[recipient.program];
-					rprog.message = message;
-					rprog.run(rprog.onMessage);
+					target = EasyCoder.scripts[recipient.program];
 				}
+			}
+			if (target && target.onMessage) {
+				target.sender = program.script;
+				target.message = message;
+				target.run(target.onMessage);
 			}
 			return command.pc + 1;
 		}
@@ -2828,6 +2855,7 @@ const EasyCoder_Core = {
 				}
 				break;
 			case `message`:
+			case `sender`:
 			case `error`:
 			case `millisecond`:
 			case `time`:
@@ -3241,6 +3269,13 @@ const EasyCoder_Core = {
 				};
 			case `message`:
 				content = program.message;
+				return {
+					type: `constant`,
+					numeric: false,
+					content
+				};
+			case `sender`:
+				content = program.sender || ``;
 				return {
 					type: `constant`,
 					numeric: false,
