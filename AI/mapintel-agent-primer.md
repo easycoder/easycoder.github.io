@@ -16,9 +16,14 @@ Start with a small, complete EasyCoder + Webson app (TicTacToe) so trainees lear
    - `index.html` (loader/entry page)
    - `tictactoe.ecs` (EasyCoder behavior script)
    - `tictactoe.json` (Webson layout/styling)
+   - `.vscode/tasks.json`
+   - `.vscode/launch.json`
+   - `.stignore`
+   - `README.md`
 3. Keep `index.html` as a loader (do not embed the full app logic there).
 4. Explain each file briefly after creation.
 5. Verify local browser run before adding game logic.
+6. Verify Run and Debug shows at least one launch config from `.vscode/launch.json`.
 
 ## Default milestone sequence
 
@@ -103,6 +108,10 @@ README notes to include:
 - Chromium debug profile is created under `${TMPDIR:-/tmp}` per machine/user, not in the repo.
 - Legacy synced profile path `.vscode/chromium-debug-profile-9224/` is cleaned automatically on start.
 - `.stignore` excludes `.vscode/chromium-debug-profile-9224/` if that folder reappears.
+
+Completion rule for empty-workspace bootstrap:
+
+- Do not mark bootstrap complete until `.vscode/tasks.json` and `.vscode/launch.json` exist and provide a visible Run and Debug target.
 
 ## Context paths (fill for your environment)
 

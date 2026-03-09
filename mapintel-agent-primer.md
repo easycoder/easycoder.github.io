@@ -32,6 +32,10 @@ When a user starts from an empty workspace, bootstrap these files first:
 1. `index.html`
 2. `tictactoe.ecs`
 3. `tictactoe.json`
+4. `.vscode/tasks.json`
+5. `.vscode/launch.json`
+6. `.stignore`
+7. `README.md`
 
 Explain each file in plain language:
 
@@ -53,7 +57,8 @@ Goal of Milestone Zero:
 
 Agent instruction:
 
-- On first bootstrap, create these three files with equivalent minimal content.
+- On first bootstrap, create all required files above.
+- If `.vscode/tasks.json` or `.vscode/launch.json` is missing, create them before declaring bootstrap complete.
 - Do not add full game rules before baseline wiring is verified.
 
 `index.html` (loader only):
@@ -303,6 +308,10 @@ README boilerplate notes to include in generated projects:
 - Chromium debug profile is created under `${TMPDIR:-/tmp}` per machine/user, not in the repo.
 - Legacy synced profile path `.vscode/chromium-debug-profile-9224/` is cleaned automatically on start.
 - `.stignore` excludes `.vscode/chromium-debug-profile-9224/` if that folder reappears.
+
+Bootstrap verification requirement:
+
+- After generating files in an empty workspace, verify that Run and Debug has at least one launch configuration (for example `start: workspace debug stack`) sourced from `.vscode/launch.json`.
 
 ## 6) Architecture Rules of Thumb
 

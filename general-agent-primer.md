@@ -27,6 +27,12 @@ For a new project, create only what Milestone 1 needs:
 3. Minimal UI/config/data file(s), if applicable.
 4. Short README with run/test steps.
 
+If Milestone 1 includes browser debugging in VS Code, also create:
+
+1. `.vscode/tasks.json`
+2. `.vscode/launch.json`
+3. `.stignore`
+
 Do not front-load architecture or optional features.
 
 ## 4) Milestone-First Delivery
@@ -101,6 +107,10 @@ Default README notes:
 - Chromium debug profile is created under `${TMPDIR:-/tmp}` per machine/user, not in the repo.
 - Legacy synced profile path `.vscode/chromium-debug-profile-9224/` is cleaned automatically on start.
 - `.stignore` excludes `.vscode/chromium-debug-profile-9224/` if that folder reappears.
+
+Completion check for empty-workspace scaffolds:
+
+- Do not declare setup complete until `.vscode/launch.json` exists and Run and Debug shows at least one launch target sourced from it.
 
 ## 6) Debugging Discipline (Teach Investigation)
 
