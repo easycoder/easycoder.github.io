@@ -78,6 +78,12 @@ Required start behavior:
 - On start, remove legacy synced profile path: `${workspaceFolder}/.vscode/chromium-debug-profile-9224`.
 - Resolve browser executable with `command -v` fallback chain (for example: `chromium-browser`, `chromium`, `google-chrome`, `google-chrome-stable`).
 
+Required launch behavior:
+
+- Generate `.vscode/launch.json` with an attach config on port `9224` and a compound entry that uses `preLaunchTask: start: debug stack` and `postDebugTask: stop: debug stack`.
+- Do not hardcode browser executable path in launch config.
+- Even if `.vscode` is gitignored, still create local `.vscode/tasks.json` and `.vscode/launch.json`.
+
 Quote-safe stop pattern:
 
 ```json

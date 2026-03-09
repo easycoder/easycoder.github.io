@@ -274,6 +274,37 @@ When generating starter projects that include `.vscode/tasks.json` and `.vscode/
 }
 ```
 
+`launch.json` minimum pattern (replace `<port>`):
+
+```json
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "attach: chromium 9224",
+			"type": "pwa-chrome",
+			"request": "attach",
+			"address": "127.0.0.1",
+			"port": 9224,
+			"targetSelection": "automatic",
+			"urlFilter": "http://localhost:<port>/*",
+			"webRoot": "${workspaceFolder}"
+		}
+	],
+	"compounds": [
+		{
+			"name": "start: workspace debug stack",
+			"preLaunchTask": "start: debug stack",
+			"postDebugTask": "stop: debug stack",
+			"configurations": [
+				"attach: chromium 9224"
+			],
+			"stopAll": true
+		}
+	]
+}
+```
+
 Important details:
 
 - Required profile location format: `${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224`.
@@ -294,6 +325,7 @@ Shell style rule:
 
 - Do not generate nested `bash -lc '...'` command strings inside tasks.
 - Prefer direct `"command"` plus `"args"` for simple commands, or one flat POSIX-shell command string for multi-step setup.
+- Even if `.vscode` is gitignored, still generate local `.vscode/tasks.json` and `.vscode/launch.json` for the active workspace.
 
 `.stignore` defaults for generated projects:
 
