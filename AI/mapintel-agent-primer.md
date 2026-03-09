@@ -70,7 +70,18 @@ When generating starter projects that include `.vscode/tasks.json` and `.vscode/
    "label": "start: chromium debug 9224",
    "type": "shell",
    "command": "LEGACY_SYNCED_PROFILE=\"${workspaceFolder}/.vscode/chromium-debug-profile-9224\"; PROFILE_DIR=\"${TMPDIR:-/tmp}/<project>-chromium-${USER:-user}-9224\"; rm -rf \"$LEGACY_SYNCED_PROFILE\" \"$PROFILE_DIR\" >/dev/null 2>&1 || true; BROWSER_BIN=\"$(command -v chromium-browser || command -v chromium || command -v google-chrome || command -v google-chrome-stable)\"; if [ -z \"$BROWSER_BIN\" ]; then echo \"No supported Chromium/Chrome executable found (tried: chromium-browser, chromium, google-chrome, google-chrome-stable).\" >&2; exit 127; fi; \"$BROWSER_BIN\" --remote-debugging-port=9224 --no-first-run --no-default-browser-check --disable-background-networking --disable-component-update --disable-sync --metrics-recording-only --user-data-dir=\"$PROFILE_DIR\" \"http://localhost:<port>/index.html\"",
-   "isBackground": true
+   "isBackground": true,
+   "problemMatcher": {
+      "owner": "workspace-chromium",
+      "pattern": {
+         "regexp": "."
+      },
+      "background": {
+         "activeOnStart": true,
+         "beginsPattern": "^.*$",
+         "endsPattern": "^DevTools listening on"
+      }
+   }
 }
 ```
 
@@ -126,6 +137,7 @@ Shell style:
 - Do not generate nested `bash -lc '...'` wrappers.
 - Use direct `command` + `args` for simple tasks, or one flat shell command for multi-step startup.
 - Even if `.vscode` is gitignored, still create local `.vscode/tasks.json` and `.vscode/launch.json` for the workspace.
+- For background startup tasks, include `problemMatcher.background` readiness patterns so VS Code does not stay stuck in "starting".
 
 `.stignore` default:
 

@@ -99,6 +99,7 @@ Shell command style:
 - For simple commands, prefer `command` + `args` (for example `python3 -m http.server <port>`).
 - For multi-step startup commands, use one flat shell command string.
 - Do not wrap task commands inside nested `bash -lc '...'` strings.
+- For `isBackground: true` tasks, include `problemMatcher.background` readiness patterns (`beginsPattern`/`endsPattern`) so VS Code can detect task readiness.
 
 Default `.stignore` snippet:
 
