@@ -943,6 +943,23 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Log: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			const value = compiler.getValue();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `print`,
+				lino,
+				value,
+				log: true
+			});
+			return true;
+		}
+	},
+
 	Module: {
 
 		compile: compiler => {
@@ -1205,23 +1222,6 @@ const EasyCoder_Core = {
 				EasyCoder.writeToDebugConsole(value);
 			}
 			return command.pc + 1;
-		}
-	},
-
-	Log: {
-
-		compile: compiler => {
-			const lino = compiler.getLino();
-			compiler.next();
-			const value = compiler.getValue();
-			compiler.addCommand({
-				domain: `core`,
-				keyword: `print`,
-				lino,
-				value,
-				log: true
-			});
-			return true;
 		}
 	},
 
@@ -2381,20 +2381,21 @@ const EasyCoder_Core = {
 		case `fork`:
 			return EasyCoder_Core.Fork;
 		case `go`:
-		case `goto`:
 			return EasyCoder_Core.Go;
 		case `gosub`:
 			return EasyCoder_Core.Gosub;
+		case `goto`:
+			return EasyCoder_Core.Go;
 		case `if`:
 			return EasyCoder_Core.If;
 		case `import`:
 			return EasyCoder_Core.Import;
 		case `index`:
 			return EasyCoder_Core.Index;
-		case `module`:
-			return EasyCoder_Core.Module;
 		case `log`:
 			return EasyCoder_Core.Log;
+		case `module`:
+			return EasyCoder_Core.Module;
 		case `multiply`:
 			return EasyCoder_Core.Multiply;
 		case `negate`:

@@ -150,6 +150,14 @@ Examples:
 - MapIntel learning path -> `mapintel-agent-primer.md`
 - Other project-specific workflows -> corresponding project primer
 
+## 8A) EasyCoder Capability Rule
+
+When implementing EasyCoder features:
+
+1. Check EasyCoder core commands first.
+2. Check existing plugins next.
+3. If functionality is missing from both, prefer creating a focused new plugin rather than overcomplicating `.ecs` scripts.
+
 ## 9) Completion Checklist
 
 Before claiming completion, confirm:

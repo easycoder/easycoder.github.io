@@ -2,11 +2,39 @@ const EasyCoder_REST = {
 
 	name: `EasyCoder_REST`,
 
+	Get: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			return EasyCoder_REST.Rest.compileRequest(compiler, `get`, lino);
+		},
+
+		run: (program) => {
+			return EasyCoder_REST.Rest.run(program);
+		}
+	},
+
+	Post: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			return EasyCoder_REST.Rest.compileRequest(compiler, `post`, lino);
+		},
+
+		run: (program) => {
+			return EasyCoder_REST.Rest.run(program);
+		}
+	},
+
 	Rest: {
 
 		compile: (compiler) => {
 			const lino = compiler.getLino();
 			const request = compiler.nextToken();
+			return EasyCoder_REST.Rest.compileRequest(compiler, request, lino);
+		},
+
+		compileRequest: (compiler, request, lino) => {
 			switch (request) {
 			case `path`:
 				const path = compiler.getNextValue();
@@ -218,6 +246,10 @@ const EasyCoder_REST = {
 
 	getHandler: (name) => {
 		switch (name) {
+		case `get`:
+			return EasyCoder_REST.Get;
+		case `post`:
+			return EasyCoder_REST.Post;
 		case `rest`:
 			return EasyCoder_REST.Rest;
 		default:

@@ -23,6 +23,7 @@ Use `relink-easycoder.sh` to refresh links.
 - UI glyphs/text appearing unexpectedly: inspect literal HTML around script tags
 - "engine not loaded": verify corresponding script include is active
 - startup state issues: verify initialization order plus post-load recompute
+- compile keyword collisions: domain handlers are tried in order and may fall through; avoid emitting warnings/throws in a handler when syntax can legitimately belong to another domain
 
 ## Document as you go
 Add short notes for any non-obvious fix that would save another AI 15+ minutes.

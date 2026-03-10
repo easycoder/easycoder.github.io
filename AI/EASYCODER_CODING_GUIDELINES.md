@@ -18,8 +18,16 @@ This is a live document and must be read by any agent preparing to work on EasyC
 
 ## Plugin strategy
 
+- Before adding custom functionality, check whether the behavior already exists in EasyCoder core commands or in an existing plugin.
 - Create a plugin when EasyCoder syntax is clumsy for a task, or when wrapping substantial external JavaScript functionality.
 - Follow established patterns in existing plugins (for example `plugins/gmap.js`).
+- If required functionality is missing from both core and existing plugins, prefer adding a new plugin over forcing complex script-level workarounds.
+
+## External service prerequisites
+
+- When a feature depends on external services (for example Google Maps), state prerequisites early.
+- Google Maps functionality requires a Google Maps API key/token; surface this requirement before map implementation work begins.
+- Never hard-code production secrets in committed source. Use a runtime-provided value (for example local storage, environment injection, or user prompt flow) and document where it is read.
 
 ## Reporting and contribution
 

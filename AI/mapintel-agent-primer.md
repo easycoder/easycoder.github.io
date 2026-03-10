@@ -53,6 +53,13 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 - Choose an approach based on the current environment.
 - If a helper is needed, create one (for example `serve.py`) and explain exactly how to run it.
 
+## Map features and capability checks
+
+- Google Maps features require a Google Maps API key/token; raise this prerequisite before implementing map rendering.
+- Do not hard-code production keys in committed source.
+- For requested special functionality, check EasyCoder core and existing plugins first.
+- If capability is missing from both, prefer a new plugin rather than complex script-level workarounds.
+
 ## VS Code debug scaffold defaults (generated projects)
 
 When generating starter projects that include `.vscode/tasks.json` and `.vscode/launch.json`, apply these defaults to avoid Syncthing cross-machine breakage and shell quoting failures:

@@ -309,35 +309,6 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	Click: {
-
-		compile: (compiler) => {
-			const lino = compiler.getLino();
-			if (compiler.nextIsSymbol()) {
-				const targetRecord = compiler.getSymbolRecord();
-				if (targetRecord.keyword === `select`) {
-					compiler.next();
-					compiler.addCommand({
-						domain: `browser`,
-						keyword: `click`,
-						lino,
-						target: targetRecord.name
-					});
-					return true;
-				}
-			}
-			return false;
-		},
-
-		run: (program) => {
-			const command = program[program.pc];
-			const targetRecord = program.getSymbolRecord(command.target);
-			const element = targetRecord.element[targetRecord.index];
-			element.dispatchEvent(new Event(`click`));
-			return command.pc + 1;
-		}
-	},
-
 	Clear: {
 
 		compile: (compiler) => {
@@ -394,6 +365,35 @@ const EasyCoder_Browser = {
 					break;
 				}
 			}
+			return command.pc + 1;
+		}
+	},
+
+	Click: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const targetRecord = compiler.getSymbolRecord();
+				if (targetRecord.keyword === `select`) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `browser`,
+						keyword: `click`,
+						lino,
+						target: targetRecord.name
+					});
+					return true;
+				}
+			}
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const targetRecord = program.getSymbolRecord(command.target);
+			const element = targetRecord.element[targetRecord.index];
+			element.dispatchEvent(new Event(`click`));
 			return command.pc + 1;
 		}
 	},
@@ -813,10 +813,10 @@ const EasyCoder_Browser = {
 								});
 								return true;
 							}
-							throw Error(`Invalid variable type`);
+							return false;
 						}
 						if (symbolRecord.keyword !== `form`) {
-							throw Error(`Invalid variable type`);
+							return false;
 						}
 						compiler.next();
 						compiler.addCommand({
@@ -831,7 +831,6 @@ const EasyCoder_Browser = {
 					}
 				}
 			}
-			compiler.addWarning(`Unrecognised syntax in 'get'`);
 			return false;
 		},
 
@@ -1913,18 +1912,6 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	SELECT: {
-
-		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `select`, false, `dom`);
-			return true;
-		},
-
-		run: (program) => {
-			return program[program.pc].pc + 1;
-		}
-	},
-
 	Scroll: {
 
 		compile: (compiler) => {
@@ -1978,6 +1965,18 @@ const EasyCoder_Browser = {
 
 		compile: (compiler) => {
 			compiler.compileVariable(`browser`, `section`, false, `dom`);
+			return true;
+		},
+
+		run: (program) => {
+			return program[program.pc].pc + 1;
+		}
+	},
+
+	SELECT: {
+
+		compile: (compiler) => {
+			compiler.compileVariable(`browser`, `select`, false, `dom`);
 			return true;
 		},
 
@@ -2602,10 +2601,10 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	TR: {
+	TD: {
 
 		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `tr`, false, `dom`);
+			compiler.compileVariable(`browser`, `td`, false, `dom`);
 			return true;
 		},
 
@@ -2614,10 +2613,10 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	TD: {
+	TEXTAREA: {
 
 		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `td`, false, `dom`);
+			compiler.compileVariable(`browser`, `textarea`, false, `dom`);
 			return true;
 		},
 
@@ -2638,10 +2637,10 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	TEXTAREA: {
+	TR: {
 
 		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `textarea`, false, `dom`);
+			compiler.compileVariable(`browser`, `tr`, false, `dom`);
 			return true;
 		},
 
@@ -2954,26 +2953,26 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Render;
 		case `request`:
 			return EasyCoder_Browser.Request;
-		case `select`:
-			return EasyCoder_Browser.SELECT;
 		case `scroll`:
 			return EasyCoder_Browser.Scroll;
 		case `section`:
 			return EasyCoder_Browser.SECTION;
+		case `select`:
+			return EasyCoder_Browser.SELECT;
 		case `set`:
 			return EasyCoder_Browser.Set;
 		case `span`:
 			return EasyCoder_Browser.SPAN;
 		case `table`:
 			return EasyCoder_Browser.TABLE;
-		case `tr`:
-			return EasyCoder_Browser.TR;
 		case `td`:
 			return EasyCoder_Browser.TD;
-		case `th`:
-			return EasyCoder_Browser.TH;
 		case `textarea`:
 			return EasyCoder_Browser.TEXTAREA;
+		case `th`:
+			return EasyCoder_Browser.TH;
+		case `tr`:
+			return EasyCoder_Browser.TR;
 		case `trace`:
 			return EasyCoder_Browser.Trace;
 		case `ul`:

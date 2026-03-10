@@ -90,6 +90,18 @@ const EasyCoder_GMap = {
 		}
 	},
 
+	Marker: {
+
+		compile: compiler => {
+			compiler.compileVariable(`gmap`, `marker`);
+			return true;
+		},
+
+		run: program => {
+			return program[program.pc].pc + 1;
+		}
+	},
+
 	On: {
 
 		compile: compiler => {
@@ -153,18 +165,6 @@ const EasyCoder_GMap = {
 				return 0;
 			}
 			return command.pc + 1;
-		}
-	},
-
-	Marker: {
-
-		compile: compiler => {
-			compiler.compileVariable(`gmap`, `marker`);
-			return true;
-		},
-
-		run: program => {
-			return program[program.pc].pc + 1;
 		}
 	},
 

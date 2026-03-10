@@ -236,6 +236,12 @@ Follow this sequence:
 6. Raise local browser testing early, pick the best option for this environment, and implement it if needed.
 7. Suggest the next milestone.
 
+Capability decision rule:
+
+1. Check EasyCoder core commands first.
+2. Check existing plugins (especially `gmap` for map behavior) before designing custom extensions.
+3. If capability is missing from both, prefer introducing a new plugin rather than complex script-only workarounds.
+
 Prefer explicit state transitions and readable naming over hidden side effects.
 
 ## 5) Local Testing Expectations
