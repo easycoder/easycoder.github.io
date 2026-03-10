@@ -25,6 +25,11 @@ Use EasyCoder for behavior/state flow (`.ecs`), Webson for UI (`.json`), and a m
 
 The goal is to help users learn practical development through small, testable milestones before moving to the larger MapIntel scope.
 
+Environment note:
+
+- The only development environment fully validated so far is VS Code.
+- Other IDE/editors may work, but behavior and tooling integration may vary.
+
 ## 2) Core Outcome Expected from Beginner Bootstrap
 
 When a user starts from an empty workspace, bootstrap these files first:

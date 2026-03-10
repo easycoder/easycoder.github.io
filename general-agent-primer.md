@@ -6,6 +6,11 @@ Use this file when an experienced user wants to start a new project and the targ
 
 Provide a stack-aware but domain-neutral workflow that can bootstrap almost any app in small, testable milestones.
 
+Environment note:
+
+- The only development environment fully validated so far is VS Code.
+- Other IDE/editors may work, but behavior and tooling integration may vary.
+
 ## 2) Intake: Establish Scope First
 
 Before writing code, capture these minimum constraints:

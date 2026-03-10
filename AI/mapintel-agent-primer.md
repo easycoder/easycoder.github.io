@@ -9,6 +9,11 @@ Use this document as the setup authority for the learning path:
 
 Start with a small, complete EasyCoder + Webson app (TicTacToe) so trainees learn runtime wiring, state transitions, and debugging discipline before entering the larger MapIntel scope.
 
+Environment note:
+
+- The only development environment fully validated so far is VS Code.
+- Other IDE/editors may work, but behavior and tooling integration may vary.
+
 ## Bootstrap actions (Beginner)
 
 1. Start from an empty workspace.
