@@ -117,7 +117,10 @@
         "$Prompt1Area",
         "$Prompt2Title",
         "$Prompt2Content",
-        "$Prompt2Area"
+        "$Prompt2Area",
+        "$Prompt3Title",
+        "$Prompt3Content",
+        "$Prompt3Area"
       ],
 
       "$CheatTitle": {
@@ -192,6 +195,39 @@
         "#content": "$Prompt2Content",
         "width": "100%",
         "min-height": "15em",
+        "resize": "vertical",
+        "background": "#0d1220",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "10px",
+        "box-sizing": "border-box",
+        "padding": "0.7em",
+        "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "font-size": "14px",
+        "line-height": "1.45",
+        "margin-bottom": "0.7em"
+      },
+
+      "$Prompt3Title": {
+        "#element": "div",
+        "@id": "CheatPrompt3Title",
+        "#content": "Prompt 3: Improve computer move strategy",
+        "font-size": "1.03em",
+        "font-weight": "700",
+        "color": "#9cc5ff",
+        "margin-bottom": "0.3em"
+      },
+
+      "$Prompt3Content": {
+        "#textFile": "content/primer/cheat-prompt-3.txt"
+      },
+
+      "$Prompt3Area": {
+        "#element": "textarea",
+        "@id": "CheatPrompt3Text",
+        "#content": "$Prompt3Content",
+        "width": "100%",
+        "min-height": "10em",
         "resize": "vertical",
         "background": "#0d1220",
         "color": "#eaf0ff",
