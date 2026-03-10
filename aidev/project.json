@@ -112,8 +112,12 @@
       "#": [
         "$CheatTitle",
         "$CheatText",
-        "$CheatSheetContent",
-        "$CheatArea"
+        "$Prompt1Title",
+        "$Prompt1Content",
+        "$Prompt1Area",
+        "$Prompt2Title",
+        "$Prompt2Content",
+        "$Prompt2Area"
       ],
 
       "$CheatTitle": {
@@ -134,16 +138,60 @@
         "margin-bottom": "0.45em"
       },
 
-      "$CheatSheetContent": {
-        "#textFile": "content/primer/cheat-sheet.txt"
+      "$Prompt1Title": {
+        "#element": "div",
+        "@id": "CheatPrompt1Title",
+        "#content": "Prompt 1: Build the TicTacToe board shell",
+        "font-size": "1.03em",
+        "font-weight": "700",
+        "color": "#9cc5ff",
+        "margin-bottom": "0.3em",
+        "margin-top": "0.2em"
       },
 
-      "$CheatArea": {
+      "$Prompt1Content": {
+        "#textFile": "content/primer/cheat-prompt-1.txt"
+      },
+
+      "$Prompt1Area": {
         "#element": "textarea",
-        "@id": "CheatPromptText",
-        "#content": "$CheatSheetContent",
+        "@id": "CheatPrompt1Text",
+        "#content": "$Prompt1Content",
         "width": "100%",
-        "min-height": "20em",
+        "min-height": "16em",
+        "resize": "vertical",
+        "background": "#0d1220",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "10px",
+        "box-sizing": "border-box",
+        "padding": "0.7em",
+        "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "font-size": "14px",
+        "line-height": "1.45",
+        "margin-bottom": "0.7em"
+      },
+
+      "$Prompt2Title": {
+        "#element": "div",
+        "@id": "CheatPrompt2Title",
+        "#content": "Prompt 2: Add human/computer turn logic",
+        "font-size": "1.03em",
+        "font-weight": "700",
+        "color": "#9cc5ff",
+        "margin-bottom": "0.3em"
+      },
+
+      "$Prompt2Content": {
+        "#textFile": "content/primer/cheat-prompt-2.txt"
+      },
+
+      "$Prompt2Area": {
+        "#element": "textarea",
+        "@id": "CheatPrompt2Text",
+        "#content": "$Prompt2Content",
+        "width": "100%",
+        "min-height": "15em",
         "resize": "vertical",
         "background": "#0d1220",
         "color": "#eaf0ff",
