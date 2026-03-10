@@ -943,6 +943,23 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Log: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			const value = compiler.getValue();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `print`,
+				lino,
+				value,
+				log: true
+			});
+			return true;
+		}
+	},
+
 	Module: {
 
 		compile: compiler => {
@@ -1208,23 +1225,6 @@ const EasyCoder_Core = {
 		}
 	},
 
-	Log: {
-
-		compile: compiler => {
-			const lino = compiler.getLino();
-			compiler.next();
-			const value = compiler.getValue();
-			compiler.addCommand({
-				domain: `core`,
-				keyword: `print`,
-				lino,
-				value,
-				log: true
-			});
-			return true;
-		}
-	},
-
 	Push: {
 
 		compile: compiler => {
@@ -1297,6 +1297,26 @@ const EasyCoder_Core = {
 			return command.pc + 1;
 		}
 	},
+
+	Release: {
+
+		compile: compiler => {
+			if (compiler.getToken()== `parent`) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `core`,
+						keyword: `set`,
+						lino,
+						request: `setReady`
+					});
+					return true;
+				}
+				else {
+					return false
+				}
+		}
+	},
+
 
 	Replace: {
 
@@ -1536,17 +1556,21 @@ const EasyCoder_Core = {
 				message = compiler.getValue();
 			}
 			if (compiler.tokenIs(`to`)) {
-				var recipient;
-				if (compiler.nextTokenIs(`parent`)) {
-					recipient = `parent`;
-				} else if (compiler.isSymbol) {
+				let recipient;
+				compiler.next();
+				if ([`parent`, `sender`].includes(compiler.getToken())) {
+					recipient = compiler.getToken();
+					compiler.next();
+				} else if (compiler.isSymbol()) {
 					const moduleRecord = compiler.getSymbolRecord();
 					if (moduleRecord.keyword !== `module`) {
 						return false;
 					}
 					recipient = moduleRecord.name;
+					compiler.next();
+				} else {
+					return false;
 				}
-				compiler.next();
 				compiler.addCommand({
 					domain: `core`,
 					keyword: `send`,
@@ -1561,22 +1585,25 @@ const EasyCoder_Core = {
 		run: program => {
 			const command = program[program.pc];
 			const message = program.getValue(command.message);
+			let target = null;
 			if (command.recipient === `parent`) {
 				if (program.parent) {
-					const parent = EasyCoder.scripts[program.parent];
-					const onMessage = parent.onMessage;
-					if (onMessage) {
-						parent.message = message;
-						parent.run(parent.onMessage);
-					}
+					target = EasyCoder.scripts[program.parent];
+				}
+			} else if (command.recipient === `sender`) {
+				if (program.sender) {
+					target = EasyCoder.scripts[program.sender];
 				}
 			} else {
 				const recipient = program.getSymbolRecord(command.recipient);
 				if (recipient.program) {
-					let rprog = EasyCoder.scripts[recipient.program];
-					rprog.message = message;
-					rprog.run(rprog.onMessage);
+					target = EasyCoder.scripts[recipient.program];
 				}
+			}
+			if (target && target.onMessage) {
+				target.sender = program.script;
+				target.message = message;
+				target.run(target.onMessage);
 			}
 			return command.pc + 1;
 		}
@@ -2354,20 +2381,21 @@ const EasyCoder_Core = {
 		case `fork`:
 			return EasyCoder_Core.Fork;
 		case `go`:
-		case `goto`:
 			return EasyCoder_Core.Go;
 		case `gosub`:
 			return EasyCoder_Core.Gosub;
+		case `goto`:
+			return EasyCoder_Core.Go;
 		case `if`:
 			return EasyCoder_Core.If;
 		case `import`:
 			return EasyCoder_Core.Import;
 		case `index`:
 			return EasyCoder_Core.Index;
-		case `module`:
-			return EasyCoder_Core.Module;
 		case `log`:
 			return EasyCoder_Core.Log;
+		case `module`:
+			return EasyCoder_Core.Module;
 		case `multiply`:
 			return EasyCoder_Core.Multiply;
 		case `negate`:
@@ -2828,6 +2856,7 @@ const EasyCoder_Core = {
 				}
 				break;
 			case `message`:
+			case `sender`:
 			case `error`:
 			case `millisecond`:
 			case `time`:
@@ -3241,6 +3270,13 @@ const EasyCoder_Core = {
 				};
 			case `message`:
 				content = program.message;
+				return {
+					type: `constant`,
+					numeric: false,
+					content
+				};
+			case `sender`:
+				content = program.sender || ``;
 				return {
 					type: `constant`,
 					numeric: false,
@@ -3895,35 +3931,6 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	Click: {
-
-		compile: (compiler) => {
-			const lino = compiler.getLino();
-			if (compiler.nextIsSymbol()) {
-				const targetRecord = compiler.getSymbolRecord();
-				if (targetRecord.keyword === `select`) {
-					compiler.next();
-					compiler.addCommand({
-						domain: `browser`,
-						keyword: `click`,
-						lino,
-						target: targetRecord.name
-					});
-					return true;
-				}
-			}
-			return false;
-		},
-
-		run: (program) => {
-			const command = program[program.pc];
-			const targetRecord = program.getSymbolRecord(command.target);
-			const element = targetRecord.element[targetRecord.index];
-			element.dispatchEvent(new Event(`click`));
-			return command.pc + 1;
-		}
-	},
-
 	Clear: {
 
 		compile: (compiler) => {
@@ -3980,6 +3987,35 @@ const EasyCoder_Browser = {
 					break;
 				}
 			}
+			return command.pc + 1;
+		}
+	},
+
+	Click: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			if (compiler.nextIsSymbol()) {
+				const targetRecord = compiler.getSymbolRecord();
+				if (targetRecord.keyword === `select`) {
+					compiler.next();
+					compiler.addCommand({
+						domain: `browser`,
+						keyword: `click`,
+						lino,
+						target: targetRecord.name
+					});
+					return true;
+				}
+			}
+			return false;
+		},
+
+		run: (program) => {
+			const command = program[program.pc];
+			const targetRecord = program.getSymbolRecord(command.target);
+			const element = targetRecord.element[targetRecord.index];
+			element.dispatchEvent(new Event(`click`));
 			return command.pc + 1;
 		}
 	},
@@ -4399,10 +4435,10 @@ const EasyCoder_Browser = {
 								});
 								return true;
 							}
-							throw Error(`Invalid variable type`);
+							return false;
 						}
 						if (symbolRecord.keyword !== `form`) {
-							throw Error(`Invalid variable type`);
+							return false;
 						}
 						compiler.next();
 						compiler.addCommand({
@@ -4417,7 +4453,6 @@ const EasyCoder_Browser = {
 					}
 				}
 			}
-			compiler.addWarning(`Unrecognised syntax in 'get'`);
 			return false;
 		},
 
@@ -5499,18 +5534,6 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	SELECT: {
-
-		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `select`, false, `dom`);
-			return true;
-		},
-
-		run: (program) => {
-			return program[program.pc].pc + 1;
-		}
-	},
-
 	Scroll: {
 
 		compile: (compiler) => {
@@ -5564,6 +5587,18 @@ const EasyCoder_Browser = {
 
 		compile: (compiler) => {
 			compiler.compileVariable(`browser`, `section`, false, `dom`);
+			return true;
+		},
+
+		run: (program) => {
+			return program[program.pc].pc + 1;
+		}
+	},
+
+	SELECT: {
+
+		compile: (compiler) => {
+			compiler.compileVariable(`browser`, `select`, false, `dom`);
 			return true;
 		},
 
@@ -6188,10 +6223,10 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	TR: {
+	TD: {
 
 		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `tr`, false, `dom`);
+			compiler.compileVariable(`browser`, `td`, false, `dom`);
 			return true;
 		},
 
@@ -6200,10 +6235,10 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	TD: {
+	TEXTAREA: {
 
 		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `td`, false, `dom`);
+			compiler.compileVariable(`browser`, `textarea`, false, `dom`);
 			return true;
 		},
 
@@ -6224,10 +6259,10 @@ const EasyCoder_Browser = {
 		}
 	},
 
-	TEXTAREA: {
+	TR: {
 
 		compile: (compiler) => {
-			compiler.compileVariable(`browser`, `textarea`, false, `dom`);
+			compiler.compileVariable(`browser`, `tr`, false, `dom`);
 			return true;
 		},
 
@@ -6540,26 +6575,26 @@ const EasyCoder_Browser = {
 			return EasyCoder_Browser.Render;
 		case `request`:
 			return EasyCoder_Browser.Request;
-		case `select`:
-			return EasyCoder_Browser.SELECT;
 		case `scroll`:
 			return EasyCoder_Browser.Scroll;
 		case `section`:
 			return EasyCoder_Browser.SECTION;
+		case `select`:
+			return EasyCoder_Browser.SELECT;
 		case `set`:
 			return EasyCoder_Browser.Set;
 		case `span`:
 			return EasyCoder_Browser.SPAN;
 		case `table`:
 			return EasyCoder_Browser.TABLE;
-		case `tr`:
-			return EasyCoder_Browser.TR;
 		case `td`:
 			return EasyCoder_Browser.TD;
-		case `th`:
-			return EasyCoder_Browser.TH;
 		case `textarea`:
 			return EasyCoder_Browser.TEXTAREA;
+		case `th`:
+			return EasyCoder_Browser.TH;
+		case `tr`:
+			return EasyCoder_Browser.TR;
 		case `trace`:
 			return EasyCoder_Browser.Trace;
 		case `ul`:
@@ -7645,7 +7680,9 @@ const EasyCoder_Markdown = {
         if (symbols[`#debug`] >= 2) {
             console.log(`#include ${name}: ${path}`);
         }
-        const response = await fetch(path);
+        const response = await fetch(path, {
+            cache: `no-store`
+        });
         const script = await response.text();
         await EasyCoder_Webson.build(parent, name, JSON.parse(script), symbols);
     },
@@ -7658,7 +7695,9 @@ const EasyCoder_Markdown = {
         if (typeof EasyCoder_Webson.textCache[path] !== `undefined`) {
             return EasyCoder_Webson.textCache[path];
         }
-        const response = await fetch(path);
+        const response = await fetch(path, {
+            cache: `no-store`
+        });
         if (!response.ok) {
             throw Error(`Unable to load text file '${path}' (${response.status})`);
         }
@@ -9438,11 +9477,39 @@ const EasyCoder_REST = {
 
 	name: `EasyCoder_REST`,
 
+	Get: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			return EasyCoder_REST.Rest.compileRequest(compiler, `get`, lino);
+		},
+
+		run: (program) => {
+			return EasyCoder_REST.Rest.run(program);
+		}
+	},
+
+	Post: {
+
+		compile: (compiler) => {
+			const lino = compiler.getLino();
+			return EasyCoder_REST.Rest.compileRequest(compiler, `post`, lino);
+		},
+
+		run: (program) => {
+			return EasyCoder_REST.Rest.run(program);
+		}
+	},
+
 	Rest: {
 
 		compile: (compiler) => {
 			const lino = compiler.getLino();
 			const request = compiler.nextToken();
+			return EasyCoder_REST.Rest.compileRequest(compiler, request, lino);
+		},
+
+		compileRequest: (compiler, request, lino) => {
 			switch (request) {
 			case `path`:
 				const path = compiler.getNextValue();
@@ -9654,6 +9721,10 @@ const EasyCoder_REST = {
 
 	getHandler: (name) => {
 		switch (name) {
+		case `get`:
+			return EasyCoder_REST.Get;
+		case `post`:
+			return EasyCoder_REST.Post;
 		case `rest`:
 			return EasyCoder_REST.Rest;
 		default:
