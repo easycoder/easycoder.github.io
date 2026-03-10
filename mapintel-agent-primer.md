@@ -196,6 +196,14 @@ For board interaction, require this pattern:
 
 Do not generate nine distinct click handlers for TicTacToe cells.
 
+## 2E) EasyCoder Array Access Requirement
+
+For array variables, require canonical index-based access:
+
+1. Set the active element with `index Array to N`.
+2. Read/write via the array variable name (for example `put Array into Value`).
+3. Do not generate pseudo-syntax like `put element N of Array into Value`.
+
 ## 3) Repo Orientation (Current Workspace)
 
 Authoritative external references (do not infer these from the primer page URL):

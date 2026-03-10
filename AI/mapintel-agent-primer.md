@@ -57,6 +57,12 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 2. Use `the index of Cell` inside the handler to resolve which cell was tapped.
 3. Guard taps by state (for example turn and occupied-cell checks) instead of enabling/disabling many per-cell handlers.
 
+## EasyCoder array access guard
+
+1. Use `index Array to N` to choose an element.
+2. Then use the array variable directly (for example `put Array into Value`).
+3. Do not generate `put element N of Array into Value`.
+
 ## Webson ID guard
 
 1. Use `@id` for element IDs in Webson JSON.

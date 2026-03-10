@@ -22,6 +22,12 @@ This is a live document and must be read by any agent preparing to work on EasyC
 - Gate user input explicitly with state checks (for example current turn and cell-empty tests) so taps are ignored when required.
 - Do not generate separate per-cell handlers (`on click Cell0`, `Cell1`, etc.) for grid-style logic.
 
+## Array access syntax guard
+
+- For array element access, set the active index explicitly: `index Array to N`.
+- Then read/write through the array variable name (for example `put Array into Value`).
+- Do not invent non-EasyCoder forms such as `put element N of Array into Value`.
+
 ## Webson syntax guard
 
 - In Webson JSON, element IDs must use the `@id` directive.

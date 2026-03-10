@@ -159,6 +159,14 @@ When generating EasyCoder interaction logic for repeated elements:
 3. Use `the index of <array>` in the handler to identify the triggered item.
 4. Enforce turn/state guards in the handler to ignore events when interaction is not allowed.
 
+## 6D) EasyCoder Array Access Guard
+
+When generating EasyCoder array logic:
+
+1. Set active element via `index Array to N`.
+2. Read/write through the array variable name after indexing.
+3. Do not emit pseudo-syntax such as `put element N of Array into Value`.
+
 ## 7) Agent Working Model
 
 For each request:
