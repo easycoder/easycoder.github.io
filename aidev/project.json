@@ -594,13 +594,13 @@
 
       "$NeedItem1": {
         "#element": "li",
-        "#content": "An AI-boosted text editor (for example VS Code, or any equivalent).",
+        "#content": "An AI-boosted text editor (if unsure, use VS Code with Copilot).",
         "margin": "0.25em 0"
       },
 
       "$NeedItem2": {
         "#element": "li",
-        "#content": "A modern web browser for local testing.",
+        "#content": "A modern web browser for local testing. On Linux we recommend 'sudo snap install chromium'",
         "margin": "0.25em 0"
       },
 
