@@ -62,3 +62,9 @@ This is a live document and must be read by any agent preparing to work on EasyC
 ## Readability rule
 
 - Begin each large block of functionality with a short purpose comment and a meaningful label (a symbol ending with a colon).
+- Use the standard EasyCoder layout convention: indent normal script lines by one tab so labels can sit on the left margin.
+- Keep labels flush-left for scanability; keep statements inside each labelled block indented.
+- For `begin` / `end` blocks, indent enclosed lines one additional tab level relative to the surrounding statement.
+- If a comment introduces or describes a label block, place that comment at the left margin directly above the label.
+- In label-level comments, keep one tab after `!` so comment text aligns visually with indented script statements.
+- For in-block comments, align the comment with script indentation and use one space after `!` (for example `\t! comment text`).

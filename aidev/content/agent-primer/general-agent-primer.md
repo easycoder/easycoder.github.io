@@ -96,6 +96,17 @@ When generating EasyCoder array logic:
 2. Read/write through the array variable name after indexing.
 3. Do not emit pseudo-syntax such as `put element N of Array into Value`.
 
+## 6E) EasyCoder Formatting Convention
+
+When generating EasyCoder scripts:
+
+1. Indent normal statements by one tab.
+2. Keep labels flush-left for readability.
+3. For `begin` / `end` blocks, indent enclosed lines one extra tab level.
+4. Put comments about a label block at the left margin above that label.
+5. In label-level comments, use one tab after `!` to align comment text with script indentation.
+6. For in-block comments, align with script indentation and use one space after `!`.
+
 ## 7) Agent Working Model
 
 For each request:

@@ -63,6 +63,14 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 2. Then use the array variable directly (for example `put Array into Value`).
 3. Do not generate `put element N of Array into Value`.
 
+## EasyCoder formatting convention
+
+1. Indent normal script lines by one tab.
+2. Keep labels flush-left at the left margin.
+3. For `begin` / `end` blocks, indent enclosed lines one extra tab level.
+4. Put label-related comments at the left margin above the label.
+5. For in-block comments, align with script indentation and use one space after `!`.
+
 ## Webson ID guard
 
 1. Use `@id` for element IDs in Webson JSON.

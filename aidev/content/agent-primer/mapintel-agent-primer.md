@@ -194,6 +194,18 @@ For array variables, require canonical index-based access:
 2. Read/write via the array variable name (for example `put Array into Value`).
 3. Do not generate pseudo-syntax like `put element N of Array into Value`.
 
+## 2F) EasyCoder Formatting Convention
+
+For readability, follow the house style:
+
+1. Indent normal script statements by one tab.
+2. Keep labels (for example `Setup:`) flush-left at the margin.
+3. Keep statements within each labelled block indented consistently.
+4. For `begin` / `end` blocks, indent enclosed lines one extra tab level.
+5. Put comments about a label block at the left margin above that label.
+6. In label-level comments, use one tab after `!` so text aligns with indented script.
+7. For in-block comments, align with script indentation and use one space after `!`.
+
 ## 3) Repo Orientation (Current Workspace)
 
 Authoritative external references (do not infer these from the primer page URL):
