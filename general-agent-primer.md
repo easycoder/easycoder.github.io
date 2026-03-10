@@ -143,6 +143,13 @@ When generating EasyCoder loops:
 2. Close loop blocks with `end`.
 3. Do not emit `end while`.
 
+## 6B) Webson ID Syntax Guard
+
+When generating Webson JSON:
+
+1. Use `@id` for element IDs.
+2. Do not emit plain `id` for Webson directive-style IDs.
+
 ## 7) Agent Working Model
 
 For each request:

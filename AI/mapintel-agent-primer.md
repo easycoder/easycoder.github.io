@@ -51,6 +51,11 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 2. Close loop blocks with `end`.
 3. Never generate `end while`.
 
+## Webson ID guard
+
+1. Use `@id` for element IDs in Webson JSON.
+2. Never generate plain `id` when defining Webson element IDs.
+
 ## Working style
 
 - Work in small, reviewable steps.

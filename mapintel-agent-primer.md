@@ -36,6 +36,12 @@ Loop syntax guard:
 2. Do not generate `end while`.
 3. For nested row/column loops, each `while` must have its own `begin`/`end` pair.
 
+Webson ID guard:
+
+1. Use `@id` for element IDs in Webson JSON.
+2. Do not output plain `id` when writing Webson directives.
+3. Example: `"@id": "cell-0-0"`.
+
 ## 2) Core Outcome Expected from Beginner Bootstrap
 
 When a user starts from an empty workspace, bootstrap these files first:

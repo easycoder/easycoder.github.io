@@ -15,6 +15,12 @@ This is a live document and must be read by any agent preparing to work on EasyC
 - Do not generate `end while`; that is not the canonical closure form in this codebase.
 - For nested loops (for example row/column), each `while` should be followed by `begin` and closed by `end`.
 
+## Webson syntax guard
+
+- In Webson JSON, element IDs must use the `@id` directive.
+- Do not use plain `id` as a property when defining element IDs in Webson source.
+- Example: use `"@id": "board"` (correct), not `"id": "board"` (incorrect for Webson directives).
+
 ## State and modularity
 
 - In EasyCoder, variables are global within a script. If you need private working state, move that logic into a separate module script (and a Webson file if needed).
