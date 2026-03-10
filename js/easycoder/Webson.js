@@ -146,7 +146,9 @@
         if (symbols[`#debug`] >= 2) {
             console.log(`#include ${name}: ${path}`);
         }
-        const response = await fetch(path);
+        const response = await fetch(path, {
+            cache: `no-store`
+        });
         const script = await response.text();
         await EasyCoder_Webson.build(parent, name, JSON.parse(script), symbols);
     },
@@ -159,7 +161,9 @@
         if (typeof EasyCoder_Webson.textCache[path] !== `undefined`) {
             return EasyCoder_Webson.textCache[path];
         }
-        const response = await fetch(path);
+        const response = await fetch(path, {
+            cache: `no-store`
+        });
         if (!response.ok) {
             throw Error(`Unable to load text file '${path}' (${response.status})`);
         }
