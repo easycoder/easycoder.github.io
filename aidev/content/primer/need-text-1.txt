@@ -1,1 +1,1 @@
-If you are starting from zero, keep your setup simple and practical:
+If you are starting from zero, begin in VS Code (the only fully validated environment so far) and keep your setup simple and practical:
