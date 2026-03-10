@@ -135,6 +135,14 @@ Use this 2-step flow in EasyCoder scripts:
 
 For non-EasyCoder stacks, use the equivalent step/trace debugger pattern and keep the same investigation mindset.
 
+## 6A) EasyCoder Loop Syntax Guard
+
+When generating EasyCoder loops:
+
+1. Use `while <condition>` followed by `begin`.
+2. Close loop blocks with `end`.
+3. Do not emit `end while`.
+
 ## 7) Agent Working Model
 
 For each request:

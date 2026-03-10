@@ -9,6 +9,12 @@ This is a live document and must be read by any agent preparing to work on EasyC
 - Attach DOM event handlers (`on click`, etc.) to the array, not to each element individually. The triggered element index should drive logic.
 - Never embed HTML directly in EasyCoder script logic. Use Webson for UI structure.
 
+## Control-flow syntax guard
+
+- EasyCoder block loops use `while ... begin ... end`.
+- Do not generate `end while`; that is not the canonical closure form in this codebase.
+- For nested loops (for example row/column), each `while` should be followed by `begin` and closed by `end`.
+
 ## State and modularity
 
 - In EasyCoder, variables are global within a script. If you need private working state, move that logic into a separate module script (and a Webson file if needed).

@@ -20,6 +20,7 @@
   "#": [
     "$TabBar",
     "$PrimerContainer",
+    "$CheatContainer",
     "$ManualContainer"
   ],
 
@@ -31,6 +32,7 @@
     "margin-bottom": "0.1em",
     "#": [
       "$TabPrimer",
+      "$TabCheat",
       "$TabManual"
     ],
 
@@ -39,6 +41,19 @@
       "@id": "TabPrimer",
       "#content": "Primer",
       "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabCheat": {
+      "#element": "button",
+      "@id": "TabCheat",
+      "#content": "Cheat Sheet",
+      "background": "#0d1220",
       "color": "#eaf0ff",
       "border": "1px solid #2b3555",
       "border-radius": "9px",
@@ -75,6 +90,72 @@
       "$AuthorPanel",
       "$Footer"
     ]
+  },
+
+  "$CheatContainer": {
+    "#element": "div",
+    "@id": "CheatContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.9em",
+    "#": [
+      "$CheatCard"
+    ],
+
+    "$CheatCard": {
+      "#element": "div",
+      "@id": "CheatCard",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "#": [
+        "$CheatTitle",
+        "$CheatText",
+        "$CheatSheetContent",
+        "$CheatArea"
+      ],
+
+      "$CheatTitle": {
+        "#element": "div",
+        "@id": "CheatTitle",
+        "#content": "Prompt cheat sheet (step-by-step)",
+        "font-size": "1.15em",
+        "font-weight": "700",
+        "color": "#7ca5ff",
+        "margin-bottom": "0.35em"
+      },
+
+      "$CheatText": {
+        "#element": "div",
+        "@id": "CheatText",
+        "#content": "Use these prompts as reliable, copy/paste-safe milestones. Add new prompts below as the tutorial evolves.",
+        "color": "#b8c2df",
+        "margin-bottom": "0.45em"
+      },
+
+      "$CheatSheetContent": {
+        "#textFile": "content/primer/cheat-sheet.txt"
+      },
+
+      "$CheatArea": {
+        "#element": "textarea",
+        "@id": "CheatPromptText",
+        "#content": "$CheatSheetContent",
+        "width": "100%",
+        "min-height": "20em",
+        "resize": "vertical",
+        "background": "#0d1220",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "10px",
+        "box-sizing": "border-box",
+        "padding": "0.7em",
+        "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "font-size": "14px",
+        "line-height": "1.45"
+      }
+    }
   },
 
   "$ManualContainer": {

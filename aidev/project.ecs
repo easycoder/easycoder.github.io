@@ -25,8 +25,10 @@
     div PromptCard
     div Footer
     div PrimerContainer
+    div CheatContainer
     div ManualContainer
     button TabPrimer
+    button TabCheat
     button TabManual
     div ManualStatus
     div ManualBody
@@ -127,8 +129,10 @@ SetupScreen:
     attach PromptCard to `PromptCard` or go to AbandonShip
     attach Footer to `Footer` or go to AbandonShip
     attach PrimerContainer to `PrimerContainer` or go to AbandonShip
+    attach CheatContainer to `CheatContainer` or go to AbandonShip
     attach ManualContainer to `ManualContainer` or go to AbandonShip
     attach TabPrimer to `TabPrimer` or go to AbandonShip
+    attach TabCheat to `TabCheat` or go to AbandonShip
     attach TabManual to `TabManual` or go to AbandonShip
     attach ManualStatus to `ManualStatus` or go to AbandonShip
     attach ManualBody to `ManualBody` or go to AbandonShip
@@ -196,6 +200,13 @@ SetupScreen:
     begin
         gosub to ShowPrimerTab
         history push url `#primer`
+    end
+
+    on click TabCheat
+    begin
+        if AuthorMode go to DisableAuthorMode
+        gosub to ShowCheatTab
+        history push url `#cheatsheet`
     end
 
     on click TabManual
@@ -349,8 +360,21 @@ SetupScreen:
 ShowPrimerTab:
     put `primer` into ActiveTab
     set style `display` of PrimerContainer to `flex`
+    set style `display` of CheatContainer to `none`
     set style `display` of ManualContainer to `none`
     set style `background` of TabPrimer to `#23345e`
+    set style `background` of TabCheat to `#0d1220`
+    set style `background` of TabManual to `#0d1220`
+    set style `display` of RetryManualButton to `none`
+    return
+
+ShowCheatTab:
+    put `cheat` into ActiveTab
+    set style `display` of PrimerContainer to `none`
+    set style `display` of CheatContainer to `flex`
+    set style `display` of ManualContainer to `none`
+    set style `background` of TabPrimer to `#0d1220`
+    set style `background` of TabCheat to `#23345e`
     set style `background` of TabManual to `#0d1220`
     set style `display` of RetryManualButton to `none`
     return
@@ -358,8 +382,10 @@ ShowPrimerTab:
 ShowManualTab:
     put `manual` into ActiveTab
     set style `display` of PrimerContainer to `none`
+    set style `display` of CheatContainer to `none`
     set style `display` of ManualContainer to `flex`
     set style `background` of TabPrimer to `#0d1220`
+    set style `background` of TabCheat to `#0d1220`
     set style `background` of TabManual to `#23345e`
     return
 
@@ -536,6 +562,12 @@ RestoreFromLocation:
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
         gosub to ShowManualOverview
+        return
+    end
+    if CurrentLocation includes `#cheatsheet`
+    begin
+        if AuthorMode go to DisableAuthorMode
+        gosub to ShowCheatTab
         return
     end
     gosub to ShowPrimerTab

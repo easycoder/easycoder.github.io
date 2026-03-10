@@ -45,6 +45,12 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 1. If the program stops and the location is unknown, put `debug step` at the top of the script and use the resulting trace to locate the stop point.
 2. Use `trace` to halt at a chosen line and optionally display variables while stepping.
 
+## EasyCoder loop syntax guard
+
+1. Use `while <condition>` then `begin`.
+2. Close loop blocks with `end`.
+3. Never generate `end while`.
+
 ## Working style
 
 - Work in small, reviewable steps.
