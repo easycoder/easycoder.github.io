@@ -3412,7 +3412,8 @@ const EasyCoder_Core = {
 
 	condition: {
 
-		compile: compiler => {
+		// Parse a single condition term (no AND/OR)
+		parseConditionTerm: compiler => {
 			if (compiler.isSymbol()) {
 				const symbolRecord = compiler.getSymbolRecord();
 				if (symbolRecord.keyword === `module`) {
@@ -3569,9 +3570,66 @@ const EasyCoder_Core = {
 			return null;
 		},
 
+		// Parse AND expressions (higher precedence than OR)
+		parseAndExpression: compiler => {
+			let left = EasyCoder_Core.condition.parseConditionTerm(compiler);
+			if (!left) {
+				return null;
+			}
+			while (compiler.tokenIs(`and`)) {
+				compiler.next();
+				const right = EasyCoder_Core.condition.parseConditionTerm(compiler);
+				if (!right) {
+					compiler.warning(`Expected condition after 'and'`);
+					return left;
+				}
+				left = {
+					domain: `core`,
+					type: `and`,
+					left,
+					right
+				};
+			}
+			return left;
+		},
+
+		// Parse OR expressions (lower precedence than AND)
+		parseOrExpression: compiler => {
+			let left = EasyCoder_Core.condition.parseAndExpression(compiler);
+			if (!left) {
+				return null;
+			}
+			while (compiler.tokenIs(`or`)) {
+				compiler.next();
+				const right = EasyCoder_Core.condition.parseAndExpression(compiler);
+				if (!right) {
+					compiler.warning(`Expected condition after 'or'`);
+					return left;
+				}
+				left = {
+					domain: `core`,
+					type: `or`,
+					left,
+					right
+				};
+			}
+			return left;
+		},
+
+		// Main compile method that starts the recursive descent parser
+		compile: compiler => {
+			return EasyCoder_Core.condition.parseOrExpression(compiler);
+		},
+
 		test: (program, condition) => {
 			var comparison;
 			switch (condition.type) {
+			case `or`:
+				return program.condition.test(program, condition.left) ||
+					program.condition.test(program, condition.right);
+			case `and`:
+				return program.condition.test(program, condition.left) &&
+					program.condition.test(program, condition.right);
 			case `tracing`:
 				return condition.sense ? !!program.tracing : !program.tracing;
 			case `boolean`:
