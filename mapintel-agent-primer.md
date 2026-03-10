@@ -185,6 +185,17 @@ Reason:
 - This is the expected EasyCoder training pattern.
 - It keeps state transitions, win checks, and reset logic compact and readable.
 
+## 2D) TicTacToe Event-Handler Requirement
+
+For board interaction, require this pattern:
+
+1. Attach each `Cell` array element in setup (`index Cell to N`, then `attach Cell ...`).
+2. Register one click handler on the array (`on click Cell`), not one handler per cell.
+3. In the handler, use `the index of Cell` to resolve the tapped cell.
+4. Guard handler execution by game state (for example ignore taps when it is the computer turn or when the cell is already occupied).
+
+Do not generate nine distinct click handlers for TicTacToe cells.
+
 ## 3) Repo Orientation (Current Workspace)
 
 Authoritative external references (do not infer these from the primer page URL):

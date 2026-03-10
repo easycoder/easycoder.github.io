@@ -15,6 +15,13 @@ This is a live document and must be read by any agent preparing to work on EasyC
 - Do not generate `end while`; that is not the canonical closure form in this codebase.
 - For nested loops (for example row/column), each `while` should be followed by `begin` and closed by `end`.
 
+## Event-handler guard
+
+- For repeated UI items (for example board cells), attach the array variable in a loop, then register one handler on the array (for example `on click Cell`).
+- Inside the handler, use the triggered index (`the index of Cell`) to find the target item and update state.
+- Gate user input explicitly with state checks (for example current turn and cell-empty tests) so taps are ignored when required.
+- Do not generate separate per-cell handlers (`on click Cell0`, `Cell1`, etc.) for grid-style logic.
+
 ## Webson syntax guard
 
 - In Webson JSON, element IDs must use the `@id` directive.

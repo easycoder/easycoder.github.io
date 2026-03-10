@@ -51,6 +51,12 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 2. Close loop blocks with `end`.
 3. Never generate `end while`.
 
+## EasyCoder event-handler guard
+
+1. For board grids, attach array elements in setup and use one array handler (`on click Cell`).
+2. Use `the index of Cell` inside the handler to resolve which cell was tapped.
+3. Guard taps by state (for example turn and occupied-cell checks) instead of enabling/disabling many per-cell handlers.
+
 ## Webson ID guard
 
 1. Use `@id` for element IDs in Webson JSON.

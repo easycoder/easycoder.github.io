@@ -79,6 +79,15 @@ When generating Webson JSON:
 1. Use `@id` for element IDs.
 2. Do not emit plain `id` for Webson directive-style IDs.
 
+## 6C) EasyCoder Event-Handler Guard
+
+When generating EasyCoder interaction logic for repeated elements:
+
+1. Attach repeated elements through an array variable.
+2. Use one array event handler (for example `on click Cell`).
+3. Use `the index of <array>` in the handler to identify the triggered item.
+4. Enforce turn/state guards in the handler to ignore events when interaction is not allowed.
+
 ## 7) Agent Working Model
 
 For each request:

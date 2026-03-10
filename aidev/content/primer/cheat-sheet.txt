@@ -2,7 +2,8 @@ Prompt 1: Build the TicTacToe board shell
 
 Create a 3 by 3 matrix of cells.
 Each cell is square and all are the same size.
-The overall width of the matrix is such as to just fit the screen.
+The martrix occupies the centre 50% of the screen width.
+The matrix is positioned at the top of the screen.
 Each cell has a 1-pixel black border and a 2-pixel margin between it and its neighbours and the screen edges.
 
 The programming strategy is as follows:
