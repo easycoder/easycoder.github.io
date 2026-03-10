@@ -3445,8 +3445,8 @@ const EasyCoder_Core = {
 				};
 			}
 			if (compiler.tokenIs(`not`)) {
-				if (compiler.nextTokenIs(`tracing`)) {
-					compiler.next();
+				if (compiler.peek() === `tracing`) {
+					compiler.next(2);
 					return {
 						domain: `core`,
 						type: `tracing`,
