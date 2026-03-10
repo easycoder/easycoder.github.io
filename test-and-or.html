@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyCoder AND/OR Test</title>
+  <script type='text/javascript' src='../js/easycoder/Compile.js'></script>
+  <script type='text/javascript' src='../js/easycoder/Core.js'></script>
+  <script type='text/javascript' src='../js/easycoder/Value.js'></script>
+  <script type='text/javascript' src='../js/easycoder/Browser.js'></script>
+  <script type='text/javascript' src='../js/easycoder/JSON.js'></script>
+  <script type='text/javascript' src='../js/easycoder/REST.js'></script>
+  <script type='text/javascript' src='../js/easycoder/Run.js'></script>
+  <script type='text/javascript' src='../js/easycoder/Main.js'></script>
+  <style>
+    body { font-family: monospace; margin: 20px; }
+    #output { border: 1px solid #ccc; padding: 10px; margin-top: 10px; background: #f5f5f5; }
+    .test { margin: 10px 0; padding: 5px; border-left: 3px solid #ccc; }
+    .pass { border-left-color: #00aa00; background: #f0fff0; }
+    .fail { border-left-color: #aa0000; background: #fff0f0; }
+  </style>
+</head>
+<body>
+  <h1>EasyCoder AND/OR Operator Tests</h1>
+  <div id="output"></div>
+  
+  <pre id="easycoder-script" style="display:none">
+variable A
+variable B
+variable C
+variable Result
+
+! Test 1: Simple AND
+put 5 into A
+put 10 into B
+if A is less than B and B is greater than 0
+    put `✓ Test 1 PASS: AND operator works` into Result
+    log Result
+else
+    put `✗ Test 1 FAIL: AND operator failed` into Result
+    log Result
+
+! Test 2: Simple OR
+put 5 into C
+if C is less than 0 or C is greater than 0
+    put `✓ Test 2 PASS: OR operator works` into Result
+    log Result
+else
+    put `✗ Test 2 FAIL: OR operator failed` into Result
+    log Result
+
+! Test 3: Precedence (AND binds tighter than OR)
+! This should evaluate as: (false and true) or (true) = true
+put 5 into A
+put 10 into B
+put 20 into C
+if A is greater than 100 and B is less than 100 or C is greater than 0
+    put `✓ Test 3 PASS: Precedence correct (AND before OR)` into Result
+    log Result
+else
+    put `✗ Test 3 FAIL: Precedence incorrect` into Result
+    log Result
+
+! Test 4: Multiple AND operations
+if A is less than B and B is less than C and C is greater than 0
+    put `✓ Test 4 PASS: Multiple AND operations work` into Result
+    log Result
+else
+    put `✗ Test 4 FAIL: Multiple AND operations failed` into Result
+    log Result
+
+! Test 5: Multiple OR operations
+if A is greater than 100 or B is greater than 100 or C is greater than 100 or C is greater than 0
+    put `✓ Test 5 PASS: Multiple OR operations work` into Result
+    log Result
+else
+    put `✗ Test 5 FAIL: Multiple OR operations failed` into Result
+    log Result
+
+! Test 6: AND with false condition
+put 0 into A
+if A is less than B and A is greater than 10
+    put `✗ Test 6 FAIL: AND should be false` into Result
+    log Result
+else
+    put `✓ Test 6 PASS: AND correctly evaluates to false` into Result
+    log Result
+
+! Test 7: OR with at least one true
+put 0 into A
+if A is greater than 10 or B is greater than 5
+    put `✓ Test 7 PASS: OR correctly evaluates to true` into Result
+    log Result
+else
+    put `✗ Test 7 FAIL: OR should be true` into Result
+    log Result
+
+log `All AND/OR tests completed`
+  </pre>
+
+  <script>
+    // Override log to output to page
+    const originalLog = console.log;
+    const output = document.getElementById('output');
+    
+    EasyCoder.writeToDebugConsole = function(message) {
+      const line = document.createElement('div');
+      line.className = 'test';
+      if (message.includes('✓')) {
+        line.className += ' pass';
+      } else if (message.includes('✗')) {
+        line.className += ' fail';
+      }
+      line.textContent = message;
+      output.appendChild(line);
+    };
+    
+    // Start EasyCoder
+    window.addEventListener('load', () => {
+      EasyCoder.load();
+    });
+  </script>
+</body>
+</html>
