@@ -9,7 +9,7 @@ The programming strategy is as follows:
 Use tictactoe.json to define a main div with the id 'board'.
 Create a set of 9 child divs, each one being a cell of width/height such as to conform with the above. Each one will have an ID of the form 'cell-{R}-{C}' where {R} is the row index and {C} the column index.
 
-In tictactoe.ecs, write code that declares these variables:
+In tictactoe.ecs, add the following code, which declares variables:
 
    div Board
    div Cell
