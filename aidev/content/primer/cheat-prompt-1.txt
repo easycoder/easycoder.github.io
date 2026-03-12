@@ -1,6 +1,6 @@
 Create a 3 by 3 matrix of cells.
 Each cell is square and all are the same size.
-The martrix occupies the centre 50% of the screen width.
+The matrix occupies the centre 50% of the screen width.
 The matrix is positioned at the top of the screen.
 Each cell has a 1-pixel black border and a 2-pixel margin between it and its neighbours and the screen edges.
 
