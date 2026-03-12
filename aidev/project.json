@@ -86,6 +86,7 @@
       "$HeroCard",
       "$LearnCard",
       "$NeedCard",
+      "$BuildCard",
       "$PromptCard",
       "$AuthorPanel",
       "$Footer"
@@ -711,6 +712,36 @@
         "#content": "",
         "color": "#b8c2df"
       }
+    }
+  },
+
+  "$BuildCard": {
+    "#element": "div",
+    "@id": "BuildCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$BuildTitle",
+      "$BuildText"
+    ],
+
+    "$BuildTitle": {
+      "#element": "div",
+      "@id": "BuildTitle",
+      "#content": "What you will build",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.45em"
+    },
+
+    "$BuildText": {
+      "#element": "div",
+      "@id": "BuildText",
+      "#content": "As a simple example to get you started, you'll build an implementation of TicTacToe. This should get you familiar with the basics so you can move on from there.",
+      "line-height": "1.5"
     }
   },
 
