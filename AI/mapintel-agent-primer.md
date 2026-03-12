@@ -71,10 +71,13 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 4. Put label-related comments at the left margin above the label.
 5. For in-block comments, align with script indentation and use one space after `!`.
 
-## Webson ID guard
+## Webson format guard
 
-1. Use `@id` for element IDs in Webson JSON.
-2. Never generate plain `id` when defining Webson element IDs.
+1. Use `"#element"` to declare element type. Do not use `"type"`.
+2. List children in a `"#"` array of reference names. Do not use `"items"`.
+3. Place style properties directly on the element object. Do not nest them under a `"style"` key.
+4. Define named children as sibling keys prefixed with `$` (e.g. `"$Board": {...}`).
+5. `@` means "attribute" — `"@id"` sets the HTML `id` attribute. Use `"@id"` for IDs; the same pattern applies to any other HTML attribute. Do not use plain `"id"`.
 
 ## Working style
 
@@ -88,6 +91,8 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 - Raise local testing early.
 - Choose an approach based on the current environment.
 - If a helper is needed, create one (for example `serve.py`) and explain exactly how to run it.
+- If browser reports `localhost refused to connect` / `ERR_CONNECTION_REFUSED`, diagnose server availability before editing code.
+- Verify the server is listening on the expected port, restart it if needed, and only then debug scripts.
 
 ## Map features and capability checks
 

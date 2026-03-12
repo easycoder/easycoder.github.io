@@ -6,7 +6,7 @@ Each cell has a 1-pixel black border and a 2-pixel margin between it and its nei
 
 The programming strategy is as follows:
 
-In tictactoe.json, define a main div with the id 'board'.
+In tictactoe.json, define a main div with the id 'board'. Use canonical Webson format: `"#element": "div"` for the element type and `"@id": "board"` for the ID. Place style properties directly on the object — do not use a nested `"style"` key, and do not use `"type"` or `"items"` (those belong to a different Webson dialect).
 Create a set of 9 child divs, each one being a cell of width/height such as to conform with the above. Each one will have an ID of the form 'cell-{Row}-{Col}' where {Row} is the row index and {Col} the column index.
 
 In tictactoe.ecs, add the following code, which declares variables:

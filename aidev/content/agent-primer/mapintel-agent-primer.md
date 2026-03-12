@@ -31,11 +31,13 @@ Loop syntax guard:
 2. Do not generate `end while`.
 3. For nested row/column loops, each `while` must have its own `begin`/`end` pair.
 
-Webson ID guard:
+Webson format guard:
 
-1. Use `@id` for element IDs in Webson JSON.
-2. Do not output plain `id` when writing Webson directives.
-3. Example: `"@id": "cell-0-0"`.
+1. Use `"#element"` to declare element type. Do not use `"type"`.
+2. List children in a `"#"` array of reference names. Do not use `"items"`.
+3. Place style properties directly on the element object. Do not nest them under a `"style"` key.
+4. Define named children as sibling keys prefixed with `$` (e.g. `"$Board": {...}`).
+5. `@` means "attribute" — `"@id"` sets the HTML `id` attribute. Use `"@id"` for IDs; the same pattern applies to any other HTML attribute. Do not use plain `"id"`.
 
 ## 2) Core Outcome Expected from Beginner Bootstrap
 
@@ -82,13 +84,13 @@ Use a clean CDN URL by default (no fixed `?ver=` token). If cache bypass is need
 	<title>TicTacToe (Bootstrap)</title>
 	<script src="https://easycoder.github.io/dist/easycoder.js"></script>
 </head>
-<body>
+<body id="app-root">
 	<pre id="easycoder-script" style="display:none">
 ! TicTacToe loader
 
 		script Loader
 		variable Script
-		rest get Script from `tictactoe.ecs?v=` cat now
+		rest get Script from `tictactoe.ecs`
 		run Script
 	</pre>
 </body>
@@ -105,12 +107,12 @@ Use a clean CDN URL by default (no fixed `?ver=` token). If cache bypass is need
 		div Body
 		variable ScreenWebson
 
-		create Body
+		attach Body to body
 		set style `width` of Body to `100%`
 		set style `min-height` of Body to `100vh`
 		set style `margin` of Body to `0`
 
-		rest get ScreenWebson from `tictactoe.json?v=` cat now
+		rest get ScreenWebson from `tictactoe.json`
 				or stop
 		render ScreenWebson in Body
 ```
@@ -119,28 +121,23 @@ Use a clean CDN URL by default (no fixed `?ver=` token). If cache bypass is need
 
 ```json
 {
-	"type": "div",
-	"style": {
-		"width": "100%",
-		"minHeight": "100vh",
-		"display": "flex",
-		"flexDirection": "column",
-		"alignItems": "center",
-		"justifyContent": "center",
-		"fontFamily": "sans-serif",
-		"background": "#f6f7fb",
-		"color": "#1e2430"
-	},
-	"items": [
-		{
-			"type": "h1",
-			"value": "TicTacToe"
-		},
-		{
-			"type": "p",
-			"value": "Bootstrap complete. Next milestone: add a 3x3 board and turn state."
-		}
-	]
+	"#element": "div",
+	"@id": "app",
+	"width": "100%",
+	"minHeight": "100vh",
+	"display": "flex",
+	"flexDirection": "column",
+	"alignItems": "center",
+	"justifyContent": "center",
+	"fontFamily": "sans-serif",
+	"#": ["$Status"],
+	"$Status": {
+		"#element": "p",
+		"@id": "status",
+		"fontSize": "1.1em",
+		"color": "#1e2430",
+		"#content": "(empty)"
+	}
 }
 ```
 
@@ -290,6 +287,13 @@ In this repo, a common option is:
 - `python3 -m http.server 5500`
 
 Then open `http://localhost:5500/` in a browser.
+
+Connectivity preflight (required before code diagnosis):
+
+1. If browser shows `localhost refused to connect` / `ERR_CONNECTION_REFUSED`, treat this as a server availability issue first, not a script bug.
+2. Verify the server is running on the expected port before changing code.
+3. Restart the server and re-check `http://localhost:5500/`.
+4. Only debug scripts after the server responds.
 
 ## 6) Architecture Rules of Thumb
 
