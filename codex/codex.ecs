@@ -130,7 +130,7 @@
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
     
-    rest get Pages from `/ecs/pages.json`
+    rest get Pages from `/codex/pages.json`
 
     get Step from storage as `.step`
     if left 4 of Step is not `step`
