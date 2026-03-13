@@ -91,13 +91,13 @@
     variable FileIsOpen
     variable Item
     variable Items
+
+    debug step
     
     load showdown
-    rest get ECPayload from `/codex/fragments/ec.txt`
+	rest get ECPayload from `/codex/fragments/ec.txt`
+	or put `<strong>EasyCoder</strong>` into ECPayload
   	json parse url the location as Args
-
-!    create Tracer
-!    set attribute `id` of Tracer to `easycoder-tracer`
 
     print `Static site`
     clear PasswordRequested
@@ -123,12 +123,12 @@
     require js `dist/plugins/gmap.js`
     require js `dist/plugins/svg.js`
     
-    codemirror init basic profile `https://` cat the hostname cat `/dist/plugins/codemirror-ecs.js`
-    require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
+    codemirror init basic profile `/codex/plugins/codemirror-ecs.js`
+    require css `/dist/plugins/codemirror/addon/dialog/dialog.css`
+    require js `/dist/plugins/codemirror/addon/dialog/dialog.js`
+    require js `/dist/plugins/codemirror/addon/search/search.js`
+    require js `/dist/plugins/codemirror/addon/search/searchcursor.js`
+    require js `/dist/plugins/codemirror/addon/search/jump-to-line.js`
     
     rest get Pages from `/codex/pages.json`
 
@@ -285,7 +285,7 @@
 	set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
 	gosub to ShowHelpPage
-	rest get Script from `/ecs/docman.ecs?v=` cat now
+    rest get Script from `/resources/ecs/docman.ecs?v=` cat now
 	run Script with ReferencePanel as DocManModule
 	put empty into storage as `.ref`
 
@@ -665,7 +665,7 @@ ShowContents:
 ShowHelpPage:
     append Step to CallStack
 SHP1:
-    history push url `?s=` cat Step
+    history push url `codex.html?s=` cat Step
 SHP2:
 	put Step into storage as `.step`
     put `/codex/code/` cat Step cat `.ecs` into Item
@@ -731,32 +731,6 @@ SHP2:
             	goto ShowHelpPage
         	end
             add 1 to N
-        end
-    end
-    else
-    begin
-    	put 0 into N
-    	while true
-        begin
-        	attach Index to `page-other-` cat N or goto SHP5
-            add 1 to N
-        end
-SHP5:
-		if N is greater than 0
-        begin
-			set the elements of Index to N
-            put 0 into N
-            while N is less than the elements of Index
-            begin
-	   	        index Index to N
-	   	        attach Index to `page-other-` cat N
-	   	        on click Index
-	  	        begin
-	  	            put attribute `data-file` of Index into Step
-		            goto ShowHelpPage
-		        end
-                add 1 to N
-            end
         end
     end
     scroll HelpOuter to 0
@@ -853,7 +827,7 @@ Decorate:
     put left N of Payload into Size
     add 1 to N
     put from N of Payload into Payload
-  	put `<img src="codex/codex/icon/` cat Name
+    put `<img src="codex/icon/` cat Name
     	cat `.png" style="width:` cat Size cat `;height:` cat Size
         cat `" title="` cat Payload cat `" />` into Payload
   end

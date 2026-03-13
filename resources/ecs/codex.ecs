@@ -96,7 +96,8 @@
     rest path `rest.php`
     
     load showdown
-    rest get ECPayload from `/resources/fragment/ec.txt`
+	rest get ECPayload from `/resources/fragment/ec.txt`
+	or put `<strong>EasyCoder</strong>` into ECPayload
   	json parse url the location as Args
 
 !    create Tracer

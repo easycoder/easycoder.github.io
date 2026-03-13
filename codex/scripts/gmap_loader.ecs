@@ -1,0 +1,1 @@
+require js `dist/plugins/gmap.js`

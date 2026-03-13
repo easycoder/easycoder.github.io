@@ -17,6 +17,21 @@
       "disableNetworkCache": true,
       "userDataDir": "${workspaceFolder}/.vscode/chromium-vscode-profile",
       "preLaunchTask": "serve: easycoder.github.io"
+    },
+    {
+      "name": "Launch Codex (Chromium)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:5500/codex.html",
+      "webRoot": "${workspaceFolder}",
+      "runtimeExecutable": "/usr/bin/chromium-browser",
+      "runtimeArgs": [
+        "--no-first-run",
+        "--no-default-browser-check"
+      ],
+      "disableNetworkCache": true,
+      "userDataDir": "${workspaceFolder}/.vscode/chromium-vscode-profile",
+      "preLaunchTask": "serve: easycoder.github.io"
     }
   ]
 }

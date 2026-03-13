@@ -630,6 +630,7 @@
     "padding": "1em",
     "#": [
       "$PromptTitle",
+      "$PromptNote",
       "$PromptArea",
       "$ButtonRow"
     ],
@@ -642,6 +643,14 @@
       "font-weight": "700",
       "color": "#7ca5ff",
       "margin-bottom": "0.45em"
+    },
+
+    "$PromptNote": {
+      "#element": "div",
+      "@id": "PromptNote",
+      "#content": "Recommended first steps: complete Codex tutorial step0-step3 before starting your AI project.",
+      "color": "#b8c2df",
+      "margin-bottom": "0.6em"
     },
 
     "$InitialPrompt": {
@@ -740,7 +749,7 @@
     "$BuildText": {
       "#element": "div",
       "@id": "BuildText",
-      "#content": "As a simple example to get you started, you'll build an implementation of TicTacToe. This should get you familiar with the basics so you can move on from there.",
+      "#content": "As a simple example to get you started, you'll build an implementation of TicTacToe. Complete the first few Codex tutorial steps before starting your own AI coding project so both you and the assistant share the same EasyCoder basics.",
       "line-height": "1.5"
     }
   },

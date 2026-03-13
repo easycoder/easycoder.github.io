@@ -9,10 +9,10 @@
 <body>
   <pre id="easycoder-rest" style="display:none">/rest.php</pre>
   <pre id="easycoder-script" style="display:none">
-	require js `codex/showdown.js`
-	require js `codex/codemirror.js`
-	require js `codex/float.js`
-	require js `codex/vfx.js`
+	require js `codex/showdown.js?v=` cat now
+	require js `codex/codemirror.js?v=` cat now
+	require js `codex/float.js?v=` cat now
+	require js `codex/vfx.js?v=` cat now
 	variable Script
 	rest get Script from `/codex/codex.ecs?v=` cat now
 	run Script

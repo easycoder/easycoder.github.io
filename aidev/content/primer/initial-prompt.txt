@@ -1,5 +1,7 @@
 I want to learn practical software development by building a smartphone-first app using EasyCoder and Webson.
 
+Before starting the project, have me complete the first few Codex tutorial steps so I understand core EasyCoder patterns. If an AI assistant is driving the coding, require it to follow those same tutorial patterns as the default style.
+
 Use this agent primer markdown URL as authoritative setup context:
 https://easycoder.github.io/mapintel-agent-primer.md
 

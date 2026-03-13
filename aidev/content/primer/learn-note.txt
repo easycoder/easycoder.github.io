@@ -1,1 +1,1 @@
-This is a guided route into software work. It still requires effort, careful review, and practice.
+This is a guided route into software work. Complete the first few Codex tutorial steps before starting an AI-led project so you and the agent share the same EasyCoder basics.
