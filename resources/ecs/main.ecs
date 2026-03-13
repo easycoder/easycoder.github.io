@@ -295,17 +295,7 @@ DoNotes:
     if Arg is empty stop
 
 RunCodex:
-	if CodexModule is not running
-	begin
-		require js `dist/plugins/codemirror.js`
-		require js `dist/plugins/float.js`
-		require js `dist/plugins/vfx.js`
-		rest get Script from `/resources/ecs/codex.ecs?v=` cat now
-		send `pause` to CurrentModule
-		set style `display` of Body to `none`
-		run Script as CodexModule
-	end
-	send `start` to CodexModule
+	set the location to `https://easycoder.github.io/codex.html`
     stop
 
 ShowLife:
