@@ -1,0 +1,9 @@
+<body>
+    <div id="my-first">This is my interactive text</div>
+    <div id="easycoder-script">
+       div MyText
+       attach MyText to `my-first`
+       on click MyText alert `Hello, world!`
+       stop
+    </div>
+</body>

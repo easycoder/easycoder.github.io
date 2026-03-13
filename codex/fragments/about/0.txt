@@ -1,0 +1,1 @@
+on click TheElement set style &#96;background&#96; of TheElement to &#96;pink&#96;
