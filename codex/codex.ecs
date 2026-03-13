@@ -71,6 +71,8 @@
     variable Size
     variable A
     variable B
+    variable IA
+    variable IB
     variable V
 
   ! The browser
@@ -679,16 +681,50 @@ SHP2:
     if Step is `contents`
     begin
     	put empty into List
+		put 0 into N
+		while N is less than 100
+		begin
+			put `step` cat N into Item
+			put property Item of Pages into Page
+			if Page is empty put 100 into N
+			else
+			begin
+				append Page to List
+				add 1 to N
+			end
+		end
+		put property `gap` of Pages into Page
+		if Page is not empty append Page to List
         put the json keys of Pages into Items
         put 0 into N
         while N is less than the json count of Items
         begin
             put element N of Items into Item
-            put property Item of Pages into Item
-            if property `index` of Item is greater than 0 append Item to List
+            if left 4 of Item is not `step`
+            begin
+                if Item is not `gap`
+                begin
+                    if Item is not `background`
+                    begin
+                        if Item is not `tools`
+                        begin
+                            if Item is not `contact`
+                            begin
+                                put property Item of Pages into Item
+                                if property `index` of Item is greater than 21 append Item to List
+                            end
+                        end
+                    end
+                end
+            end
             add 1 to N
         end
-        sort List with ListSorter
+		put property `background` of Pages into Page
+		if Page append Page to List
+		put property `tools` of Pages into Page
+		if Page append Page to List
+		put property `contact` of Pages into Page
+		if Page append Page to List
     	put `<h1>Contents</h1>` into Script
         put 0 into N
         while N is less than the json count of List
@@ -852,8 +888,12 @@ Decorate:
 ListSorter:
     put arg `a` of List into A
     put arg `b` of List into B
-    if property `index` of A is greater than property `index` of B put 1 into V
-    else if property `index` of A is less than property `index` of B put -1 into V
+    put property `index` of A into IA
+    put property `index` of B into IB
+    add 0 to IA
+    add 0 to IB
+    if IA is greater than IB put 1 into V
+    else if IA is less than IB put -1 into V
     else put 0 into V
     set arg `v` of List to V
     stop
