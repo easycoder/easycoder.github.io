@@ -46,7 +46,6 @@
     variable Password
     variable PasswordRequested
     variable PasswordValid
-    variable ReadOnly
     variable Args
     variable Arg
     variable Name
@@ -101,7 +100,6 @@
 !    set attribute `id` of Tracer to `easycoder-tracer`
 
     print `Static site`
-    set ReadOnly
     clear PasswordRequested
     put empty into CallStack
     history set
@@ -972,39 +970,8 @@ StopTestModule:
 	return
 
 GetPassword:
-	if ReadOnly
-    begin
-    	clear PasswordValid
-        return
-    end
-	if the hostname is `localhost` go to SetPasswordValid
-	if the hostname is `127.0.0.1` go to SetPasswordValid
-    
-	if not PasswordRequested
-    begin
-	    set PasswordRequested
-        if hostname is `localhost` goto SetPasswordValid
-        if hostname is `127.0.0.1` goto SetPasswordValid
-        get Password from storage as `.password`
-	    if Password is empty
-        begin
-        put `Please provide the admin password` cat newline
-            cat `or click OK to use private browser storage.` into Message
-        	put prompt Message with `` into Password
-        end
-        rest get PasswordValid from `_verify/` cat Password
-            or begin
-                clear PasswordValid
-                return
-            end
-        if PasswordValid is `yes` 
-        begin
-            put Password into storage as `.password`
-        	set PasswordValid
-	    end
-      else clear PasswordValid
-	end
-  return
+	clear PasswordValid
+    return
 
 SetPasswordValid:
   set PasswordValid
