@@ -92,7 +92,7 @@
     variable Item
     variable Items
 
-    debug step
+!    debug step
     
     load showdown
 	rest get ECPayload from `/codex/fragments/ec.txt`
@@ -743,7 +743,6 @@ SHP3:
        		`border:1px solid black;border-radius:0.5em;padding:0.3em;background:lightgray;text-decoration:none`
 	    on click Copy
 	    begin
-debug step
         	gosub to StopTestModule
         	put `code` into View
             if Mobile gosub to SetView
