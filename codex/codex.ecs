@@ -158,31 +158,31 @@
     create Link in Buttons
     create New in Link
     set the style of New to `width:40px;margin-right:0.5em`
-    set attribute `src` of New to `/codex/icon/new.png`
+    set attribute `src` of New to `codex/icon/new.png`
     set attribute `title` of New to `New`
     create Open in Link
     set the style of Open to `width:40px;margin-right:0.5em`
-    set attribute `src` of Open to `/codex/icon/open.png`
+    set attribute `src` of Open to `codex/icon/open.png`
     set attribute `title` of Open to `Open`
     create Link in Buttons
     create Save in Link
     set the style of Save to `width:40px;margin-right:1.5em`
-    set attribute `src` of Save to `/codex/icon/save.png`
+    set attribute `src` of Save to `codex/icon/save.png`
     set attribute `title` of Save to `Save`
     create Link in Buttons
     create Delete in Link
     set the style of Delete to `width:40px;margin-right:1.5em`
-    set attribute `src` of Delete to `/codex/icon/trash.png`
+    set attribute `src` of Delete to `codex/icon/trash.png`
     set attribute `title` of Delete to `Delete`
     create Link in Buttons
     create RunStop in Link
     set the style of RunStop to `width:40px;margin-right:1.5em`
-    set attribute `src` of RunStop to `/codex/icon/run.png`
+    set attribute `src` of RunStop to `codex/icon/run.png`
     set attribute `title` of RunStop to `Run`
    	create Link in Buttons
    	create Cycle in Link
    	set the style of Cycle to `width:40px`
-   	set attribute `src` of Cycle to `/codex/icon/cycle.png`
+   	set attribute `src` of Cycle to `codex/icon/cycle.png`
    	set attribute `title` of Cycle to `Cycle screens`
 
     create Status in Buttons
@@ -248,32 +248,32 @@
     create Link in HelpButtons
     create Back in Link
        set the style of Back to `width:40px`
-    set attribute `src` of Back to `/codex/icon/arrow-back.png`
+    set attribute `src` of Back to `codex/icon/arrow-back.png`
     set attribute `title` of Back to `Previous step`
     create Link in HelpButtons
     create Forward in Link
        set the style of Forward to `margin-left:1em;width:40px`
-    set attribute `src` of Forward to `/codex/icon/arrow-forward.png`
+    set attribute `src` of Forward to `codex/icon/arrow-forward.png`
     set attribute `title` of Forward to `Next step`
     create Contents in HelpButtons
     create Contents in Link
     set the style of Contents to `margin-left:1em;width:40px`
-    set attribute `src` of Contents to `/codex/icon/list.png`
+    set attribute `src` of Contents to `codex/icon/list.png`
     set attribute `title` of Contents to `Contents`
     create Link in HelpButtons
     create Reference in Link
     set the style of Reference to `margin-left:1em;width:40px`
-    set attribute `src` of Reference to `/codex/icon/book.png`
+    set attribute `src` of Reference to `codex/icon/book.png`
     set attribute `title` of Reference to `Programmer's Reference`
     create Link in HelpButtons
     create Tools in Link
     set the style of Tools to `margin-left:1em;width:40px`
-    set attribute `src` of Tools to `/codex/icon/tools.png`
+    set attribute `src` of Tools to `codex/icon/tools.png`
     set attribute `title` of Tools to `Tools and Techniques`
     create Link in HelpButtons
     create Exit in Link
     set the style of Exit to `margin-left:1em;width:40px`
-    set attribute `src` of Exit to `/codex/icon/exit.png`
+    set attribute `src` of Exit to `codex/icon/exit.png`
     set attribute `title` of Exit to `Exit Codex`
     
     create HelpInner in HelpOuter
@@ -338,7 +338,7 @@
     begin
     	gosub to StopTestModule
         clear Running
-        set attribute `src` of RunStop to `/codex/icon/run.png`
+        set attribute `src` of RunStop to `codex/icon/run.png`
     end
    
     create Overlay in Body
@@ -853,7 +853,7 @@ Decorate:
     put left N of Payload into Size
     add 1 to N
     put from N of Payload into Payload
-  	put `<img src="codex//codex/icon/` cat Name
+  	put `<img src="codex/codex/icon/` cat Name
     	cat `.png" style="width:` cat Size cat `;height:` cat Size
         cat `" title="` cat Payload cat `" />` into Payload
   end
@@ -933,7 +933,7 @@ DoRunStop:
         set style `display` of RunPanel to `block`
 	end
 
-    set attribute `src` of RunStop to `/codex/icon/runstop.png`
+    set attribute `src` of RunStop to `codex/icon/runstop.png`
     set attribute `title` of RunStop to `Stop`
     set Running
     wait 10 ticks
@@ -941,7 +941,7 @@ DoRunStop:
     run Script with RunPanel as TestModule nowait then
     begin
         clear Running
-    	set attribute `src` of RunStop to `/codex/icon/run.png`
+    	set attribute `src` of RunStop to `codex/icon/run.png`
     	set attribute `title` of RunStop to `Run`
         set style `display` of RunPanel to `none`
         set style `display` of HelpOuter to `block`
@@ -965,7 +965,7 @@ StopTestModule:
         end
         else put `help` into View
         set style `display` of HelpOuter to `block`
-        set attribute `src` of RunStop to `/codex/icon/run.png`
+        set attribute `src` of RunStop to `codex/icon/run.png`
     end
 	return
 
