@@ -241,7 +241,7 @@
 
     create Banner in HelpOuter
     set the style of Banner to `width:100%`
-    set attribute `src` of Banner to `codex/simg/banner.png`
+    set attribute `src` of Banner to `codex/img/banner.png`
     
     create HelpButtons in HelpOuter
     set the style of HelpButtons to `text-align:center;height:40px`
