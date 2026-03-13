@@ -295,7 +295,7 @@ DoNotes:
     if Arg is empty stop
 
 RunCodex:
-	set the location to `https://easycoder.github.io/codex.html`
+	location `https://easycoder.github.io/codex.html`
     stop
 
 ShowLife:
