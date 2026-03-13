@@ -93,7 +93,7 @@
     variable Items
     
     load showdown
-    rest get ECPayload from `/fragments/ec.txt`
+    rest get ECPayload from `/codex/fragments/ec.txt`
   	json parse url the location as Args
 
 !    create Tracer
