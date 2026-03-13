@@ -93,25 +93,15 @@
     variable Item
     variable Items
     
-    rest path `rest.php`
-    
     load showdown
-    rest get ECPayload from `/resources/fragment/ec.txt`
+    rest get ECPayload from `/fragment/ec.txt`
   	json parse url the location as Args
 
 !    create Tracer
 !    set attribute `id` of Tracer to `easycoder-tracer`
 
-!	Test if site is on a static host
-    put empty into Script
-    clear ReadOnly
-    rest get List from `_list/scripts`
-    or begin
-    	print `Static site`
-        set ReadOnly
-        go to L2
-    end
-L2:
+    print `Static site`
+    set ReadOnly
     clear PasswordRequested
     put empty into CallStack
     history set
@@ -142,9 +132,7 @@ L2:
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
     require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
     
-    if not ReadOnly set the title to `EasyCoder Codex`
-    
-    rest get Pages from `/resources/ecs/pages.json`
+    rest get Pages from `/ecs/pages.json`
 
     get Step from storage as `.step`
     if left 4 of Step is not `step`
@@ -172,31 +160,31 @@ L2:
     create Link in Buttons
     create New in Link
     set the style of New to `width:40px;margin-right:0.5em`
-    set attribute `src` of New to `resources/icon/new.png`
+    set attribute `src` of New to `icon/new.png`
     set attribute `title` of New to `New`
     create Open in Link
     set the style of Open to `width:40px;margin-right:0.5em`
-    set attribute `src` of Open to `resources/icon/open.png`
+    set attribute `src` of Open to `icon/open.png`
     set attribute `title` of Open to `Open`
     create Link in Buttons
     create Save in Link
     set the style of Save to `width:40px;margin-right:1.5em`
-    set attribute `src` of Save to `resources/icon/save.png`
+    set attribute `src` of Save to `icon/save.png`
     set attribute `title` of Save to `Save`
     create Link in Buttons
     create Delete in Link
     set the style of Delete to `width:40px;margin-right:1.5em`
-    set attribute `src` of Delete to `resources/icon/trash.png`
+    set attribute `src` of Delete to `icon/trash.png`
     set attribute `title` of Delete to `Delete`
     create Link in Buttons
     create RunStop in Link
     set the style of RunStop to `width:40px;margin-right:1.5em`
-    set attribute `src` of RunStop to `resources/icon/run.png`
+    set attribute `src` of RunStop to `icon/run.png`
     set attribute `title` of RunStop to `Run`
    	create Link in Buttons
    	create Cycle in Link
    	set the style of Cycle to `width:40px`
-   	set attribute `src` of Cycle to `resources/icon/cycle.png`
+   	set attribute `src` of Cycle to `icon/cycle.png`
    	set attribute `title` of Cycle to `Cycle screens`
 
     create Status in Buttons
@@ -255,39 +243,39 @@ L2:
 
     create Banner in HelpOuter
     set the style of Banner to `width:100%`
-    set attribute `src` of Banner to `resources/img/banner.png`
+    set attribute `src` of Banner to `img/banner.png`
     
     create HelpButtons in HelpOuter
     set the style of HelpButtons to `text-align:center;height:40px`
     create Link in HelpButtons
     create Back in Link
        set the style of Back to `width:40px`
-    set attribute `src` of Back to `resources/icon/arrow-back.png`
+    set attribute `src` of Back to `icon/arrow-back.png`
     set attribute `title` of Back to `Previous step`
     create Link in HelpButtons
     create Forward in Link
        set the style of Forward to `margin-left:1em;width:40px`
-    set attribute `src` of Forward to `resources/icon/arrow-forward.png`
+    set attribute `src` of Forward to `icon/arrow-forward.png`
     set attribute `title` of Forward to `Next step`
     create Contents in HelpButtons
     create Contents in Link
     set the style of Contents to `margin-left:1em;width:40px`
-    set attribute `src` of Contents to `resources/icon/list.png`
+    set attribute `src` of Contents to `icon/list.png`
     set attribute `title` of Contents to `Contents`
     create Link in HelpButtons
     create Reference in Link
     set the style of Reference to `margin-left:1em;width:40px`
-    set attribute `src` of Reference to `resources/icon/book.png`
+    set attribute `src` of Reference to `icon/book.png`
     set attribute `title` of Reference to `Programmer's Reference`
     create Link in HelpButtons
     create Tools in Link
     set the style of Tools to `margin-left:1em;width:40px`
-    set attribute `src` of Tools to `resources/icon/tools.png`
+    set attribute `src` of Tools to `icon/tools.png`
     set attribute `title` of Tools to `Tools and Techniques`
     create Link in HelpButtons
     create Exit in Link
     set the style of Exit to `margin-left:1em;width:40px`
-    set attribute `src` of Exit to `resources/icon/exit.png`
+    set attribute `src` of Exit to `icon/exit.png`
     set attribute `title` of Exit to `Exit Codex`
     
     create HelpInner in HelpOuter
@@ -299,7 +287,7 @@ L2:
 	set the style of ReferencePanel to `display:none;width:100%;height:100%`
 
 	gosub to ShowHelpPage
-	rest get Script from `/resources/ecs/docman.ecs?v=` cat now
+	rest get Script from `/ecs/docman.ecs?v=` cat now
 	run Script with ReferencePanel as DocManModule
 	put empty into storage as `.ref`
 
@@ -352,7 +340,7 @@ L2:
     begin
     	gosub to StopTestModule
         clear Running
-        set attribute `src` of RunStop to `resources/icon/run.png`
+        set attribute `src` of RunStop to `icon/run.png`
     end
    
     create Overlay in Body
@@ -625,7 +613,7 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
-	if PasswordValid rest get Content from `/resources/scripts/` cat File cat `?v=` cat now
+	if PasswordValid rest get Content from `/scripts/` cat File cat `?v=` cat now
     else get Content from storage as File
     put Content into Current
     set the content of Status to `Script '` cat File cat `' loaded`
@@ -682,7 +670,7 @@ SHP1:
     history push url `?s=` cat Step
 SHP2:
 	put Step into storage as `.step`
-    put `/resources/codex/code/` cat Step cat `.ecs` into Item
+    put `/codex/code/` cat Step cat `.ecs` into Item
     rest get Fragment from Item or put empty into storage as `.step`
     put property Step of Pages into Page
     if property `prev` of Page is empty set style `visibility` of Back to `hidden`
@@ -720,7 +708,7 @@ SHP2:
     end
     else
     begin
-		put `/resources/codex/md/` cat Step cat `.md` into Item
+		put `/codex/md/` cat Step cat `.md` into Item
     	rest get Script from Item or
         begin
         	alert `The script '` cat Item cat `' could not be found`
@@ -867,7 +855,7 @@ Decorate:
     put left N of Payload into Size
     add 1 to N
     put from N of Payload into Payload
-  	put `<img src="resources/icon/` cat Name
+  	put `<img src="icon/` cat Name
     	cat `.png" style="width:` cat Size cat `;height:` cat Size
         cat `" title="` cat Payload cat `" />` into Payload
   end
@@ -947,7 +935,7 @@ DoRunStop:
         set style `display` of RunPanel to `block`
 	end
 
-    set attribute `src` of RunStop to `resources/icon/runstop.png`
+    set attribute `src` of RunStop to `icon/runstop.png`
     set attribute `title` of RunStop to `Stop`
     set Running
     wait 10 ticks
@@ -955,7 +943,7 @@ DoRunStop:
     run Script with RunPanel as TestModule nowait then
     begin
         clear Running
-    	set attribute `src` of RunStop to `resources/icon/run.png`
+    	set attribute `src` of RunStop to `icon/run.png`
     	set attribute `title` of RunStop to `Run`
         set style `display` of RunPanel to `none`
         set style `display` of HelpOuter to `block`
@@ -979,7 +967,7 @@ StopTestModule:
         end
         else put `help` into View
         set style `display` of HelpOuter to `block`
-        set attribute `src` of RunStop to `resources/icon/run.png`
+        set attribute `src` of RunStop to `icon/run.png`
     end
 	return
 
