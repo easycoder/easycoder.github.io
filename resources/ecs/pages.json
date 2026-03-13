@@ -157,11 +157,6 @@
         "file":"background",
         "title":"Background"
     },
-	"install": {
-    	"index":52,
-        "file":"install",
-        "title":"Installation"
-    },
 	"tools": {
     	"index":53,
         "file":"tools",
