@@ -3,7 +3,7 @@ This is the ~ec~ **Codex**, a comprehensive free resource aimed at two groups of
 
 **Beginners** can learn to code using English-like scripts, with no prior experience needed, no need to set up hosting or to download any software. **Codex** includes a comprehensive tutorial with many working examples.
 
-**Experts** can leverage the ~ec~ technology to achieve better productivity. When the **Codex** is installed on a server it allows direct access by the owner of the site to all the site code, which can be developed and maintained on any PC or even a smartphone.
+**Experts** can leverage the ~ec~ technology to achieve better productivity. ~ec~ is ideal for working with AI, because it keeps things simple. There's no need to be an expert in any programming language; what _is_ important is to be expert in your problem domain. The code produced by AI in ~ec~ is robust and very easy to follow. (If you don't understand a piece of code you just ask your AI agent to explain.) You'll need to visit [Programming with AI](https://easycoder.github.io/primer.html), which explains how you set up AI to create ~ec~ scripts for you. Because ~ec~ isn't a mainstream tool, AI needs to run a 'primer pack' before starting a new project. We supply the AI prompt needed to make that happen.
 
 ~ec~ was originally developed as a WordPress plugin, to offer non-programmers a relatively painless way to customize aspects of their pages and add simple interactivity based on DOM manipulation. As it developed it became clear that it was capable of far more than mere tweaks and was soon employed as the engine behind several complete websites. Further development resulted in the **Codex**, a complete IDE for website coding and a tutorial for programmers, both novice and expert.
 
