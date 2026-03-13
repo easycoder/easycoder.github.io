@@ -750,6 +750,8 @@ SHP2:
         end
       replace `<` with `&lt;` in Script
       replace `>` with `&gt;` in Script
+	  put `<pre>` cat Fragment cat `</pre>` into Payload
+	  replace `~step~` with Payload in Script
     end
     gosub to ProcessMarkdown
     if Step is `contents`
@@ -783,6 +785,7 @@ SHP3:
         	put `code` into View
             if Mobile gosub to SetView
             codemirror close ContentEditor
+            set the content of ContentEditor to empty
     		codemirror attach to ContentEditor
     		codemirror set content of ContentEditor to Fragment
             set the text of NameEditor to empty

@@ -12,23 +12,30 @@ const EasyCoder_Showdown = {
 
 	getValue: (program, name) => {
 		const symbol = EasyCoder_Showdown.getSymbol(program, name);
-		if (!symbol || !symbol.value || typeof symbol.index === `undefined`) {
+		if (!symbol || !symbol.value) {
 			return ``;
 		}
-		const item = symbol.value[symbol.index];
+		let item = symbol.value[symbol.index];
+		if (typeof item === `undefined` && typeof symbol.index === `undefined`) {
+			item = symbol.value[0];
+		}
 		return item && typeof item.content !== `undefined` ? item.content : ``;
 	},
 
 	setValue: (program, name, content) => {
 		const symbol = EasyCoder_Showdown.getSymbol(program, name);
-		if (!symbol || !symbol.value || typeof symbol.index === `undefined`) {
+		if (!symbol || !symbol.value) {
 			return;
 		}
-		symbol.value[symbol.index] = {
+		const item = {
 			type: `constant`,
 			numeric: false,
 			content
 		};
+		symbol.value[symbol.index] = item;
+		if (typeof symbol.index === `undefined`) {
+			symbol.value[0] = item;
+		}
 	},
 
 	fallbackTransform: (program, payload) => {
