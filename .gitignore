@@ -7,3 +7,7 @@ dev
 # Ephemeral runtime artifacts
 .vscode/chromium-debug-profile-9224/
 .vscode/chromium-vscode-profile/
+
+# Node
+node_modules/
+

@@ -1,0 +1,27 @@
+{
+  "name": "easycoder.github.io",
+  "version": "1.0.0",
+  "description": "**_EasyCoder_** is a high-level English-like scripting language that runs entirely in the browser and lets you write highly readable scripts to control the appearance and behavior of your web pages. It's much easier to learn than JavaScript but does many of the same things.",
+  "main": "ectest.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/easycoder/easycoder.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/easycoder/easycoder.github.io/issues"
+  },
+  "homepage": "https://github.com/easycoder/easycoder.github.io#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "jsdom": "^28.1.0"
+  }
+}
