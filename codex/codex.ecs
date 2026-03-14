@@ -783,14 +783,16 @@ SHP3:
 	    begin
         	gosub to StopTestModule
         	put `code` into View
-            put empty into Content
-            put empty into Current
             codemirror close ContentEditor
-            set the content of ContentEditor to empty
             set the content of ContentEditor to Fragment
             if Mobile gosub to SetView
             else codemirror attach to ContentEditor
             codemirror set content of ContentEditor to Fragment
+            if Mobile
+            begin
+                wait 1 tick
+                codemirror set content of ContentEditor to Fragment
+            end
             set the text of NameEditor to empty
             attach Clear to `clear` or stop
             clear ShowRun
