@@ -1,0 +1,18 @@
+{
+  "id": "EC-0002",
+  "name": "arithmetic-chain",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.2",
+    "2.3",
+    "2.6"
+  ],
+  "script": "EC-0002-arithmetic-chain.ecs",
+  "expect": {
+    "logs": [
+      "18"
+    ],
+    "error": null
+  }
+}

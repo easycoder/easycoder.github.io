@@ -1,0 +1,36 @@
+{
+  "specVersion": "0.1",
+  "generatedAt": "2026-03-14T00:00:00Z",
+  "implementations": {
+    "js-browser": {
+      "runtimeVersion": "unknown",
+      "summary": {
+        "pass": 0,
+        "fail": 0,
+        "skip": 5
+      },
+      "results": [
+        { "id": "EC-0001", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0002", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0003", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0004", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0005", "status": "skip", "details": "Not run yet" }
+      ]
+    },
+    "python-cli": {
+      "runtimeVersion": "unknown",
+      "summary": {
+        "pass": 0,
+        "fail": 0,
+        "skip": 5
+      },
+      "results": [
+        { "id": "EC-0001", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0002", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0003", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0004", "status": "skip", "details": "Not run yet" },
+        { "id": "EC-0005", "status": "skip", "details": "Not run yet" }
+      ]
+    }
+  }
+}
