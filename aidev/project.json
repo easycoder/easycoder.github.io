@@ -566,16 +566,61 @@
       "margin-bottom": "0.35em"
     },
 
-    "$CodexFootnoteContent": {
-      "#textFile": "content/primer/easycoder-codex-note.txt"
-    },
-
     "$CodexFootnoteBody": {
       "#element": "div",
       "@id": "CodexFootnoteBody",
-      "#content": "$CodexFootnoteContent",
       "color": "#b8c2df",
-      "white-space": "pre-line"
+      "#": [
+        "$CodexFootnoteLine1",
+        "$CodexFootnoteLine2"
+      ]
+    },
+
+    "$CodexFootnoteLine1": {
+      "#element": "div",
+      "margin-bottom": "0.6em",
+      "#": [
+        "$CodexFootnoteText1",
+        "$CodexFootnoteLink1",
+        "$CodexFootnoteText2"
+      ]
+    },
+
+    "$CodexFootnoteText1": {
+      "#element": "span",
+      "#content": "EasyCoder is a high-level coding language that works with AI to deliver code that can be checked by humans, not just taken on trust. Before starting your first project, go to the "
+    },
+
+    "$CodexFootnoteLink1": {
+      "#element": "a",
+      "#content": "Codex",
+      "@href": "https://easycoder.github.io/codex.html",
+      "color": "#9fc0ff"
+    },
+
+    "$CodexFootnoteText2": {
+      "#element": "span",
+      "#content": ". This is a combined tutorial, reference manual and programmer's playground and will very quickly get you accustomed to the kind of output that will be delivered by AI."
+    },
+
+    "$CodexFootnoteLine2": {
+      "#element": "div",
+      "#": [
+        "$CodexFootnoteContactLabel",
+        "$CodexFootnoteContactLink"
+      ]
+    },
+
+    "$CodexFootnoteContactLabel": {
+      "#element": "span",
+      "#content": "Contact: "
+    },
+
+    "$CodexFootnoteContactLink": {
+      "#element": "a",
+      "#content": "easycoder.ai@gmail.com",
+      "@href": "mailto:easycoder.ai@gmail.com",
+      "color": "#9fc0ff"
     }
   },
 
