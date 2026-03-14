@@ -10,6 +10,7 @@ Goals:
 Structure:
 - `easycoder-language-contract.md`: normative behavior and compatibility policy.
 - `easycoder-plugin-contract.md`: shared plugin/domain interface contract and JS/Python mapping.
+- `easycoder-versioning-policy.md`: shared versioning and release-note rules across runtimes.
 
 Versioning:
 - Spec versions use `MAJOR.MINOR`.
