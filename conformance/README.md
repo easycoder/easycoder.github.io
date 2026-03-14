@@ -7,6 +7,15 @@ Layout:
 - `runner-contract.md`: shared runner input/output expectations.
 - `parity-report-template.json`: report schema template.
 - `parity-report.initial.json`: starter report before first execution.
+- `run_conformance.py`: parity report generator from test metadata + optional actuals.
+
+Quick usage:
+- `python3 conformance/run_conformance.py --implementation js-browser`
+- `python3 conformance/run_conformance.py --implementation python-cli --actuals my-actuals.json`
+
+Actuals file format:
+- JSON object keyed by test id.
+- Value shape: `{ "logs": ["..."], "error": null }`.
 
 Execution model:
 - Each implementation runs the same `.ecs` scripts.
