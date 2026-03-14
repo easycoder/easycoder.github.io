@@ -8,6 +8,7 @@ Layout:
 - `parity-report-template.json`: report schema template.
 - `parity-report.initial.json`: starter report before first execution.
 - `run_conformance.py`: parity report generator from test metadata + optional actuals.
+- `plugin-interface-matrix.json`: JS/Python plugin interface capability mapping.
 
 Quick usage:
 - `python3 conformance/run_conformance.py --implementation js-browser`
@@ -27,6 +28,5 @@ Result categories:
 - `skip`: unsupported by current implementation target (must be justified).
 
 Future work:
-- Add JS-browser runner.
-- Add Python CLI runner.
-- Publish parity report in CI.
+- Add plugin behavior conformance tests on top of interface mapping.
+- Promote plugin contract from Draft 0.1 after behavior tests exist.
