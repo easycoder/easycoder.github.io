@@ -6,3 +6,4 @@
 - 2026-03-14: Added `spec/easycoder-plugin-contract.md` to normalize plugin interface expectations between JS and Python runtimes.
 - 2026-03-14: Use `scripts/easycoder/sync-shared-to-py.sh` to mirror shared `spec/` and `conformance/` artifacts into a sibling `easycoder-py` checkout instead of copying files by hand.
 - 2026-03-14: `RELEASE_NOTES.md` is repo-specific and should not be mirrored by the sync script.
+- 2026-03-14: For one-command mirroring, use `scripts/easycoder/publish-shared-to-py.sh` (sync + commit, optional push) from `easycoder.github.io`.

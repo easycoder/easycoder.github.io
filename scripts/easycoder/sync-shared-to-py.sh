@@ -27,8 +27,8 @@ copy_file() {
 copy_tree() {
 	local source="$1"
 	local target="$2"
+	rm -rf "$target"
 	mkdir -p "$target"
-	rm -f "$target"/*
 	cp -r "$source"/. "$target"/
 	echo "Synced $(realpath --relative-to="$repo_root" "$source")/"
 }
