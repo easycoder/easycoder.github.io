@@ -5,11 +5,13 @@ on:
     paths:
       - "conformance/**"
       - "spec/**"
+      - "dist/easycoder.js"
       - ".github/workflows/conformance-report.yml"
   pull_request:
     paths:
       - "conformance/**"
       - "spec/**"
+      - "dist/easycoder.js"
       - ".github/workflows/conformance-report.yml"
 
 jobs:
@@ -24,10 +26,22 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run JS-browser adapter
+        run: |
+          node conformance/ec_js_runner.js \
+            --dist-path dist/easycoder.js \
+            --output conformance/actuals-js-browser.json
+
       - name: Generate report
         run: |
           python3 conformance/run_conformance.py \
             --implementation js-browser \
+            --actuals conformance/actuals-js-browser.json \
             --runtime-version ci \
             --output conformance/parity-report.generated.json
 

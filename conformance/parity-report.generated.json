@@ -1,39 +1,64 @@
 {
   "specVersion": "0.1",
-  "generatedAt": "2026-03-14T10:26:54.182708+00:00",
+  "generatedAt": "2026-03-14T12:04:17.589976+00:00",
   "implementations": {
     "js-browser": {
       "runtimeVersion": "unknown",
       "summary": {
-        "pass": 0,
+        "pass": 5,
         "fail": 0,
-        "skip": 5
+        "skip": 0
       },
       "results": [
         {
           "id": "EC-0001",
-          "status": "skip",
-          "details": "No actual result provided"
+          "status": "pass",
+          "actual": {
+            "logs": [
+              "hello"
+            ],
+            "error": null
+          }
         },
         {
           "id": "EC-0002",
-          "status": "skip",
-          "details": "No actual result provided"
+          "status": "pass",
+          "actual": {
+            "logs": [
+              "18"
+            ],
+            "error": null
+          }
         },
         {
           "id": "EC-0003",
-          "status": "skip",
-          "details": "No actual result provided"
+          "status": "pass",
+          "actual": {
+            "logs": [
+              "GT"
+            ],
+            "error": null
+          }
         },
         {
           "id": "EC-0004",
-          "status": "skip",
-          "details": "No actual result provided"
+          "status": "pass",
+          "actual": {
+            "logs": [
+              "15"
+            ],
+            "error": null
+          }
         },
         {
           "id": "EC-0005",
-          "status": "skip",
-          "details": "No actual result provided"
+          "status": "pass",
+          "actual": {
+            "logs": [
+              "green"
+            ],
+            "error": null
+          }
         }
       ]
     }
