@@ -792,7 +792,7 @@ SHP3:
             if Mobile
             begin
                 put the length of Fragment into CopyDelay
-                multiply CopyDelay by 12 giving CopyDelay
+                multiply CopyDelay by 20 giving CopyDelay
                 divide CopyDelay by 1000
                 add 4 to CopyDelay
                 if CopyDelay is less than 6 put 6 into CopyDelay
