@@ -85,6 +85,7 @@
     "#": [
       "$HeroCard",
       "$LearnCard",
+      "$CodexFootnoteCard",
       "$NeedCard",
       "$BuildCard",
       "$PromptCard",
@@ -540,6 +541,41 @@
       "#content": "$LearnNoteContent",
       "color": "#b8c2df",
       "margin-top": "0.45em"
+    }
+  },
+
+  "$CodexFootnoteCard": {
+    "#element": "div",
+    "@id": "CodexFootnoteCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$CodexFootnoteTitle",
+      "$CodexFootnoteBody"
+    ],
+
+    "$CodexFootnoteTitle": {
+      "#element": "div",
+      "@id": "CodexFootnoteTitle",
+      "#content": "What are EasyCoder and Codex?",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$CodexFootnoteContent": {
+      "#textFile": "content/primer/easycoder-codex-note.txt"
+    },
+
+    "$CodexFootnoteBody": {
+      "#element": "div",
+      "@id": "CodexFootnoteBody",
+      "#content": "$CodexFootnoteContent",
+      "color": "#b8c2df",
+      "white-space": "pre-line"
     }
   },
 
