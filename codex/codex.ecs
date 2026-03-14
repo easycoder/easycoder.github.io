@@ -73,6 +73,7 @@
     variable B
     variable IA
     variable IB
+    variable CopyDelay
     variable V
 
   ! The browser
@@ -790,7 +791,13 @@ SHP3:
             codemirror set content of ContentEditor to Fragment
             if Mobile
             begin
-                wait 10 ticks
+                put the length of Fragment into CopyDelay
+                multiply CopyDelay by 12 giving CopyDelay
+                divide CopyDelay by 1000
+                add 4 to CopyDelay
+                if CopyDelay is less than 6 put 6 into CopyDelay
+                if CopyDelay is greater than 24 put 24 into CopyDelay
+                wait CopyDelay ticks
                 codemirror set content of ContentEditor to Fragment
             end
             set the text of NameEditor to empty
