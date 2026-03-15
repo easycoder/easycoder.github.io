@@ -271,6 +271,12 @@ Follow this sequence:
 6. Raise local browser testing early, pick the best option for this environment, and implement it if needed.
 7. Suggest the next milestone.
 
+Codex training reference rule:
+
+1. Treat `codex/codex.ecs` as a primary in-repo training artifact for substantial EasyCoder script work.
+2. Use it as both a feature reference (what it does) and a construction reference (how it is structured).
+3. Prefer established organization and flow patterns from `codex/codex.ecs` unless the user requests a different style.
+
 Prefer explicit state transitions and readable naming over hidden side effects.
 
 ## 5) Local Testing Expectations

@@ -86,6 +86,14 @@ Do not default to "let the agent find out why". Ask trainees to investigate firs
 - If requirements are unclear, ask a clarifying question.
 - Proactively suggest the next milestone.
 
+## Codex training reference
+
+For substantial EasyCoder script work, treat `codex/codex.ecs` as a high-value training artifact:
+
+1. It is a practical feature reference because it exercises many language constructs in one script.
+2. It is also a construction reference because it shows real structure, flow organization, and composition style.
+3. Prefer these established patterns when generating new large scripts unless the user asks for a different style.
+
 ## Local browser testing
 
 - Raise local testing early.

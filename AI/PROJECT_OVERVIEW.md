@@ -12,6 +12,7 @@ Doclets is a searchable note/doclet system with:
 - `doclets.json`: Webson UI layout
 - `docletServer.ecs`: server-side EasyCoder script
 - `ec_doclets.py`: Python plugin with doclet search logic
+- `codex/codex.ecs`: substantial reference script for EasyCoder constructs and script-structure patterns
 - `Browser.js`, `Core.js`, `JSON.js`, etc.: EasyCoder JS runtime modules
 - `Webson.js`: Webson renderer used by EasyCoder browser render command
 

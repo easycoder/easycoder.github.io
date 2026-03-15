@@ -206,6 +206,14 @@ When implementing EasyCoder features:
 2. Check existing plugins next.
 3. If functionality is missing from both, prefer creating a focused new plugin rather than overcomplicating `.ecs` scripts.
 
+## 8B) Codex Training Reference Rule
+
+When planning or generating substantial EasyCoder scripts:
+
+1. Use `codex/codex.ecs` as a primary in-repo training reference.
+2. Learn from both what it does and how it is built (structure, flow, and composition patterns).
+3. Prefer established `codex/codex.ecs` patterns before inventing new script organization styles.
+
 ## 9) Completion Checklist
 
 Before claiming completion, confirm:
