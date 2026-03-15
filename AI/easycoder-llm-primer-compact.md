@@ -3,6 +3,16 @@
 Use this as authoritative context.
 If unsure about syntax, ask the user. Do not guess.
 
+Strict guardrails:
+- Declare variables one per line.
+- Variables must be declared before use.
+- Use `while ... begin ... end`.
+- Do not emit `end while`, `end if`, `repeat ... end repeat`.
+- Do not emit `define`, `end define`, `otherwise`, `endif`.
+- Do not emit `function`, `end function`, or callable subroutines like `Name(...)`.
+- Use `gosub Label` + `return` for subroutines.
+- In `.ecs` command lines, punctuation beyond `!`, `:`, and backticks is suspicious unless user-confirmed.
+
 ## 1) EasyCoder essentials
 
 - `.ecs` is EasyCoder script source.
@@ -35,18 +45,22 @@ Assignment and conditions:
 put 0 into Counter
 add 1 to Counter
 if Counter is 3
+begin
     put `Three` into Message
-else
+end
+if Counter is not 3
+begin
     put `Other` into Message
-end if
+end
 ```
 
 Loop rule (critical):
 - Use `while ... begin ... end`
 - Never use `end while`
+- Preferred bound style: `is not greater than`
 
 ```text
-while N is less than 9
+while N is not greater than 8
 begin
     add 1 to N
 end
@@ -87,6 +101,17 @@ render ScreenJson in Body
 debug step
 trace
 ```
+
+Membership checks (supported):
+
+```text
+if Vowels includes Ch
+begin
+    add 1 to VowelCount
+end
+```
+
+Use this instead of `is an element of`.
 
 ## 2) Webson essentials
 
@@ -134,3 +159,11 @@ For each request:
 6. Suggest next step.
 
 If syntax confidence is low, ask before code generation.
+
+Before answering, self-check:
+1. No undeclared variables.
+2. No comma declarations.
+3. Every `while` has `begin ... end`.
+4. No `end while` or `end if`.
+5. No pseudo-keywords (`define`, `otherwise`, `endif`).
+6. No pseudo-subroutine forms (`function`, `Name(...)`).

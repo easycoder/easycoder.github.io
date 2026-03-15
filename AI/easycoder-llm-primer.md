@@ -6,6 +6,22 @@ Use this as the complete reference when helping with an EasyCoder/Webson project
 
 If you are unsure about EasyCoder or Webson syntax, ask the user. Do not guess.
 
+## 0a) Strict syntax guardrails
+
+Use these rules exactly:
+- Declare variables one per line. Do not use comma declarations.
+- Variables must be declared before use.
+- Loops use `while ... begin ... end`.
+- Do not emit `end while`.
+- Do not emit `end if`.
+- `begin ... end` blocks must belong to a control statement (for example `while` or `if`), not stand alone.
+- Do not invent `function`, `end function`, or recursive call syntax unless the user confirms those forms are supported.
+- Do not emit pseudo-keywords from other languages such as `define`, `end define`, `otherwise`, or `endif`.
+- Do not emit callable subroutines like `Name(...)`. Use `gosub Label` and shared variables.
+- In `.ecs` command lines, expect mostly word-based syntax plus `!`, `:`, and backticks for string literals. Treat other punctuation as suspicious unless explicitly documented.
+- Do not emit pseudo-loop forms like `repeat ... end repeat` unless the user confirms they are valid in this runtime.
+- Prefer `put ... into Name` over `set Name to ...` unless the user confirms `set` forms are supported.
+
 ## 1) EasyCoder quick reference
 
 EasyCoder is a browser-side scripting language (`.ecs`) with English-like syntax.
@@ -39,22 +55,27 @@ add 1 to Counter
 take 1 from Counter
 
 if Counter is 3
+begin
     put `Three` into Message
-else
+end
+if Counter is not 3
+begin
     put `Other` into Message
-end if
+end
 ```
 
-Comparisons: `is`, `is not`, `is greater than`, `is less than`, `is greater than or equal to`, `is less than or equal to`.
+Comparisons: `is`, `is not`, `is greater than`, `is not greater than`, `is less than`, `is not less than`.
+Preferred loop bound style: use `is not greater than` instead of `is less than or equal to`.
 
 ### 1c) Loops (important)
 
 Use `while ... begin ... end`.
 Never use `end while`.
+Do not use free-standing `begin ... end` as a loop substitute.
 
 ```text
 put 0 into N
-while N is less than 9
+while N is not greater than 8
 begin
     add 1 to N
 end
@@ -74,6 +95,51 @@ Main:
     stop
 
 DoSomething:
+    return
+```
+
+### 1d.1) Subroutines (preferred pattern)
+
+Use labels + `gosub` + `return` for reusable logic.
+
+```text
+script Example
+
+    number Input
+    number Output
+
+    put 5 into Input
+    gosub Compute
+    stop
+
+Compute:
+    put Input into Output
+    return
+```
+
+For iterative work (for example factorial), prefer loop-based subroutines over invented recursive `function` syntax.
+
+Factorial subroutine pattern:
+
+```text
+script FactorialDemo
+
+    number Number
+    number FactorialResult
+    number Counter
+
+    put 56 into Number
+    gosub ComputeFactorial
+    stop
+
+ComputeFactorial:
+    put 1 into FactorialResult
+    put 1 into Counter
+    while Counter is not greater than Number
+    begin
+        multiply FactorialResult by Counter
+        add 1 to Counter
+    end
     return
 ```
 
@@ -122,6 +188,37 @@ render ScreenJson in Body
 debug step
 trace
 ```
+
+### 1f.1) Membership checks (supported)
+
+EasyCoder supports membership tests using `includes` in conditions:
+
+```text
+if Vowels includes Ch
+begin
+    add 1 to VowelCount
+end
+```
+
+Use this instead of invented forms like `is an element of`.
+
+For strings, this maps to substring/character membership.
+For example, after lowercasing input:
+
+```text
+put lowercase Sentence into Sentence
+put `aeiou` into Vowels
+```
+
+### 1f.2) String-processing safety rule
+
+For tasks like "count vowels", do not invent string primitives.
+If canonical commands for string length, character access, or membership are not already known, ask the user first.
+
+Ask this minimal clarification:
+- "Please confirm the canonical EasyCoder commands for: string length, getting the Nth character, and checking whether a character is in a string (for example `AEIOU`)."
+
+Until confirmed, do not emit pseudo-forms such as `the length of ...`, `the character at position ...`, or `is an element of ...`.
 
 ### 1g) Formatting
 
@@ -251,3 +348,19 @@ First response behavior:
 - If constraints are already clear, start implementation immediately.
 
 If uncertain about syntax, ask before generating code.
+
+## 6) Output self-check (before answering)
+
+Before returning EasyCoder code, verify:
+1. No comma declarations (for example no `number A, B`).
+2. Every variable used is declared.
+3. Every `while` has `begin ... end`.
+4. No `end while` and no `end if`.
+5. No stand-alone `begin ... end` pretending to be a loop.
+6. No invented `function` / `end function` blocks.
+7. No `define` / `end define`, `otherwise`, or `endif`.
+8. No callable subroutine form like `Name(...)`.
+9. No `repeat` / `end repeat` unless user-confirmed.
+10. Prefer `put ... into ...`; avoid `set ... to ...` unless user-confirmed.
+11. For string tasks, if length/character/membership commands are unknown, ask before coding.
+12. In `.ecs` command lines, treat punctuation beyond `!`, `:`, and backticks as suspicious unless user-confirmed.

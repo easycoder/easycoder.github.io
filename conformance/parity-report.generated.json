@@ -1,64 +1,49 @@
 {
   "specVersion": "0.1",
-  "generatedAt": "2026-03-14T12:04:17.589976+00:00",
+  "generatedAt": "2026-03-15T22:45:43.090324+00:00",
   "implementations": {
     "js-browser": {
       "runtimeVersion": "unknown",
       "summary": {
-        "pass": 5,
+        "pass": 0,
         "fail": 0,
-        "skip": 0
+        "skip": 7
       },
       "results": [
         {
           "id": "EC-0001",
-          "status": "pass",
-          "actual": {
-            "logs": [
-              "hello"
-            ],
-            "error": null
-          }
+          "status": "skip",
+          "details": "No actual result provided"
         },
         {
           "id": "EC-0002",
-          "status": "pass",
-          "actual": {
-            "logs": [
-              "18"
-            ],
-            "error": null
-          }
+          "status": "skip",
+          "details": "No actual result provided"
         },
         {
           "id": "EC-0003",
-          "status": "pass",
-          "actual": {
-            "logs": [
-              "GT"
-            ],
-            "error": null
-          }
+          "status": "skip",
+          "details": "No actual result provided"
         },
         {
           "id": "EC-0004",
-          "status": "pass",
-          "actual": {
-            "logs": [
-              "15"
-            ],
-            "error": null
-          }
+          "status": "skip",
+          "details": "No actual result provided"
         },
         {
           "id": "EC-0005",
-          "status": "pass",
-          "actual": {
-            "logs": [
-              "green"
-            ],
-            "error": null
-          }
+          "status": "skip",
+          "details": "No actual result provided"
+        },
+        {
+          "id": "EC-0006",
+          "status": "skip",
+          "details": "No actual result provided"
+        },
+        {
+          "id": "EC-0007",
+          "status": "skip",
+          "details": "No actual result provided"
         }
       ]
     }

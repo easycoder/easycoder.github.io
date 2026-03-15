@@ -1,0 +1,18 @@
+{
+  "id": "EC-0006",
+  "name": "and-or-conditions",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.7"
+  ],
+  "script": "EC-0006-and-or-conditions.ecs",
+  "expect": {
+    "logs": [
+      "AND works",
+      "OR works",
+      "Precedence correct"
+    ],
+    "error": null
+  }
+}

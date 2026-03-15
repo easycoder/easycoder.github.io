@@ -1,0 +1,16 @@
+{
+  "id": "EC-0007",
+  "name": "includes-membership",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.8"
+  ],
+  "script": "EC-0007-includes-membership.ecs",
+  "expect": {
+    "logs": [
+      "11"
+    ],
+    "error": null
+  }
+}
