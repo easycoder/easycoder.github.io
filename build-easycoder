@@ -4,8 +4,60 @@ echo "Copy the various files"
 cd ~/dev/easycoder/easycoder.github.io
 rm -rf dist/*
 mkdir dist/plugins
+mkdir -p dist/vendor/showdown
 cp -r js/plugins/* dist/plugins
 cp -r server/* dist
+
+echo "Ensure showdown runtime library is available"
+if [ -f vendor/showdown/showdown.min.js ]; then
+	cp vendor/showdown/showdown.min.js dist/vendor/showdown/showdown.min.js
+elif command -v curl >/dev/null 2>&1; then
+	curl -fsSL https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js \
+		-o dist/vendor/showdown/showdown.min.js
+elif command -v wget >/dev/null 2>&1; then
+	wget -q -O dist/vendor/showdown/showdown.min.js \
+		https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js
+else
+	echo "Warning: Could not fetch showdown.min.js (curl/wget not found)."
+	echo "Codex showdown decode will fail until dist/vendor/showdown/showdown.min.js exists."
+fi
+
+echo "Ensure CodeMirror addon assets are available"
+mkdir -p dist/plugins/codemirror/addon/dialog
+mkdir -p dist/plugins/codemirror/addon/search
+
+if [ -f vendor/codemirror/addon/dialog/dialog.css ]; then
+	cp vendor/codemirror/addon/dialog/dialog.css dist/plugins/codemirror/addon/dialog/dialog.css
+	cp vendor/codemirror/addon/dialog/dialog.js dist/plugins/codemirror/addon/dialog/dialog.js
+	cp vendor/codemirror/addon/search/search.js dist/plugins/codemirror/addon/search/search.js
+	cp vendor/codemirror/addon/search/searchcursor.js dist/plugins/codemirror/addon/search/searchcursor.js
+	cp vendor/codemirror/addon/search/jump-to-line.js dist/plugins/codemirror/addon/search/jump-to-line.js
+elif command -v curl >/dev/null 2>&1; then
+	curl -fsSL https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css \
+		-o dist/plugins/codemirror/addon/dialog/dialog.css
+	curl -fsSL https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js \
+		-o dist/plugins/codemirror/addon/dialog/dialog.js
+	curl -fsSL https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js \
+		-o dist/plugins/codemirror/addon/search/search.js
+	curl -fsSL https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js \
+		-o dist/plugins/codemirror/addon/search/searchcursor.js
+	curl -fsSL https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js \
+		-o dist/plugins/codemirror/addon/search/jump-to-line.js
+elif command -v wget >/dev/null 2>&1; then
+	wget -q -O dist/plugins/codemirror/addon/dialog/dialog.css \
+		https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css
+	wget -q -O dist/plugins/codemirror/addon/dialog/dialog.js \
+		https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js
+	wget -q -O dist/plugins/codemirror/addon/search/search.js \
+		https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js
+	wget -q -O dist/plugins/codemirror/addon/search/searchcursor.js \
+		https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js
+	wget -q -O dist/plugins/codemirror/addon/search/jump-to-line.js \
+		https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js
+else
+	echo "Warning: Could not fetch CodeMirror addons (curl/wget not found)."
+	echo "Codex search/dialog features will fail until dist/plugins/codemirror/addon/* exists."
+fi
 
 echo "Merge into a single file"
 cat js/easycoder/Core.js js/easycoder/Browser.js js/easycoder/MarkdownRenderer.js js/easycoder/Webson.js js/easycoder/JSON.js js/easycoder/MQTT.js js/easycoder/REST.js js/easycoder/Compare.js js/easycoder/Condition.js js/easycoder/Value.js js/easycoder/Run.js js/easycoder/Compile.js js/easycoder/Main.js js/easycoder/EasyCoder.js > dist/easycoder.js
