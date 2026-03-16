@@ -40,7 +40,6 @@
   button NextButton
   a Link
   callback DecoratorCallback
-  variable ReadOnly
   variable List
   variable Packages
   variable Package
@@ -78,14 +77,6 @@
   set attribute `id` of Tracer to `easycoder-tracer`
   create Container in Parent
 
-! Test if the site is writable
-  clear ReadOnly
-  rest get List from `_list/scripts`
-  or begin
-  	set ReadOnly
-    goto L2
-  end
-L2:
   get PackageName from storage as `.docman-package`
   if PackageName is empty put `core` into PackageName
   get Group from storage as `.docman-` cat PackageName cat `-group`
@@ -179,25 +170,6 @@ RS2:
     go to Viewer
   end
 
-  if not ReadOnly
-  begin
-    create EditorButton in ButtonsDiv
-    set the style of EditorButton to `margin-right:1em`
-    set the text of EditorButton to `Editor`
-    on click EditorButton
-    begin
-      get Password from storage as `.password`
-      if Password is empty
-        put prompt `Please type the admin password` with `` into Password
-      rest get Valid from `_verify/` cat Password or put `no` into Valid
-      if Valid is `yes`
-      begin
-        put Password into storage as `.password`
-        go to Editor
-      end
-    end
-  end
-
   create TutorialButton in ButtonsDiv
   set the style of TutorialButton to `margin-right:1em`
   set the text of TutorialButton to `Tutorial`
@@ -276,7 +248,6 @@ Viewer:
   set style `visibility` of PackageButtonsDiv to `hidden`
   set style `display` of SaveButton to `none`
   set style `display` of ViewerButton to `none`
-  if not ReadOnly set style `display` of EditorButton to `inline`
   get Group from storage as `.docman-` cat PackageName cat `-group`
   get Keyword from storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
   put property Keyword of Keywords into Record
@@ -453,7 +424,6 @@ Editor:
   set style `visibility` of PackageButtonsDiv to `visible`
   set style `display` of SaveButton to `inline`
   set style `display` of ViewerButton to `inline`
-  if not ReadOnly set style `display` of EditorButton to `none`
   clear ContentDiv
   create FormDiv in ContentDiv
 
@@ -525,7 +495,6 @@ Editor:
   set the content of ExamplesInput to decode Examples
 
   set style `display` of ViewerButton to `inline`
-  if not ReadOnly set style `display` of EditorButton to `none`
   stop
 
 SelectPackage:
