@@ -21,6 +21,7 @@
     "$TabBar",
     "$PrimerContainer",
     "$CheatContainer",
+    "$DeveloperContainer",
     "$ManualContainer"
   ],
 
@@ -33,6 +34,7 @@
     "#": [
       "$TabPrimer",
       "$TabCheat",
+      "$TabDeveloper",
       "$TabManual"
     ],
 
@@ -53,6 +55,19 @@
       "#element": "button",
       "@id": "TabCheat",
       "#content": "Cheat Sheet",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabDeveloper": {
+      "#element": "button",
+      "@id": "TabDeveloper",
+      "#content": "Developer",
       "background": "#0d1220",
       "color": "#eaf0ff",
       "border": "1px solid #2b3555",
@@ -241,6 +256,33 @@
         "font-size": "14px",
         "line-height": "1.45"
       }
+    }
+  },
+
+  "$DeveloperContainer": {
+    "#element": "div",
+    "@id": "DeveloperContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$DeveloperCard"
+    ],
+
+    "$DeveloperCard": {
+      "#element": "div",
+      "@id": "DeveloperCard",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff",
+      "#content": "$DeveloperMarkdown"
+    },
+
+    "$DeveloperMarkdown": {
+      "#textFile": "developer.md"
     }
   },
 

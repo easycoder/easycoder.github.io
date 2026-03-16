@@ -26,9 +26,11 @@
     div Footer
     div PrimerContainer
     div CheatContainer
+    div DeveloperContainer
     div ManualContainer
     button TabPrimer
     button TabCheat
+    button TabDeveloper
     button TabManual
     div ManualStatus
     div ManualBody
@@ -130,9 +132,11 @@ SetupScreen:
     attach Footer to `Footer` or go to AbandonShip
     attach PrimerContainer to `PrimerContainer` or go to AbandonShip
     attach CheatContainer to `CheatContainer` or go to AbandonShip
+    attach DeveloperContainer to `DeveloperContainer` or go to AbandonShip
     attach ManualContainer to `ManualContainer` or go to AbandonShip
     attach TabPrimer to `TabPrimer` or go to AbandonShip
     attach TabCheat to `TabCheat` or go to AbandonShip
+    attach TabDeveloper to `TabDeveloper` or go to AbandonShip
     attach TabManual to `TabManual` or go to AbandonShip
     attach ManualStatus to `ManualStatus` or go to AbandonShip
     attach ManualBody to `ManualBody` or go to AbandonShip
@@ -207,6 +211,13 @@ SetupScreen:
         if AuthorMode go to DisableAuthorMode
         gosub to ShowCheatTab
         history push url `#cheatsheet`
+    end
+
+    on click TabDeveloper
+    begin
+        if AuthorMode go to DisableAuthorMode
+        gosub to ShowDeveloperTab
+        history push url `#developer`
     end
 
     on click TabManual
@@ -361,9 +372,11 @@ ShowPrimerTab:
     put `primer` into ActiveTab
     set style `display` of PrimerContainer to `flex`
     set style `display` of CheatContainer to `none`
+    set style `display` of DeveloperContainer to `none`
     set style `display` of ManualContainer to `none`
     set style `background` of TabPrimer to `#23345e`
     set style `background` of TabCheat to `#0d1220`
+    set style `background` of TabDeveloper to `#0d1220`
     set style `background` of TabManual to `#0d1220`
     set style `display` of RetryManualButton to `none`
     return
@@ -372,9 +385,24 @@ ShowCheatTab:
     put `cheat` into ActiveTab
     set style `display` of PrimerContainer to `none`
     set style `display` of CheatContainer to `flex`
+    set style `display` of DeveloperContainer to `none`
     set style `display` of ManualContainer to `none`
     set style `background` of TabPrimer to `#0d1220`
     set style `background` of TabCheat to `#23345e`
+    set style `background` of TabDeveloper to `#0d1220`
+    set style `background` of TabManual to `#0d1220`
+    set style `display` of RetryManualButton to `none`
+    return
+
+ShowDeveloperTab:
+    put `developer` into ActiveTab
+    set style `display` of PrimerContainer to `none`
+    set style `display` of CheatContainer to `none`
+    set style `display` of DeveloperContainer to `flex`
+    set style `display` of ManualContainer to `none`
+    set style `background` of TabPrimer to `#0d1220`
+    set style `background` of TabCheat to `#0d1220`
+    set style `background` of TabDeveloper to `#23345e`
     set style `background` of TabManual to `#0d1220`
     set style `display` of RetryManualButton to `none`
     return
@@ -383,9 +411,11 @@ ShowManualTab:
     put `manual` into ActiveTab
     set style `display` of PrimerContainer to `none`
     set style `display` of CheatContainer to `none`
+    set style `display` of DeveloperContainer to `none`
     set style `display` of ManualContainer to `flex`
     set style `background` of TabPrimer to `#0d1220`
     set style `background` of TabCheat to `#0d1220`
+    set style `background` of TabDeveloper to `#0d1220`
     set style `background` of TabManual to `#23345e`
     return
 
@@ -568,6 +598,12 @@ RestoreFromLocation:
     begin
         if AuthorMode go to DisableAuthorMode
         gosub to ShowCheatTab
+        return
+    end
+    if CurrentLocation includes `#developer`
+    begin
+        if AuthorMode go to DisableAuthorMode
+        gosub to ShowDeveloperTab
         return
     end
     gosub to ShowPrimerTab
