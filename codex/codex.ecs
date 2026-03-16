@@ -43,9 +43,6 @@
     module TestModule
 	module DocManModule
   	callback DecoratorCallback
-    variable Password
-    variable PasswordRequested
-    variable PasswordValid
     variable Args
     variable Arg
     variable Name
@@ -103,7 +100,6 @@
   	json parse url the location as Args
 
     print `Static site`
-    clear PasswordRequested
     put empty into CallStack
     history set
     on restore
@@ -388,8 +384,7 @@
         			set the content of Status to `No script name has been given`
         			go to ResetStatus
       			end
-    	  		if PasswordValid rest post Content to `_save/scripts~` cat Name
-      			else put Content into storage as CurrentName
+    	  		put Content into storage as CurrentName
             end
     	end
     	clear FileIsOpen
@@ -402,7 +397,6 @@
 
     on click Save
     begin
-    	gosub to GetPassword
         put the content of NameEditor into Name
         if Name is empty
         begin
@@ -416,8 +410,7 @@
         codemirror attach to ContentEditor
         if Content is not Current
         begin
-            if PasswordValid rest post Content to `_save/scripts~` cat Name
-            else put Content into storage as Name
+            put Content into storage as Name
             put Content into Current
             set the content of Status to `Script '` cat Name cat `' saved`
             fork to ResetStatus
@@ -431,7 +424,6 @@
     
     on click Delete
     begin
-    	gosub to GetPassword
         put the content of NameEditor into Name
         if Name is empty
         begin
@@ -443,8 +435,7 @@
             codemirror close ContentEditor
             set the content of ContentEditor to empty
             codemirror attach to ContentEditor
-            if PasswordValid rest post Content to `_delete/scripts~` cat Name
-            else remove Name from storage
+            remove Name from storage
             set the content of Status to `Script "` cat Name cat `" deleted`
             set the content of NameEditor to empty
             put empty into Content
@@ -508,7 +499,6 @@
 
 DoOpen:
 	gosub to StopTestModule
-    gosub to GetPassword
 
     if Mobile
     begin
@@ -522,8 +512,7 @@ DoOpen:
     begin
       if confirm `Content has changed. Do you want to save it?`
       begin
-      	if PasswordValid rest post Content to `_save/scripts~` cat Name
-      	else put Content into storage as Name
+      	put Content into storage as Name
       end
     end
 
@@ -543,31 +532,15 @@ DoOpen:
     set style `display` of FileListing to `inline-block`
 
   ! Fill the browser with content from the server
-    if PasswordValid
+    get Files from storage
+    put the json count of Files into FileCount
+    put empty into Content
+    put 0 into N
+    while N is less than FileCount
     begin
-        rest get Files from `_list/scripts`
-        put the json count of Files into FileCount
-        put empty into Content
-        put 0 into N
-        while N is less than FileCount
-        begin
-            put element N of Files into Item
-            if property `type` of Item is `ecs` json add property `name` of Item to Content
-            add 1 to N
-        end
-    end
-    else
-    begin
-    	get Files from storage
-	  	put the json count of Files into FileCount
-	  	put empty into Content
-	  	put 0 into N
-	  	while N is less than FileCount
-	  	begin
-	  		put element N of Files into Item
-	    	if left 1 of Item is not `.` json add Item to Content
-	    	add 1 to N
-	  	end
+        put element N of Files into Item
+        if left 1 of Item is not `.` json add Item to Content
+        add 1 to N
     end
     json sort Content
     put empty into FileList
@@ -614,8 +587,7 @@ DoOpen:
 SelectFile:
     index File to the index of FileName
     set the content of NameEditor to File
-	if PasswordValid rest get Content from `/scripts/` cat File cat `?v=` cat now
-    else get Content from storage as File
+	get Content from storage as File
     put Content into Current
     set the content of Status to `Script '` cat File cat `' loaded`
     fork to ResetStatus
@@ -996,11 +968,3 @@ StopTestModule:
         set attribute `src` of RunStop to `codex/icon/run.png`
     end
 	return
-
-GetPassword:
-	clear PasswordValid
-    return
-
-SetPasswordValid:
-  set PasswordValid
-  return
