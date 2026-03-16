@@ -32,9 +32,8 @@ Once you have given the primer prompt you can start asking your agent to write s
 ### Python version
 To run a Python-based script, install EasyCoder:
 
-```
-pip install -U easycoder
-```
+`pip install -U easycoder`
+
 If EasyCoder is already installed this will update you to the latest version, which you might need to do from time to time as it's still under development and new features are regularly being added. Note that on some Linux systems, EasyCoder will not be installed on your $PATH, so either give the full path (usually ~/.local/bin/easycoder) or set up a symbolic link. To check the version number, use
 
 `easycoder`
@@ -57,26 +56,26 @@ Copy the file at `https://easycoder.github.io/index_html` to your own `index.htm
 Now create a script file, `project.ecs` with the following content. It starts by setting up a panel in your browser. Add new code written by your AI agent to the bottom of the script:
 
 ```
-!  project.ecs
+!  project.ecs 
 
-   script Project
+   script Project 
 
-   div Body
-   variable Mobile
+   div Body 
+   variable Mobile 
    variable ScreenWebson
 
-   if portrait
-   begin
-      if mobile set Mobile else clear Mobile
-   end
-   attach Body to body
-   if Mobile
-      set the style of Body to `width:100%;height:100%`
-   else
+   if portrait 
+   begin 
+      if mobile set Mobile else clear Mobile 
+   end 
+   attach Body to body 
+   if Mobile 
+      set the style of Body to `width:100%;height:100%` 
+   else 
       set the style of Body to `width:1024px;height:100%;display:flex`
 
-   rest get ScreenWebson from `project.json` or stop
-   render ScreenWebson in Body
+   rest get ScreenWebson from `project.json` or stop 
+   render ScreenWebson in Body 
 ```
 
 Create a file `project.json` as follows:
