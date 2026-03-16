@@ -1,7 +1,7 @@
 # The tracer #
 The hardest part about programming is figuring out why things don't work as expected, and for many of us this is much of the time. To help with this, development systems usually have some kind of ability to stop a running program, examine its variables and step through the instructions one by one. Your browser has a very good debugger but all it will tell you is what's happening inside the ~ec~ engine, not what your script is doing. So we added a feature that will do these things. It's a little basic but there are times when it can help a lot.
 
-The ~ec~ tracer needs you to tell it where it can display its information, and this is done in your script itself. Referring back to the bouncy rectangle, here's the same script with some tracer code added:
+The ~ec~ tracer needs you to tell it where it can display its information, and this is done in your script itself. Referring back to the bouncy rectangle, click the button to get the same script with some tracer code added:
 
 ~copy~
 

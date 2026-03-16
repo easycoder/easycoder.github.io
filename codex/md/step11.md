@@ -1,5 +1,5 @@
 # Interactivity #
-In all but the simplest of programs there are ways the user can interact and control how things happen. Here I'll show how to do this. For our example we'll build a script that asks the user for a number then creates that number of buttons on the screen. When a button is clicked its appearance will change to show it's no longer clickable. Here's the code:
+In all but the simplest of programs there are ways the user can interact and control how things happen. Here I'll show how to do this. For our example we'll build a script that asks the user for a number then creates that number of buttons on the screen. When a button is clicked its appearance will change to show it's no longer clickable. Click the button to load up the code:
 
 ~copy~
 

@@ -1,5 +1,4 @@
 # EasyCoder Tools and Techniques #
-To deploy an ~ec~ script you need to embed it in a web page. The basic mechanism is described in our **Install** page but a number of other topics need to be covered as well.
 
 ## Plugins ##
 The standard ~ec~ language includes a wide range of general-purpose programming constructs needed by any language; variables, values, conditionals, strings, numbers and so on. Everything else is provided by plugins. Some of these, notably browser features, JSON and REST, are loaded automatically (though this behavior can be changed if necessary) and several more are available as optional plugins. Plugins add commands to the language and must be loaded before any script that makes use of those keywords will compile.
