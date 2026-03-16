@@ -42,9 +42,9 @@ python3 -m http.server 5500
 
 Then open `http://localhost:5500/` in your browser.
 
-Copy the file at `https://easycoder.github.io/index_html` to your own `index.html` and serve this to your browser. Your EasyCoder script will be the file `project.ecs` that you create alongside the index file. 
+Copy the file at `https://easycoder.github.io/index_html` to your own `index.html` and serve this to your browser.
 
-Your script will need to start by setting up a panel in your browser. Create a file `project.ecs` and add new code at the bottom as you get it:
+Now create a script file, `project.ecs` with the following content. It starts by setting up a panel in your browser. Add new code written by your AI agent to the bottom of the script:
 
 ```
 !  project.ecs
@@ -99,6 +99,3 @@ Both versions of EasyCoder have a built-in tracer that lets you stop a script at
 You can get some familiarity with many features of EasyCoder by starting with our [Codex](https://easycoder.github.io/codex.html). This is an integrated tutorial, reference manual and programmer's playground for the scripting language.
 
 And that's it! If you have questions you can email us at [easycoder.ai@gmail.com](mailto:easycoder.ai@gmail.com). 
-View
-Save
-Close
