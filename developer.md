@@ -53,7 +53,7 @@ Then open `http://localhost:5500/` in your browser.
 
 Copy the file at `https://easycoder.github.io/index_html` to your own `index.html` and serve this to your browser.
 
-Now create a script file, `project.ecs` with the following content. It starts by setting up a panel in your browser. Add new code written by your AI agent to the bottom of the script:
+Now create a script file, `project.ecs` with the following content. It starts by setting up a panel in your browser. Add new code written by your AI agent to the bottom of the script.
 
 ```
 !  project.ecs 
