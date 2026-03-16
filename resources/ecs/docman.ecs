@@ -30,7 +30,6 @@
   button DeleteButton
   button NewKeywordButton
   button ViewerButton
-  button EditorButton
   button SaveButton
   button TutorialButton
   button CommandsButton
@@ -40,7 +39,6 @@
   button NextButton
   a Link
   callback DecoratorCallback
-  variable List
   variable Packages
   variable Package
   variable PackageName
@@ -57,8 +55,6 @@
   variable NewGroup
   variable Index
   variable Mode
-  variable Password
-  variable Valid
   variable Content
   variable Item
   variable Name
