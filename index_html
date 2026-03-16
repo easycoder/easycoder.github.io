@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyCoder project</title>
+  <!-- Bump this token to force clients to fetch fresh JS without manual cache clear. -->
+  <meta name="easycoder-cache-tag" content="20260310-7" />
+   <script type='text/javascript' src='easycoder.js'></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <pre id="easycoder-script" style="display:none">
+!  Loader script
+
+        script Loader
+
+        variable Script
+        rest get Script from `project.ecs?v=` cat now
+        run Script
+  </pre>
+</body>
+</html>
