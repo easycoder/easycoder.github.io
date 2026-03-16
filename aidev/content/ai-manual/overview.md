@@ -13,11 +13,11 @@ A practical manual for teams that want fast delivery without losing clarity, rel
 ### 1. AI-Native Manifesto
 Why constrained, readable systems can outperform heavyweight stacks for focused product delivery.
 
-### 2. MVP Blueprint
-MapIntel app scope, state/event model, data contract, and milestone plan.
+### 2. Decision Framework
+A balanced case for and against high-level, human-friendly scripting languages in AI-based development.
 
-### 3. Build Walkthrough
-Blank workspace to working MVP, including primer URL workflow and prompt packs.
+### 3. Delivery Workflow
+How to turn a blank workspace into a working MVP with disciplined prompts, guardrails, and review loops.
 
 ### 4. Troubleshooting Playbook
 Root-cause debugging loop for stale state, duplicates, race conditions, and startup mismatch.
@@ -31,8 +31,8 @@ Roles, handoff sequence, escalation triggers, and decision rules for small teams
 ### 7. Prompt Engineering
 Reusable prompt templates, anti-patterns, quality gates, and escalation prompts.
 
-### 8. End-to-End Case Study
-How the full method performs in a realistic product cycle from bootstrap to stabilization.
+### 8. Compare and Contrast
+Structured AI development versus vibe coding: trade-offs, failure modes, and where each approach fits.
 
 ## One-Page Operating Model
 

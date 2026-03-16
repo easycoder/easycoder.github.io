@@ -1,5 +1,5 @@
 {
-  "#doc": "MapIntel Primer page rendered via Webson",
+  "#doc": "EasyCoder Primer page rendered via Webson",
   "#element": "div",
   "@id": "PrimerPage",
   "position": "relative",
@@ -357,7 +357,7 @@
       "$ManualChapter2": {
         "#element": "button",
         "@id": "ManualChapter2",
-        "#content": "Chapter 2 — Idea to First Working Screen",
+        "#content": "Chapter 2 — Decision Framework",
         "background": "#0d1220",
         "color": "#9cc5ff",
         "border": "1px solid #2b3555",
@@ -370,7 +370,7 @@
       "$ManualChapter3": {
         "#element": "button",
         "@id": "ManualChapter3",
-        "#content": "Chapter 3 — Build Walkthrough",
+        "#content": "Chapter 3 — Delivery Workflow",
         "background": "#0d1220",
         "color": "#9cc5ff",
         "border": "1px solid #2b3555",
@@ -435,7 +435,7 @@
       "$ManualChapter8": {
         "#element": "button",
         "@id": "ManualChapter8",
-        "#content": "Chapter 8 — MapIntel End-to-End",
+        "#content": "Chapter 8 — Structured vs Vibe Coding",
         "background": "#0d1220",
         "color": "#9cc5ff",
         "border": "1px solid #2b3555",

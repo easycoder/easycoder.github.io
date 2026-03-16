@@ -75,183 +75,105 @@ In this new context, constrained, human-readable development systems can deliver
 
 ---
 
-## Chapter 2 — From Idea to First Working Screen (Map Intelligence App)
 
-### Product concept
+## Chapter 2 — Decision Framework: Human-Friendly Scripting for AI Development
 
-A smartphone-first webapp that displays a fully navigable Google Map with a bottom info panel.
+This chapter gives a balanced view of high-level, human-friendly scripting languages (for example EasyCoder-style DSLs) in AI-assisted product work.
 
-When the user picks a point on the map, the app should:
+The question is not "simple versus advanced."
+The real question is: which representation gives your team the best combination of speed, understanding, and control for the product you are building.
 
-1. capture coordinates,
-2. determine land vs water,
-3. identify nearest town/city (if over land),
-4. collect contextual information (country, city, weather, and related metadata) from public REST sources,
-5. render all information in a robust bottom-sheet style panel.
+### What we mean by "human-friendly scripting"
 
-### Why this is a strong AI + EasyCoder/Webson demo
+A human-friendly scripting layer typically has:
 
-- Clear event-driven interaction model.
-- Strongly bounded state transitions.
-- Real-world API orchestration without backend-heavy architecture.
-- Easy to validate UX on smartphones.
-- Demonstrates how high-value behavior can be built with a readable, constrained stack.
+- direct, readable commands,
+- explicit state and event flow,
+- limited surface area compared with large framework ecosystems,
+- fewer hidden abstractions between intent and behavior.
 
-### Recommended MVP scope
+### Strong arguments in favor
 
-Ship this first:
+1. **Faster shared understanding**
+  - Non-specialists can inspect behavior without decoding framework internals.
+  - Review quality rises because more people can validate intent.
 
-- Interactive map + point selection marker.
-- Reverse geocode to country and locality.
-- Land/water decision path.
-- Current weather only.
-- Bottom panel with loading/error/ready states.
+2. **Better AI alignment through constraints**
+  - AI performs more reliably in bounded grammars than in open-ended architecture space.
+  - Fewer options often means fewer accidental architecture detours.
 
-Defer this for later:
+3. **Lower cognitive overhead during iteration**
+  - Small teams can move quickly without context-switching across multiple tooling layers.
+  - Root-cause debugging is often easier when flow is explicit.
 
-- account/login,
-- history/favorites,
-- offline sync,
-- advanced analytics,
-- social sharing.
+4. **Good fit for smartphone-first UI work**
+  - Event/state-heavy interactions map well to readable scripting patterns.
+  - Teams can prioritize UX behavior over framework ceremony.
 
-### State model (minimum useful set)
+### Valid arguments against
 
-- `idle`
-- `point-selected`
-- `geocoding`
-- `over-water`
-- `loading-data`
-- `ready`
-- `error`
+1. **Ecosystem depth can be thinner**
+  - Fewer off-the-shelf integrations than major framework ecosystems.
+  - Teams may build more glue code themselves.
 
-### Event model
+2. **Scale boundaries are real**
+  - Very large, multi-team codebases may outgrow lightweight conventions.
+  - Governance, static analysis, and package tooling may be less mature.
 
-- `map-loaded`
-- `point-picked`
-- `geocode-success`
-- `geocode-fail`
-- `water-detected`
-- `weather-success`
-- `weather-fail`
-- `panel-expand`
-- `panel-collapse`
-- `retry`
+3. **Talent portability concerns**
+  - Hiring pools are usually larger for mainstream stacks.
+  - Onboarding may require introducing internal language conventions.
 
-### Bottom panel data contract
+4. **Risk of over-correction**
+  - Teams can mistake readability for rigor.
+  - Without tests and release discipline, any language style can fail.
 
-- Latitude / longitude
-- Land/water flag
-- Country name
-- Nearest locality name
-- Time zone
-- Weather now (temp, condition, wind)
-- Source timestamps
-- Error text (if partial failure)
+### Decision matrix (quick guide)
 
-### Public data sources (practical defaults)
+Choose a human-friendly scripting approach when most of these are true:
 
-- Reverse geocode: Google Geocoding API (or Nominatim where appropriate)
-- Weather: Open-Meteo (fast startup option)
-- Country metadata: REST Countries
-- Optional enrichers: elevation, air quality, sunrise/sunset, population
+- product scope is clear and UI-centric,
+- team is small to medium,
+- rapid iteration and explainability are top priorities,
+- architecture can remain intentionally constrained.
 
-### Guardrails to include from day one
+Prefer a mainstream framework-heavy approach when most of these are true:
 
-- Request-cancellation token per point selection (latest selection wins)
-- Idempotent UI update pipeline (ignore stale REST responses)
-- Debounce map taps/clicks
-- Uniform error envelope across all data fetches
-- Source attribution + cache TTL policy
+- deep third-party ecosystem needs dominate,
+- many teams must collaborate with strict standardization,
+- long-term hiring portability outweighs short-term iteration speed,
+- system complexity is already high and growing rapidly.
 
-### Milestone plan
+### Non-negotiable quality guardrails (either way)
 
-#### M1 — Map + point capture
-
-- Render map on smartphone viewport
-- Add point selection
-- Show coordinates in panel
-
-#### M2 — Place identity
-
-- Reverse geocode selected point
-- Decide land vs water
-- Resolve nearest locality when over land
-
-#### M3 — Context enrichment
-
-- Add weather fetch and display
-- Add country metadata
-- Handle partial failures gracefully
-
-#### M4 — Smartphone hardening
-
-- Optimize panel UX for touch + small screens
-- Improve loading transitions
-- Add retry pathways and slow-network resilience
-
-### Recommended Working Method (Human + AI)
-
-For this style of project, progress is usually best when each step is small and reviewable.
-
-- Keep changes fine-grained so each revision is easy to inspect and reason about.
-- Examine all new file content before moving on.
-- Require real understanding, not checklist completion.
-- If any change is unclear, stop and ask for clarification before proceeding.
-
-This is a key quality rule: no automatic “box-ticking.” Confidence should come from understanding each change and its effect.
-
-### Review Checklist Template (Use Every Iteration)
-
-Use this short checklist at the end of each change:
-
-- What changed? (files + behavior)
-- Why did it change? (intent)
-- What should the user now see on-screen?
-- What could break because of this change?
-- Which test was run (or manual step performed)?
-- Do all reviewers understand the change?
-- If not, what question must be answered before continuing?
-
-This template is intentionally lightweight. It preserves speed while preventing unclear changes from accumulating.
-
-### Post-MVP Exploration: High Pay-off UI Iteration
-
-Once the core feature set works end-to-end, switch into UI exploration mode.
-
-- Experiment with alternate bottom-panel controls and layouts.
-- Try a tabbed panel (for example: Place, Weather, Sources) as a candidate design.
-- Compare options quickly in short AI-assisted iterations.
-
-This phase often delivers large usability gains from relatively small code changes, while also building practical experience in interactive human+AI product development.
+- Define explicit state transitions.
+- Use acceptance checks for every change.
+- Enforce latest-request-wins for async UI updates.
+- Require behavior-delta summaries in reviews.
+- Keep rollback paths for risky edits.
 
 ### Chapter takeaway
 
-This project is deliberately ambitious enough to show real capability while still being structured enough for AI-assisted, constrained development.
-
-It is an ideal chapter for proving the central thesis:
-
-- less framework overhead,
-- more explicit state + event design,
-- faster and safer iteration with readable runtime logic.
+Human-friendly scripting is not a universal replacement for mainstream stacks.
+It is a strategic choice that can be excellent for AI-assisted smartphone product work when scope, constraints, and process discipline are handled deliberately.
 
 ---
 
-## Chapter 3 — Build Walkthrough: Blank Project to Working MVP
+## Chapter 3 — Delivery Workflow: Blank Workspace to Reliable MVP
 
-This chapter provides a practical step-by-step method for building the Map Intelligence app with AI assistance.
+This chapter provides a practical step-by-step workflow for building a smartphone-first webapp with AI assistance.
+
+It is intentionally project-agnostic: use this for any focused app where fast learning and controlled delivery matter.
 
 ### Positioning for new programmers (serious, not hype)
 
-This chapter is also for people who want to enter software development but feel uncertain about entry-level opportunities.
+This workflow is useful for people entering software development through AI-assisted practice.
 
-This route is practical:
+- AI is changing how software gets built.
+- Fundamentals and disciplined review still matter.
+- Real project iterations build both coding skill and AI collaboration skill.
 
-- AI is changing the market.
-- Fundamentals and disciplined workflow still matter.
-- Real project work builds both coding skill and AI collaboration skill.
-
-Avoid “instant success” framing. Progress comes from understanding each iteration.
+Avoid "instant success" framing. Progress comes from understanding each iteration.
 
 ### True starting point: editor + AI agent + no files
 
@@ -261,83 +183,39 @@ Assume the user begins with only:
 - an AI coding agent,
 - an empty workspace.
 
-To make this repeatable for non-expert users, provide a user-friendly primer web page at a stable URL.
+To make this repeatable, provide a user-friendly primer page at a stable URL.
 
-Use two separate files:
+Use two separate assets:
 
-- Marketing page URL (human-facing), e.g. `https://easycoder.github.io/learn-to-program.html`
-- Agent primer URL (machine-facing markdown), chosen by intent:
-  - `https://easycoder.github.io/mapintel-agent-primer.md` for this repo's guided path (TicTacToe first, then MapIntel)
-  - `https://easycoder.github.io/general-agent-primer.md` for experienced users starting a domain-neutral project
+- marketing page URL (human-facing)
+- agent primer URL (machine-facing markdown)
 
-That page should do two things:
+That setup should do two things:
 
-1. Briefly explain the project purpose.
-2. Provide a first prompt the user can paste directly into the AI agent.
-
-The agent primer URL is a delivery mechanism for hidden prerequisites users may not know, such as:
-
-- where EasyCoder and Webson live,
-- where supporting docs live,
-- what bootstrap behavior is expected from the agent,
-- how local browser testing should be handled.
+1. Explain project purpose and working method.
+2. Provide a first prompt users can paste into their AI agent.
 
 ### Primer URL requirements
 
-The primer content should include enough context for the agent to self-orient without forcing the user to explain internals.
+Minimum content in the agent primer:
 
-Minimum content:
-
-- EasyCoder location and relevant repo/workspace paths
-- Webson location and key docs to consult first
-- expected agent behavior at bootstrap
-- local testing guidance (environment-dependent)
-
-#### Design starter asset
-
-Starter assets are available at:
-
-- `AI/mapintel-primer.html` (human-facing page)
-- `AI/mapintel-agent-primer.md` (agent-facing instructions)
-- `general-agent-primer.md` (general-purpose agent-facing instructions)
-
-Use these as working bases and adjust paths/content for your environment before publishing both URLs.
+- runtime and tooling locations,
+- project conventions and file roles,
+- expected bootstrap behavior from the agent,
+- local testing guidance for the current environment.
 
 ### Agent behavior expected at bootstrap
 
-After receiving the initial prompt, the agent should explicitly state it will set up the template and then create:
+After receiving the initial prompt, the agent should:
 
-- `index.html`
-- `tictactoe.ecs`
-- `tictactoe.json`
+- explain a short plan,
+- create minimum runnable files,
+- explain what each file does,
+- propose and wire local testing early.
 
-It should briefly explain each file:
+### Initial prompt template
 
-- `index.html`: loader/entry page that boots the app.
-- `tictactoe.ecs`: EasyCoder script containing app behavior and flow.
-- `tictactoe.json`: Webson UI layout and styling model.
-
-TicTacToe board model rule (must be explicit in agent output):
-
-- Use one array-style variable for all 9 board cells.
-- Use one repeated Webson cell template driven by index.
-- Do not create nine separate variables for cells.
-
-Important note for users:
-
-- `index.html` can technically contain the full script, but keeping it as a loader preserves separation of concerns and keeps the main logic free of embedded HTML.
-- In early TicTacToe milestones, a minimal starter screen is expected before full game logic is added.
-
-Tooling note:
-
-- Local testing setup depends on environment and should be decided at runtime.
-- The agent should raise testing early, recommend an approach, implement it when needed, and explain how to run it.
-
-### Initial prompt template (for the primer page)
-
-Use language in this shape:
-
-"You are helping me build a smartphone-first Map Intelligence webapp using EasyCoder + Webson.
+"You are helping me build a smartphone-first webapp using a human-friendly scripting/runtime stack.
 Start from an empty workspace.
 Use the agent primer at <PRIMER_MD_URL> as authoritative context.
 
@@ -347,179 +225,83 @@ Then explain what you created in plain language.
 
 Raise local browser testing early, choose the best option for this environment, and implement it if needed."
 
-Beginner path variant prompt text:
-
-"You are helping me build a beginner TicTacToe app using EasyCoder + Webson, with MapIntel as a later capstone.
-Start from an empty workspace.
-Use the agent primer at <PRIMER_MD_URL> as authoritative context.
-
-Explain your plan briefly.
-Bootstrap TicTacToe from the primer instructions.
-When implementing the 3x3 board, use one array-style variable and one repeated Webson template; do not create nine separate cell variables.
-Then explain what you created in plain language.
-
-Raise local browser testing early, choose the best option for this environment, and implement it if needed."
-
 ### Prompt URL pattern for users
 
-A concise user flow is:
-
 1. Open the marketing page URL.
-2. Copy the provided initial prompt (which includes the agent primer markdown URL).
+2. Copy the initial prompt (including the primer markdown URL).
 3. Paste it to the AI agent.
-4. Let the agent bootstrap files/tooling from the agent primer URL.
-5. Ask the agent to explain what it just created before moving on.
+4. Let the agent bootstrap files/tooling from the primer.
+5. Ask the agent to explain what it created before moving on.
 
-### Documentation pack to support the primer
+### Milestone method (recommended)
 
-To help the agent answer questions accurately, provide concise support docs alongside the primer:
-
-- EasyCoder quick orientation (runtime model, script structure, key commands)
-- Webson quick orientation (layout model, binding, styling conventions)
-- minimal project conventions (naming, file roles, run path)
-- milestone map (M1–M4 from this chapter)
-
-This avoids brittle one-shot prompting and gives the agent a stable factual base.
-
-The approach is iterative:
+Use short cycles:
 
 1. Define one narrow milestone.
-2. Ask AI for only the code needed for that milestone.
+2. Ask AI for only that milestone.
 3. Run and verify.
-4. Review with the checklist.
-5. Move to the next milestone.
+4. Review with checklist.
+5. Continue.
 
-### Phase 0 — Setup and constraints
+### Milestone blueprint (project-agnostic)
 
-Before generating code, define constraints clearly:
+#### M1 - App shell
 
-- Smartphone-first viewport and interaction.
-- Single-screen app (map + bottom panel).
-- Front-end execution preferred.
-- Public REST only for MVP.
-- Existing gmap.js plugin used for map selection events.
-- No hidden automatic behavior: all state transitions explicit.
+- render smartphone-first layout,
+- initialize base state,
+- verify first interactive element.
 
-#### Prompt Pack: Setup Prompt
+#### M2 - Core interaction loop
 
-Use this style of prompt with your AI assistant:
+- implement primary user action,
+- bind action to state updates,
+- display user-visible result.
 
-"Create the initial project skeleton for a smartphone webapp using EasyCoder/Webson.
-Include a full-screen map region and a collapsed bottom info panel.
-Use explicit states: idle, point-selected, geocoding, over-water, loading-data, ready, error.
-Do not add extra pages or advanced features.
-Generate only the minimum files and wire-up needed to run the first screen."
+#### M3 - Data enrichment
 
-#### Acceptance check
+- add one external data source,
+- handle loading, success, and failure paths,
+- ensure stale responses are ignored.
 
-- App loads on phone dimensions.
-- Map is visible and interactive.
-- Bottom panel is visible/collapsible.
-- No data integration yet.
+#### M4 - Reliability hardening
 
-### Phase 1 — Point selection and panel binding
+- add duplicate-action protections,
+- improve slow-network behavior,
+- add retry and recovery messaging.
 
-Goal: selecting a map point updates panel coordinates.
+### Vibe coding versus structured workflow (quick compare)
 
-#### Prompt Pack: Point Selection Prompt
+**Vibe coding style**
+- fast for exploration,
+- weak traceability,
+- high drift risk as scope grows.
 
-"Add point selection handling using gmap.js so that tapping/clicking the map stores latitude and longitude in state.
-Show coordinates in the bottom panel.
-Add request token generation for each new selection, but do not call external APIs yet.
-Keep all changes small and explicit."
+**Structured workflow style**
+- still fast, but with explicit constraints,
+- better reviewability and reproducibility,
+- lower regression risk during sustained delivery.
 
-#### Acceptance check
-
-- Tapping map updates marker.
-- Panel shows new coordinates.
-- Repeated taps always show latest coordinates.
-
-### Phase 2 — Reverse geocoding and land/water branch
-
-Goal: identify place context and handle water gracefully.
-
-#### Prompt Pack: Geocode Prompt
-
-"Add reverse geocoding for selected coordinates.
-Update state transitions explicitly: point-selected -> geocoding -> ready or over-water or error.
-If over water, show a clear panel message and stop location-specific enrichment.
-Ensure stale responses are ignored when selection token is outdated."
-
-#### Acceptance check
-
-- Land point returns country/locality.
-- Water point displays over-water state.
-- Fast repeated taps do not show stale place data.
-
-### Phase 3 — Weather enrichment
-
-Goal: show current weather for valid land selections.
-
-#### Prompt Pack: Weather Prompt
-
-"Integrate weather fetch for the resolved location using a public REST source.
-Keep existing state model and add explicit loading-data and ready transitions.
-If weather fails, show partial data with clear error text instead of failing the whole panel.
-Do not add forecast yet; current conditions only."
-
-#### Acceptance check
-
-- Weather appears for valid locations.
-- API failure shows partial fallback with explanation.
-- No stale weather after selecting a new point quickly.
-
-### Phase 4 — Panel UX refinement
-
-Goal: improve readability and interaction without major architecture changes.
-
-Recommended experiments:
-
-- Tabbed panel (Place / Weather / Sources)
-- Expanded/collapsed panel states with preserved context
-- Progressive disclosure of optional metadata
-
-#### Prompt Pack: UX Experiment Prompt
-
-"Refactor only the bottom panel presentation.
-Keep all existing data flow unchanged.
-Add a tabbed panel option with tabs: Place, Weather, Sources.
-Minimize code churn and keep behavior backward-compatible.
-Return a summary of exactly what changed and why."
-
-#### Acceptance check
-
-- Data remains correct.
-- Navigation between tabs is responsive on smartphone.
-- No regression in map interaction.
-
-### Phase 5 — Reliability pass
-
-Before calling MVP complete:
-
-- Verify latest-selection-wins behavior under rapid taps.
-- Verify all API failures produce user-readable panel output.
-- Verify loading indicators and recovery paths.
-- Verify no duplicated requests from a single user action.
-- Verify all reviewers understand the latest changes.
+Use vibe coding for rough ideation prototypes.
+Use structured workflow for anything expected to be maintained.
 
 ### Practical rules for AI collaboration
 
 - Prefer many small prompts over one huge prompt.
 - Always ask AI to list changed files and behavior deltas.
 - Ask AI to explain non-obvious logic in plain language.
-- Block merge/acceptance if any reviewer does not understand a change.
+- Block acceptance if reviewers do not understand a change.
 - Keep momentum: clarity first, then speed.
 
 ### Chapter takeaway
 
-The fastest path is controlled iteration:
+The fastest reliable path is controlled iteration:
 
 - small change,
 - visible result,
 - explicit review,
 - repeat.
 
-This is where EasyCoder/Webson + AI collaboration is strongest: high-speed delivery with readable logic and practical reliability.
+This is where human-friendly scripting plus AI collaboration is strongest: high-speed delivery with readable logic and practical reliability.
 
 ---
 
@@ -946,81 +728,116 @@ Teams that standardize prompt structure produce clearer code, fewer regressions,
 
 ---
 
-## Chapter 8 — Case Study: MapIntel End-to-End
 
-This chapter shows how Chapters 1–7 work together in a realistic delivery flow.
+## Chapter 8 — Compare and Contrast: Structured AI Development vs Vibe Coding
 
-### Objective
+This chapter compares two common AI-assisted development styles.
 
-Build a smartphone-first map app that:
+### The two styles
 
-- accepts point selection,
-- resolves place context,
-- enriches with weather,
-- presents results in a bottom panel,
-- remains stable under rapid interaction and partial failure.
+1. **Structured AI development**
+  - clear scope,
+  - explicit constraints,
+  - small reviewed changes,
+  - acceptance checks per step.
 
-### Delivery timeline (example)
+2. **Vibe coding**
+  - rapid conversational coding,
+  - minimal up-front structure,
+  - intuition-led iteration,
+  - weaker documentation and controls by default.
 
-1. **Bootstrap**
-  - User opens marketing page URL.
-  - User pastes prompt containing agent primer markdown URL.
-  - Agent creates starter files and explains the setup.
+Neither style is "good" or "bad" in isolation.
+Fit depends on risk, timeline, and expected maintenance.
 
-2. **MVP flow**
-  - Map interaction and coordinate capture.
-  - Reverse geocode and land/water branching.
-  - Weather enrichment and panel rendering.
+### Side-by-side comparison
 
-3. **Stabilization**
-  - Add stale-response guards.
-  - Add duplicate-action protections.
-  - Validate mobile UI state transitions.
+#### Speed in first hour
 
-4. **Refinement**
-  - Improve panel UX.
-  - Explore tabbed panel and information hierarchy.
-  - Keep diffs focused and reversible.
+- Vibe coding is often faster.
+- Structured workflow is slightly slower initially because setup is explicit.
 
-5. **Production habits**
-  - Introduce release checklist.
-  - Add lightweight observability.
-  - Run recurring maintenance cadence.
+#### Quality after many iterations
 
-### What made this approach work
+- Vibe coding quality can vary sharply across sessions.
+- Structured workflow tends to hold quality more consistently.
 
-- clear state model,
-- small implementation steps,
-- explicit acceptance checks,
-- human understanding before merge,
-- predictable handoffs between team roles.
+#### Team handoff readiness
 
-### Typical failure points (and responses)
+- Vibe output is often harder for another person to resume safely.
+- Structured output is easier to review, explain, and continue.
 
-- **Duplicate actions:** fixed with in-flight/idempotency controls.
-- **Stale responses:** fixed with request-token “latest wins” logic.
-- **Path/source confusion:** fixed with canonical name/path validation.
-- **Mobile interaction drift:** fixed with explicit mode and guard checks.
+#### Regression risk
 
-### Lessons from the case
+- Vibe coding has higher drift risk when many files evolve quickly.
+- Structured workflow lowers drift by requiring small scoped edits and checks.
 
-- Most serious issues were process issues, not language issues.
-- AI accelerated output, but human review determined quality.
-- Simpler architecture improved diagnosability and recovery speed.
+#### Learning and onboarding
 
-### Reusable case-study checklist
+- Vibe coding feels approachable at first.
+- Structured workflow teaches stronger engineering habits over time.
 
-Use this when adapting to a new app idea:
+### Failure modes to watch
 
-- define state model first,
-- define acceptance checks before coding,
-- enforce small-step changes,
-- require behavior-delta summaries,
-- keep stabilization and release habits in scope from the start.
+Common in vibe-heavy workflows:
 
-### Chapter takeaway
+- accidental architecture sprawl,
+- inconsistent naming and patterns,
+- untracked behavior changes,
+- fragile fixes that pass only the immediate test.
 
-The MapIntel case shows that disciplined AI collaboration can produce real product outcomes without heavyweight process overhead.
+Common in over-rigid structured workflows:
+
+- excessive ceremony,
+- slow experimentation,
+- process fatigue.
+
+### Hybrid model (recommended in practice)
+
+Use a two-mode approach:
+
+1. **Explore mode (time-boxed)**
+  - allow vibe-style exploration,
+  - prototype alternatives quickly,
+  - do not treat outputs as production-ready.
+
+2. **Delivery mode (default for shipping)**
+  - convert selected ideas into structured, reviewable changes,
+  - add explicit state/error handling,
+  - validate with acceptance checks.
+
+This preserves creativity while protecting reliability.
+
+### Decision checklist: which mode now?
+
+Choose explore mode when:
+
+- problem framing is uncertain,
+- UX direction is still open,
+- throwaway prototypes are acceptable.
+
+Choose delivery mode when:
+
+- behavior must be stable,
+- team handoff is required,
+- release impact is non-trivial.
+
+### How human-friendly scripting changes the balance
+
+Readable scripting lowers the cost of delivery mode because:
+
+- intent is visible in fewer layers,
+- AI can be constrained more effectively,
+- human reviewers can verify behavior faster.
+
+That means teams can keep creative speed while entering controlled delivery earlier.
+
+### Final takeaway
+
+Vibe coding is useful for ideation.
+Structured AI development is stronger for dependable product delivery.
+
+The highest-performing teams intentionally use both, in sequence, with clear transition rules.
 
 ---
 
@@ -1030,7 +847,7 @@ Use this as the condensed version of the manual.
 
 ### 1) Start correctly
 
-- Use a human-facing marketing page plus agent-facing primer markdown.
+- Use a human-facing entry page plus an agent-facing primer markdown.
 - Bootstrap from empty workspace with clear file roles.
 - Ask the agent to explain what it created.
 
@@ -1072,4 +889,4 @@ Use this as the condensed version of the manual.
 ### Final takeaway
 
 AI-assisted development works best when simplicity, clarity, and discipline are combined.
-The advantage is not just faster code generation — it is a faster path to understandable, maintainable software.
+The advantage is not only faster code generation; it is a faster path to understandable, maintainable software.
