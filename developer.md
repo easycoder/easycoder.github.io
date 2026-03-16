@@ -9,7 +9,9 @@ EasyCoder is a coding system for AI-powered software development. It is used to 
 The Python and JS variants are similar versions of the same coding language. 
 
 ## Why use high-level scripting?
-EasyCoder is far simpler for inexperienced software developers (or even non-programmers) to understand than either Python or JavaScript, yet equally capable of building substantial software products. This is thanks to the way AI is agnostic when it comes to programming languages; able to code with anything that can provide the necessary functionality. See the **AI Manual** tab on this page for a full exposition of this subject. 
+EasyCoder is far simpler for inexperienced software developers (or even non-programmers) to understand than either Python or JavaScript, yet equally capable of building substantial software products. This is thanks to the way AI is agnostic when it comes to programming languages; able to code with anything that can provide the necessary functionality. What this means in practice is people can validate the code being produced without first becoming coding gurus. This is in contrast to 'vibe coding', where you have to just trust AI to do the right job. With EasyCoder, _you_ are in control all the way.
+
+See the **AI Manual** tab on this page for a full exposition of this subject. 
 
 ## The primer prompt
 Development can proceed using either a cloud-based agent or a local LLM hosted by yourself and accessed via Open WebUI. In either case, once you are set up, your first step will be to provide a "primer prompt" that will get your agent familiar with EasyCoder. You can ask a cloud-based agent to read this from a URL, but for a local LLM you will have to open the URL yourself, copy its content and paste this as the primer prompt.
@@ -33,7 +35,11 @@ To run a Python-based script, install EasyCoder:
 ```
 pip install -U easycoder
 ```
-If EasyCoder is already installed this will update you to the latest version, which you might need to do from time to time as it's still under development and new features are regularly being added. Note that on some Linux systems, EasyCoder will not be installed on your $PATH, so either give the full path (usually ~/.local/bin/easycoder) or set up a symbolic link. To check the version number, use `easycoder`, and to run your script, use
+If EasyCoder is already installed this will update you to the latest version, which you might need to do from time to time as it's still under development and new features are regularly being added. Note that on some Linux systems, EasyCoder will not be installed on your $PATH, so either give the full path (usually ~/.local/bin/easycoder) or set up a symbolic link. To check the version number, use
+
+`easycoder`
+
+and to run your script, use
 
 `easycoder project.ecs`
 
