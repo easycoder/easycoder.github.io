@@ -2768,90 +2768,9 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			const command = program[program.pc];
-			const fileSpec = program.getSymbolRecord(command.file);
-			const path = program.getValue(command.path);
-			const progressSpec = program.getSymbolRecord(command.progress);
-			const statusSpec = program.getSymbolRecord(command.status);
-
-			const file = fileSpec.element[fileSpec.index];
-			const progress = progressSpec.element[progressSpec.index];
-			const status = statusSpec.element[statusSpec.index];
-
-			const setProgress = (value) => {
-				if (progress) {
-					progress.value = value;
-				}
-			};
-			const setStatus = (value) => {
-				if (status) {
-					status.innerHTML = value;
-				}
-			};
-
-			const source = file.files[0];
-			if (source) {
-				const formData = new FormData();
-				formData.append(`source`, source);
-				formData.append(`path`, path);
-				const ajax = new XMLHttpRequest();
-				ajax.upload.addEventListener(`progress`, function (event) {
-					const percent = Math.round((event.loaded / event.total) * 100);
-					setProgress(percent);
-					setStatus(`${Math.round(percent)}%...`);
-				}, false);
-				ajax.addEventListener(`load`, function (event) {
-					const response = event.target.responseText;
-					setProgress(0);
-					setStatus(``);
-					if (response) {
-						EasyCoder.writeToDebugConsole(response);
-					}
-				}, false);
-				ajax.addEventListener(`error`, function () {
-					setStatus(`Upload failed`);
-					EasyCoder.writeToDebugConsole(`Upload failed`);
-				}, false);
-				ajax.addEventListener(`abort`, function () {
-					setStatus(`Upload aborted`);
-					EasyCoder.writeToDebugConsole(`Upload aborted`);
-				}, false);
-				ajax.onreadystatechange = function () {
-					if (this.readyState === 4) {
-						const command = program.ajaxCommand;
-						const status = this.status;
-						switch (status) {
-						case 200:
-							program.run(command.pc + 1);
-							break;
-						case 0:
-							break;
-						default:
-							try {
-								program.runtimeError(command.lino, `Error ${status}`);
-							} catch (err) {
-								program.reportError(err, program);
-							}
-							break;
-						}
-					}
-				};
-				ajax.onerror = function () {
-					if (command.onError) {
-						program.errorMessage = this.responseText;
-						program.run(command.onError);
-					} else {
-						const error = this.responseText;
-						program.runtimeError(command.lino, error);
-					}
-				};
-				program.ajaxCommand = command;
-				const postpath = path.startsWith(`http`)
-					? path
-					: `${window.location.origin}/${EasyCoder.REST.restPath}/${path}`;
-				ajax.open(`POST`, postpath);
-				ajax.send(formData);
-			}
+			program.runtimeError(command.lino, `File upload is disabled in static hosting mode`);
 			return 0;
+
 		}
 	},
 

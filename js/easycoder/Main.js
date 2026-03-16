@@ -263,26 +263,25 @@ const EasyCoder = {
 	},
 
 	require: function(type, src, cb) {
-		let prefix = ``;
-		if (src[0] == `/`) {
-			prefix = window.location.origin + `/`;
-		}
+		const resolvedSrc = src[0] === `/`
+			? `${window.location.origin}${src}`
+			: src;
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
 		case `css`:
 			element.type = `text/css`;
-			element.href = `${prefix}${src}`;
+			element.href = resolvedSrc;
 			element.rel = `stylesheet`;
 			break;
 		case `js`:
 			element.type = `text/javascript`;
-			element.src = `${prefix}${src}`;
+			element.src = resolvedSrc;
 			break;
 		default:
 			return;
 		}
 		element.onload = function () {
-			EasyCoder.writeToDebugConsole(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
+			EasyCoder.writeToDebugConsole(`${Date.now() - EasyCoder.timestamp} ms: Library ${resolvedSrc} loaded`);
 			cb();
 		};
 		document.head.appendChild(element);
@@ -488,7 +487,7 @@ const EasyCoder = {
 	},
 
 	start: function(source) {
-		EasyCoder.restPath = `rest.php`;
+		EasyCoder.restPath = `.`;
 		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);

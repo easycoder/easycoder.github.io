@@ -6448,90 +6448,9 @@ const EasyCoder_Browser = {
 
 		run: (program) => {
 			const command = program[program.pc];
-			const fileSpec = program.getSymbolRecord(command.file);
-			const path = program.getValue(command.path);
-			const progressSpec = program.getSymbolRecord(command.progress);
-			const statusSpec = program.getSymbolRecord(command.status);
-
-			const file = fileSpec.element[fileSpec.index];
-			const progress = progressSpec.element[progressSpec.index];
-			const status = statusSpec.element[statusSpec.index];
-
-			const setProgress = (value) => {
-				if (progress) {
-					progress.value = value;
-				}
-			};
-			const setStatus = (value) => {
-				if (status) {
-					status.innerHTML = value;
-				}
-			};
-
-			const source = file.files[0];
-			if (source) {
-				const formData = new FormData();
-				formData.append(`source`, source);
-				formData.append(`path`, path);
-				const ajax = new XMLHttpRequest();
-				ajax.upload.addEventListener(`progress`, function (event) {
-					const percent = Math.round((event.loaded / event.total) * 100);
-					setProgress(percent);
-					setStatus(`${Math.round(percent)}%...`);
-				}, false);
-				ajax.addEventListener(`load`, function (event) {
-					const response = event.target.responseText;
-					setProgress(0);
-					setStatus(``);
-					if (response) {
-						EasyCoder.writeToDebugConsole(response);
-					}
-				}, false);
-				ajax.addEventListener(`error`, function () {
-					setStatus(`Upload failed`);
-					EasyCoder.writeToDebugConsole(`Upload failed`);
-				}, false);
-				ajax.addEventListener(`abort`, function () {
-					setStatus(`Upload aborted`);
-					EasyCoder.writeToDebugConsole(`Upload aborted`);
-				}, false);
-				ajax.onreadystatechange = function () {
-					if (this.readyState === 4) {
-						const command = program.ajaxCommand;
-						const status = this.status;
-						switch (status) {
-						case 200:
-							program.run(command.pc + 1);
-							break;
-						case 0:
-							break;
-						default:
-							try {
-								program.runtimeError(command.lino, `Error ${status}`);
-							} catch (err) {
-								program.reportError(err, program);
-							}
-							break;
-						}
-					}
-				};
-				ajax.onerror = function () {
-					if (command.onError) {
-						program.errorMessage = this.responseText;
-						program.run(command.onError);
-					} else {
-						const error = this.responseText;
-						program.runtimeError(command.lino, error);
-					}
-				};
-				program.ajaxCommand = command;
-				const postpath = path.startsWith(`http`)
-					? path
-					: `${window.location.origin}/${EasyCoder.REST.restPath}/${path}`;
-				ajax.open(`POST`, postpath);
-				ajax.send(formData);
-			}
+			program.runtimeError(command.lino, `File upload is disabled in static hosting mode`);
 			return 0;
+
 		}
 	},
 
@@ -9695,7 +9614,6 @@ const EasyCoder_REST = {
 				EasyCoder_REST.restPath = program.getValue(command.path);
 				return command.pc + 1;
 			}
-
 			const url = program.getValue(command.url);
 			if (!EasyCoder_REST.restPath) {
 				EasyCoder_REST.restPath = `.`;
@@ -9703,9 +9621,26 @@ const EasyCoder_REST = {
 			let path = url;
 			if (!url.startsWith(`http`)) {
 				if (url[0] == `/`) {
-					path = url.substr(1);
+					if (command.request === `post`) {
+						const error = `REST POST to same-origin endpoints is disabled in static hosting mode`;
+						if (command.onError) {
+							program.errorMessage = error;
+							program.run(command.onError);
+							return 0;
+						}
+						program.runtimeError(command.lino, error);
+						return 0;
+					}
+					path = `${window.location.origin}${url}`;
 				} else {
-					path = `${EasyCoder_REST.restPath}/${url}`;
+					const error = `Relative REST endpoints are disabled in static hosting mode`;
+					if (command.onError) {
+						program.errorMessage = error;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, error);
+					return 0;
 				}
 			}
 
@@ -10946,26 +10881,25 @@ const EasyCoder = {
 	},
 
 	require: function(type, src, cb) {
-		let prefix = ``;
-		if (src[0] == `/`) {
-			prefix = window.location.origin + `/`;
-		}
+		const resolvedSrc = src[0] === `/`
+			? `${window.location.origin}${src}`
+			: src;
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
 		case `css`:
 			element.type = `text/css`;
-			element.href = `${prefix}${src}`;
+			element.href = resolvedSrc;
 			element.rel = `stylesheet`;
 			break;
 		case `js`:
 			element.type = `text/javascript`;
-			element.src = `${prefix}${src}`;
+			element.src = resolvedSrc;
 			break;
 		default:
 			return;
 		}
 		element.onload = function () {
-			EasyCoder.writeToDebugConsole(`${Date.now() - EasyCoder.timestamp} ms: Library ${prefix}${src} loaded`);
+			EasyCoder.writeToDebugConsole(`${Date.now() - EasyCoder.timestamp} ms: Library ${resolvedSrc} loaded`);
 			cb();
 		};
 		document.head.appendChild(element);
@@ -11171,7 +11105,7 @@ const EasyCoder = {
 	},
 
 	start: function(source) {
-		EasyCoder.restPath = `rest.php`;
+		EasyCoder.restPath = `.`;
 		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);

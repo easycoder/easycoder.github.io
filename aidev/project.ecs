@@ -357,18 +357,8 @@ SetupScreen:
 
     on click SaveContentButton
     begin
-        put the content of AuthorEditor into EditorContent
-        put SelectedPath into SavePath
-        replace `/` with `~` in SavePath
-        rest post EditorContent to `_save/` cat SavePath
-            or begin
-                set the content of AuthorStatus to
-                    `Save unavailable in browser-only mode. Changes remain in the editor only.`
-                stop
-            end
         set the content of AuthorStatus to
-            `Save request sent for ` cat SelectedPath
-            cat `. Verify endpoint maps to aidev/content.`
+            `Save is disabled in static hosting mode. Changes remain in the editor only.`
     end
 
     stop

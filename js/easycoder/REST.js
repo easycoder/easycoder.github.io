@@ -162,7 +162,6 @@ const EasyCoder_REST = {
 				EasyCoder_REST.restPath = program.getValue(command.path);
 				return command.pc + 1;
 			}
-
 			const url = program.getValue(command.url);
 			if (!EasyCoder_REST.restPath) {
 				EasyCoder_REST.restPath = `.`;
@@ -170,9 +169,26 @@ const EasyCoder_REST = {
 			let path = url;
 			if (!url.startsWith(`http`)) {
 				if (url[0] == `/`) {
-					path = url.substr(1);
+					if (command.request === `post`) {
+						const error = `REST POST to same-origin endpoints is disabled in static hosting mode`;
+						if (command.onError) {
+							program.errorMessage = error;
+							program.run(command.onError);
+							return 0;
+						}
+						program.runtimeError(command.lino, error);
+						return 0;
+					}
+					path = `${window.location.origin}${url}`;
 				} else {
-					path = `${EasyCoder_REST.restPath}/${url}`;
+					const error = `Relative REST endpoints are disabled in static hosting mode`;
+					if (command.onError) {
+						program.errorMessage = error;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, error);
+					return 0;
 				}
 			}
 

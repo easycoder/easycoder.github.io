@@ -71,7 +71,7 @@
   variable N
   variable P
   
-  rest path `rest.php`
+  rest path `.`
   
   create Tracer in Parent
   set attribute `id` of Tracer to `easycoder-tracer`
@@ -95,8 +95,6 @@
   load showdown
   on DecoratorCallback go to Decorate
   
-!  rest get Content from `_list/docs`
-!  alert Content
 
   put `[]` into Packages
   put `[]` into Content
@@ -539,34 +537,10 @@ SelectEditKeyword:
   go to Editor
 
 NewPackage:
-  gosub to SaveKeyword
-  put prompt `Type the new package name:` with `new` into PackageName
-  if PackageName
-  begin
-    rest get Content from `/resources/doc/`
-    put 0 into Index
-    while Index is less than the json count of Content
-    begin
-      put element Index of Content into Item
-      if property `type` of Item is `json`
-      begin
-        put property `name` of Item into Name
-        if Name is PackageName cat `.json`
-        begin
-          alert `Package '` cat PackageName cat `' already exists.`
-          stop
-        end
-      end
-      add 1 to Index
-    end
-  end
-  put `{"commands":{},"values":{},"conditions":{}}` into Record
-  set encoding to `base64`
-  rest post encode Record to `_save/doc~` cat PackageName cat `.json`
-  set encoding to `ec`
-  json add PackageName to Packages
-  put empty into storage as `.docman-` cat PackageName cat `-` cat Group cat `-keyword`
-  go to Restart
+  set the text of Status to `New package is disabled in static hosting mode`
+  wait 3
+  set the text of Status to ``
+  stop
 
 NewKeyword:
   gosub to SaveKeyword
@@ -627,12 +601,7 @@ SaveKeyword:
 
 SavePackage:
   gosub to SaveKeyword
-!  put encode Package into Package
-  set the text of Status to `Saving package "` cat PackageName cat `"...`
-  set encoding to `base64`
-  rest post encode Package to `_save/doc~` cat PackageName cat `.json`
-  set encoding to `ec`
-  set the text of Status to `Package "` cat PackageName cat `" saved`
+  set the text of Status to `Save is disabled in static hosting mode`
   wait 3
   set the text of Status to ``
   stop
