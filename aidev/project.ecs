@@ -27,6 +27,7 @@
     div PrimerContainer
     div CheatContainer
     div DeveloperContainer
+    div DeveloperCard
     div ManualContainer
     button TabPrimer
     button TabCheat
@@ -68,6 +69,8 @@
     variable EditorContent
     variable OriginalMarkdown
     variable AuthorMode
+    variable DeveloperMarkdown
+    variable DeveloperLoaded
     variable ManualMarkdown
     variable ManualLoaded
     variable ManualOverviewContent
@@ -133,6 +136,7 @@ SetupScreen:
     attach PrimerContainer to `PrimerContainer` or go to AbandonShip
     attach CheatContainer to `CheatContainer` or go to AbandonShip
     attach DeveloperContainer to `DeveloperContainer` or go to AbandonShip
+    attach DeveloperCard to `DeveloperCard` or go to AbandonShip
     attach ManualContainer to `ManualContainer` or go to AbandonShip
     attach TabPrimer to `TabPrimer` or go to AbandonShip
     attach TabCheat to `TabCheat` or go to AbandonShip
@@ -169,6 +173,7 @@ SetupScreen:
 
     put 0 into FooterTapCount
     clear AuthorMode
+    clear DeveloperLoaded
     clear ManualLoaded
     put `primer` into ActiveTab
     put `initial-prompt` into SelectedItem
@@ -405,6 +410,19 @@ ShowDeveloperTab:
     set style `background` of TabDeveloper to `#23345e`
     set style `background` of TabManual to `#0d1220`
     set style `display` of RetryManualButton to `none`
+    gosub to EnsureDeveloperLoaded
+    return
+
+EnsureDeveloperLoaded:
+    if DeveloperLoaded return
+    rest get DeveloperMarkdown from `developer.md?v=` cat now
+        or begin
+            set the content of DeveloperCard to
+                `Developer guide is not reachable from this server context.`
+            return
+        end
+    set the content of DeveloperCard to DeveloperMarkdown
+    set DeveloperLoaded
     return
 
 ShowManualTab:
