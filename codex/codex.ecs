@@ -888,7 +888,7 @@ Decorate:
     put left N of Payload into Data
     add 1 to N
     put from N of Payload into Payload
-  	put `<b><a href="" id="ec-link-` cat LinkCount cat `" data-codexid="` cat Data cat `">`
+  	put `<b><a href="#" id="ec-link-` cat LinkCount cat `" data-codexid="` cat Data cat `">`
     	cat Payload cat `</a></b>` into Payload
   	add 1 to LinkCount
   end

@@ -74,7 +74,7 @@ const EasyCoder_Showdown = {
 				const text = body.slice(pos + 1);
 				const linkCount = parseInt(EasyCoder_Showdown.getValue(program, `LinkCount`) || `0`, 10) || 0;
 				EasyCoder_Showdown.setValue(program, `LinkCount`, String(linkCount + 1));
-				return `<b><a href="" id="ec-link-${linkCount}" data-codexid="${data}">${text}</a></b>`;
+				return `<b><a href="#" id="ec-link-${linkCount}" data-codexid="${data}">${text}</a></b>`;
 			}
 		}
 		if (payload.startsWith(`next:`)) {
