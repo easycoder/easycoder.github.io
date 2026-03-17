@@ -1406,7 +1406,7 @@ const EasyCoder_Browser = {
 							if (program.length > 0) {
 								const eventTarget = event.target;
 								const boundTarget = event.currentTarget || target;
-								if (eventTarget && eventTarget.type != `radio`) {
+								if (eventTarget && eventTarget.type != `radio` && typeof eventTarget.blur === `function`) {
 									eventTarget.blur();
 								}
 								if (typeof boundTarget.targetRecord !== `undefined`) {
