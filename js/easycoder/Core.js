@@ -1557,6 +1557,7 @@ const EasyCoder_Core = {
 			}
 			if (compiler.tokenIs(`to`)) {
 				let recipient;
+				let replyVar = null;
 				compiler.next();
 				if ([`parent`, `sender`].includes(compiler.getToken())) {
 					recipient = compiler.getToken();
@@ -1571,12 +1572,24 @@ const EasyCoder_Core = {
 				} else {
 					return false;
 				}
+				if (compiler.tokenIs(`and`)) {
+					compiler.next();
+					if (!compiler.tokenIs(`assign`)) return false;
+					compiler.next();
+					if (!compiler.tokenIs(`reply`)) return false;
+					compiler.next();
+					if (!compiler.tokenIs(`to`)) return false;
+					if (!compiler.nextIsSymbol()) return false;
+					replyVar = compiler.getSymbolRecord().name;
+					compiler.next();
+				}
 				compiler.addCommand({
 					domain: `core`,
 					keyword: `send`,
 					lino,
 					message,
-					recipient
+					recipient,
+					replyVar
 				});
 			}
 			return true;
@@ -1594,17 +1607,33 @@ const EasyCoder_Core = {
 				if (program.sender) {
 					target = EasyCoder.scripts[program.sender];
 				}
+				// Intercept: if the caller is awaiting a direct reply
+				if (target && target.replyVar) {
+					target.message = message;
+					const replyTarget = target.getSymbolRecord(target.replyVar);
+					replyTarget.value[replyTarget.index] = {
+						type: `text`,
+						numeric: false,
+						content: message
+					};
+					target.replyVar = null;
+					return command.pc + 1;
+				}
 			} else {
 				const recipient = program.getSymbolRecord(command.recipient);
 				if (recipient.program) {
 					target = EasyCoder.scripts[recipient.program];
 				}
 			}
+			if (command.replyVar) {
+				program.replyVar = command.replyVar;
+			}
 			if (target && target.onMessage) {
 				target.sender = program.script;
 				target.message = message;
 				target.run(target.onMessage);
 			}
+			program.replyVar = null;
 			return command.pc + 1;
 		}
 	},
