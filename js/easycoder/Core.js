@@ -1603,6 +1603,18 @@ const EasyCoder_Core = {
 				if (program.parent) {
 					target = EasyCoder.scripts[program.parent];
 				}
+				// Intercept: if the caller is awaiting a direct reply
+				if (target && target.replyVar) {
+					target.message = message;
+					const replyTarget = target.getSymbolRecord(target.replyVar);
+					replyTarget.value[replyTarget.index] = {
+						type: `text`,
+						numeric: false,
+						content: message
+					};
+					target.replyVar = null;
+					return command.pc + 1;
+				}
 			} else if (command.recipient === `sender`) {
 				if (program.sender) {
 					target = EasyCoder.scripts[program.sender];
