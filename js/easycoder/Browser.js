@@ -1405,15 +1405,16 @@ const EasyCoder_Browser = {
 							};
 							if (program.length > 0) {
 								const eventTarget = event.target;
-								if (eventTarget.type != `radio`) {
+								const boundTarget = event.currentTarget || target;
+								if (eventTarget && eventTarget.type != `radio`) {
 									eventTarget.blur();
 								}
-								if (typeof eventTarget.targetRecord !== `undefined`) {
-									eventTarget.targetRecord.index = eventTarget.targetIndex;
+								if (typeof boundTarget.targetRecord !== `undefined`) {
+									boundTarget.targetRecord.index = boundTarget.targetIndex;
 									setTimeout(function () {
 										EasyCoder.timestamp = Date.now();
-										let p = EasyCoder.scripts[eventTarget.targetRecord.program];
-										p.run(eventTarget.targetPc);
+										let p = EasyCoder.scripts[boundTarget.targetRecord.program];
+										p.run(boundTarget.targetPc);
 									}, 1);
 								}
 							}
