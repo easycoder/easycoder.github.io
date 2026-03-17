@@ -9633,14 +9633,17 @@ const EasyCoder_REST = {
 					}
 					path = `${window.location.origin}${url}`;
 				} else {
-					const error = `Relative REST endpoints are disabled in static hosting mode`;
-					if (command.onError) {
-						program.errorMessage = error;
-						program.run(command.onError);
+					if (command.request === `post`) {
+						const error = `Relative REST POST endpoints are disabled in static hosting mode`;
+						if (command.onError) {
+							program.errorMessage = error;
+							program.run(command.onError);
+							return 0;
+						}
+						program.runtimeError(command.lino, error);
 						return 0;
 					}
-					program.runtimeError(command.lino, error);
-					return 0;
+					path = url;
 				}
 			}
 
