@@ -2750,6 +2750,7 @@ const EasyCoder_Core = {
 			}
 			if ([`character`, `char`].includes(token)) {
 				let index = compiler.getNextValue();
+				compiler.next();
 				if (compiler.tokenIs(`of`)) {
 					let value = compiler.getNextValue();
 					return {

@@ -7,6 +7,7 @@
     "EC-0004-while-sum.json",
     "EC-0005-array-index-access.json",
     "EC-0006-and-or-conditions.json",
-    "EC-0007-includes-membership.json"
+    "EC-0007-includes-membership.json",
+    "EC-0008-char-of-value.json"
   ]
 }

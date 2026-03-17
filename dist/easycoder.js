@@ -1557,6 +1557,7 @@ const EasyCoder_Core = {
 			}
 			if (compiler.tokenIs(`to`)) {
 				let recipient;
+				let replyVar = null;
 				compiler.next();
 				if ([`parent`, `sender`].includes(compiler.getToken())) {
 					recipient = compiler.getToken();
@@ -1571,12 +1572,24 @@ const EasyCoder_Core = {
 				} else {
 					return false;
 				}
+				if (compiler.tokenIs(`and`)) {
+					compiler.next();
+					if (!compiler.tokenIs(`assign`)) return false;
+					compiler.next();
+					if (!compiler.tokenIs(`reply`)) return false;
+					compiler.next();
+					if (!compiler.tokenIs(`to`)) return false;
+					if (!compiler.nextIsSymbol()) return false;
+					replyVar = compiler.getSymbolRecord().name;
+					compiler.next();
+				}
 				compiler.addCommand({
 					domain: `core`,
 					keyword: `send`,
 					lino,
 					message,
-					recipient
+					recipient,
+					replyVar
 				});
 			}
 			return true;
@@ -1590,15 +1603,53 @@ const EasyCoder_Core = {
 				if (program.parent) {
 					target = EasyCoder.scripts[program.parent];
 				}
+				// Intercept: if the caller is awaiting a direct reply
+				if (target && target.replyVar) {
+					target.message = message;
+					const replyTarget = target.getSymbolRecord(target.replyVar);
+					replyTarget.value[replyTarget.index] = {
+						type: `text`,
+						numeric: false,
+						content: message
+					};
+					target.replyVar = null;
+					return command.pc + 1;
+				}
 			} else if (command.recipient === `sender`) {
 				if (program.sender) {
 					target = EasyCoder.scripts[program.sender];
+				}
+				// Intercept: if the caller is awaiting a direct reply
+				if (target && target.replyVar) {
+					target.message = message;
+					const replyTarget = target.getSymbolRecord(target.replyVar);
+					replyTarget.value[replyTarget.index] = {
+						type: `text`,
+						numeric: false,
+						content: message
+					};
+					target.replyVar = null;
+					return command.pc + 1;
 				}
 			} else {
 				const recipient = program.getSymbolRecord(command.recipient);
 				if (recipient.program) {
 					target = EasyCoder.scripts[recipient.program];
 				}
+			}
+			if (command.replyVar) {
+				program.replyVar = command.replyVar;
+				if (target && target.onMessage) {
+					target.sender = program.script;
+					target.message = message;
+					target.run(target.onMessage);
+				}
+				if (program.replyVar) {
+					program.replyVar = null;
+					program.runtimeError(command.lino, `No reply received from '${command.recipient}'`);
+					return 0;
+				}
+				return command.pc + 1;
 			}
 			if (target && target.onMessage) {
 				target.sender = program.script;
@@ -2699,6 +2750,7 @@ const EasyCoder_Core = {
 			}
 			if ([`character`, `char`].includes(token)) {
 				let index = compiler.getNextValue();
+				compiler.next();
 				if (compiler.tokenIs(`of`)) {
 					let value = compiler.getNextValue();
 					return {
@@ -7924,7 +7976,11 @@ const EasyCoder_Markdown = {
                         }
                     } else {
                         const styleVal = EasyCoder_Webson.expand(element, value, symbols);
-                        element.style[key] = styleVal;
+                        if (key.includes(`-`) || key.startsWith(`--`)) {
+                            element.style.setProperty(key, styleVal);
+                        } else {
+                            element.style[key] = styleVal;
+                        }
                         if (symbols[`#debug`] >= 2) {
                             console.log(`Style ${key}: ${JSON.stringify(value, 0, 0)} -> ${styleVal}`);
                         }
@@ -9866,6 +9922,20 @@ const EasyCoder_Value = {
 			}
 		}
 
+		// Character extraction: char N of Value / character N of Value
+		if ([`char`, `character`].includes(token)) {
+			const index = compiler.getNextValue();
+			if (compiler.tokenIs(`of`)) {
+				const value = compiler.getNextValue();
+				return {
+					domain: `core`,
+					type: `char`,
+					index,
+					value
+				};
+			}
+		}
+
 		// See if any of the domains can handle it
 		const mark = compiler.getIndex();
 		for (const name of Object.keys(compiler.domain)) {
@@ -9936,11 +10006,14 @@ const EasyCoder_Value = {
 				content: value.content
 			};
 		case `char`:
-			return {
-				type: `constant`,
-				numeric: false,
-				content: value.content
-			};
+			if (!value.domain) {
+				return {
+					type: `constant`,
+					numeric: false,
+					content: value.content
+				};
+			}
+			break;
 		case `cat`:
 			return {
 				type: `constant`,

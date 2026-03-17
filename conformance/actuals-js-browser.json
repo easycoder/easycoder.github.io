@@ -28,5 +28,27 @@
       "green"
     ],
     "error": null
+  },
+  "EC-0006": {
+    "logs": [
+      "AND works",
+      "OR works",
+      "Precedence correct"
+    ],
+    "error": null
+  },
+  "EC-0007": {
+    "logs": [],
+    "error": {
+      "category": "compile",
+      "message": "Compile error in 'undefined':\n   1 ! EC-0007: Includes membership in condition\n   2 \n   3 string Sentence\nUnknown symbol or keyword 'string' at line 4\n"
+    }
+  },
+  "EC-0008": {
+    "logs": [
+      "u",
+      "e"
+    ],
+    "error": null
   }
 }

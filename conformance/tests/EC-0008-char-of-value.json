@@ -1,0 +1,18 @@
+{
+  "id": "EC-0008",
+  "name": "char-of-value",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.2",
+    "2.6"
+  ],
+  "script": "EC-0008-char-of-value.ecs",
+  "expect": {
+    "logs": [
+      "u",
+      "e"
+    ],
+    "error": null
+  }
+}

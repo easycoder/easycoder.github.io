@@ -52,6 +52,20 @@ const EasyCoder_Value = {
 			}
 		}
 
+		// Character extraction: char N of Value / character N of Value
+		if ([`char`, `character`].includes(token)) {
+			const index = compiler.getNextValue();
+			if (compiler.tokenIs(`of`)) {
+				const value = compiler.getNextValue();
+				return {
+					domain: `core`,
+					type: `char`,
+					index,
+					value
+				};
+			}
+		}
+
 		// See if any of the domains can handle it
 		const mark = compiler.getIndex();
 		for (const name of Object.keys(compiler.domain)) {
@@ -122,11 +136,14 @@ const EasyCoder_Value = {
 				content: value.content
 			};
 		case `char`:
-			return {
-				type: `constant`,
-				numeric: false,
-				content: value.content
-			};
+			if (!value.domain) {
+				return {
+					type: `constant`,
+					numeric: false,
+					content: value.content
+				};
+			}
+			break;
 		case `cat`:
 			return {
 				type: `constant`,
