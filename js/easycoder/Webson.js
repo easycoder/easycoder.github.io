@@ -412,7 +412,11 @@
                         }
                     } else {
                         const styleVal = EasyCoder_Webson.expand(element, value, symbols);
-                        element.style[key] = styleVal;
+                        if (key.includes(`-`) || key.startsWith(`--`)) {
+                            element.style.setProperty(key, styleVal);
+                        } else {
+                            element.style[key] = styleVal;
+                        }
                         if (symbols[`#debug`] >= 2) {
                             console.log(`Style ${key}: ${JSON.stringify(value, 0, 0)} -> ${styleVal}`);
                         }
