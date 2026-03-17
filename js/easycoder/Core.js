@@ -1639,13 +1639,23 @@ const EasyCoder_Core = {
 			}
 			if (command.replyVar) {
 				program.replyVar = command.replyVar;
+				if (target && target.onMessage) {
+					target.sender = program.script;
+					target.message = message;
+					target.run(target.onMessage);
+				}
+				if (program.replyVar) {
+					program.replyVar = null;
+					program.runtimeError(command.lino, `No reply received from '${command.recipient}'`);
+					return 0;
+				}
+				return command.pc + 1;
 			}
 			if (target && target.onMessage) {
 				target.sender = program.script;
 				target.message = message;
 				target.run(target.onMessage);
 			}
-			program.replyVar = null;
 			return command.pc + 1;
 		}
 	},
