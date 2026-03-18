@@ -583,7 +583,6 @@ const EasyCoder_MQTT = {
             };
 
             const tokenValue = program.getValue(command.token);
-            const broker = program.getValue(command.broker);
             if (command.tokenKey) {
                 const tokenKey = program.getValue(command.tokenKey);
                 if (broker === 'mqtt.flespi.io') {
