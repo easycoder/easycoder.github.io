@@ -155,7 +155,13 @@ const EasyCoder_MQTT = {
                     ? `wss://${this.broker}:8081`
                     : `mqtt://${this.broker}:${this.port}`;
             } else {
-                throw new Error('Unsupported MQTT broker');
+                url = isBrowser
+                    ? `wss://${this.broker}:${this.port}`
+                    : `mqtts://${this.broker}:${this.port}`;
+                if (this.token && typeof this.token === 'object') {
+                    options.username = this.token.username;
+                    options.password = this.token.password;
+                }
             }
 
             this.client = mqtt.connect(url, options);
@@ -577,18 +583,26 @@ const EasyCoder_MQTT = {
             };
 
             const tokenValue = program.getValue(command.token);
+            const broker = program.getValue(command.broker);
             if (command.tokenKey) {
                 const tokenKey = program.getValue(command.tokenKey);
-                EasyCoder_MQTT.decryptFernetToken(tokenValue, tokenKey)
-                    .then(plainToken => {
-                        if (finalizeClient(plainToken)) {
-                            program.run(command.pc + 1);
-                        }
-                    })
-                    .catch(error => {
-                        program.runtimeError(command.lino, error.message || String(error));
-                    });
-                return 0;
+                if (broker === 'mqtt.flespi.io') {
+                    EasyCoder_MQTT.decryptFernetToken(tokenValue, tokenKey)
+                        .then(plainToken => {
+                            if (finalizeClient(plainToken)) {
+                                program.run(command.pc + 1);
+                            }
+                        })
+                        .catch(error => {
+                            program.runtimeError(command.lino, error.message || String(error));
+                        });
+                    return 0;
+                } else {
+                    if (!finalizeClient({ username: tokenValue, password: tokenKey })) {
+                        return 0;
+                    }
+                    return command.pc + 1;
+                }
             }
 
             if (!finalizeClient(tokenValue)) {

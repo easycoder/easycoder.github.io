@@ -1397,6 +1397,7 @@ const EasyCoder_Browser = {
 						target.targetIndex = index;
 						target.targetPc = command.pc + 2;
 						target.onclick = function (event) {
+							print(`onclick fired for `+targetRecord.name+` index `+index);
 							event.stopPropagation();
 							EasyCoder_Browser.clickData = {
 								target,
@@ -1411,11 +1412,14 @@ const EasyCoder_Browser = {
 								}
 								if (typeof boundTarget.targetRecord !== `undefined`) {
 									boundTarget.targetRecord.index = boundTarget.targetIndex;
+									print(`running handler for `+boundTarget.targetRecord.name+` at pc `+boundTarget.targetPc);
 									setTimeout(function () {
 										EasyCoder.timestamp = Date.now();
 										let p = EasyCoder.scripts[boundTarget.targetRecord.program];
 										p.run(boundTarget.targetPc);
 									}, 1);
+								} else {
+									print(`onclick: no targetRecord on boundTarget for `+targetRecord.name);
 								}
 							}
 							return false;
