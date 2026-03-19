@@ -8725,7 +8725,10 @@ const EasyCoder_MQTT = {
             this.client = null;
             this.onConnectPC = null;
             this.onMessagePC = null;
+            this.onErrorPC = null;
             this.message = null;
+            this.lastError = null;
+            this.errorFired = false;
             this.chunkedMessages = {};  // Store incoming chunked messages
             this.chunkSize = 1024;      // Default chunk size
             this.lastSendTime = null;   // Time for last transmission
@@ -8772,7 +8775,15 @@ const EasyCoder_MQTT = {
             // Setup event handlers
             this.client.on('connect', () => this.onConnect());
             this.client.on('message', (topic, payload) => this.onMessage(topic, payload));
-            this.client.on('error', (error) => console.error('MQTT connection error:', error));
+            this.client.on('error', (error) => {
+                console.error('MQTT connection error:', error);
+                if (!this.errorFired) {
+                    this.errorFired = true;
+                    this.lastError = error.message || String(error);
+                    this.client.end(true);
+                    this._queueProgramCallback(this.onErrorPC);
+                }
+            });
             this.client.on('close', () => console.warn('MQTT connection closed'));
         }
 
@@ -8894,6 +8905,10 @@ const EasyCoder_MQTT = {
             let value = this.message;
             value = value && value.message ? value.message : value;
             return value;
+        }
+
+        getError() {
+            return this.lastError || '';
         }
 
         sendMessage(topic, message, qos, chunkSize) {
@@ -9225,7 +9240,7 @@ const EasyCoder_MQTT = {
                 compiler.next();
                 const event = compiler.nextToken();
 
-                if (event === 'connect' || event === 'message') {
+                if (event === 'connect' || event === 'message' || event === 'error') {
                     compiler.next();
 
                     const command = {
@@ -9254,6 +9269,8 @@ const EasyCoder_MQTT = {
                 program.mqttClient.onConnectPC = command.pc + 2;
             } else if (event === 'message') {
                 program.mqttClient.onMessagePC = command.pc + 2;
+            } else if (event === 'error') {
+                program.mqttClient.onErrorPC = command.pc + 2;
             }
 
             return command.pc + 1;
@@ -9426,6 +9443,13 @@ const EasyCoder_MQTT = {
                         type: 'mqtt',
                         content: 'message'
                     };
+                } else if (token === 'error') {
+                    compiler.nextToken();
+                    return {
+                        domain: 'mqtt',
+                        type: 'mqtt',
+                        content: 'error'
+                    };
                 }
             }
 
@@ -9448,6 +9472,13 @@ const EasyCoder_MQTT = {
                             content = String(message);
                         }
                     }
+                    return {
+                        type: 'constant',
+                        numeric: false,
+                        content
+                    };
+                } else if (value.content === 'error') {
+                    const content = program.mqttClient ? program.mqttClient.getError() : '';
                     return {
                         type: 'constant',
                         numeric: false,
