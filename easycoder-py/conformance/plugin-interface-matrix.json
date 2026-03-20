@@ -1,0 +1,42 @@
+{
+  "specVersion": "0.1",
+  "type": "plugin-interface-matrix",
+  "description": "Mapping of shared plugin capabilities between EasyCoder JS and Python runtimes.",
+  "capabilities": [
+    {
+      "name": "domain-registration",
+      "js-browser": "EasyCoder.domain.<name> = DomainObject",
+      "python-cli": "ECProgram.importPlugin() + useClass() + handler.getName()"
+    },
+    {
+      "name": "keyword-compile-discovery",
+      "js-browser": "domain.getHandler(token).compile(compiler)",
+      "python-cli": "domain.keywordHandler(token) -> k_<token>"
+    },
+    {
+      "name": "keyword-runtime-dispatch",
+      "js-browser": "domain.run(program) -> handler.run(program)",
+      "python-cli": "domain.runHandler(keyword) -> r_<keyword>"
+    },
+    {
+      "name": "value-compile",
+      "js-browser": "domain.value.compile(compiler)",
+      "python-cli": "domain.compileValue()"
+    },
+    {
+      "name": "value-runtime",
+      "js-browser": "domain.value.get(program, value)",
+      "python-cli": "domain.valueHandler(type) -> v_<type>"
+    },
+    {
+      "name": "condition-compile",
+      "js-browser": "domain.condition.compile(compiler)",
+      "python-cli": "domain.compileCondition()"
+    },
+    {
+      "name": "condition-runtime",
+      "js-browser": "domain.condition.test(program, condition)",
+      "python-cli": "domain.conditionHandler(type) -> c_<type>"
+    }
+  ]
+}

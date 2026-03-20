@@ -1,0 +1,48 @@
+!   server.ecs
+!   Test the ec_server plugin.
+!   Run this script, then in another terminal run tests/server_test.sh
+
+    script ServerTest
+
+    use server
+
+    variable Path
+    variable Body
+    variable Response
+    server MyServer
+
+    start MyServer on port 8765
+
+    print `Server running on port 8765`
+    print `Run tests/server_test.sh in another terminal`
+
+    on MyServer request
+    begin
+        if MyServer request is `GET`
+        begin
+            set Path to MyServer path
+            if Path is `/hello`
+            begin
+                return `Hello from EasyCoder` to MyServer
+            end
+            else if Path is `/stop`
+            begin
+                return `Stopping` to MyServer
+                exit
+            end
+            else
+            begin
+                return `Unknown path: ` cat Path to MyServer with status 404
+            end
+        end
+        else if MyServer request is `POST`
+        begin
+            get Body from MyServer
+            set Response to `Echo: ` cat Body
+            return Response to MyServer
+        end
+        else
+        begin
+            return `Method not supported` to MyServer with status 405
+        end
+    end

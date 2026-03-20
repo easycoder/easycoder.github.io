@@ -1,0 +1,173 @@
+{
+  "Script Template": {
+    "prefix": "script",
+    "body": [
+      "script ${1:ScriptName}",
+      "    ${2:! Your code here}",
+      "    exit"
+    ],
+    "description": "Basic script structure"
+  },
+  "Variable Declaration": {
+    "prefix": "variable",
+    "body": [
+      "variable ${1:Name}"
+    ],
+    "description": "Declare a variable"
+  },
+  "Set Variable": {
+    "prefix": "set",
+    "body": [
+      "set ${1:variable} to ${2:value}"
+    ],
+    "description": "Set a variable value"
+  },
+  "If Statement": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition}",
+      "    ${2:! code}",
+      "else",
+      "    ${3:! else code}"
+    ],
+    "description": "If-else statement"
+  },
+  "While Loop": {
+    "prefix": "while",
+    "body": [
+      "while ${1:condition}",
+      "begin",
+      "    ${2:! loop code}",
+      "end"
+    ],
+    "description": "While loop"
+  },
+  "Print": {
+    "prefix": "print",
+    "body": [
+      "print ${1:value}"
+    ],
+    "description": "Print a value"
+  },
+  "Log": {
+    "prefix": "log",
+    "body": [
+      "log ${1:message}"
+    ],
+    "description": "Log a message with timestamp"
+  },
+  "Error Handler": {
+    "prefix": "onerror",
+    "body": [
+      "on error",
+      "    log error",
+      "    exit"
+    ],
+    "description": "Error handler"
+  },
+  "Add": {
+    "prefix": "add",
+    "body": [
+      "add ${1:value} to ${2:variable}"
+    ],
+    "description": "Add to a variable"
+  },
+  "Append": {
+    "prefix": "append",
+    "body": [
+      "append ${1:value} to ${2:array}"
+    ],
+    "description": "Append to an array"
+  },
+  "Get REST": {
+    "prefix": "get",
+    "body": [
+      "get ${1:url} to ${2:variable}"
+    ],
+    "description": "GET request"
+  },
+  "Post REST": {
+    "prefix": "post",
+    "body": [
+      "post ${1:value} to ${2:url}"
+    ],
+    "description": "POST request"
+  },
+  "Open File": {
+    "prefix": "open",
+    "body": [
+      "open ${1:file} as ${2:mode}"
+    ],
+    "description": "Open a file"
+  },
+  "Read File": {
+    "prefix": "read",
+    "body": [
+      "read ${1:file} to ${2:variable}"
+    ],
+    "description": "Read from file"
+  },
+  "Write File": {
+    "prefix": "write",
+    "body": [
+      "write ${1:value} to ${2:file}"
+    ],
+    "description": "Write to file"
+  },
+  "Use Plugin": {
+    "prefix": "use",
+    "body": [
+      "use ${1:plugin-name}"
+    ],
+    "description": "Import a plugin"
+  },
+  "Fork Process": {
+    "prefix": "fork",
+    "body": [
+      "fork to ${1:label}"
+    ],
+    "description": "Fork a new process"
+  },
+  "Go to Label": {
+    "prefix": "goto",
+    "body": [
+      "go to ${1:label}"
+    ],
+    "description": "Go to a label"
+  },
+  "Gosub": {
+    "prefix": "gosub",
+    "body": [
+      "gosub to ${1:label}"
+    ],
+    "description": "Call a subroutine"
+  },
+  "Input": {
+    "prefix": "input",
+    "body": [
+      "input ${1:variable} with ${2:prompt}"
+    ],
+    "description": "Get user input"
+  },
+  "Assert": {
+    "prefix": "assert",
+    "body": [
+      "assert ${1:condition} with ${2:message}"
+    ],
+    "description": "Assert a condition"
+  },
+  "Index Array": {
+    "prefix": "index",
+    "body": [
+      "index ${1:variable} to ${2:index}"
+    ],
+    "description": "Set array index"
+  },
+  "Split String": {
+    "prefix": "split",
+    "body": [
+      "split ${1:string} on ${2:delimiter} into ${3:array}"
+    ],
+    "description": "Split a string"
+  }
+}

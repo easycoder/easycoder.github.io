@@ -1,0 +1,31 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "easycoder"
+authors = [{name = "Graham Trott", email = "gtanyware@gmail.com"}]
+description = "Rapid scripting in English"
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+keywords = ["compiler", "scripting", "prototyping", "programming", "coding", "python", "low code", "hypertalk", "computer language", "learn to code"]
+dynamic = ["version"]
+dependencies = [
+    "pytz",
+    "requests",
+    "psutil",
+    "paramiko",
+    "pyside6",
+    "paho-mqtt",
+    "bottle"
+]
+
+[tool.flit.sdist]
+include = ["ec_*.py", "*.png"]
+
+[project.scripts]
+easycoder = "easycoder:Main"
+
+[project.urls]
+Home = "https://github.com/easycoder/easycoder-py"

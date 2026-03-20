@@ -1,0 +1,46 @@
+!   mqtt_publisher.ecs
+
+    script MQTTPublisher
+
+    use mqtt
+
+    topic MyTopic
+    topic ServerTopic
+    variable UUID
+    variable MQTTToken
+
+!    debug step
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Set up MQTT
+
+    ! Get the MQTT token
+    put `kgDkpyDUubtAchcj9ts85QPJOwE1C2MKjNuoeb4nisd23pM33uTb5m7AGuMNhJMP` into MQTTToken
+
+    put uuid into UUID
+
+    init MyTopic
+        name UUID
+        qos 1
+    
+    init ServerTopic
+        name `38:54:39:34:62:d7/request`
+        qos 1
+
+    mqtt
+        token MQTTToken
+        id uuid
+        broker `mqtt.flespi.io`
+        port 8883
+        subscribe MyTopic
+
+    wait 2
+    
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send a action
+    send to ServerTopic
+        sender MyTopic
+        action `topics`
+
+    wait 2
+    exit

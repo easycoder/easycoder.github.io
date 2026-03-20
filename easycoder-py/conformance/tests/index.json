@@ -1,0 +1,12 @@
+{
+  "specVersion": "0.1",
+  "tests": [
+    "EC-0001-basic-assignment.json",
+    "EC-0002-arithmetic-chain.json",
+    "EC-0003-condition-branch.json",
+    "EC-0004-while-sum.json",
+    "EC-0005-array-index-access.json",
+    "EC-0006-and-or-conditions.json",
+    "EC-0007-includes-membership.json"
+  ]
+}

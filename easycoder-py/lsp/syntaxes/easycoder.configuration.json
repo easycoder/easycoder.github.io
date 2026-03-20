@@ -1,0 +1,22 @@
+{
+  "comments": {
+    "lineComment": "!"
+  },
+  "brackets": [
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    ["(", ")"],
+    ["'", "'"],
+    ["\"", "\""]
+  ],
+  "surroundingPairs": [
+    ["(", ")"],
+    ["'", "'"],
+    ["\"", "\""]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "\\b(if|else|loop|repeat|while|until|on|script)\\b",
+    "decreaseIndentPattern": "\\b(exit|end)\\b"
+  }
+}

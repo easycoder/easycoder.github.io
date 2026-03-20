@@ -1,0 +1,62 @@
+!   wordlist.ecs
+
+    script WordList
+
+    dictionary Words
+    dictionary W
+    variable Content
+    variable Length
+    variable Word
+    variable Count
+    variable S
+    variable F
+    variable C
+
+    get Content from url `https://easycoder.github.io`
+    put the length of Content into Length
+    print Length
+
+    put 0 into S
+    put 1 into F
+    put empty into Word
+    while F is less than Length
+    begin
+        put from S to F of Content into C
+        if C is less than `A` go to Test
+        if C is not greater than `Z` go to AddChar
+        if C is less than `a` go to MoveOn
+        if C is not greater than `z` go to AddChar
+        go to MoveOn
+
+    AddChar:
+        put Word cat C into Word
+        go to MoveOn
+
+    Test:
+        if Word is not empty
+        begin
+            print Word
+            if Words has entry Word
+            begin
+                put entry Word of Words into W
+                put the value of entry `count` of W into Count
+                increment Count
+                set entry `count` of W to Count
+                set entry Word of Words to W
+            end
+            else
+            begin
+                reset W
+                set entry `word` of W to Word
+                set entry `count` of W to 1
+                set entry Word of Words to W
+            end
+            put empty into Word
+        end
+
+    MoveOn:
+        increment S
+        increment F
+    end
+    print prettify Words
+    exit

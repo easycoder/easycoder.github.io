@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyCoder MQTT Plugin Test</title>
+    
+    <!-- MQTT.js library -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    
+    <!-- EasyCoder core (you'll need to provide the correct path/URL) -->
+    <!-- <script src="path/to/easycoder.js"></script> -->
+    
+    <!-- MQTT Plugin -->
+    <script src="mqtt.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .status {
+            background: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.disconnected { background: #f44336; }
+        .status-indicator.connected { background: #4CAF50; }
+        
+        #messages {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            border-radius: 3px;
+        }
+        
+        .message.sent {
+            background: #f1f8e9;
+            border-left-color: #8BC34A;
+        }
+        
+        .message-time {
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .controls {
+            background: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔌 EasyCoder MQTT Plugin Test</h1>
+    
+    <div class="status">
+        <h3>Connection Status</h3>
+        <span class="status-indicator disconnected" id="statusIndicator"></span>
+        <span id="statusText">Disconnected</span>
+    </div>
+    
+    <div class="controls">
+        <h3>Controls</h3>
+        <button id="connectBtn" onclick="connect()">Connect</button>
+        <button id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
+        <br><br>
+        <input type="text" id="messageInput" placeholder="Enter message to send..." />
+        <button id="sendBtn" onclick="sendMessage()" disabled>Send Message</button>
+    </div>
+    
+    <div class="status">
+        <h3>Messages</h3>
+        <div id="messages"></div>
+    </div>
+    
+    <div class="status">
+        <h3>About This Test</h3>
+        <p>This page demonstrates the EasyCoder MQTT plugin running in JavaScript.</p>
+        <ul>
+            <li><strong>Broker:</strong> test.mosquitto.org</li>
+            <li><strong>Port:</strong> 1883</li>
+            <li><strong>Test Topic:</strong> easycoder/test/demo</li>
+            <li><strong>Client ID:</strong> EasyCoder-Test-[random]</li>
+        </ul>
+        <p><em>Note: This is a public test broker. Messages may be visible to others.</em></p>
+    </div>
+
+    <script>
+        // Test the MQTT plugin directly (without full EasyCoder runtime)
+        let mqttClient = null;
+        const testTopic = 'easycoder/test/demo';
+        
+        function addMessage(text, isSent = false) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message' + (isSent ? ' sent' : '');
+            
+            const time = new Date().toLocaleTimeString();
+            messageDiv.innerHTML = `
+                <div>${text}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            messagesDiv.insertBefore(messageDiv, messagesDiv.firstChild);
+        }
+        
+        function updateStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (connected) {
+                indicator.className = 'status-indicator connected';
+                statusText.textContent = 'Connected to test.mosquitto.org';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                sendBtn.disabled = false;
+            } else {
+                indicator.className = 'status-indicator disconnected';
+                statusText.textContent = 'Disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                sendBtn.disabled = true;
+            }
+        }
+        
+        function connect() {
+            const clientId = 'EasyCoder-Test-' + Math.random().toString(16).substr(2, 8);
+            addMessage(`Connecting as ${clientId}...`, false);
+            
+            try {
+                // Create a direct MQTT.js client for testing
+                mqttClient = mqtt.connect('mqtt://test.mosquitto.org:1883', {
+                    clientId: clientId
+                });
+                
+                mqttClient.on('connect', () => {
+                    addMessage('✅ Connected successfully!', false);
+                    updateStatus(true);
+                    
+                    mqttClient.subscribe(testTopic, { qos: 1 }, (err) => {
+                        if (!err) {
+                            addMessage(`📡 Subscribed to topic: ${testTopic}`, false);
+                        }
+                    });
+                });
+                
+                mqttClient.on('message', (topic, message) => {
+                    const msg = message.toString();
+                    addMessage(`📨 Received on ${topic}: ${msg}`, false);
+                });
+                
+                mqttClient.on('error', (error) => {
+                    addMessage(`❌ Error: ${error.message}`, false);
+                });
+                
+                mqttClient.on('close', () => {
+                    addMessage('Connection closed', false);
+                    updateStatus(false);
+                });
+                
+            } catch (error) {
+                addMessage(`❌ Connection failed: ${error.message}`, false);
+                updateStatus(false);
+            }
+        }
+        
+        function disconnect() {
+            if (mqttClient) {
+                mqttClient.end();
+                mqttClient = null;
+                addMessage('Disconnected by user', false);
+                updateStatus(false);
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) {
+                alert('Please enter a message');
+                return;
+            }
+            
+            if (!mqttClient) {
+                alert('Not connected');
+                return;
+            }
+            
+            // Create a structured message like the EasyCoder plugin does
+            const payload = {
+                action: 'test',
+                message: message,
+                timestamp: new Date().toISOString()
+            };
+            
+            mqttClient.publish(testTopic, JSON.stringify(payload), { qos: 1 }, (err) => {
+                if (!err) {
+                    addMessage(`📤 Sent: ${message}`, true);
+                    input.value = '';
+                } else {
+                    addMessage(`❌ Send failed: ${err.message}`, false);
+                }
+            });
+        }
+        
+        // Allow Enter key to send
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Show plugin info
+        console.log('EasyCoder MQTT Plugin:', EasyCoder_MQTT);
+        console.log('Plugin version:', EasyCoder_MQTT.name);
+        console.log('Available handlers:', [
+            'init', 'mqtt', 'on', 'send', 'topic'
+        ]);
+    </script>
+</body>
+</html>

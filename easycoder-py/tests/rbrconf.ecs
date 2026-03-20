@@ -1,0 +1,2229 @@
+!   rbrconf.ecs
+
+    script RBRConfigurator
+
+    use graphics
+
+!    debug compile
+
+    window HostWindow
+    window Window
+    window Dialog
+    layout MainPanel
+    layout LeftPanel
+    layout RightPanel
+    layout DeviceHPanel
+    layout DeviceButtonPanel
+    layout OuterLayout
+    layout Layout
+    layout VLayout
+    layout HLayout
+    layout Panel
+    group Group
+    label Label
+    label RelayStateLabel
+    label StatusLabel
+    label UptimeLabel
+    label TemperatureLabel
+    pushbutton ResetConfigButton
+    pushbutton ScanDevicesButton
+    pushbutton ClearSystemButton
+    pushbutton ReconnectMasterButton
+    pushbutton RemoveSlaveButton
+    pushbutton UpdateFileButton
+    pushbutton UpdateAllFilesButton
+    pushbutton DeleteFileButton
+    pushbutton ExitButton
+    pushbutton ScanSystemsButton
+    pushbutton RemoveSystemButton
+    pushbutton MasterDeviceButton
+    pushbutton RelayToggleButton
+    pushbutton UpdateWidgetDataButton
+    pushbutton ResetDeviceButton
+    pushbutton TemperatureButton
+    pushbutton OKButton
+    pushbutton CancelButton
+    lineinput HostInput
+    lineinput UserInput
+    lineinput PasswordInput
+    lineinput LineInput
+    lineinput DeviceNameInput
+    lineinput LEDPinInput
+    lineinput RelayPinInput
+    lineinput DHT22PinInput
+    lineinput PathInput
+    listbox ListBox
+    listbox SlaveList
+    combobox SystemsCombo
+    checkbox LEDInvertCheckbox
+    checkbox RelayInvertCheckbox
+    messagebox MessageBox
+
+!    debug step
+
+    log `Starting`
+    init graphics
+
+    create MainPanel type QHBoxLayout
+
+    ! Do the left-hand panel
+
+    create LeftPanel type QVBoxLayout
+    add LeftPanel to MainPanel
+
+    add stretch to LeftPanel
+
+    create ResetConfigButton text `Reset everything`
+    on click ResetConfigButton go to ResetConfigFileClick
+    add ResetConfigButton to LeftPanel
+
+    create ClearSystemButton text `Clear the selected system`
+    on click ClearSystemButton go to ClearSystemClick
+    add ClearSystemButton to LeftPanel
+
+    create ReconnectMasterButton text `Reconnect the master`
+    on click ReconnectMasterButton go to ReconnectMasterClick
+    add ReconnectMasterButton to LeftPanel
+
+    add stretch to LeftPanel
+
+    create ScanDevicesButton text `Scan for devices`
+    on click ScanDevicesButton go to ScanForDevicesClick
+    add ScanDevicesButton to LeftPanel
+
+    create UpdateFileButton text `Update one file`
+    on click UpdateFileButton go to UpdateFileClick
+    add UpdateFileButton to LeftPanel
+
+    create UpdateAllFilesButton text `Update all files`
+    on click UpdateAllFilesButton go to UpdateAllFilesClick
+    add UpdateAllFilesButton to LeftPanel
+
+    create DeleteFileButton text `Delete file`
+    add DeleteFileButton to LeftPanel
+    on click DeleteFileButton go to DeleteFileClick
+
+    create RemoveSlaveButton text `Remove slave`
+    add RemoveSlaveButton to LeftPanel
+    on click RemoveSlaveButton go to RemoveSlaveClick
+
+    add stretch to LeftPanel
+
+    create ExitButton text `Exit`
+    add ExitButton to LeftPanel
+    on click ExitButton go to ExitClick
+
+    ! Now do the right-hand panel
+
+    create RightPanel type QVBoxLayout
+    add stretch RightPanel to MainPanel
+
+    ! Create the system name group
+    create Group title `Systems`
+    set the height of Group to 50
+    add Group to RightPanel
+    create Layout type QHBoxLayout
+    add Layout to Group
+    create SystemsCombo
+    add stretch SystemsCombo to Layout
+    create ScanSystemsButton text `System Scan`
+    disable ScanSystemsButton
+    on click ScanSystemsButton go to ScanSystemsClick
+    add ScanSystemsButton to Layout
+    create RemoveSystemButton text `Remove`
+    disable RemoveSystemButton
+    on click RemoveSystemButton go to RemoveSystemClick
+    add RemoveSystemButton to Layout
+
+    ! Create the Master Device group
+    create Group title `Master device`
+    set the height of Group to 50
+    add Group to RightPanel
+    create Layout type QHBoxLayout
+    add Layout to Group
+    create MasterDeviceButton text ``
+    add MasterDeviceButton to Layout
+    on click MasterDeviceButton go to MasterDeviceClick
+
+    ! Create the Slave Devices group
+    create Group title `Slave devices`
+    set the height of Group to 150
+    add Group to RightPanel
+    create Layout type QHBoxLayout
+    add Layout to Group
+    create SlaveList
+    add SlaveList to Layout
+    on select SlaveList go to SlaveDeviceClick
+
+    ! Create the Selected Device group
+    create Group title `Selected device`
+    set the height of Group to 150
+    add Group to RightPanel
+
+    create DeviceHPanel type QHBoxLayout
+    add DeviceHPanel to Group
+
+    create OuterLayout type QVBoxLayout
+    add OuterLayout to DeviceHPanel
+
+    create Layout type QHBoxLayout
+    add Layout to OuterLayout
+    create Label text `Name:`
+    add Label to Layout
+    create DeviceNameInput size 40
+    add DeviceNameInput to Layout
+    create Label text `Uptime:`
+    add Label to Layout
+    create UptimeLabel text `0`
+    add UptimeLabel to Layout
+    add stretch to Layout
+
+    create Layout type QHBoxLayout
+    add Layout to OuterLayout
+    create Label text `LED Pin:`
+    add Label to Layout
+    create LEDPinInput size 5
+    add LEDPinInput to Layout
+    create LEDInvertCheckbox text `Inverted`
+    add LEDInvertCheckbox to Layout
+    add stretch to Layout
+
+    create Layout type QHBoxLayout
+    add Layout to OuterLayout
+    create Label text `Relay Pin:`
+    add Label to Layout
+    create RelayPinInput size 5
+    add RelayPinInput to Layout
+    create RelayInvertCheckbox text `Inverted`
+    add RelayInvertCheckbox to Layout
+    create RelayToggleButton size 5 text `Toggle`
+    on click RelayToggleButton go to RelayToggleClick
+    add RelayToggleButton to Layout
+    create RelayStateLabel size 5 text empty
+    add RelayStateLabel to Layout
+    add stretch to Layout
+
+    create Layout type QHBoxLayout
+    add Layout to OuterLayout
+    create Label text `DHT22 Pin:`
+    add Label to Layout
+    create DHT22PinInput size 5
+    add DHT22PinInput to Layout
+    add stretch to Layout
+
+    create Layout type QHBoxLayout
+    add Layout to OuterLayout
+    create Label text `Path:`
+    add Label to Layout
+    create PathInput size 60
+    set the width of PathInput to 250
+    add PathInput to Layout
+    add stretch to Layout
+
+    create Layout type QHBoxLayout
+    add Layout to OuterLayout
+    create Label text `Temperature:`
+    add Label to Layout
+    create TemperatureLabel text ``
+    add TemperatureLabel to Layout
+    add stretch to Layout
+
+    ! The 'Update' and 'Reset' ManageButtons
+    create DeviceButtonPanel type QVBoxLayout
+    add stretch to DeviceButtonPanel
+    create UpdateWidgetDataButton text `Update`
+    on click UpdateWidgetDataButton go to UpdateWidgetDataClick
+    add UpdateWidgetDataButton to DeviceButtonPanel
+    create ResetDeviceButton text `Reset`
+    on click ResetDeviceButton go to ResetDeviceButtonClick
+    add ResetDeviceButton to DeviceButtonPanel
+    create TemperatureButton text `Get temperature`
+    on click TemperatureButton go to TemperatureButtonClick
+    add TemperatureButton to DeviceButtonPanel
+    add stretch to DeviceButtonPanel
+    add DeviceButtonPanel to DeviceHPanel
+
+    add stretch to RightPanel
+
+    create StatusLabel text `` align right
+    add StatusLabel to RightPanel
+    gosub to OK
+
+    create Window title `RBR-Now configurator` size 700 500
+    set the layout of Window to MainPanel
+    show Window
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    ssh SSH
+    dictionary ControllerSpec
+    dictionary SystemConfig
+    dictionary Systems
+    dictionary Devices
+    dictionary Device
+    dictionary Device2
+    dictionary MasterDevice
+    dictionary Config
+    dictionary Hosts
+    dictionary Pins
+    dictionary Pin
+    dictionary Dict
+    list SlaveDevices
+    list Keys
+    list List
+    variable RamDisk
+    variable HomeDir
+    variable ConfigFile
+    variable Name
+    variable Value
+    variable ReturnValue
+    variable Title
+    variable Result
+    variable Item
+    variable HostSSID
+    variable HostPassword
+    variable SystemHostSSID
+    variable CurrentSSID
+    variable SSID
+    variable MAC
+    variable Password
+    variable IPAddr
+    variable MyIPAddr
+    variable Prompt
+    variable SystemCallResult
+    variable SystemName
+    variable SystemMAC
+    variable SystemPassword
+    variable SystemIPAddr
+    variable StatusMessage
+    variable Message
+    variable Message2
+    variable Response
+    variable DeviceSelected
+    variable MasterSSID
+    variable MasterMAC
+    variable MasterIPAddr
+    variable MasterDeviceName
+    variable Channel
+    variable Previous
+    variable IsMaster
+    variable FileName
+    variable FileSize
+    variable ErrorFlag
+    variable Attempt
+    variable Sequence
+    variable Start
+    variable Finish
+    variable Total
+    variable Segment
+    variable Length
+    variable ControllerSpecPath
+    variable SlavePath
+    variable Files
+    variable Count
+    variable Content
+    variable Uptime
+    variable APInfo
+    variable Info
+    variable URL
+    variable Silent
+    variable RelayState
+    variable D
+    variable F
+    variable K
+    variable N
+    variable P
+    variable S
+    variable T1
+    variable T2
+
+!    debug compile
+!    debug step
+!    system `rm /home/graham/.rbr.conf`
+!    system `rm /home/graham/.controller.json`
+
+    put `/mnt/data/` into RamDisk
+    put trim system `echo $HOME` into HomeDir
+    put HomeDir cat `/.controller.json` into ControllerSpecPath
+    put HomeDir cat `/.rbr.conf` into ConfigFile
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   The main program starts here
+    set the encoding to `hex`
+
+!   Load the main config file or create one if there is none
+    if file ConfigFile exists load Config from ConfigFile
+    else reset Config
+    if Config is empty
+    begin
+        log `No config file`
+        reset Config
+        save Config to ConfigFile
+    end
+    log prettify Config
+!    put json Config into Config
+!    log Config
+    if Config does not have entry `hosts`
+    begin
+        reset Dict
+        set entry `hosts` of Config to Dict
+    end
+    if Config does not have entry `systems`
+    begin
+        reset Dict
+        set entry `systems` of Config to Dict
+    end
+    if Config does not have entry `current-system` set entry `current-system` of Config to empty
+    if entry `current-system` of Config is empty
+    begin
+        put entry `systems` of Config into Systems
+        put the keys of Systems into Keys
+        if the count of Keys is 0
+            reset SystemName
+        else
+            put item 0 of Keys into SystemName
+        set entry `current-system` of Config to SystemName
+        save stringify Config to ConfigFile
+    end
+    put entry `hosts` of Config into Hosts
+
+    reset CurrentSSID
+    reset SystemHostSSID
+    reset SystemIPAddr
+    reset MasterDevice
+    clear DeviceSelected
+    clear Silent
+
+Restart:
+    gosub to SetBusy
+
+!   Get the host SSID
+    put `Getting host SSID...` into StatusMessage
+    gosub to Working
+    put trim system `LANG=C nmcli -t -f active,ssid dev wifi | grep ^yes | cut -d: -f2-` into HostSSID
+    if Hosts has entry HostSSID
+        put entry HostSSID of Hosts into HostPassword
+    else
+    begin
+        gosub to GetHostPassword
+        if HostPassword is not empty
+        begin
+            set entry HostSSID of Hosts to HostPassword
+            set entry `hosts` of Config to Hosts
+        end
+    end
+    save prettify Config to ConfigFile
+    put `Connected to ` cat HostSSID into StatusMessage
+    gosub to Working
+
+    if file ControllerSpecPath exists
+    begin
+        load ControllerSpec from ControllerSpecPath
+        gosub to SetupSSH
+    end
+    else
+    begin
+        reset SystemIPAddr
+        reset ControllerSpec
+        gosub to GetSSH
+        gosub to SetupSSH
+        put HostSSID into CurrentSSID
+        put SystemIPAddr into IPAddr
+        put 0 into Count
+        gosub to ScanIPAddress
+        gosub to RefreshSystemsCombo
+    end
+    log ControllerSpec
+
+    reset SystemConfig
+    reset Devices
+
+    gosub to LockSystemController
+
+!   Get the list of systems from Config, or create an empty list. Then populate the combo box
+    if Config has entry `systems` put entry `systems` of Config into Systems
+    else
+    begin
+        reset Systems
+        set entry `systems` of Config to Systems
+    end
+    gosub to RefreshSystemsCombo
+
+    gosub to SetUnBusy
+    on select SystemsCombo go to SystemsComboSelect
+    put `Ready` into StatusMessage
+    gosub to Idle
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+SetupSSH:
+    put entry `current` of ControllerSpec into SystemIPAddr
+    log SystemIPAddr
+    put entry SystemIPAddr of ControllerSpec into Dict
+    log Dict
+    if Dict has entry `user`
+        if Dict has entry `password`
+        begin
+            put `Set up SSH to ` cat SystemIPAddr into StatusMessage
+            gosub to Working
+            set SSH
+                host SystemIPAddr
+                user entry `user` of Dict
+                password entry `password` of Dict
+            if error in SSH
+            begin
+                put `SSH error: ` cat the error of SSH into StatusMessage
+                gosub to Error
+                stop
+            end
+        end
+        else
+        begin
+            put `Incomplete SSH login data` into StatusMessage
+            gosub to Error
+            stop
+        end
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Reset the entire system
+ResetConfigFileClick:
+    create MessageBox on Window
+        style question
+        title `Master reset`
+        message `This will remove all information. Continue?`
+    show MessageBox giving Value
+    if Value is `Yes`
+    begin
+        log `Deleting ` cat ConfigFile
+        delete file ConfigFile
+        log `Deleting ` cat ControllerSpecPath
+        delete file ControllerSpecPath
+        put `Restarted the configurator` into StatusMessage
+        gosub to Idle
+        go to Restart
+    end
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Scan the local network for system controllers
+ScanSystemsClick:
+    put 0 into Count
+    gosub to SetBusy
+    log `Scan for system controllers`
+    disable ScanSystemsButton
+    create MessageBox on Window
+        style yesnocancel
+        title `Systems scan`
+        message `Do you know the IP address of a new system controller?` cat newline
+            cat `If not, I will do a complete scan of the local network, taking about 5 minutes.`
+    show MessageBox giving Value
+    log Value
+
+    if Value is `Yes`
+    begin
+        put `New RBR system` into Title
+        put `Type the IP adress of the new system` into Prompt
+        reset Value
+        put 20 into Length
+        gosub to GetRequestedText
+        put ReturnValue into IPAddr
+        gosub to ScanIPAddress
+        log `Result: ` cat Result
+        if Result is not `OK`
+        begin
+            put `The system did not respond to the scan` into StatusMessage
+            gosub to Error
+            gosub to SetUnBusy
+            stop
+        end
+    end
+
+    else if Value is `No`
+    begin
+        put 0 into Count
+        gosub to ScanSystems
+        if Count is 0
+        begin
+            put `No new systems were found` into StatusMessage
+            gosub to Error
+        end
+    end
+
+    else
+    begin  ! The Cancel button was clicked
+        gosub to SetUnBusy
+        stop
+    end
+
+    gosub to RefreshSystemsCombo
+    gosub to PostConfigData
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Scan the local network for RBR system controllers
+ScanSystems:
+    log `Scan systems`
+    put trim system `hostname -I` into MyIPAddr
+    log MyIPAddr
+    put 1 into N
+    while N is less than 255
+    begin
+        put the position of the last `.` in MyIPAddr into P
+        increment P
+        put left P of MyIPAddr into Value
+        put Value cat N into IPAddr
+        put `Scanning ` cat IPAddr into StatusMessage
+        gosub to ScanIPAddress
+        wait 10 ticks
+        increment N
+    end
+!    set entry `current-system` of Config to SystemName
+    gosub to UpdateSystems
+!    log `After scan: ` cat prettify Config
+    gosub to PostConfigData
+    go to OK
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Scan a supplied IP address
+ScanIPAddress:
+    log `Scan ` cat IPAddr
+    gosub to Working
+    reset Result
+    get Result from url `http://` cat IPAddr cat `:17348/cgi-bin/mac.py` timeout 1 or go to SIA2
+    increment Count
+    put trim Result into Result
+    log IPAddr cat `: ` cat Result
+    put the position of ` ` in Result into P
+    put left P of Result into SystemMAC
+    increment P
+    put from P of Result into Result
+    put the position of ` ` in Result into P
+    put left P of Result into SystemPassword
+    increment P
+    put from P of Result into SystemName
+    reset SystemConfig
+    set entry `host-ssid` of SystemConfig to HostSSID
+    set entry `host-password` of SystemConfig to HostPassword
+    set entry `ipaddr` of SystemConfig to IPAddr
+    set entry `mac` of SystemConfig to SystemMAC
+    set entry `password` of SystemConfig to SystemPassword
+    set entry `devices` of SystemConfig to json `{}`
+    set entry `current-system` of Config to SystemName
+    log `Adding ` cat SystemName cat ` to Systems`
+    gosub to GetConfigData
+!    log prettify SystemConfig
+    set entry SystemName of Systems to SystemConfig
+    put `OK` into Result
+    return
+SIA2:
+    put `Fail` into Result
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get the config data for a system
+GetConfigData:
+    gosub to SetBusy
+    if SystemName is empty return
+    log prettify SystemConfig
+    log `Get the config data for ` cat SystemName
+    get Value from url `https://rbrheating.com/ui/resources/php/rest.php/config/` cat SystemMAC cat `/` cat SystemPassword
+    or
+    begin
+        put `Can't read the config file for ` cat SystemName cat `(` cat MAC cat `/` cat Password cat `)` into StatusMessage
+        go to Error
+    end
+!    log Value
+    ! If the server has data, copy it into the local config
+    if Value is `""` reset Value
+    if Value is empty put `{}` into Value
+    if Value is not `{}`
+    begin
+        log `Add config data from the server`
+        put json Value into Dict
+!        log prettify Dict
+        put the keys of Dict into Keys
+        put 0 into K
+        while K is less than the count of Keys
+        begin
+            put item K of Keys into Name
+            log `Adding ` cat Name cat ` to config data`
+!            if Name is `ssid` set entry `host-ssid` of SystemConfig to entry Name of Dict
+!            else if Name is `password` set entry `host-password` of SystemConfig to entry Name of Dict
+            set entry Name of SystemConfig to entry Name of Dict
+            increment K
+        end
+    end
+    gosub to UpdateSystems
+    put entry `devices` of SystemConfig into Devices
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Refresh the systems combobox
+RefreshSystemsCombo:
+    log `Refresh SystemsCombo`
+    clear SystemsCombo
+    put entry `current-system` of Config into SystemName
+    put the keys of Systems into Keys
+    log Keys
+    if the count of Keys is 0 return
+    put 0 into S
+    while S is less than the count of Keys
+    begin
+        put item S of Keys into Name
+        log `Add ` cat Name cat ` to SystemsCombo`
+        add Name to SystemsCombo
+        if Name is SystemName put S into N
+        increment S
+    end
+    select index N of SystemsCombo
+    log `Select ` cat SystemName
+    go to SelectSystem2
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Select a system from the combo box
+SystemsComboSelect:
+    put SystemsCombo into SystemName
+    if SystemName is not empty gosub to SelectSystem
+    gosub to SetUnBusy
+    if not ErrorFlag gosub to OK
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Select a system
+SelectSystem:
+    log SystemName cat ` ` cat  entry `current-system` of Config
+SelectSystem2:
+    if SystemName is empty return
+    if Systems does not have entry SystemName
+    begin
+        put the keys of Systems into Keys
+        put item 0 of Keys into SystemName
+        set entry `current-system` of Config to SystemName
+    end
+    log `Select system ` cat SystemName
+    ! Update the current system
+    gosub to ResumeSystemController
+!    put entry `current-system` of Config into SystemName
+    if SystemName is empty return
+    put entry SystemName of Systems into SystemConfig
+    ! Select the new system
+    set entry `current-system` of Config to SystemName
+    put entry SystemName of Systems into SystemConfig
+!    log SystemConfig
+    put entry `ipaddr` of SystemConfig into SystemIPAddr
+    put entry `mac` of SystemConfig into SystemMAC
+    put entry `password` of SystemConfig into SystemPassword
+    if ControllerSpec has entry SystemIPAddr
+    begin
+        set entry `current` of ControllerSpec to SystemIPAddr
+        save ControllerSpec to HomeDir cat `/.controller.json`
+    end
+    else
+    begin
+        put `Unknown system controller` into StatusMessage
+        gosub to Working
+        gosub to GetSSH
+    end
+    put entry `devices` of SystemConfig into Devices
+    if Devices is empty reset MasterSSID
+    gosub to PopulateSystemInfo
+    gosub to PostConfigData
+    gosub to LockSystemController
+    save ControllerSpec to HomeDir cat `/.controller.json`
+    log `System ` cat SystemName cat ` selected`
+!    log Devices
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Remove a system from the combo box
+RemoveSystemClick:
+    gosub to SetBusy
+    put SystemsCombo into Name
+    log ControllerSpec cat ` ` cat IPAddr
+    log `Remove ` cat Name cat `?`
+    create MessageBox on Window
+        style question
+        title `Remove system`
+        message `Are you sure you want to remove ` cat Name cat `?`
+    show MessageBox giving Value
+    if Value is `Yes`
+    begin
+        remove the current item from SystemsCombo
+        delete entry Name of Systems
+        reset SystemName
+        set the text of MasterDeviceButton to empty
+        clear SlaveList
+        reset SystemConfig
+        set entry `current-system` of Config to SystemsCombo
+        set entry `systems` of Config to Systems
+        reset SystemHostSSID
+        save prettify Config to ConfigFile
+        gosub to PostConfigData
+    end
+    if the count of SystemsCombo is 0 disable RemoveSystemButton
+    else select index 0 of SystemsCombo
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Clear all the data for the selected system
+ClearSystemClick:
+    gosub to SetBusy
+    create MessageBox on Window
+        style question
+        title `System clear`
+        message `This will remove all devices from ` cat SystemsCombo
+            cat `. Continue?`
+    show MessageBox giving Value
+    if Value is `Yes`
+    begin
+        if CurrentSSID is not HostSSID gosub to ConnectToHost
+        put entry SystemName of Systems into SystemConfig
+        put entry `mac` of SystemConfig into SystemMAC
+        put entry `password` of SystemConfig into SystemPassword
+        reset Devices
+        gosub to UpdateSystemConfig
+        set the text of MasterDeviceButton to empty
+        reset MasterSSID
+        clear SlaveList
+        gosub to PostConfigData
+    end
+    gosub to OK
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Reconnect the master after a network change
+ReconnectMasterClick:
+    gosub to SetBusy
+    put the keys of Devices into Keys
+    put 0 into K
+    while K is less than the count of Keys
+    begin
+        put item K of Keys into Name
+        put entry Name of Devices into Device
+        if entry `master` of Device is true
+        begin
+            put from 8 of MasterSSID into MasterMAC
+            put entry `ssid` of Device into SSID
+            gosub to InterrogateDevice
+            if ErrorFlag go to RMC2
+            put `config.json` into FileName
+            set entry `hostssid` of Device to HostSSID
+            set entry `hostpass` of Device to HostPassword
+            set entry `ipaddr` of Device to empty
+            set entry Name of Devices to Device
+            gosub to UpdateSystemConfig
+            put stringify Device into Content
+            put `192.168.9.1` into MasterIPAddr
+            gosub to SendConfigToMaster
+            go to RMC2
+        end
+        increment K
+    end
+RMC2:
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Scan the local network for new devices
+ScanForDevicesClick:
+    gosub to SetBusy
+    gosub to GetChannel
+    put `Scanning for new devices...` into StatusMessage
+    gosub to Working
+    put system `nmcli device wifi list` into SystemCallResult
+    log SystemCallResult
+    split SystemCallResult
+    reset List
+    put 1 into N
+    while N is less than the items in SystemCallResult
+    begin
+        index SystemCallResult to N
+        put SystemCallResult into SSID
+        if left 1 of SSID is `*` begin end
+        else
+        begin
+            ! We only want RBR-Now-xxxxxxxxxxxx devices
+            put trim SSID into SSID
+            put the position of ` ` in SSID into P
+            put from P of SSID into SSID
+            put trim SSID into SSID
+            put the position of ` ` in SSID into P
+            put left P of SSID into SSID
+            if left 7 of SSID is `RBR-Now`
+            begin
+                log `Found ` cat SSID
+                ! Check if this one already exists
+                if Devices is empty reset Devices
+                else
+                begin
+                    put the keys of Devices into Keys
+                    put 0 into D
+                    while D is less than the count of Keys
+                    begin
+                        put item D of Keys into Name
+                        put entry Name of Devices into Device
+                        if SSID is entry `ssid` of Device
+                        begin
+                            log SSID cat ` exists already`
+                            go to SFDC2
+                        end
+                        increment D
+                    end
+                end
+                log `Add ` cat SSID
+                append SSID to List
+            end
+        end
+    SFDC2:
+        increment N
+    end
+    log `SSIDs: ` cat List
+    if the count of List is 0
+    begin
+        put `No new devices were found` into StatusMessage
+        log StatusMessage
+        gosub to Idle
+        stop
+    end
+    put `Select Device` into Title
+    put `Select a new device` into Prompt
+    gosub to SelectSSIDFromList
+    enable ClearSystemButton
+    if SSID is empty
+    begin
+        gosub to OK
+        stop
+    end
+    else
+    begin
+        gosub to SetupDevice
+        if ErrorFlag go to SFDC3
+!        gosub to ConnectToHost
+        gosub to PostConfigData
+    end
+SFDC3:
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Select an SSID from the list
+SelectSSIDFromList:
+    create Layout type QVBoxLayout
+    create Label text Prompt align center
+    add Label to Layout
+    create ListBox
+    put 0 into N
+    while N is less than the count of List
+    begin
+        add item N of List to ListBox
+        increment N
+    end
+    on select ListBox
+    begin
+        put the current item in ListBox into SSID
+        log `Selected ` cat SSID
+        put SSID cat ` Selected ` into StatusMessage
+        gosub to Working
+        close Dialog
+        return
+    end
+    add ListBox to Layout
+    add stretch to Layout
+    create HLayout type QHBoxLayout
+    create CancelButton text `Cancel`
+    on click CancelButton
+    begin
+        reset Item
+        close Dialog
+        return
+    end
+    add CancelButton to HLayout
+    add HLayout to Layout
+    create Dialog title Title size 250 200
+    set the layout of Dialog to Layout
+    center Dialog on Window
+    show Dialog
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Set up the device identified by SSID
+SetupDevice:
+    if SSID is HostSSID
+    begin
+        put `Oops - this is the host!` into StatusMessage
+        go to Error
+    end
+
+    ! Connect to the device's AP and get basic data
+    gosub to InterrogateDevice
+    if ErrorFlag return
+
+    ! Check if this is the first device to be configured. If so, make it the master.
+    if MasterSSID is empty gosub to ConfigureMasterDevice
+    else
+    begin
+        clear IsMaster
+        log `Deal with slave ` cat Name
+        put SSID cat ` ` cat Name into Item
+        log Item
+        if SlaveDevices does not include Name
+        begin
+            append Item to SlaveDevices
+            set SlaveList to SlaveDevices
+            gosub to CreateDevice
+            gosub to SendChannelToSlave
+        end
+    end
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Interrogate a device on its AP
+InterrogateDevice:
+    gosub to ConnectToDevice
+    if ErrorFlag return
+    put system `hostname -I` into IPAddr
+    put the position of the last `.` in IPAddr into D
+    increment D
+    put left D of IPAddr into IPAddr
+    put IPAddr cat `1` into IPAddr
+    put `http://` cat IPAddr into URL
+    put `Request AP details for ` cat SSID cat ` at ` cat URL into StatusMessage
+    gosub to Working
+    get APInfo from url URL
+    or begin
+        put `Failed to interrogate ` cat SSID into StatusMessage
+        go to Error
+    end
+    put trim APInfo into APInfo
+    log `Device info: ` cat APInfo
+    put APInfo into Info
+    split Info on ` `
+    if the elements of Info is less than 4
+    begin
+        put `Bad response from device: ` cat APInfo into StatusMessage
+        go to Error
+    end
+    index Info to 0
+    put Info into MAC
+    index Info to 2
+    put Info into Name
+    replace `_` with ` ` in Name
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send the channel and master MAC to a slave device
+SendChannelToSlave:
+    put `http://` cat IPAddr cat `?environ-` cat Channel cat `-` cat MasterMAC into URL
+    put `Send channel/master to ` cat SSID cat ` - ` cat URL into StatusMessage
+    gosub to Working
+    get Response from url URL
+    or begin
+        put `Failed to send to ` cat SSID into StatusMessage
+        go to Error
+    end
+    put `http://` cat IPAddr cat `?reset` into URL
+    put `Reset ` cat SSID cat ` - ` cat URL into StatusMessage
+    gosub to Working
+    get Response from url URL
+    or begin
+        put `Failed to reset ` cat SSID into StatusMessage
+        go to Error
+    end
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Configure the master device
+ConfigureMasterDevice:
+    set IsMaster
+    log `Deal with master ` cat Name
+    put SSID into MasterSSID
+    put Name into MasterDeviceName
+    gosub to CreateDevice
+    if ErrorFlag return
+    put Device into MasterDevice
+    put MAC into MasterMAC
+    put IPAddr into MasterIPAddr
+
+    ! Send the config data to the device
+    gosub to SendConfigToMaster
+    if ErrorFlag return
+    go to PopulateDeviceInfo
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send the config file to the master device
+SendConfigToMaster:
+    put `config.json` into FileName
+    put stringify Device into Content
+    log `Send ` cat Content cat ` to master`
+    gosub to SendOneFile
+    if ErrorFlag return
+    put `update` into Message
+    gosub to SendMessageToDevice
+    if left 2 of Response is not `OK`
+    begin
+        put `Device not updated` into StatusMessage
+        gosub to Error
+        gosub to SetUnBusy
+        stop
+    end
+    gosub to RequestReset
+    put `Give the device a few seconds to reboot` into StatusMessage
+    gosub to Working
+    wait 10
+    gosub to ConnectToDevice
+    if ErrorFlag return
+    put MasterSSID cat ` ` cat MasterName into StatusMessage
+    gosub to Working
+    disable MasterDeviceButton
+
+    ! Get the master IP address
+    put `http://` cat MasterIPAddr cat `/?mac=` cat MasterMAC cat `&msg=ipaddr` into URL
+    put `Interrogate the master device` into StatusMessage
+    gosub to Working
+    get Response from url URL
+    or begin
+        put `Failed to get Master ip address of ` cat MasterSSID into StatusMessage
+        go to Error
+    end
+    log `ipaddr: ` cat Response
+    if left 2 of Response is `OK`
+    begin
+        put from 3 of Response into MasterIPAddr
+        put `Master ip address is ` cat MasterIPAddr into StatusMessage
+        gosub to Working
+        gosub to SetMasterDeviceButtonText
+        set entry `ipaddr` of MasterDevice to MasterIPAddr
+        set entry MasterDeviceName of Devices to MasterDevice
+        gosub to UpdateSystemConfig
+    end
+    else
+    begin
+        put `Failed to get Master ip address` into StatusMessage
+        go to Error
+    end
+    enable MasterDeviceButton
+    put MasterDevice into Device
+    gosub to ConnectToHost
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Create a device entry in the config file
+CreateDevice:
+    log `Create Device`
+    reset Device
+    if IsMaster
+    begin
+        log `Create master device ` cat MasterDeviceName
+        set entry `hostssid` of Device to HostSSID
+        set entry `hostpass` of Device to HostPassword
+        set entry `ipaddr` of Device to empty
+    end
+    else log `Create slave device ` cat Name
+    set entry `path` of Device to empty
+    set entry `master` of Device to IsMaster
+    if not IsMaster
+    begin
+        put from 8 of entry `ssid` of MasterDevice into MasterMAC
+        log MasterMAC
+        set entry `myMaster` of Device to MasterMAC
+    end
+    set entry `name` of Device to Name
+    set entry `ssid` of Device to SSID
+    set entry `channel` of Device to Channel
+    reset Pins
+    reset Pin
+    set entry `pin` of Pin to empty
+    set entry `invert` of Pin to false
+    set entry `led` of Pins to Pin
+    reset Pin
+    set entry `pin` of Pin to empty
+    set entry `invert` of Pin to false
+    set entry `relay` of Pins to Pin
+    reset Pin
+    set entry `pin` of Pin to empty
+    set entry `dht22` of Pins to Pin
+    set entry `pins` of Device to Pins
+    set entry Name of Devices to Device
+    go to UpdateSystemConfig
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Populate the system information fields
+PopulateSystemInfo:
+    log `Populate fields for ` cat SystemName
+    put entry `host-ssid` of SystemConfig into SystemHostSSID
+    put entry `host-password` of SystemConfig into HostPassword
+    if SystemHostSSID is not HostSSID
+    begin
+        put `Different host SSID: ` cat SystemHostSSID into StatusMessage
+        gosub to Working
+        create MessageBox on Window
+            style question
+            title `Change network`
+            message `You are not connected to the same network as system ` cat SystemName
+                cat `. Would you like to connect to that network (` cat SystemHostSSID cat `)?`
+        show MessageBox giving Value
+        if Value is `Yes`
+        begin
+            put SystemHostSSID into HostSSID
+            system `nmcli connection delete ` cat HostSSID
+            log `nmcli dev wifi connect ` cat HostSSID cat ` password ` cat HostPassword
+            put system `nmcli dev wifi connect ` cat HostSSID cat ` password ` cat HostPassword into SystemCallResult
+            log SystemCallResult
+            split SystemCallResult on ` `
+            if the elements of SystemCallResult is greater than 2
+            begin
+                index SystemCallResult to 2
+                if SystemCallResult is `successfully`
+                begin
+                    set entry HostSSID of Hosts to HostPassword
+                    set entry `hosts` of Config to Hosts
+                    gosub to PostConfigData
+                    put HostSSID into CurrentSSID
+                    put `Connected to ` cat HostSSID into StatusMessage
+                    gosub to Working
+                end
+                else
+                begin
+                    put `Failed to connect to ` cat HostSSID into StatusMessage
+                    go to Error
+                end
+            end
+        end
+    end
+    else log `Same host (no change to SSID)`
+    put entry `mac` of SystemConfig into SystemMAC
+    put entry `password` of SystemConfig into SystemPassword
+    put entry `devices` of SystemConfig into Devices
+    put the keys of Devices into Keys
+    reset MasterDevice
+    set the text of MasterDeviceButton to empty
+    reset SlaveDevices
+    clear SlaveList
+    put 0 into D
+    while D is less than the count of Keys
+    begin
+        put item D of Keys into Name
+        put entry Name of Devices into Device
+        if entry `master` of Device
+        begin
+            put Device into MasterDevice
+            put entry `name` of MasterDevice into MasterDeviceName
+            put entry `ssid` of MasterDevice into MasterSSID
+            put entry `ipaddr` of MasterDevice into MasterIPAddr
+            gosub to SetMasterDeviceButtonText
+        end
+        else
+        begin
+            put entry `ssid` of Device into SSID
+!            log Name
+            append SSID cat ` ` cat Name to SlaveDevices
+            add SSID cat ` ` cat Name to SlaveList
+        end
+        increment D
+    end
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Update text on MasterDeviceButton
+SetMasterDeviceButtonText:
+    set the text of MasterDeviceButton to MasterSSID cat ` ` cat MasterDeviceName
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Handle a click on the MasterDeviceButton
+MasterDeviceClick:
+    if MasterDeviceButton is not empty
+    begin
+        log `Select the master device`
+        if Devices has entry MasterDeviceName
+        begin
+            set DeviceSelected
+            set IsMaster
+            put entry MasterDeviceName of Devices into MasterDevice
+            put MasterDevice into Device
+            gosub to PopulateDeviceInfo
+        end
+        else
+        begin
+            put `Can't select the master device` into StatusMessage
+            gosub to Error
+        end
+    end
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Populate the device information fields
+PopulateDeviceInfo:
+    gosub to GetDeviceData
+    if Device has entry `name`
+    begin
+        put entry `name` of Device into Name
+        log `Populate device ` cat Name
+        if not Silent
+        begin
+            set the text of DeviceNameInput to entry `name` of Device
+            gosub to CheckDevice
+            set the text of PathInput to entry `path` of Device
+            put entry `pins` of Device into Pins
+            put entry `led` of Pins into Pin
+            set the text of LEDPinInput to entry `pin` of Pin
+            set the state of LEDInvertCheckbox to entry `invert` of Pin
+            put entry `relay` of Pins into Pin
+            set the text of RelayPinInput to entry `pin` of Pin
+            set the state of RelayInvertCheckbox to entry `invert` of Pin
+            put entry `dht22` of Pins into Pin
+            set the text of DHT22PinInput to entry `pin` of Pin
+            enable UpdateAllFilesButton
+            enable DeleteFileButton
+        end
+        gosub to CheckDevice
+        if ErrorFlag return
+    end
+    go to OK
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Show information about a slave device
+SlaveDeviceClick:
+    log `Select ` cat SlaveList
+    set DeviceSelected
+    clear IsMaster
+    log SlaveList
+    put SlaveList into Item
+    put the position of ` ` in Item into S
+    increment S
+    put from S of Item into Item
+    if Devices has entry Item
+    begin
+        put entry Item of Devices into Device
+        put entry `name` of Device into Name
+        gosub to PopulateDeviceInfo
+    end
+    else
+    begin
+        put `Can't select the device` into StatusMessage
+        gosub to Error
+    end
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Remove a slave device from the list
+RemoveSlaveClick:
+    put SlaveList into Name
+    put the selected item in SlaveList into Name
+    put the position of ` ` in Name into S
+    increment S
+    put from S of Name into Name
+    create MessageBox on Window
+        style question
+        title `Remove slave device`
+        message `Do you want to remove '` cat Name cat `'?`
+    show MessageBox giving Value
+    if Value is not `Yes` stop
+    delete entry Name of Devices
+    put the selected index of SlaveList into S
+    delete item S of SlaveDevices
+    set SlaveList to SlaveDevices
+    gosub to UpdateSystemConfig
+    gosub to PostConfigData
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Close the application and exit
+ExitClick:
+    log `Exit the configurator`
+    gosub to PostConfigData
+    gosub to ResumeSystemController
+    close Window
+    exit
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get the host password
+GetHostPassword:
+    log `Get the host password`
+    put `Type your router password:` into Prompt
+    put `Router password` into Title
+    reset Value
+    put 40 into Length
+    gosub to GetRequestedText
+    put ReturnValue into HostPassword
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get user input
+GetRequestedText:
+    create VLayout type QVBoxLayout
+    create Label text Prompt align centre
+    add Label to VLayout
+    create HLayout type QHBoxLayout
+    add HLayout to VLayout
+    create LineInput size Length
+    set the text of LineInput to Value
+    add stretch LineInput to HLayout
+    create HLayout type QHBoxLayout
+    add HLayout to VLayout
+    create OKButton text `OK` size 6
+    on click OKButton
+    begin
+        put LineInput into ReturnValue
+        close Dialog
+        return
+    end
+    add OKButton to HLayout
+    create CancelButton text `Cancel` size 6
+    on click CancelButton
+    begin
+        reset ReturnValue
+        close Dialog
+        return
+    end
+    add CancelButton to HLayout
+    create Dialog title Title size 300 80
+    set the layout of Dialog to VLayout
+    center Dialog on Window
+    show Dialog
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Scan the network for access points
+GetAccessPoints:
+    put `Scanning the local network...` into StatusMessage
+    log StatusMessage
+    gosub to Working
+    put system `nmcli device wifi list` into Result
+!    log Result
+    gosub to OK
+    split Result
+    put json `[]` into List
+    put 1 into N
+    while N is less than the items of Result
+    begin
+        index Result to N
+        put Result into SSID
+        if left 1 of SSID is `*` begin end
+        else
+        begin
+            put trim SSID into SSID
+            put the position of ` ` in SSID into P
+            put from P of SSID into SSID
+            put trim SSID into SSID
+            put the position of ` ` in SSID into P
+            put left P of SSID into SSID
+            if SSID is empty go to SN2
+            if left 1 of SSID is `-` go to SN2
+            append SSID to List
+        end
+    SN2:
+        increment N
+    end
+!    log `SSIDs: ` cat List
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Connect to the host router
+ConnectToHost:
+    put `Connect to host ` cat HostSSID cat ` with password ` cat HostPassword into StatusMessage
+    gosub to Working
+    system `nmcli connection delete ` cat HostSSID
+    put system `nmcli dev wifi connect ` cat HostSSID cat ` password "` cat HostPassword cat `"` into SystemCallResult
+    split SystemCallResult on ` `
+    if the elements of SystemCallResult is greater than 2
+    begin
+        index SystemCallResult to 2
+        if SystemCallResult is `successfully`
+        begin
+            put HostSSID into CurrentSSID
+            put `Connected to ` cat HostSSID into StatusMessage
+            go to Idle
+        end
+    end
+    put `Failed to connect to ` cat HostSSID into StatusMessage
+    gosub to GetAccessPoints
+    put `Select HostSSID` into Title
+    put `Select the home router for this system` into Prompt
+    gosub to SelectSSIDFromList
+    if HostSSID is empty go to Start
+    set entry `host-ssid` of Config to HostSSID
+    if Config does not have entry `host-password` gosub to GetHostPassword
+    set entry `host-password` of Config to HostPassword
+    log `******** I just set the host password for ` cat HostSSID cat ` to ` cat HostPassword cat `************`
+    print prettify Config
+    go to ConnectToHost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Here when a connection failure occurs
+FailedToConnect:
+    log `Result: ` cat SystemCallResult
+    set the elements of Value to 1
+    put `Failed to connect to ` cat SSID into StatusMessage
+    go to Error
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Connect to a device
+ConnectToDevice:
+    put `Connect to device ` cat SSID cat ` with password 00000000` into StatusMessage
+    gosub to Working
+    system `nmcli connection delete ` cat SSID
+    put system `nmcli dev wifi connect ` cat SSID cat ` password 00000000` into SystemCallResult
+    put SystemCallResult into Value
+    split Value on ` `
+    if the elements of Value is not greater than 2 go to FailedToConnect
+    index Value to 2
+    if Value is not `successfully` go to FailedToConnect
+    put SSID into CurrentSSID
+    put `Connected to ` cat SSID into StatusMessage
+    gosub to Working
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Update the widget data for the selected device
+UpdateWidgetDataClick:
+    gosub to SetBusy
+    put entry `name` of Device into Previous
+    set entry `name` of Device to DeviceNameInput
+    set entry `path` of Device to PathInput
+    put `pause` into Message
+    gosub to SendRBRMessage
+    reset Pins
+    reset Pin
+    set entry `pin` of Pin to LEDPinInput
+    set entry `invert` of Pin to LEDInvertCheckbox
+    set entry `led` of Pins to Pin
+    reset Pin
+    set entry `pin` of Pin to RelayPinInput
+    set entry `invert` of Pin to RelayInvertCheckbox
+    set entry `relay` of Pins to Pin
+    reset Pin
+    set entry `pin` of Pin to DHT22PinInput
+    set entry `dht22` of Pins to Pin
+    set entry `pins` of Device to Pins
+    put `config.json` into FileName
+    put stringify Device into Content
+    log prettify Device
+    gosub to SendOneFile
+    if not ErrorFlag
+    begin
+        put `update` into Message
+        gosub to SendMessageToDevice
+        if left 2 of Response is not `OK`
+        begin
+            put `Device not updated` into StatusMessage
+            gosub to Error
+            gosub to SetUnBusy
+            stop
+        end
+        set entry DeviceNameInput of Devices to Device
+        if IsMaster
+        begin
+            put DeviceNameInput into MasterDeviceName
+            gosub to SetMasterDeviceButtonText
+        end
+        else
+        begin
+            delete item SlaveList of SlaveDevices
+            put SlaveList into Item
+            split Item on ` `
+            append Item cat ` ` cat DeviceNameInput to SlaveDevices
+            set the elements of Item to 1
+            set SlaveList to SlaveDevices
+        end
+        if DeviceNameInput is not Previous
+        begin
+            delete entry Previous of Devices
+            set entry Name of Devices to Device
+        end
+        gosub to UpdateSystemConfig
+        gosub to PostConfigData
+    end
+    gosub to Idle
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Update all the files on a device
+UpdateAllFilesClick:
+    if not DeviceSelected stop
+    put entry `ssid` of Device into SSID
+    put from 8 of SSID into MAC
+    put `pause` into Message
+    gosub to SendRBRMessage
+
+    get Files from url `https://raw.githubusercontent.com/easycoder/rbr/refs/heads/main/RBRNow/files.txt`
+
+    split Files
+    put 0 into F
+    while F is less than the elements of Files
+    begin
+        index Files to F
+        put trim Files into FileName
+        if FileName is not empty gosub to UpdateOneFile
+        if ErrorFlag
+        begin
+            put `File updates did not succeed` into StatusMessage
+            gosub to Error
+            gosub to SetUnBusy
+            stop
+        end
+        increment F
+    end
+    put `update` into Message
+    gosub to SendMessageToDevice
+    if left 2 of Response is not `OK`
+    begin
+        put `Files not updated` into StatusMessage
+        gosub to Error
+        gosub to SetUnBusy
+        stop
+    end
+    gosub to SetUnBusy
+    put `All files updated` into StatusMessage
+    gosub to Idle
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Update a single file on the selected device
+UpdateFileClick:
+    put `Name of file to update:` into Prompt
+    reset Value
+    put `Update file` into Title
+    put 40 into Length
+    gosub to GetRequestedText
+    if ReturnValue is not empty
+    begin
+        put ReturnValue into FileName
+        if FileName is not empty
+        begin
+            put `Update  ` cat FileName into StatusMessage
+            gosub to Working
+            gosub to UpdateOneFile
+            if ErrorFlag stop
+            else
+            begin
+                put `File ` cat FileName cat ` updated` into StatusMessage
+                gosub to Idle
+            end
+        end
+    end
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Update a single file
+UpdateOneFile:
+    if right 1 of FileName is `/`
+    begin
+        put the length of FileName into S
+        decrement S
+        put left S of FileName into FileName
+        put `Create directory ` cat FileName into StatusMessage
+        gosub to Working
+        put `mkdir:` cat FileName into Message
+        gosub to SendRBRMessage
+        log Response
+        if left 2 of Response is not `OK`
+        begin
+            put `Failed to create directory` into StatusMessage
+            go to Error
+        end
+        go to Idle
+    end
+
+    ! Send a regular file
+    get Content from url `https://raw.githubusercontent.com/easycoder/rbr/refs/heads/main/RBRNow/` cat FileName
+    or begin
+        put `Failed to get ` cat FileName cat ` from GitHub` into StatusMessage
+        go to Error
+    end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send a single file with multiple attempts
+SendOneFile:
+    put 0 into Attempt
+    clear ErrorFlag
+SOF2:
+    increment Attempt
+    gosub to SendFileToDevice
+    if ErrorFlag
+    begin
+        if Attempt is less than 10 go to SOF2
+    end
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send a file to a device
+SendFileToDevice:
+    gosub to SetBusy
+    put the length of Content into FileSize
+    put `Update device file ` cat FileName cat ` (size=` cat FileSize cat ` chars)` into StatusMessage
+    gosub to Working
+    wait 1
+    put 0 into Sequence
+    put 0 into Start
+    put 0 into Finish
+    put 0 into Total
+    while Start is less than FileSize
+    begin
+        wait 10 ticks
+        if Finish is greater than FileSize put FileSize into Finish
+        add 100 to Start giving Finish
+        put from Start to Finish of Content into Segment
+        put the length of Segment into Length
+        add Length to Total
+        put encode Segment into Segment
+        put `Send ` cat FileName cat `, part ` cat Sequence into StatusMessage
+        if Attempt is not 1 put StatusMessage cat ` (attempt ` cat Attempt cat `)` into StatusMessage
+        gosub to Working
+        put `part:`  cat Sequence cat `,text:` cat Segment into Message
+        gosub to SendMessageToDevice
+        log Message cat ` -> ` cat Response
+        if Response is empty
+        begin
+            put `Failed to send part ` cat Sequence into StatusMessage
+            go to SendFileFail
+        end
+        if the position of `ESP_ERR_ESPNOW_CHAN` in Response is greater than 0
+        begin
+            put `Channel error` into StatusMessage
+            put 10 into Attempt
+            go to SendFileFail
+        end
+        split Response on ` `
+        index Response to 0
+        if Response is not Sequence
+        begin
+            if the length of Response is greater than 20 put left 20 of Response cat `...` into Response
+            put `Incorrect sequence: got ` cat Response cat ` instead of ` cat Sequence into StatusMessage
+            go to SendFileFail
+        end
+        index Response to 1
+        if Response is not Length
+        begin
+            if the length of Response is greater than 20 put left 20 of Response cat `...` into Response
+            put `Mismatched length in part ` cat Sequence cat `: got ` cat Response cat ` instead of ` cat Length into StatusMessage
+            go to SendFileFail
+        end
+        put Finish into Start
+        increment Sequence
+    end
+    put `save:` cat FileName into Message
+    gosub to SendMessageToDevice
+    split Response on ` `
+    index Response to 0
+    if Response is not Total
+    begin
+        put `Mismatched length: ` cat Total cat ` - ` cat Response into StatusMessage
+        go to SendFileFail
+    end
+    put `File ` cat FileName cat ` saved` into StatusMessage
+    gosub to Working
+    return
+
+SendFileFail:
+    put FileName cat `: ` cat StatusMessage into StatusMessage
+    gosub to Error
+    wait 5
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Delete a file on the selected device
+DeleteFileClick:
+    put `Name of file to delete:` into Prompt
+    reset Value
+    put `Delete file` into Title
+    put 40 into Length
+    gosub to GetRequestedText
+    if ReturnValue is not empty
+    begin
+        put ReturnValue into FileName
+        put `Delete  ` cat FileName into StatusMessage
+        gosub to Working
+        wait 1
+        put `delete:` cat FileName into Message
+        gosub to SendRBRMessage
+        if left 2 of Response is not `OK`
+        begin
+            put `Failed to delete ` cat FileName into StatusMessage
+            gosub to Error
+            stop
+        end
+        put `File ` cat FileName cat ` has been deleted` into StatusMessage
+        gosub to Idle
+    end
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get the tmmperature
+TemperatureButtonClick:
+    log `Get temperature`
+    gosub to TemperatureRequest
+    gosub to Idle
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send a temperature request message to a device
+TemperatureRequest:
+    gosub to GetDeviceData
+    put `Request temperature from ` cat Name into StatusMessage
+    gosub to Working
+    put `temp` into Message
+    gosub to SendRBRMessage
+    if not Silent log Response
+    if left 2 of Response is not `OK`
+    begin
+        put `Failed to get temperature from ` cat Name into StatusMessage
+        go to Error
+    end
+    put the position of the last ` ` in Response into S
+    put left S of Response into Response
+    put from 3 of Response into Response
+    put the value of Response into T1
+    put T1 modulo 10 into T2
+    divide T1 by 10
+    set the text of TemperatureLabel to T1 cat `.` cat T2 cat `°C`
+    put `Temperature read successfully` into StatusMessage
+    go to Idle
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Reset a device
+ResetDeviceButtonClick:
+    gosub to RequestReset
+    gosub to Idle
+    gosub to SetUnBusy
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send a reset message to a device
+RequestReset:
+    gosub to GetDeviceData
+    put `Reset ` cat Name into StatusMessage
+    gosub to Working
+    put `reset` into Message
+    gosub to SendRBRMessage
+    log Response
+    if left 2 of Response is not `OK`
+    begin
+        put `Failed to reset ` cat Name into StatusMessage
+        go to Error
+    end
+    put `Device ` cat Name cat ` has been reset` into StatusMessage
+    go to Working
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Check a device
+CheckDevice:
+    clear ErrorFlag
+    if not Silent log `Get uptime`
+    put `uptime` into Message
+    gosub to SendRBRMessage
+    if ErrorFlag return
+    if Silent return
+    if Response is not empty
+    begin
+!        log Response
+        split Response on ` `
+        if the elements of Response is greater than 2
+        begin
+            index Response to 0
+            if Response is `OK`
+            begin
+                index Response to 1
+                put Response into RelayState
+                set the text of RelayStateLabel to RelayState
+                index Response to 2
+                put the position of `+` in Response into P
+                put left P of Response into Uptime
+                set the text of UptimeLabel to Uptime cat ` sec`
+                if not Silent log Name cat ` uptime: ` cat Uptime
+                put entry `dht22` of Pins into Pin
+                put entry `pin` of Pin into Value
+                if Value is empty set the text of TemperatureLabel to empty
+                else gosub to TemperatureRequest
+            end
+        end
+    end
+    go to OK
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Toggle a relay
+RelayToggleClick:
+    if RelayState is `OFF` put `on` into Message
+    else if RelayState is `ON` put `off` into Message
+    else reset Message
+    if Message is not empty
+    begin
+        gosub to SendRBRMessage
+        if Response is empty
+        begin
+            put `No response from ` cat Name into StatusMessage
+            gosub to Error
+        end
+        else
+        begin
+            if left 3 of Response is `OK `
+            begin
+                split Response on ` `
+                index Response to 1
+                put Response into RelayState
+                set the text of RelayStateLabel to RelayState
+                put `Relay ` cat Response into StatusMessage
+                set the elements of Response to 1
+                gosub to Idle
+            end
+            else
+            begin
+                put `No relay` into StatusMessage
+                gosub to Error
+            end
+        end
+    end
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get the current channel
+GetChannel:
+    if MasterDevice is empty return
+    put MasterDevice into Device
+    put `channel` into Message
+    gosub to SendRBRMessage
+    log Response
+    if left 3 of Response is not `OK `
+    begin
+        put `Can't get the current channel` into StatusMessage
+        go to Error
+    end
+    put the value of from 3 of Response into Channel
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send an RBR-Now message to a device
+SendRBRMessage:
+    gosub to SetBusy
+    gosub to SendMessageToDevice
+    if left 2 of Response is `OK`
+    begin
+        gosub to SetUnBusy
+        return
+    end
+    put `Bad response '` cat Response cat `' from ` cat Name into StatusMessage
+    gosub to Error
+    reset Response
+    go to SetUnBusy
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Send a message to a RBR-Now device
+SendMessageToDevice:
+    gosub to GetDeviceData
+    put entry `ssid` of Device into SSID
+    put from 8 of SSID into MAC
+    put left 30 of Message into Message2
+    if the length of Message is greater than 30 put Message2 cat `...` into Message2
+    put Message into Message2
+    if SlavePath is not empty
+    begin
+        put the position of `,` in SlavePath into P
+        if P is greater than 0
+        begin
+            put left P of SlavePath into Name
+            gosub to GetSlavePathMAC
+            add 1 to P
+            put from P of SlavePath into SlavePath
+            put `!` cat SlavePath cat `,` cat Message into Message2
+        end
+        else
+        begin
+            put `!` cat MAC cat `,` cat Message into Message2
+            put SlavePath into Name
+            gosub to GetSlavePathMAC
+        end
+    end
+SMTD2:
+    reset Response
+    put `http://` cat MasterIPAddr cat `/?mac=` cat MAC cat `&msg=` cat Message2 into URL
+!    if not Silent log URL
+    get Response from url URL
+    or begin
+        log `Response: ` cat Response
+        put `Could not message ` cat Name into StatusMessage
+        gosub to Working
+        if SlavePath is empty return
+        ! Try direct communication
+        reset SlavePath
+        go to SMTD2
+    end
+    log URL cat ` -> ` cat Response
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get the MAC address of the named device
+GetSlavePathMAC:
+    put entry Name of Devices into Device2
+    put from 8 of entry `ssid` of Device2 into MAC
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get information about a device
+GetDeviceData:
+    put entry `name` of Device into Name
+    put entry `ssid` of Device into SSID
+    put from 8 of SSID into MAC
+    if Device has entry `path` put entry `path` of Device into SlavePath
+    else reset SlavePath
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Post the config data
+PostConfigData:
+    if CurrentSSID is not HostSSID gosub to ConnectToHost
+!    log `Config: ` cat prettify Config
+    save prettify Config to ConfigFile
+    if SystemMAC is empty return
+    if SystemConfig is empty return
+    put entry `mac` of SystemConfig into SystemMAC
+    put entry `password` of SystemConfig into SystemPassword
+    put `https://rbrheating.com/ui/resources/php/rest.php/config/` cat SystemMAC cat `/` cat SystemPassword into URL
+    log `Posting SystemConfig to ` cat URL
+!    log prettify SystemConfig
+    post SystemConfig to URL
+    or begin
+        put `I couldn't post the config file` into StatusMessage
+        go to Error
+    end
+    go to OK
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   The usual chain of JSON updates
+UpdateSystemConfig:
+    set entry `devices` of SystemConfig to Devices
+UpdateSystems:
+    set entry SystemName of Systems to SystemConfig
+UpdateConfig:
+    set entry `systems` of Config to Systems
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Lock the system controller
+LockSystemController:
+    save `lock` to SSH RamDisk cat `lock`
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Resume the system controller
+ResumeSystemController:
+    if not error in SSH save empty to SSH RamDisk cat `lock`
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   The Status box at the bottom of the screen
+OK:
+    put `OK` into StatusMessage
+
+Idle:
+    log `*** ` cat StatusMessage cat ` ***`
+    if not Silent
+    begin
+        set the text of StatusLabel to `<font color="#008000">` cat StatusMessage cat `</font>`
+    end
+    clear ErrorFlag
+    go to SetUnBusy
+
+Working:
+    log `*** ` cat StatusMessage cat ` ***`
+    if Silent return
+    set the text of StatusLabel to `<font color="#0000e0">` cat StatusMessage cat `</font>`
+    clear ErrorFlag
+    wait 50 ticks
+    return
+
+Abort:
+    put `Abort` into StatusMessage
+
+Error:
+    log `*** ` cat StatusMessage cat ` ***`
+    if not Silent
+    begin
+        set the text of StatusLabel to `<font color="#ff0000">` cat StatusMessage cat `</font>`
+    end
+    set ErrorFlag
+    go to SetUnBusy
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Enable or disable the various buttons
+SetUnBusy:
+log SystemHostSSID cat ` ` cat HostSSID
+    if SystemHostSSID is not empty
+        if SystemHostSSID is not HostSSID go to SetBusy
+! ScanDevicesButton
+    if the count of SystemsCombo is 0
+        disable ScanDevicesButton
+        else enable ScanDevicesButton
+! ClearSystemButton
+    if the count of SystemsCombo is 0
+        disable ClearSystemButton
+        else enable ClearSystemButton
+! ScanSystemsButton
+    enable ScanSystemsButton
+! ReconnectMasterButton
+    enable ReconnectMasterButton
+! RemoveSystemButton
+    if SystemsCombo is empty
+    begin
+        disable RemoveSystemButton
+    end
+    else
+    begin
+        enable RemoveSystemButton
+    end
+! MasterDeviceButton
+    if MasterDeviceButton is empty disable MasterDeviceButton else enable MasterDeviceButton
+! RelayToggleButton
+    enable RelayToggleButton
+! NameInput
+! LEDInput
+! RelayInput
+! DHT22Input
+! PathInput
+    if DeviceSelected
+    begin
+        enable RemoveSlaveButton
+        enable DeviceNameInput
+        enable PathInput
+        enable LEDPinInput
+        enable RelayPinInput
+        enable DHT22PinInput
+        if not IsMaster enable PathInput
+    end
+    else
+    begin
+        disable DeviceNameInput
+        disable PathInput
+        disable LEDPinInput
+        disable RelayPinInput
+        disable DHT22PinInput
+    end
+! Update Files buttons
+    if DeviceNameInput is empty
+    begin
+        disable UpdateFileButton
+        disable UpdateAllFilesButton
+    end
+    else
+    begin
+        enable UpdateFileButton
+        enable UpdateAllFilesButton
+    end
+! DeleteFileButton
+    if DeviceNameInput is empty disable DeleteFileButton else enable DeleteFileButton
+! Update some buttons
+    if DeviceNameInput is empty
+    begin
+        disable UpdateWidgetDataButton
+        disable ResetDeviceButton
+        disable TemperatureButton
+    end
+    else
+    begin
+        enable UpdateWidgetDataButton
+        enable ResetDeviceButton
+        put entry `pins` of Device into Pins
+        put entry `dht22` of Pins into Pin
+        if entry `pin` of Pin is not empty enable TemperatureButton
+    end
+    wait 10 ticks
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Set the system to be busy (no buttons enabled)
+SetBusy:
+    disable ScanDevicesButton
+    disable ClearSystemButton
+    disable RemoveSlaveButton
+    disable ReconnectMasterButton
+    disable UpdateFileButton
+    disable UpdateAllFilesButton
+    disable DeleteFileButton
+    disable ScanSystemsButton
+    disable RemoveSystemButton
+    disable MasterDeviceButton
+    disable RelayToggleButton
+    disable UpdateWidgetDataButton
+    disable ResetDeviceButton
+    disable TemperatureButton
+    disable DeviceNameInput
+    disable PathInput
+    disable LEDPinInput
+    disable RelayPinInput
+    disable DHT22PinInput
+    wait 10 ticks
+    return
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   Get the SSH configuration data
+GetSSH:
+    if ControllerSpec has entry `current`
+    begin
+        put entry `current` of ControllerSpec into IPAddr
+        put entry IPAddr of ControllerSpec into Dict
+    end
+    else
+    begin
+        reset Dict
+        set entry `user` of Dict to empty
+        set entry `password` of Dict to empty
+    end
+    create Panel type QVBoxLayout
+    create Layout type QHBoxLayout
+    add Layout to Panel
+    create Label text `SSH Host IP:`
+    add Label to Layout
+    create HostInput size 30
+    set the width of HostInput to 200
+    set the text of HostInput to SystemIPAddr
+    add HostInput to Layout
+    create Layout type QHBoxLayout
+    add Layout to Panel
+    create Label text `SSH User:`
+    add Label to Layout
+    create UserInput size 30
+    set the width of UserInput to 200
+    set the text of UserInput to entry `user` of Dict
+    add UserInput to Layout
+    create Layout type QHBoxLayout
+    add Layout to Panel
+    create Label text `SSH Password:`
+    add Label to Layout
+    create PasswordInput size 30
+    set the width of PasswordInput to 200
+    set the text of PasswordInput to entry `password` of Dict
+    add PasswordInput to Layout
+    create Layout type QHBoxLayout
+    add Layout to Panel
+    create OKButton text `OK`
+    on click OKButton
+    begin
+        if HostInput is empty stop
+        if UserInput is empty stop
+        if PasswordInput is empty stop
+        reset Dict
+        set entry `user` of Dict to UserInput
+        set entry `password` of Dict to PasswordInput
+        set entry HostInput of ControllerSpec to Dict
+        set entry `current` of ControllerSpec to HostInput
+        put HostInput into SystemIPAddr
+        save ControllerSpec to ControllerSpecPath
+        close HostWindow
+        return
+    end
+    add OKButton to Layout
+    create CancelButton text `Cancel`
+    on click CancelButton exit
+    add CancelButton to Layout
+    create HostWindow title `Host SSH Parameters` size 300 200
+    set the layout of HostWindow to Panel
+    show HostWindow
+    stop

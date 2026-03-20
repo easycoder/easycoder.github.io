@@ -1,0 +1,112 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "EasyCoder",
+  "scopeName": "source.easycoder",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#labels"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.exclamation.easycoder",
+          "match": "!.*$"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.easycoder",
+          "match": "\\b(add|append|assert|begin|clear|close|copy|create|debug|decrement|delete|dictionary|divide|download|end|exit|file|fork|get|go|gosub|goto|if|import|increment|index|input|list|load|lock|log|module|multiply|negate|on|open|pass|pop|post|print|push|put|read|release|replace|reset|return|run|save|script|send|set|shuffle|split|ssh|stack|stop|system|take|toggle|trim|truncate|unlock|use|variable|wait|while|write)\\b"
+        },
+        {
+          "name": "keyword.operator.easycoder",
+          "match": "\\b(to|from|in|of|with|by|as|at|into|or|and|not|giving|size|binary|directory|error|step|compile|program|custom|stack)\\b"
+        },
+        {
+          "name": "storage.type.easycoder",
+          "match": "\\b(variable|file|stack|ssh)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.backtick.easycoder",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            {
+              "name": "constant.character.escape.easycoder",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.easycoder",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.easycoder",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.double.easycoder",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.easycoder",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.easycoder",
+          "match": "\\b\\d+(\\.\\d+)?\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.easycoder",
+          "match": "(==|!=|<=|>=|<|>)"
+        }
+      ]
+    },
+    "labels": {
+      "patterns": [
+        {
+          "name": "entity.name.label.easycoder",
+          "match": "^\\s*[A-Za-z_][A-Za-z0-9_]*:"
+        }
+      ]
+    }
+  }
+}

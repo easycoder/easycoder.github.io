@@ -1,0 +1,18 @@
+{
+  "id": "EC-0001",
+  "name": "basic-assignment",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.1",
+    "2.2",
+    "2.6"
+  ],
+  "script": "EC-0001-basic-assignment.ecs",
+  "expect": {
+    "logs": [
+      "hello"
+    ],
+    "error": null
+  }
+}

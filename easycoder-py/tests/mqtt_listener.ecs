@@ -1,0 +1,31 @@
+!   mqtt_listener.ecs
+
+    script MQTTListener
+
+    use mqtt
+
+    topic ServerTopic
+    dictionary ReceivedMessage
+    variable MQTTToken
+    variable MyID
+
+    ! Get the MQTT token
+    put `kgDkpyDUubtAchcj9ts85QPJOwE1C2MKjNuoeb4nisd23pM33uTb5m7AGuMNhJMP` into MQTTToken
+
+    ! Set up MQTT
+    put `38:54:39:34:62:d7/request` into MyID
+    init ServerTopic
+        name MyID
+        qos 1
+
+    mqtt
+        token MQTTToken
+        id uuid
+        broker `mqtt.flespi.io`
+        port 8883
+        subscribe ServerTopic
+    
+    on mqtt message
+    begin
+        put the mqtt message into ReceivedMessage
+        log `Incoming: ` cat ReceivedMessage

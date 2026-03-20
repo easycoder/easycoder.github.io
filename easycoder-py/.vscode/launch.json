@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": []
+        },
+        {
+            "type": "node-terminal",
+            "name": "Run Script: compile (client)",
+            "request": "launch",
+            "command": "npm run compile",
+            "cwd": "${workspaceFolder}/lsp/client"
+        }
+    ]
+}

@@ -1,0 +1,74 @@
+{
+    "#": [
+        "BlackText",
+        "Photo",
+        "BlueRect",
+        "RedEllipse"
+    ],
+    "BlueRect": {
+        "type": "rectangle",
+        "left": "30w",
+        "bottom": "15h",
+        "width": "20w",
+        "height": "40h",
+        "fill": "blue",
+        "id": "bluerect",
+        "#": [
+            "GreenCircle"
+        ],
+        "GreenCircle": {
+            "type": "ellipse",
+            "left": "10w",
+            "bottom": "40w",
+            "width": "80w",
+            "height": "80w",
+            "fill": "green",
+            "id": "greencircle"
+        }
+    },
+    "RedEllipse": {
+        "type": "ellipse",
+        "left": 300,
+        "bottom": 100,
+        "width": 200,
+        "height": 100,
+        "fill": "red",
+        "id": "redellipse",
+        "#": [
+            "Label"
+        ],
+        "Label": {
+            "type": "text",
+            "left": 40,
+            "bottom": 25,
+            "width": 120,
+            "height":50,
+            "color": "white",
+            "text": "Label\nwith 2 lines",
+            "fontSize": 20,
+            "id": "label"
+        }
+    },
+
+    "BlackText": {
+        "type": "text",
+        "left": 0,
+        "bottom": 0,
+        "width": 640,
+        "height":100,
+        "color": "black",
+        "text": "Graphics demo",
+        "fontSize": 20,
+        "id": "black text"
+    },
+
+    "Photo": {
+        "type": "image",
+        "left": "10w",
+        "bottom": "30h",
+        "width": "80w",
+        "height": "60h",
+        "source": "images/Semoigo Dawn.jpg",
+        "id": "dawn"
+    }
+}

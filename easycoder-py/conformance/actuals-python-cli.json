@@ -1,0 +1,40 @@
+{
+  "EC-0001": {
+    "logs": [
+      "hello"
+    ],
+    "error": null
+  },
+  "EC-0002": {
+    "logs": [
+      "18"
+    ],
+    "error": null
+  },
+  "EC-0003": {
+    "logs": [
+      "GT"
+    ],
+    "error": null
+  },
+  "EC-0004": {
+    "logs": [
+      "15"
+    ],
+    "error": null
+  },
+  "EC-0005": {
+    "logs": [
+      "green"
+    ],
+    "error": null
+  },
+  "EC-0006": {
+    "logs": [
+      "AND works",
+      "OR works",
+      "Precedence correct"
+    ],
+    "error": null
+  }
+}

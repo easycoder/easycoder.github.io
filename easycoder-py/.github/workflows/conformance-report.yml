@@ -1,0 +1,52 @@
+name: Conformance Report
+
+on:
+  push:
+    paths:
+      - "conformance/**"
+      - "spec/**"
+      - ".github/workflows/conformance-report.yml"
+  pull_request:
+    paths:
+      - "conformance/**"
+      - "spec/**"
+      - ".github/workflows/conformance-report.yml"
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install easycoder runtime
+        run: pip install .
+
+      - name: Run tests and collect actuals
+        run: |
+          python3 conformance/ec_py_runner.py \
+            --conformance-root conformance \
+            --output conformance/actuals-python-cli.json
+
+      - name: Generate parity report
+        run: |
+          python3 conformance/run_conformance.py \
+            --implementation python-cli \
+            --runtime-version ci \
+            --actuals conformance/actuals-python-cli.json \
+            --output conformance/parity-report.generated.json
+
+      - name: Validate report JSON
+        run: |
+          python3 -m json.tool conformance/parity-report.generated.json > /dev/null
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-report-python-cli
+          path: conformance/parity-report.generated.json

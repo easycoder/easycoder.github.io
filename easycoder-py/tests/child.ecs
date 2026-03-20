@@ -1,0 +1,13 @@
+!   child.ecs
+
+    script Child
+
+!    debug step
+
+    on message
+    begin
+        print the sender cat `: ` cat the message
+        send `buongiorno` to parent
+    end
+    release parent
+    stop

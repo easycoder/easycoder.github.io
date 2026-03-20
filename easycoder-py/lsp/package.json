@@ -1,0 +1,85 @@
+{
+  "name": "easycoder-lsp",
+  "displayName": "EasyCoder Language Server",
+  "description": "Intelligent language support for EasyCoder (.ecs) scripts with collision detection, completions, and hover docs",
+  "version": "1.0.0",
+  "publisher": "easycoder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/easycoder/easycoder-py.git"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "keywords": [
+    "easycoder",
+    "dsl",
+    "scripting",
+    "lsp",
+    "language-server"
+  ],
+  "activationEvents": [
+    "onLanguage:easycoder"
+  ],
+  "main": "./client/out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "easycoder",
+        "aliases": [
+          "EasyCoder",
+          "easycoder"
+        ],
+        "extensions": [
+          ".ecs"
+        ],
+        "configuration": "./syntaxes/easycoder.configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "easycoder",
+        "scopeName": "source.easycoder",
+        "path": "./syntaxes/easycoder.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "EasyCoder",
+      "properties": {
+        "easycoder.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        },
+        "easycoder.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the EasyCoder language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "cd client && npm run compile",
+    "watch": "cd client && npm run watch",
+    "postinstall": "cd client && npm install"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {}
+}

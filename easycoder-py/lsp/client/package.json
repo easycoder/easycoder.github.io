@@ -1,0 +1,27 @@
+{
+  "name": "easycoder-lsp-client",
+  "description": "EasyCoder Language Server Extension - Client",
+  "author": "EasyCoder",
+  "license": "MIT",
+  "version": "1.0.0",
+  "publisher": "easycoder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/easycoder/easycoder-py.git"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -w -p ."
+  }
+}

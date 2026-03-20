@@ -1,0 +1,17 @@
+{
+  "id": "EC-0003",
+  "name": "condition-branch",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.5",
+    "2.6"
+  ],
+  "script": "EC-0003-condition-branch.ecs",
+  "expect": {
+    "logs": [
+      "GT"
+    ],
+    "error": null
+  }
+}

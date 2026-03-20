@@ -1,0 +1,18 @@
+{
+  "id": "EC-0004",
+  "name": "while-sum",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.2",
+    "2.4",
+    "2.6"
+  ],
+  "script": "EC-0004-while-sum.ecs",
+  "expect": {
+    "logs": [
+      "15"
+    ],
+    "error": null
+  }
+}

@@ -1,0 +1,51 @@
+!   primes.ecs
+
+    script Primes
+
+    variable Primes
+    variable NPrimes
+    variable Index
+    variable Candidate
+    variable C10
+    variable P10
+    variable VCount
+    variable Remainder
+    variable N
+    variable P
+
+    set NPrimes to 50
+    set the elements of Primes to NPrimes
+
+    index Primes to 0
+    set Primes to 3
+    index Primes to 1
+    set Primes to 5
+    index Primes to 2
+    set Primes to 7
+    print 1
+    print 3
+    print 5
+    print 7
+    set Index to 3
+    set Candidate to 9
+
+    while Index is less than NPrimes
+    begin
+        multiply Candidate by 10 giving C10
+        put 0 into N
+        while N is less than Index
+        begin
+            index Primes to N
+            multiply Primes by 10 giving P10
+            set Remainder to C10 modulo P10
+            if Remainder is 0 go to Next
+            increment N
+        end
+        index Primes to Index
+        set Primes to Candidate
+        print Candidate
+        increment Index
+    Next:
+        add 2 to Candidate
+    end
+    exit

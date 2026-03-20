@@ -1,0 +1,55 @@
+!   mqtt.ecs
+
+    script MQTTTest
+
+    use mqtt
+
+    topic Request
+    topic Response
+    variable Query
+    variable Message
+    module Tests
+    
+    init Request
+        name `a8:41:f4:d3:19:dd/request`
+        qos 1
+    init Response
+        name `a8:41:f4:d3:19:dd/response`
+        qos 1
+
+    mqtt
+        token ``
+        id `EasyCoder-MQTT-Test`
+        broker `test.mosquitto.org`
+        port 1883
+        subscribe Response
+    
+    on mqtt message
+        begin
+            put the mqtt message into Message
+            log `Message received`
+            log Message
+        end
+
+    wait 1
+    
+!    log `Request a file`
+!    send mqtt `file:/home/graham/dev/easycoder/easycoder-py/tests/tests.ecs` to Request
+
+    log `Do a doclet query`
+    put `slack` into Query
+    gosub to SendQuery
+
+    put `Doclets/260111-00` into Query
+    gosub to SendQuery
+
+    wait 3
+
+    exit
+
+SendQuery:
+    log `Query: ` cat Query
+    send mqtt Query to Request
+    wait 3
+    return
+

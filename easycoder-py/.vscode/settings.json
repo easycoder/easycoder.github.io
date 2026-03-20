@@ -1,0 +1,47 @@
+{
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.completeFunctionParens": true,
+  "python.analysis.autoFormatStrings": true,
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.analysis.inlayHints.variableTypes": true,
+  "python.languageServer": "Pylance",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/easycoder",
+    "${workspaceFolder}/plugins"
+  ],
+  "python.autoComplete.addBrackets": true,
+  "python.analysis.indexing": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggest.insertMode": "replace",
+  "editor.suggestSelection": "first",
+  "editor.tabCompletion": "on",
+  "editor.parameterHints.enabled": true,
+  "editor.quickSuggestionsDelay": 10,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.wordBasedSuggestions": "matchingDocuments"
+  },
+  "[easycoder]": {
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.wordBasedSuggestions": "allDocuments",
+    "editor.suggest.showWords": true
+  },
+  "files.associations": {
+    "*.ecs": "easycoder"
+  },
+  "editor.semanticHighlighting.enabled": true,
+  "python.analysis.diagnosticMode": "workspace"
+}

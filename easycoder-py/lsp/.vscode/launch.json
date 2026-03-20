@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run EasyCoder Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/client/out/**/*.js"
+      ],
+      "preLaunchTask": "lsp: watch",
+      "env": {
+        "EASYCODER_LSP_DEBUGPY": "1"
+      }
+    },
+    {
+      "name": "Attach to EasyCoder LSP (Python)",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "127.0.0.1",
+        "port": 5678
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run Extension + Attach LSP",
+      "configurations": [
+        "Run EasyCoder Extension",
+        "Attach to EasyCoder LSP (Python)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "easycoder",
+  "displayName": "EasyCoder Language Support",
+  "description": "Language support for EasyCoder scripts",
+  "version": "1.0.0",
+  "publisher": "easycoder",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "easycoder",
+        "aliases": [
+          "EasyCoder",
+          "easycoder"
+        ],
+        "extensions": [
+          ".ecs"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "easycoder",
+        "scopeName": "source.easycoder",
+        "path": "./syntaxes/easycoder.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "easycoder",
+        "path": "./snippets/easycoder.json"
+      }
+    ]
+  }
+}
