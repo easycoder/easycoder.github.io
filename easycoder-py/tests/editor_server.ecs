@@ -1,0 +1,55 @@
+!   editor_server.ecs
+!   File server for the scripted editor.
+!   Usage: easycoder tests/editor_server.ecs
+!
+!   Routes (all paths absolute on the local filesystem):
+!     GET  /read<path>  →  returns file contents
+!     POST /write<path> →  writes request body to file; returns OK
+!     GET  /list<path>  →  returns JSON array of filenames in directory
+
+    script EditorServer
+
+    use server
+
+    variable FullPath
+    variable FilePath
+    variable Content
+    variable FileList
+    server Files
+
+    start Files on port 8765
+
+    print `Editor file server running on port 8765`
+    print `Press Ctrl+C to stop`
+
+    on Files request
+    begin
+        set FullPath to Files path
+
+        if FullPath starts with `/read`
+        begin
+            put FullPath into FilePath
+            replace `/read` with `` in FilePath
+            load Content from FilePath
+            return Content to Files
+        end
+        else if FullPath starts with `/write`
+        begin
+            put FullPath into FilePath
+            replace `/write` with `` in FilePath
+            get Content from Files
+            save Content to FilePath
+            return `OK` to Files
+        end
+        else if FullPath starts with `/list`
+        begin
+            put FullPath into FilePath
+            replace `/list` with `` in FilePath
+            set FileList to files in FilePath
+            return FileList to Files
+        end
+        else
+        begin
+            return `Unknown command` to Files with status 404
+        end
+    end

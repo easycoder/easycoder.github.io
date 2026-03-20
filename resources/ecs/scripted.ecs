@@ -1,153 +1,310 @@
-! Script Editor
+!   scripted.ecs
+!   Tabbed script editor with auto-save and external change detection.
+!   Requires editor_server.ecs running locally on port 8765.
 
-  script ScriptEditor
+    script ScriptEditor
 
-  div Body
-  div Container
-  div Buttons
-  div ScriptName
-  div ContentDiv
-  input NameEditor
-  textarea ContentEditor
-  span Status
-  span Span
-  button Open
-  button Save
-  button Delete
-  variable Name
-  variable CurrentName
-  variable Content
-  variable Current
+!   ── DOM ──────────────────────────────────────────────────────────────────────
+    div Body
+    div TopBar
+    div TabBar
+    div EditorArea
+    div ContentDiv
+    textarea ContentEditor
+    span StatusSpan
+    button OpenBtn
 
-! The browser
-  div Overlay
-  div Scroller
-  div Media
-  div FileListing
-  div FileRow
-  button CloseButton
-  a FileName
-  variable Alpha
-  variable FileList
-  variable FileCount
-  variable File
-  variable Files
-  variable N
-  variable FileIsOpen
-  variable Item
-  
-  rest path `.`
-  set encoding to `base64`
+!   File browser
+    div Overlay
+    div FileListing
+    div Scroller
+    div FileRow
+    button CloseBtn
+    a FileName
 
-  set the title to `Script Editor`
+!   Tab bar (dynamic, rebuilt on each change)
+    button TabBtn
 
-  create Body
-  create Container in Body
-  set the style of Container to `width:70%;margin:0 auto;background #ffe`
+!   ── State ────────────────────────────────────────────────────────────────────
+    variable ServerBase
+    variable TabPath       ! array: full file path per tab
+    variable TabName       ! array: display name (basename) per tab
+    variable TabSaved      ! array: last content saved to server per tab
+    variable TabCount
+    variable ActiveTab
+    variable Content       ! scratch: current editor content
+    variable FileContent   ! scratch: content fetched from server
+    variable N
+    variable Item          ! scratch: JSON array used in browser and loops
+    variable File          ! scratch: single filename
+    variable FileCount
+    variable DirPath
+    variable TabBarHTML
+    variable TabItem
 
-  create Buttons in Container
-  set the style of Buttons to `text-align:center`
+    set ServerBase to `http://localhost:8765`
+    put 0 into TabCount
+    put 0 into ActiveTab
 
-  create Open in Buttons
-  set the style of Open to `margin-right:0.5em`
-  set the text of Open to `Open`
-  create Save in Buttons
-  set the text of Save to `Save`
-  set the style of Save to `margin-right:4em`
-  create Delete in Buttons
-  set the text of Delete to `Delete`
-  create Status in Buttons
-  set the style of Status to `position:absolute;float:right;padding-left:2em;color:green`
+!   ── Build UI ─────────────────────────────────────────────────────────────────
+    create Body
 
-  create ScriptName in Container
-  set the style of ScriptName to `display:flex;margin:0.5em 0`
-  create Span in ScriptName
-  set the style of Span to `flex:15`
-  set the content of Span to `Script name:&nbsp;`
-  create NameEditor in ScriptName
-  set the style of NameEditor to `flex:85;display:inline-block`
-  set the size of NameEditor to 40
+    create TopBar in Body
+    set the style of TopBar to `display:flex;align-items:center;background:#2d2d2d;padding:4px;gap:4px`
 
-  create ContentDiv in Container
-  set the style of ContentDiv to `width:100%;height:85%;border:1px solid lightgray`
+    create OpenBtn in TopBar
+    set the text of OpenBtn to `Open`
+    set the style of OpenBtn to `padding:4px 12px;cursor:pointer`
 
-  create ContentEditor in ContentDiv
-  set the style of ContentEditor to `width:100%;height:100%`
+    create TabBar in TopBar
+    set the style of TabBar to `display:flex;flex:1;gap:2px;overflow-x:auto`
 
-  codemirror init basic profile `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror-ecs.js`
-  require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
-  require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
-  require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`
-  require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
-  require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
+    create StatusSpan in TopBar
+    set the style of StatusSpan to `color:lightgreen;font-size:0.85em;padding:0 8px;white-space:nowrap;min-width:6em;text-align:right`
 
-  create Overlay in Body
-  set the style of Overlay to
-    `position:absolute;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.0);display:none`
+    create EditorArea in Body
+    set the style of EditorArea to `height:calc(100vh - 40px)`
 
-  create Media in Overlay
-  set style of Media to `display:none;width:100%;height:100%;text-align:center`
+    create ContentDiv in EditorArea
+    set the style of ContentDiv to `width:100%;height:100%`
 
-  create FileListing in Media
-  set the style of FileListing to
-    `display:none;width:50%;height:75%;margin:auto;background-color:white;`
-    cat `padding:2em 2em 3em 2em;text-align:center;position: absolute;top: 50%;left: 50%;`
-    cat `transform: translateX(-50%) translateY(-50%)`
+    create ContentEditor in ContentDiv
+    set the style of ContentEditor to `width:100%;height:100%`
 
-  create Scroller in FileListing
-  set the style of Scroller to `height:100%;overflow:scroll;text-align:left`
+!   ── CodeMirror ───────────────────────────────────────────────────────────────
+    codemirror init basic profile `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror-ecs.js`
+    require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
+    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
+    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`
+    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
+    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
+    codemirror attach to ContentEditor
 
-  create CloseButton in FileListing
-  set the text of CloseButton to `Close`
-  
-  codemirror attach to ContentEditor
-  codemirror set content of ContentEditor to Content
-  set FileIsOpen
+!   ── File browser overlay ─────────────────────────────────────────────────────
+    create Overlay in Body
+    set the style of Overlay to `display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:100`
 
-  put empty into Current
+    create FileListing in Overlay
+    set the style of FileListing to
+        `position:absolute;width:50%;max-height:70%;background:white;padding:1em;`
+        cat `top:50%;left:50%;transform:translateX(-50%) translateY(-50%);`
+        cat `display:flex;flex-direction:column;border-radius:4px`
 
-  on click Save
-  begin
-    set the content of Status to `Save is disabled in static hosting mode`
-    fork to ResetStatus
-  end
+    create Scroller in FileListing
+    set the style of Scroller to `flex:1;overflow-y:auto;margin-bottom:0.5em;min-height:100px`
 
-  on click Open
-  begin
-    set the content of Status to `Open browser is disabled in static hosting mode`
-    fork to ResetStatus
-  end
+    create CloseBtn in FileListing
+    set the text of CloseBtn to `Close`
 
-  on click Delete
-  begin
-    set the content of Status to `Delete is disabled in static hosting mode`
-    fork to ResetStatus
-  end
-  stop
+!   ── Handlers ─────────────────────────────────────────────────────────────────
+    on click OpenBtn go to ShowBrowser
+    on click TabBtn go to SwitchTab
 
-DoOpen:
-  set the content of Status to `Open browser is disabled in static hosting mode`
-  fork to ResetStatus
-  stop
+!   ── Start background loops ───────────────────────────────────────────────────
+    fork to AutoSave
+    fork to PollFile
+    stop
 
+!   ── Auto-save loop ───────────────────────────────────────────────────────────
+AutoSave:
+    wait 500 millis
+    if TabCount is 0
+    begin
+        fork to AutoSave
+        stop
+    end
+    codemirror get content of ContentEditor into Content
+    index TabSaved to ActiveTab
+    if Content is not TabSaved
+    begin
+        index TabPath to ActiveTab
+        rest post Content to ServerBase cat `/write` cat TabPath or go SaveFailed
+        index TabSaved to ActiveTab
+        put Content into TabSaved
+        set the content of StatusSpan to `Saved`
+        fork to ClearStatus
+    end
+    fork to AutoSave
+    stop
+
+SaveFailed:
+    set the content of StatusSpan to `Save failed`
+    fork to ClearStatus
+    fork to AutoSave
+    stop
+
+!   ── External change polling ──────────────────────────────────────────────────
+PollFile:
+    wait 3 seconds
+    if TabCount is 0
+    begin
+        fork to PollFile
+        stop
+    end
+    index TabPath to ActiveTab
+    rest get FileContent from ServerBase cat `/read` cat TabPath or go PollNext
+    codemirror get content of ContentEditor into Content
+    index TabSaved to ActiveTab
+    if FileContent is not TabSaved
+    begin
+        if Content is TabSaved
+        begin
+            ! Editor is clean — silently reload
+            put FileContent into TabSaved
+            codemirror set content of ContentEditor to FileContent
+            set the content of StatusSpan to `Reloaded`
+            fork to ClearStatus
+        end
+        else
+        begin
+            set the content of StatusSpan to `External change detected`
+        end
+    end
+PollNext:
+    fork to PollFile
+    stop
+
+!   ── File browser ─────────────────────────────────────────────────────────────
+ShowBrowser:
+    set DirPath to `/home/graham/dev/easycoder.github.io/resources/ecs`
+    rest get FileList from ServerBase cat `/list` cat DirPath or go BrowserError
+    put the json count of FileList into FileCount
+    ! Filter for .ecs files only
+    put empty into Item
+    put 0 into N
+    while N is less than FileCount
+    begin
+        put element N of FileList into File
+        if File ends with `.ecs` json add File to Item
+        add 1 to N
+    end
+    put the json count of Item into FileCount
+    if FileCount is 0
+    begin
+        set the content of StatusSpan to `No .ecs files found`
+        fork to ClearStatus
+        stop
+    end
+    set the elements of FileRow to FileCount
+    set the elements of FileName to FileCount
+    put empty into TabBarHTML
+    put 0 into N
+    while N is less than FileCount
+    begin
+        put element N of Item into File
+        put `<div id="ec-fr-TABID"><a id="ec-fn-TABID" href="#" style="display:block;padding:3px 0"></a></div>` into TabItem
+        replace `TABID` with N in TabItem
+        put TabBarHTML cat TabItem into TabBarHTML
+        add 1 to N
+    end
+    set the content of Scroller to TabBarHTML
+    put 0 into N
+    while N is less than FileCount
+    begin
+        index FileRow to N
+        index FileName to N
+        attach FileRow to `ec-fr-` cat N
+        attach FileName to `ec-fn-` cat N
+        put element N of Item into File
+        set the content of FileName to File
+        on click FileName go to SelectFile
+        add 1 to N
+    end
+    on click CloseBtn go to CloseBrowser
+    set style `display` of Overlay to `block`
+    stop
+
+BrowserError:
+    set the content of StatusSpan to `Cannot connect to server`
+    fork to ClearStatus
+    stop
+
+!   ── File selected in browser ─────────────────────────────────────────────────
 SelectFile:
-  index File to the index of FileName
-  set the content of NameEditor to File
-  rest get Content from `/resources/ecs/` cat File
-  put Content into Current
-  set the content of Status to `Script '` cat File cat `' loaded`
-  fork to ResetStatus
-  set the title to File
+    index FileName to the index of FileName
+    put the content of FileName into File
+    put DirPath cat `/` cat File into TabItem
+    set style `display` of Overlay to `none`
+    go to OpenFile
 
 CloseBrowser:
-  set style `background-color` of Overlay to `rgba(0,0,0,0.0)`
-  set style `display` of Overlay to `none`
-  set style `display` of Media to `none`
-  codemirror attach to ContentEditor
-  codemirror set content of ContentEditor to Content
-  stop
+    set style `display` of Overlay to `none`
+    stop
 
-ResetStatus:
-  wait 2
-  set the content of Status to ``
-  stop
+!   ── Open a file (TabItem=path, File=basename) ────────────────────────────────
+OpenFile:
+    ! Check if already open in a tab
+    put 0 into N
+    while N is less than TabCount
+    begin
+        index TabPath to N
+        if TabPath is TabItem
+        begin
+            put N into ActiveTab
+            go to ActivateTab
+        end
+        add 1 to N
+    end
+    ! Not open — load from server and create a new tab
+    ! (N now equals old TabCount, which is the index for the new tab)
+    rest get Content from ServerBase cat `/read` cat TabItem or go BrowserError
+    add 1 to TabCount
+    set the elements of TabPath to TabCount
+    set the elements of TabName to TabCount
+    set the elements of TabSaved to TabCount
+    set the elements of TabBtn to TabCount
+    index TabPath to N
+    put TabItem into TabPath
+    index TabName to N
+    put File into TabName
+    index TabSaved to N
+    put Content into TabSaved
+    put N into ActiveTab
+    go to RebuildTabBar
+
+!   ── Switch to an existing tab ────────────────────────────────────────────────
+SwitchTab:
+    put the index of TabBtn into ActiveTab
+    go to ActivateTab
+
+ActivateTab:
+    index TabSaved to ActiveTab
+    codemirror set content of ContentEditor to TabSaved
+    go to RebuildTabBar
+
+!   ── Rebuild tab bar HTML and re-attach handlers ──────────────────────────────
+RebuildTabBar:
+    put empty into TabBarHTML
+    put 0 into N
+    while N is less than TabCount
+    begin
+        index TabName to N
+        if N is ActiveTab
+        begin
+            put `<button id="ec-tb-TABID" style="background:#555;color:white;padding:4px 10px;border:none;cursor:pointer;border-bottom:2px solid lightgreen">TABNAME</button>` into TabItem
+        end
+        else
+        begin
+            put `<button id="ec-tb-TABID" style="background:#3a3a3a;color:#aaa;padding:4px 10px;border:none;cursor:pointer">TABNAME</button>` into TabItem
+        end
+        replace `TABID` with N in TabItem
+        replace `TABNAME` with TabName in TabItem
+        put TabBarHTML cat TabItem into TabBarHTML
+        add 1 to N
+    end
+    set the content of TabBar to TabBarHTML
+    put 0 into N
+    while N is less than TabCount
+    begin
+        index TabBtn to N
+        attach TabBtn to `ec-tb-` cat N
+        on click TabBtn go to SwitchTab
+        add 1 to N
+    end
+    stop
+
+!   ── Utilities ────────────────────────────────────────────────────────────────
+ClearStatus:
+    wait 3 seconds
+    set the content of StatusSpan to ``
+    stop
