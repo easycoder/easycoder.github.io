@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git config:*)",
+      "Bash(xargs ls:*)",
+      "Bash(git:*)",
+      "Bash(ssh:*)",
+      "Bash(chmod:*)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"from easycoder import Main\")",
+      "Bash(jobs)",
+      "Bash(curl:*)",
+      "Bash(bash tests/server_test.sh)",
+      "Bash(cp -r /tmp/easycoder-py-backup /home/graham/dev/easycoder.github.io/easycoder-py)",
+      "Bash(rm -rf /home/graham/dev/easycoder.github.io/easycoder-py/.git)",
+      "Bash(grep:*)",
+      "Skill(keybindings-help)",
+      "Bash(./build-easycoder)"
+    ]
+  }
+}

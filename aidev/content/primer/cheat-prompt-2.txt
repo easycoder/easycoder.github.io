@@ -1,0 +1,6 @@
+There are 2 players: the human and the computer. Play proceeds as follows:
+The player to start is decided randomly. When it's the turn of the human, the system waits for an empty cell to be tapped. It then gives the cell a light green background. Play then passes to the computer and taps will be ignored.
+When it's the turn of the computer, add a pause of 2 seconds to simulate thinking time, then choose an empty cell, giving it a light red background.
+Once a cell has a background it does not respond to taps. Play then passes to the human, with taps re-enabled.
+Play continues until the board is full or until a complete row, column or diagonal (3 cells in each case) are all the same color. The winner is the player who owns that color.
+Please add this logic.

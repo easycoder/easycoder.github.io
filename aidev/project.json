@@ -1,0 +1,1125 @@
+{
+  "#doc": "EasyCoder Primer page rendered via Webson",
+  "#element": "div",
+  "@id": "PrimerPage",
+  "position": "relative",
+  "width": "100%",
+  "height": "100%",
+  "min-height": "100%",
+  "box-sizing": "border-box",
+  "display": "flex",
+  "flex-direction": "column",
+  "background": "#0f1424",
+  "color": "#eaf0ff",
+  "font-family": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  "font-size": "16px",
+  "line-height": "1.5",
+  "overflow-y": "auto",
+  "padding": "0.9em",
+  "gap": "0.9em",
+  "#": [
+    "$TabBar",
+    "$PrimerContainer",
+    "$CheatContainer",
+    "$DeveloperContainer",
+    "$ManualContainer"
+  ],
+
+  "$TabBar": {
+    "#element": "div",
+    "@id": "TabBar",
+    "display": "flex",
+    "gap": "0.5em",
+    "margin-bottom": "0.1em",
+    "#": [
+      "$TabPrimer",
+      "$TabCheat",
+      "$TabDeveloper",
+      "$TabManual"
+    ],
+
+    "$TabPrimer": {
+      "#element": "button",
+      "@id": "TabPrimer",
+      "#content": "Primer",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabCheat": {
+      "#element": "button",
+      "@id": "TabCheat",
+      "#content": "Cheat Sheet",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabDeveloper": {
+      "#element": "button",
+      "@id": "TabDeveloper",
+      "#content": "Developer",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabManual": {
+      "#element": "button",
+      "@id": "TabManual",
+      "#content": "AI Manual",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    }
+  },
+
+  "$PrimerContainer": {
+    "#element": "div",
+    "@id": "PrimerContainer",
+    "display": "flex",
+    "flex-direction": "column",
+    "gap": "0.9em",
+    "#": [
+      "$HeroCard",
+      "$LearnCard",
+      "$CodexFootnoteCard",
+      "$NeedCard",
+      "$BuildCard",
+      "$PromptCard",
+      "$AuthorPanel",
+      "$Footer"
+    ]
+  },
+
+  "$CheatContainer": {
+    "#element": "div",
+    "@id": "CheatContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.9em",
+    "#": [
+      "$CheatCard"
+    ],
+
+    "$CheatCard": {
+      "#element": "div",
+      "@id": "CheatCard",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "#": [
+        "$CheatTitle",
+        "$CheatText",
+        "$Prompt1Title",
+        "$Prompt1Content",
+        "$Prompt1Area",
+        "$Prompt2Title",
+        "$Prompt2Content",
+        "$Prompt2Area",
+        "$Prompt3Title",
+        "$Prompt3Content",
+        "$Prompt3Area"
+      ],
+
+      "$CheatTitle": {
+        "#element": "div",
+        "@id": "CheatTitle",
+        "#content": "Prompt cheat sheet (step-by-step)",
+        "font-size": "1.15em",
+        "font-weight": "700",
+        "color": "#7ca5ff",
+        "margin-bottom": "0.35em"
+      },
+
+      "$CheatText": {
+        "#element": "div",
+        "@id": "CheatText",
+        "#content": "Use these prompts as reliable, copy/paste-safe milestones. Add new prompts below as the tutorial evolves.",
+        "color": "#b8c2df",
+        "margin-bottom": "0.45em"
+      },
+
+      "$Prompt1Title": {
+        "#element": "div",
+        "@id": "CheatPrompt1Title",
+        "#content": "Prompt 1: Build the TicTacToe board shell",
+        "font-size": "1.03em",
+        "font-weight": "700",
+        "color": "#9cc5ff",
+        "margin-bottom": "0.3em",
+        "margin-top": "0.2em"
+      },
+
+      "$Prompt1Content": {
+        "#textFile": "content/primer/cheat-prompt-1.txt"
+      },
+
+      "$Prompt1Area": {
+        "#element": "textarea",
+        "@id": "CheatPrompt1Text",
+        "#content": "$Prompt1Content",
+        "width": "100%",
+        "min-height": "16em",
+        "resize": "vertical",
+        "background": "#0d1220",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "10px",
+        "box-sizing": "border-box",
+        "padding": "0.7em",
+        "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "font-size": "14px",
+        "line-height": "1.45",
+        "margin-bottom": "0.7em"
+      },
+
+      "$Prompt2Title": {
+        "#element": "div",
+        "@id": "CheatPrompt2Title",
+        "#content": "Prompt 2: Add human/computer turn logic",
+        "font-size": "1.03em",
+        "font-weight": "700",
+        "color": "#9cc5ff",
+        "margin-bottom": "0.3em"
+      },
+
+      "$Prompt2Content": {
+        "#textFile": "content/primer/cheat-prompt-2.txt"
+      },
+
+      "$Prompt2Area": {
+        "#element": "textarea",
+        "@id": "CheatPrompt2Text",
+        "#content": "$Prompt2Content",
+        "width": "100%",
+        "min-height": "15em",
+        "resize": "vertical",
+        "background": "#0d1220",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "10px",
+        "box-sizing": "border-box",
+        "padding": "0.7em",
+        "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "font-size": "14px",
+        "line-height": "1.45",
+        "margin-bottom": "0.7em"
+      },
+
+      "$Prompt3Title": {
+        "#element": "div",
+        "@id": "CheatPrompt3Title",
+        "#content": "Prompt 3: Improve computer move strategy",
+        "font-size": "1.03em",
+        "font-weight": "700",
+        "color": "#9cc5ff",
+        "margin-bottom": "0.3em"
+      },
+
+      "$Prompt3Content": {
+        "#textFile": "content/primer/cheat-prompt-3.txt"
+      },
+
+      "$Prompt3Area": {
+        "#element": "textarea",
+        "@id": "CheatPrompt3Text",
+        "#content": "$Prompt3Content",
+        "width": "100%",
+        "min-height": "10em",
+        "resize": "vertical",
+        "background": "#0d1220",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "10px",
+        "box-sizing": "border-box",
+        "padding": "0.7em",
+        "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "font-size": "14px",
+        "line-height": "1.45"
+      }
+    }
+  },
+
+  "$DeveloperContainer": {
+    "#element": "div",
+    "@id": "DeveloperContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$DeveloperCard"
+    ],
+
+    "$DeveloperCard": {
+      "#element": "div",
+      "@id": "DeveloperCard",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff",
+      "#content": "$DeveloperMarkdown"
+    },
+
+    "$DeveloperMarkdown": {
+      "#textFile": "developer.md"
+    }
+  },
+
+  "$ManualContainer": {
+    "#element": "div",
+    "@id": "ManualContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$ManualStatus",
+      "$RetryManualButton",
+      "$ManualChapterList",
+      "$ManualBackButton",
+      "$ManualBody"
+    ],
+
+    "$ManualStatus": {
+      "#element": "div",
+      "@id": "ManualStatus",
+      "#content": "",
+      "color": "#b8c2df"
+    },
+
+    "$RetryManualButton": {
+      "#element": "button",
+      "@id": "RetryManualButton",
+      "#content": "Retry load",
+      "display": "none",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.5em 0.8em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-bottom": "0.2em",
+      "width": "fit-content"
+    },
+
+    "$ManualChapterList": {
+      "#element": "div",
+      "@id": "ManualChapterList",
+      "display": "flex",
+      "flex-direction": "column",
+      "gap": "0.35em",
+      "margin-bottom": "0.35em",
+      "#": [
+        "$ManualChapter1",
+        "$ManualChapter2",
+        "$ManualChapter3",
+        "$ManualChapter4",
+        "$ManualChapter5",
+        "$ManualChapter6",
+        "$ManualChapter7",
+        "$ManualChapter8"
+      ],
+
+      "$ManualChapter1": {
+        "#element": "button",
+        "@id": "ManualChapter1",
+        "#content": "Chapter 1 — AI-Native Webapp Development",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter2": {
+        "#element": "button",
+        "@id": "ManualChapter2",
+        "#content": "Chapter 2 — Decision Framework",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter3": {
+        "#element": "button",
+        "@id": "ManualChapter3",
+        "#content": "Chapter 3 — Delivery Workflow",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter4": {
+        "#element": "button",
+        "@id": "ManualChapter4",
+        "#content": "Chapter 4 — Troubleshooting and Stabilization",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter5": {
+        "#element": "button",
+        "@id": "ManualChapter5",
+        "#content": "Chapter 5 — From MVP to Production Habits",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter6": {
+        "#element": "button",
+        "@id": "ManualChapter6",
+        "#content": "Chapter 6 — Team Playbook",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter7": {
+        "#element": "button",
+        "@id": "ManualChapter7",
+        "#content": "Chapter 7 — Prompt Engineering",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter8": {
+        "#element": "button",
+        "@id": "ManualChapter8",
+        "#content": "Chapter 8 — Structured vs Vibe Coding",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      }
+    },
+
+    "$ManualBackButton": {
+      "#element": "button",
+      "@id": "ManualBackButton",
+      "#content": "Back",
+      "display": "none",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.5em 0.8em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-bottom": "0.2em",
+      "width": "fit-content"
+    },
+
+    "$ManualBody": {
+      "#element": "div",
+      "@id": "ManualBody",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff"
+    }
+  },
+
+  "$HeroCard": {
+    "#element": "div",
+    "@id": "HeroCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$HeroTitle",
+      "$HeroText1",
+      "$HeroText2"
+    ],
+
+    "$HeroTitle": {
+      "#element": "div",
+      "@id": "HeroTitle",
+      "#content": "Build Software, Not Just Prompts",
+      "font-size": "1.6em",
+      "font-weight": "700",
+      "line-height": "1.25",
+      "margin-bottom": "0.45em"
+    },
+
+    "$HeroText1Content": {
+      "#textFile": "content/primer/hero-text-1.txt"
+    },
+
+    "$HeroText2Content": {
+      "#textFile": "content/primer/hero-text-2.txt"
+    },
+
+    "$HeroText1": {
+      "#element": "div",
+      "@id": "HeroText1",
+      "#content": "$HeroText1Content",
+      "margin-bottom": "0.35em"
+    },
+
+    "$HeroText2": {
+      "#element": "div",
+      "@id": "HeroText2",
+      "#content": "$HeroText2Content",
+      "color": "#b8c2df"
+    }
+  },
+
+  "$LearnCard": {
+    "#element": "div",
+    "@id": "LearnCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$LearnTitle",
+      "$LearnList",
+      "$LearnNote"
+    ],
+
+    "$LearnTitle": {
+      "#element": "div",
+      "@id": "LearnTitle",
+      "#content": "What you learn",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$LearnNoteContent": {
+      "#textFile": "content/primer/learn-note.txt"
+    },
+
+    "$LearnList": {
+      "#element": "ul",
+      "@id": "LearnList",
+      "margin": "0.2em 0 0 1.2em",
+      "padding": "0",
+      "#": [
+        "$LearnItem1",
+        "$LearnItem2",
+        "$LearnItem3"
+      ],
+
+      "$LearnItem1": {
+        "#element": "li",
+        "#content": "How to structure a real smartphone webapp.",
+        "margin": "0.25em 0"
+      },
+
+      "$LearnItem2": {
+        "#element": "li",
+        "#content": "How to work effectively with an AI coding agent.",
+        "margin": "0.25em 0"
+      },
+
+      "$LearnItem3": {
+        "#element": "li",
+        "#content": "How to review and understand each change.",
+        "margin": "0.25em 0"
+      }
+    },
+
+    "$LearnNote": {
+      "#element": "div",
+      "@id": "LearnNote",
+      "#content": "$LearnNoteContent",
+      "color": "#b8c2df",
+      "margin-top": "0.45em"
+    }
+  },
+
+  "$CodexFootnoteCard": {
+    "#element": "div",
+    "@id": "CodexFootnoteCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$CodexFootnoteTitle",
+      "$CodexFootnoteBody"
+    ],
+
+    "$CodexFootnoteTitle": {
+      "#element": "div",
+      "@id": "CodexFootnoteTitle",
+      "#content": "What are EasyCoder and Codex?",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$CodexFootnoteBody": {
+      "#element": "div",
+      "@id": "CodexFootnoteBody",
+      "color": "#b8c2df",
+      "#": [
+        "$CodexFootnoteLine1",
+        "$CodexFootnoteLine2"
+      ]
+    },
+
+    "$CodexFootnoteLine1": {
+      "#element": "div",
+      "margin-bottom": "0.6em",
+      "#": [
+        "$CodexFootnoteText1",
+        "$CodexFootnoteLink1",
+        "$CodexFootnoteText2"
+      ]
+    },
+
+    "$CodexFootnoteText1": {
+      "#element": "span",
+      "#content": "EasyCoder is a high-level coding language that works with AI to deliver code that can be checked by humans, not just taken on trust. Before starting your first project, go to the "
+    },
+
+    "$CodexFootnoteLink1": {
+      "#element": "a",
+      "#content": "Codex",
+      "@href": "https://easycoder.github.io/codex.html",
+      "color": "#9fc0ff"
+    },
+
+    "$CodexFootnoteText2": {
+      "#element": "span",
+      "#content": ". This is a combined tutorial, reference manual and programmer's playground and will very quickly get you accustomed to the kind of output that will be delivered by AI."
+    },
+
+    "$CodexFootnoteLine2": {
+      "#element": "div",
+      "#": [
+        "$CodexFootnoteContactLabel",
+        "$CodexFootnoteContactLink"
+      ]
+    },
+
+    "$CodexFootnoteContactLabel": {
+      "#element": "span",
+      "#content": "Contact: "
+    },
+
+    "$CodexFootnoteContactLink": {
+      "#element": "a",
+      "#content": "easycoder.ai@gmail.com",
+      "@href": "mailto:easycoder.ai@gmail.com",
+      "color": "#9fc0ff"
+    }
+  },
+
+  "$NeedCard": {
+    "#element": "div",
+    "@id": "NeedCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$NeedTitle",
+      "$NeedText1",
+      "$NeedList",
+      "$NeedText2"
+    ],
+
+    "$NeedTitle": {
+      "#element": "div",
+      "@id": "NeedTitle",
+      "#content": "What you will need",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$NeedText1Content": {
+      "#textFile": "content/primer/need-text-1.txt"
+    },
+
+    "$NeedText2Content": {
+      "#textFile": "content/primer/need-text-2.txt"
+    },
+
+    "$NeedText1": {
+      "#element": "div",
+      "@id": "NeedText1",
+      "#content": "$NeedText1Content",
+      "margin-bottom": "0.35em"
+    },
+
+    "$NeedList": {
+      "#element": "ul",
+      "@id": "NeedList",
+      "margin": "0.2em 0 0 1.2em",
+      "padding": "0",
+      "#": [
+        "$NeedItem1",
+        "$NeedItem2",
+        "$NeedItem3"
+      ],
+
+      "$NeedItem1": {
+        "#element": "li",
+        "#content": "An AI-boosted text editor (if unsure, use VS Code with Copilot).",
+        "margin": "0.25em 0"
+      },
+
+      "$NeedItem2": {
+        "#element": "li",
+        "#content": "A modern web browser for local testing. On Linux we recommend 'sudo snap install chromium'",
+        "margin": "0.25em 0"
+      },
+
+      "$NeedItem3": {
+        "#element": "li",
+        "#content": "A willingness to read every change and learn by doing.",
+        "margin": "0.25em 0"
+      }
+    },
+
+    "$NeedText2": {
+      "#element": "div",
+      "@id": "NeedText2",
+      "#content": "$NeedText2Content",
+      "color": "#b8c2df",
+      "margin-top": "0.45em"
+    }
+  },
+
+  "$PromptCard": {
+    "#element": "div",
+    "@id": "PromptCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$PromptTitle",
+      "$PromptNote",
+      "$PromptArea",
+      "$ButtonRow"
+    ],
+
+    "$PromptTitle": {
+      "#element": "div",
+      "@id": "PromptTitle",
+      "#content": "Initial prompt (copy/paste)",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.45em"
+    },
+
+    "$PromptNote": {
+      "#element": "div",
+      "@id": "PromptNote",
+      "#content": "Recommended first steps: complete Codex tutorial step0-step3 before starting your AI project.",
+      "color": "#b8c2df",
+      "margin-bottom": "0.6em"
+    },
+
+    "$InitialPrompt": {
+      "#textFile": "content/primer/initial-prompt.txt"
+    },
+
+    "$PromptArea": {
+      "#element": "textarea",
+      "@id": "PromptText",
+      "#content": "$InitialPrompt",
+      "width": "100%",
+      "min-height": "13.5em",
+      "resize": "vertical",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "10px",
+      "box-sizing": "border-box",
+      "padding": "0.7em",
+      "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+      "font-size": "14px",
+      "line-height": "1.45"
+    },
+
+    "$ButtonRow": {
+      "#element": "div",
+      "@id": "ButtonRow",
+      "display": "flex",
+      "flex-wrap": "wrap",
+      "gap": "0.5em",
+      "margin-top": "0.7em",
+      "align-items": "center",
+      "#": [
+        "$CopyButton",
+        "$SelectButton",
+        "$StatusText"
+      ],
+
+      "$CopyButton": {
+        "#element": "button",
+        "@id": "CopyPromptButton",
+        "#content": "Copy prompt",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.6em 0.9em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$SelectButton": {
+        "#element": "button",
+        "@id": "SelectPromptButton",
+        "#content": "Select prompt",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.6em 0.9em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$StatusText": {
+        "#element": "span",
+        "@id": "PromptStatus",
+        "#content": "",
+        "color": "#b8c2df"
+      }
+    }
+  },
+
+  "$BuildCard": {
+    "#element": "div",
+    "@id": "BuildCard",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$BuildTitle",
+      "$BuildText"
+    ],
+
+    "$BuildTitle": {
+      "#element": "div",
+      "@id": "BuildTitle",
+      "#content": "What you will build",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.45em"
+    },
+
+    "$BuildText": {
+      "#element": "div",
+      "@id": "BuildText",
+      "#content": "As a simple example to get you started, you'll build an implementation of TicTacToe. Complete the first few Codex tutorial steps before starting your own AI coding project so both you and the assistant share the same EasyCoder basics.",
+      "line-height": "1.5"
+    }
+  },
+
+  "$AuthorPanel": {
+    "#element": "div",
+    "@id": "AuthorPanel",
+    "display": "none",
+    "background": "#161d34",
+    "border": "1px solid #2b3555",
+    "border-radius": "14px",
+    "padding": "1em",
+    "#": [
+      "$AuthorTitle",
+      "$AuthorHelp",
+      "$AuthorLinks",
+      "$AuthorControls",
+      "$AuthorItemName",
+      "$AuthorEditor",
+      "$AuthorStatus",
+      "$ExitAuthorButton"
+    ],
+
+    "$AuthorTitle": {
+      "#element": "div",
+      "@id": "AuthorTitle",
+      "#content": "Author mode",
+      "font-size": "1.15em",
+      "font-weight": "700",
+      "color": "#7ca5ff",
+      "margin-bottom": "0.35em"
+    },
+
+    "$AuthorHelp": {
+      "#element": "div",
+      "@id": "AuthorHelp",
+      "#content": "Choose a content item, then load either the current file or the original markdown source.",
+      "color": "#b8c2df",
+      "margin-bottom": "0.55em"
+    },
+
+    "$AuthorLinks": {
+      "#element": "div",
+      "@id": "AuthorLinks",
+      "display": "flex",
+      "flex-direction": "column",
+      "gap": "0.35em",
+      "margin-bottom": "0.7em",
+      "#": [
+        "$EditHeroText1",
+        "$EditHeroText2",
+        "$EditLearnNote",
+        "$EditNeedText1",
+        "$EditNeedText2",
+        "$EditInitialPrompt"
+      ],
+
+      "$EditHeroText1": {
+        "#element": "button",
+        "@id": "EditHeroText1",
+        "#content": "hero-text-1",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditHeroText2": {
+        "#element": "button",
+        "@id": "EditHeroText2",
+        "#content": "hero-text-2",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditLearnNote": {
+        "#element": "button",
+        "@id": "EditLearnNote",
+        "#content": "learn-note",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditNeedText1": {
+        "#element": "button",
+        "@id": "EditNeedText1",
+        "#content": "need-text-1",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditNeedText2": {
+        "#element": "button",
+        "@id": "EditNeedText2",
+        "#content": "need-text-2",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$EditInitialPrompt": {
+        "#element": "button",
+        "@id": "EditInitialPrompt",
+        "#content": "initial-prompt",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      }
+    },
+
+    "$AuthorControls": {
+      "#element": "div",
+      "@id": "AuthorControls",
+      "display": "flex",
+      "flex-wrap": "wrap",
+      "gap": "0.5em",
+      "margin-bottom": "0.5em",
+      "#": [
+        "$LoadCurrentButton",
+        "$LoadOriginalButton",
+        "$SaveContentButton"
+      ],
+
+      "$LoadCurrentButton": {
+        "#element": "button",
+        "@id": "LoadCurrentButton",
+        "#content": "Load current item",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.55em 0.85em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$LoadOriginalButton": {
+        "#element": "button",
+        "@id": "LoadOriginalButton",
+        "#content": "Load original .md",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.55em 0.85em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      },
+
+      "$SaveContentButton": {
+        "#element": "button",
+        "@id": "SaveContentButton",
+        "#content": "Save changes",
+        "background": "#23345e",
+        "color": "#eaf0ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.55em 0.85em",
+        "font-weight": "600",
+        "cursor": "pointer"
+      }
+    },
+
+    "$AuthorItemName": {
+      "#element": "div",
+      "@id": "AuthorItemName",
+      "#content": "Item: initial-prompt",
+      "font-size": "0.92em",
+      "color": "#b8c2df",
+      "margin-bottom": "0.35em"
+    },
+
+    "$AuthorEditor": {
+      "#element": "textarea",
+      "@id": "AuthorEditor",
+      "#content": "",
+      "width": "100%",
+      "min-height": "16em",
+      "resize": "vertical",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "10px",
+      "box-sizing": "border-box",
+      "padding": "0.7em",
+      "font-family": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+      "font-size": "13px",
+      "line-height": "1.45"
+    },
+
+    "$AuthorStatus": {
+      "#element": "div",
+      "@id": "AuthorStatus",
+      "#content": "",
+      "color": "#b8c2df",
+      "margin-top": "0.45em"
+    },
+
+    "$ExitAuthorButton": {
+      "#element": "button",
+      "@id": "ExitAuthorButton",
+      "#content": "Exit author mode",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.85em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-top": "0.6em"
+    }
+  },
+
+  "$Footer": {
+    "#element": "div",
+    "@id": "Footer",
+    "#content": "Primer v2 \u2022 concise, serious, learner-focused",
+    "color": "#b8c2df",
+    "text-align": "center",
+    "font-size": "0.86em",
+    "padding": "0.35em 0 0.2em",
+    "cursor": "pointer"
+  }
+}
