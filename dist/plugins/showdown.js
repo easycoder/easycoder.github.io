@@ -80,6 +80,34 @@ const EasyCoder_Showdown = {
 		if (payload.startsWith(`next:`)) {
 			return `<h2>Next: <a href="#" id="next">${payload.slice(5)}</a></h2>`;
 		}
+		if (payload.startsWith(`m:`)) {
+			const text = payload.slice(2);
+			return `<span style="color:#800;font-family:Courier New">${text}</span>`;
+		}
+		if (payload.startsWith(`q:`)) {
+			const text = payload.slice(2);
+			return `<span style="color:#800">${text}</span>`;
+		}
+		if (payload.startsWith(`l:`)) {
+			const data = payload.slice(2);
+			const exMarkPos = data.indexOf(`!`);
+			const pipePos = data.indexOf(`|`);
+			let display;
+			let linkData;
+			if (exMarkPos > 0) {
+				display = data.slice(exMarkPos + 1);
+				linkData = data.slice(0, exMarkPos);
+			} else if (pipePos > 0) {
+				display = data.slice(0, pipePos);
+				linkData = data;
+			} else {
+				display = data;
+				linkData = data;
+			}
+			const linkCount = parseInt(EasyCoder_Showdown.getValue(program, `LinkCount`) || `0`, 10) || 0;
+			EasyCoder_Showdown.setValue(program, `LinkCount`, String(linkCount + 1));
+			return `<a href="#" id="ec-docman-${linkCount}" data-docmanid="${linkData}">${display}</a>`;
+		}
 		return payload;
 	},
 
