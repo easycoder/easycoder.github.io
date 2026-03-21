@@ -1,29 +1,24 @@
 !   scripted.ecs
 !   Tabbed script editor with auto-save and external change detection.
-!   Requires editor_server.ecs running locally on port 8765.
+!   Requires editor_server.ecs running locally on port 17348.
 
     script ScriptEditor
 
 !   ── DOM ──────────────────────────────────────────────────────────────────────
     div Body
-    div TopBar
     div TabBar
-    div EditorArea
-    div ContentDiv
-    textarea ContentEditor
-    span StatusSpan
-    button OpenBtn
-
-!   File browser
+    div TabBtn
     div Overlay
-    div FileListing
     div Scroller
     div FileRow
+    textarea ContentEditor
+    span StatusSpan
+    span TabLabel
+    button OpenBtn
     button CloseBtn
+    img TabClose
     a FileName
-
-!   Tab bar (dynamic, rebuilt on each change)
-    button TabBtn
+    pre UIPre
 
 !   ── State ────────────────────────────────────────────────────────────────────
     variable ServerBase
@@ -34,71 +29,41 @@
     variable ActiveTab
     variable Content       ! scratch: current editor content
     variable FileContent   ! scratch: content fetched from server
+    variable FileList      ! scratch: JSON array of filenames from /list
     variable N
+    variable M
     variable Item          ! scratch: JSON array used in browser and loops
     variable File          ! scratch: single filename
     variable FileCount
     variable DirPath
-    variable TabBarHTML
     variable TabItem
+    variable Port
+    variable UIWebson
 
-    set ServerBase to `http://localhost:8765`
+    set Port to 17348
+
+    set ServerBase to `http://localhost:` cat Port
     put 0 into TabCount
     put 0 into ActiveTab
 
 !   ── Build UI ─────────────────────────────────────────────────────────────────
-    create Body
-
-    create TopBar in Body
-    set the style of TopBar to `display:flex;align-items:center;background:#2d2d2d;padding:4px;gap:4px`
-
-    create OpenBtn in TopBar
-    set the text of OpenBtn to `Open`
-    set the style of OpenBtn to `padding:4px 12px;cursor:pointer`
-
-    create TabBar in TopBar
-    set the style of TabBar to `display:flex;flex:1;gap:2px;overflow-x:auto`
-
-    create StatusSpan in TopBar
-    set the style of StatusSpan to `color:lightgreen;font-size:0.85em;padding:0 8px;white-space:nowrap;min-width:6em;text-align:right`
-
-    create EditorArea in Body
-    set the style of EditorArea to `height:calc(100vh - 40px)`
-
-    create ContentDiv in EditorArea
-    set the style of ContentDiv to `width:100%;height:100%`
-
-    create ContentEditor in ContentDiv
-    set the style of ContentEditor to `width:100%;height:100%`
+    attach Body to body
+    attach UIPre to `scripted-ui`
+    put the content of UIPre into UIWebson
+    render UIWebson in Body
+    attach TabBar to `se-tabbar`
+    attach ContentEditor to `se-textarea`
+    attach StatusSpan to `se-status`
+    attach OpenBtn to `se-open`
+    attach Overlay to `se-overlay`
+    attach Scroller to `se-scroller`
+    attach CloseBtn to `se-closebtn`
 
 !   ── CodeMirror ───────────────────────────────────────────────────────────────
-    codemirror init basic profile `https://cdn.jsdelivr.net/gh/easycoder/easycoder.github.io/dist/plugins/codemirror-ecs.js`
-    require css `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.css`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/dialog/dialog.js`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/search.js`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/searchcursor.js`
-    require js `https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/search/jump-to-line.js`
     codemirror attach to ContentEditor
-
-!   ── File browser overlay ─────────────────────────────────────────────────────
-    create Overlay in Body
-    set the style of Overlay to `display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:100`
-
-    create FileListing in Overlay
-    set the style of FileListing to
-        `position:absolute;width:50%;max-height:70%;background:white;padding:1em;`
-        cat `top:50%;left:50%;transform:translateX(-50%) translateY(-50%);`
-        cat `display:flex;flex-direction:column;border-radius:4px`
-
-    create Scroller in FileListing
-    set the style of Scroller to `flex:1;overflow-y:auto;margin-bottom:0.5em;min-height:100px`
-
-    create CloseBtn in FileListing
-    set the text of CloseBtn to `Close`
 
 !   ── Handlers ─────────────────────────────────────────────────────────────────
     on click OpenBtn go to ShowBrowser
-    on click TabBtn go to SwitchTab
 
 !   ── Start background loops ───────────────────────────────────────────────────
     fork to AutoSave
@@ -187,25 +152,17 @@ ShowBrowser:
     end
     set the elements of FileRow to FileCount
     set the elements of FileName to FileCount
-    put empty into TabBarHTML
+    set the content of Scroller to ``
     put 0 into N
     while N is less than FileCount
     begin
         put element N of Item into File
-        put `<div id="ec-fr-TABID"><a id="ec-fn-TABID" href="#" style="display:block;padding:3px 0"></a></div>` into TabItem
-        replace `TABID` with N in TabItem
-        put TabBarHTML cat TabItem into TabBarHTML
-        add 1 to N
-    end
-    set the content of Scroller to TabBarHTML
-    put 0 into N
-    while N is less than FileCount
-    begin
         index FileRow to N
+        create FileRow in Scroller
+        set the style of FileRow to `padding:2px 0`
         index FileName to N
-        attach FileRow to `ec-fr-` cat N
-        attach FileName to `ec-fn-` cat N
-        put element N of Item into File
+        create FileName in FileRow
+        set the style of FileName to `display:block;padding:3px 0;cursor:pointer`
         set the content of FileName to File
         on click FileName go to SelectFile
         add 1 to N
@@ -253,6 +210,8 @@ OpenFile:
     set the elements of TabName to TabCount
     set the elements of TabSaved to TabCount
     set the elements of TabBtn to TabCount
+    set the elements of TabLabel to TabCount
+    set the elements of TabClose to TabCount
     index TabPath to N
     put TabItem into TabPath
     index TabName to N
@@ -260,11 +219,58 @@ OpenFile:
     index TabSaved to N
     put Content into TabSaved
     put N into ActiveTab
-    go to RebuildTabBar
+    go to ActivateTab
 
 !   ── Switch to an existing tab ────────────────────────────────────────────────
 SwitchTab:
-    put the index of TabBtn into ActiveTab
+    put the index of TabLabel into ActiveTab
+    go to ActivateTab
+
+!   ── Close a tab ──────────────────────────────────────────────────────────────
+CloseTab:
+    put the index of TabClose into M
+    ! Shift elements above M down by one
+    put M into N
+    add 1 to N
+    while N is less than TabCount
+    begin
+        index TabPath to N
+        put TabPath into File
+        subtract 1 from N
+        index TabPath to N
+        put File into TabPath
+        add 1 to N
+        index TabName to N
+        put TabName into File
+        subtract 1 from N
+        index TabName to N
+        put File into TabName
+        add 1 to N
+        index TabSaved to N
+        put TabSaved into FileContent
+        subtract 1 from N
+        index TabSaved to N
+        put FileContent into TabSaved
+        add 1 to N
+        add 1 to N
+    end
+    subtract 1 from TabCount
+    if TabCount is 0
+    begin
+        put 0 into ActiveTab
+        codemirror set content of ContentEditor to ``
+        set the content of TabBar to ``
+        stop
+    end
+    ! Adjust ActiveTab if it was after the closed tab
+    if ActiveTab is greater than M subtract 1 from ActiveTab
+    ! Clamp ActiveTab to valid range
+    put TabCount into FileCount
+    subtract 1 from FileCount
+    if ActiveTab is greater than FileCount
+    begin
+        put FileCount into ActiveTab
+    end
     go to ActivateTab
 
 ActivateTab:
@@ -272,33 +278,32 @@ ActivateTab:
     codemirror set content of ContentEditor to TabSaved
     go to RebuildTabBar
 
-!   ── Rebuild tab bar HTML and re-attach handlers ──────────────────────────────
+!   ── Rebuild tab bar ──────────────────────────────────────────────────────────
 RebuildTabBar:
-    put empty into TabBarHTML
-    put 0 into N
-    while N is less than TabCount
-    begin
-        index TabName to N
-        if N is ActiveTab
-        begin
-            put `<button id="ec-tb-TABID" style="background:#555;color:white;padding:4px 10px;border:none;cursor:pointer;border-bottom:2px solid lightgreen">TABNAME</button>` into TabItem
-        end
-        else
-        begin
-            put `<button id="ec-tb-TABID" style="background:#3a3a3a;color:#aaa;padding:4px 10px;border:none;cursor:pointer">TABNAME</button>` into TabItem
-        end
-        replace `TABID` with N in TabItem
-        replace `TABNAME` with TabName in TabItem
-        put TabBarHTML cat TabItem into TabBarHTML
-        add 1 to N
-    end
-    set the content of TabBar to TabBarHTML
+    set the content of TabBar to ``
     put 0 into N
     while N is less than TabCount
     begin
         index TabBtn to N
-        attach TabBtn to `ec-tb-` cat N
-        on click TabBtn go to SwitchTab
+        create TabBtn in TabBar
+        if N is ActiveTab
+        begin
+            set the style of TabBtn to `display:flex;align-items:center;gap:4px;padding:4px 10px;cursor:pointer;background:#555;color:white;border-bottom:2px solid lightgreen`
+        end
+        else
+        begin
+            set the style of TabBtn to `display:flex;align-items:center;gap:4px;padding:4px 10px;cursor:pointer;background:#3a3a3a;color:#aaa`
+        end
+        index TabLabel to N
+        create TabLabel in TabBtn
+        index TabName to N
+        set the text of TabLabel to TabName
+        on click TabLabel go to SwitchTab
+        index TabClose to N
+        create TabClose in TabBtn
+        set attribute `src` of TabClose to `resources/icon/stop.png`
+        set the style of TabClose to `width:12px;height:12px;opacity:0.6;cursor:pointer`
+        on click TabClose go to CloseTab
         add 1 to N
     end
     stop

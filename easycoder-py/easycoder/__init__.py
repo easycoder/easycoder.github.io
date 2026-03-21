@@ -3,7 +3,7 @@
 import importlib
 import math
 
-__version__ = "260318.1"
+__version__ = "260320.2"
 
 from .ec_classes import *
 from .ec_compiler import *
@@ -12,6 +12,7 @@ from .ec_core import *
 from .ec_handler import *
 from .ec_mqtt import *
 from .ec_program import *
+from .ec_server import *
 from .ec_psutil import *
 from .ec_timestamp import *
 from .ec_value import *

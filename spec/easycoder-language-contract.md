@@ -23,6 +23,9 @@ This contract does not yet standardize browser-only commands, DOM interactions, 
 4. `while` loop closure form is `end` (not `end while`).
 5. Conditions evaluate using EasyCoder comparison semantics (`is`, `is greater than`, `is less than`).
 6. Output commands (such as `log`) emit one logical output record per command, preserving order.
+7. Compound conditions support `and` (higher precedence) and `or` (lower precedence).
+8. The `includes` condition tests whether a string contains a substring.
+9. The `starts with` and `ends with` conditions test string prefix and suffix respectively.
 
 ## 3. Error Contract (Initial)
 

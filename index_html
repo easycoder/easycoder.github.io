@@ -6,7 +6,7 @@
   <title>EasyCoder project</title>
   <!-- Bump this token to force clients to fetch fresh JS without manual cache clear. -->
   <meta name="easycoder-cache-tag" content="20260310-7" />
-   <script type='text/javascript' src='easycoder.js'></script>
+   <script type='text/javascript' src='easycoder-min.js'></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>

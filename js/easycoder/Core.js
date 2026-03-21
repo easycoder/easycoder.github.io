@@ -3524,6 +3524,32 @@ const EasyCoder_Core = {
 						value2
 					};
 				}
+				if (token === `starts`) {
+					if (compiler.nextTokenIs(`with`)) {
+						compiler.next();
+						const value2 = compiler.getValue();
+						return {
+							domain: `core`,
+							type: `startsWith`,
+							value1,
+							value2
+						};
+					}
+					return null;
+				}
+				if (token === `ends`) {
+					if (compiler.nextTokenIs(`with`)) {
+						compiler.next();
+						const value2 = compiler.getValue();
+						return {
+							domain: `core`,
+							type: `endsWith`,
+							value1,
+							value2
+						};
+					}
+					return null;
+				}
 				if (token === `is`) {
 					compiler.next();
 					const negate = EasyCoder_Core.isNegate(compiler);
@@ -3725,6 +3751,10 @@ const EasyCoder_Core = {
 				const value1 = program.getValue(condition.value1);
 				const value2 = program.getValue(condition.value2);
 				return value1.includes(value2);
+			case `startsWith`:
+				return program.getValue(condition.value1).startsWith(program.getValue(condition.value2));
+			case `endsWith`:
+				return program.getValue(condition.value1).endsWith(program.getValue(condition.value2));
 			}
 			return false;
 		}

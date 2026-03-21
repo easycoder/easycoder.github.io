@@ -79,6 +79,30 @@ const EasyCoder_CodeMirror = {
 					return true;
 				}
 				return false;
+			case `get`:
+				if (compiler.nextTokenIs(`content`)) {
+					if (compiler.nextTokenIs(`of`)) {
+						if (compiler.nextIsSymbol()) {
+							const editor = compiler.getSymbolRecord();
+							if (compiler.nextTokenIs(`into`)) {
+								if (compiler.nextIsSymbol()) {
+									const target = compiler.getSymbolRecord();
+									compiler.next();
+									compiler.addCommand({
+										domain: `codemirror`,
+										keyword: `codemirror`,
+										lino,
+										action: `getContent`,
+										editor: editor.name,
+										target: target.name
+									});
+									return true;
+								}
+							}
+						}
+					}
+				}
+				return false;
 			default:
 				throw new Error(`Unrecognized action '${action}'`);
 			}
@@ -129,6 +153,17 @@ const EasyCoder_CodeMirror = {
 			case `close`:
 				editor = program.getSymbolRecord(command.editor);
 				editor.editor.toTextArea();
+				break;
+			case `getContent`:
+				editor = program.getSymbolRecord(command.editor);
+				const content = editor.editor.getValue();
+				const targetRecord = program.getSymbolRecord(command.target);
+				targetRecord.value[targetRecord.index] = {
+					type: `constant`,
+					numeric: false,
+					content
+				};
+				targetRecord.used = true;
 				break;
 			}
 			return command.pc + 1;

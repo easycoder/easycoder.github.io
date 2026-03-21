@@ -1,0 +1,55 @@
+# Example task (step-by-step)
+
+The task is to build a GUI implementation of TicTacToe. Once you have set up your system (see the Start Here tab), submit these prompts one by one to your AI agent.
+
+These prompts are reliable, copy/paste-safe milestones. Add new prompts below as the tutorial evolves.
+
+## Prompt 1: Build the TicTacToe board shell
+
+Create a 3 by 3 matrix of cells. 
+Each cell is square and all are the same size. 
+The matrix occupies the centre 50% of the screen width. 
+The matrix is positioned at the top of the screen. 
+Each cell has a 1-pixel black border and a 2-pixel margin between it and its neighbours and the screen edges.
+
+The programming strategy is as follows:
+
+In tictactoe.json, define a main div with the id 'board'. Use canonical Webson format: `"#element": "div"` for the element type and `"@id": "board"` for the ID. Place style properties directly on the object — do not use a nested `"style"` key, and do not use `"type"` or `"items"` (those belong to a different Webson dialect).
+
+Create a set of 9 child divs, each one being a cell of width/height such as to conform with the above. Each one will have an ID of the form 'cell-{Row}-{Col}' where {Row} is the row index and {Col} the column index.
+
+In tictactoe.ecs, add the following code, which declares variables:
+
+   div Board 
+   div Cell 
+   variable Row 
+   variable Col 
+   variable N 
+
+Attach Board to the 'board' element.
+
+Declare Cell as having 9 elements.
+
+Set N to 0. 
+Write a double loop that iterates Row from 0-2 and within that iterates Col from 0 to 2. 
+At each inner step: 
+ - use EasyCoder array syntax to access the Nth element of Cell
+ - attach Cell to the one whose ID matches the current Row and Col
+ - add 1 to N.
+
+## Prompt 2: Add human/computer turn logic
+
+There are 2 players: the human and the computer. Play proceeds as follows:
+
+The player to start is decided randomly. When it's the turn of the human, the system waits for an empty cell to be tapped. It then gives the cell a light green background. Play then passes to the computer and taps will be ignored.
+When it's the turn of the computer, add a pause of 2 seconds to simulate thinking time, then choose an empty cell, giving it a light red background.
+
+Once a cell has a background it does not respond to taps. Play then passes to the human, with taps re-enabled.
+Play continues until the board is full or until a complete row, column or diagonal (3 cells in each case) are all the same color. The winner is the player who owns that color.
+Please add this logic.
+
+## Prompt 3: Improve computer move strategy
+
+This is too easy for the human because the computer is choosing cells at random. Please add a basic strategy that chooses cells which lead to a complete row, column or diagonal.
+Also add some explanatory comments to tictactoe.ecs, for the benefit of human novices.
+

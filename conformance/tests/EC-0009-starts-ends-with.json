@@ -1,0 +1,17 @@
+{
+  "id": "EC-0009",
+  "name": "starts-ends-with",
+  "specVersion": "0.1",
+  "required": true,
+  "requirements": [
+    "2.9"
+  ],
+  "script": "EC-0009-starts-ends-with.ecs",
+  "expect": {
+    "logs": [
+      "starts ok",
+      "ends ok"
+    ],
+    "error": null
+  }
+}

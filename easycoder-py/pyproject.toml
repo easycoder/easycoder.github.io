@@ -28,4 +28,4 @@ include = ["ec_*.py", "*.png"]
 easycoder = "easycoder:Main"
 
 [project.urls]
-Home = "https://github.com/easycoder/easycoder-py"
+Home = "https://github.com/easycoder.github.io/easycoder-py"

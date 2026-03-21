@@ -27,12 +27,14 @@ This repo is the **JS implementation** and the **official website** (served via 
 
 | | JS | Python |
 |--|--|--|
-| Source | `/js/` | `/easycoder-py/` (submodule) |
+| Source | `/js/` | `/easycoder-py/` |
 | Build output | `/dist/easycoder.js`, `/dist/easycoder-min.js` | pip package |
 | Runtime | Browser | CLI (`easycoder project.ecs`) |
 | Core files | `Core.js`, `Browser.js`, `Compile.js`, `Run.js`, `Main.js` | `ec_core.py`, `ec_compiler.py`, `ec_program.py` |
 
-The `/spec/` and `/conformance/` directories are **canonical for both implementations**. Changes here are synced to the Python submodule via `scripts/easycoder/sync-shared-to-py.sh`.
+Both implementations live in the same repo — no submodule. Everything commits and pushes in one place.
+
+The `/spec/` and `/conformance/` directories are **canonical for both implementations**.
 
 ## Build System
 
@@ -65,23 +67,6 @@ Version numbers are date-based (e.g. `250824` = 24 Aug 2025). The current versio
 - `/aidev/agent-primer-js.md` — primer for AI agents working on the JS implementation
 - `/aidev/agent-primer-python.md` — primer for AI agents working on the Python implementation
 - Read the relevant primer before making substantive changes to either implementation
-
-## Python Submodule
-
-`/easycoder-py/` is a git submodule with its own repo. To update it:
-```sh
-cd easycoder-py
-git pull
-cd ..
-git add easycoder-py
-git commit -m "Update Python submodule"
-```
-
-Sync spec/conformance changes to Python:
-```sh
-./scripts/easycoder/sync-shared-to-py.sh
-./scripts/easycoder/publish-shared-to-py.sh
-```
 
 ## Commit Style
 
