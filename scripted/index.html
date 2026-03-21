@@ -19,13 +19,6 @@
 <body>
 <pre id="scripted-ui" style="display:none">
 {
-  "$PortBtn": {
-    "#element": "button",
-    "@id": "se-portbtn",
-    "#content": "Port",
-    "padding": "4px 12px",
-    "cursor": "pointer"
-  },
   "$OpenBtn": {
     "#element": "button",
     "@id": "se-open",
@@ -69,7 +62,7 @@
     "background": "#2d2d2d",
     "padding": "4px",
     "gap": "4px",
-    "#": ["$PortBtn", "$OpenBtn", "$TabBar", "$PlusBtn", "$StatusSpan"]
+    "#": ["$OpenBtn", "$TabBar", "$PlusBtn", "$StatusSpan"]
   },
   "$ContentEditor": {
     "#element": "textarea",
@@ -136,7 +129,7 @@
 <pre id="easycoder-script" style="display:none">
 !   scripted.ecs
 !   Tabbed script editor with auto-save and external change detection.
-!   Requires scripted-server.ecs running locally on the configured port.
+!   Requires scripted-server.ecs running locally. Open with ?port=NNNNN in the URL.
 
     script ScriptEditor
 
@@ -151,7 +144,6 @@
     span StatusSpan
     span TabLabel
     button OpenBtn
-    button PortBtn
     button CloseBtn
     img PlusBtn
     img TabClose
@@ -186,7 +178,6 @@
     attach ContentEditor to `se-textarea`
     attach StatusSpan to `se-status`
     attach OpenBtn to `se-open`
-    attach PortBtn to `se-portbtn`
     attach PlusBtn to `se-plusbtn`
     attach Overlay to `se-overlay`
     attach Scroller to `se-scroller`
@@ -195,15 +186,19 @@
 !   ── CodeMirror ───────────────────────────────────────────────────────────────
     codemirror attach to ContentEditor
 
-!   ── Load port from storage ───────────────────────────────────────────────────
-    get Port from storage as `scripted-port`
-    gosub to UpdateServerBase
+!   ── Get port from URL (?port=NNNNN) ──────────────────────────────────────────
+    put the location into Port
+    if Port includes `?port=`
+    begin
+        split Port on `?port=` into Port
+        index Port to 1
+        put `http://localhost:` cat Port into ServerBase
+    end
 
     put 0 into TabCount
     put 0 into ActiveTab
 
 !   ── Handlers ─────────────────────────────────────────────────────────────────
-    on click PortBtn go to SetPort
     on click OpenBtn go to ShowBrowser
     on click PlusBtn go to NewFile
 
@@ -211,25 +206,6 @@
     fork to AutoSave
     fork to PollFile
     stop
-
-!   ── Set port ─────────────────────────────────────────────────────────────────
-SetPort:
-    put prompt `Enter server port number:` with Port into Port
-    if Port is empty stop
-    put Port into storage as `scripted-port`
-    gosub to UpdateServerBase
-    set the content of StatusSpan to `Port set to ` cat Port
-    fork to ClearStatus
-    stop
-
-UpdateServerBase:
-    if Port is empty
-    begin
-        put `` into ServerBase
-        return
-    end
-    put `http://localhost:` cat Port into ServerBase
-    return
 
 !   ── New empty tab ────────────────────────────────────────────────────────────
 NewFile:
@@ -334,7 +310,7 @@ PollNext:
 ShowBrowser:
     if ServerBase is empty
     begin
-        set the content of StatusSpan to `Set port first`
+        set the content of StatusSpan to `Add ?port=NNNNN to the URL`
         fork to ClearStatus
         stop
     end
