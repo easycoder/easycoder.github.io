@@ -1,2 +1,0 @@
-json-rpc>=1.13.0
-pytest
