@@ -291,6 +291,7 @@ Use structured workflow for anything expected to be maintained.
 - Ask AI to explain non-obvious logic in plain language.
 - Block acceptance if reviewers do not understand a change.
 - Keep momentum: clarity first, then speed.
+- Ask the agent to create and maintain its own primer.md so that lessons learned during each session are recorded and available for future sessions. This builds cumulative project knowledge without relying on human note-taking.
 
 ### Chapter takeaway
 
