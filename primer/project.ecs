@@ -145,49 +145,49 @@ SetupScreen:
 
     on click ManualChapter1
     begin
-        put `content/ai-manual/chapters/ch01.md` into ManualChapterPath
+        put `primer/ch01.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter2
     begin
-        put `content/ai-manual/chapters/ch02.md` into ManualChapterPath
+        put `primer/ch02.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter3
     begin
-        put `content/ai-manual/chapters/ch03.md` into ManualChapterPath
+        put `primer/ch03.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter4
     begin
-        put `content/ai-manual/chapters/ch04.md` into ManualChapterPath
+        put `primer/ch04.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter5
     begin
-        put `content/ai-manual/chapters/ch05.md` into ManualChapterPath
+        put `primer/ch05.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter6
     begin
-        put `content/ai-manual/chapters/ch06.md` into ManualChapterPath
+        put `primer/ch06.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter7
     begin
-        put `content/ai-manual/chapters/ch07.md` into ManualChapterPath
+        put `primer/ch07.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
     on click ManualChapter8
     begin
-        put `content/ai-manual/chapters/ch08.md` into ManualChapterPath
+        put `primer/ch08.md` into ManualChapterPath
         gosub to OpenManualChapter
     end
 
@@ -272,7 +272,7 @@ EnsureManualLoaded:
     set style `display` of RetryManualButton to `none`
     set style `display` of ManualBackButton to `none`
     set style `display` of ManualChapterList to `flex`
-    rest get ManualMarkdown from `content/ai-manual/overview.md?v=` cat now
+    rest get ManualMarkdown from `primer/tab3.md?v=` cat now
         or begin
             set the content of ManualStatus to
                 `AI manual is not reachable from this server context.`
@@ -327,7 +327,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch01.md` into ManualChapterPath
+        put `primer/ch01.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -335,7 +335,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch02.md` into ManualChapterPath
+        put `primer/ch02.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -343,7 +343,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch03.md` into ManualChapterPath
+        put `primer/ch03.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -351,7 +351,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch04.md` into ManualChapterPath
+        put `primer/ch04.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -359,7 +359,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch05.md` into ManualChapterPath
+        put `primer/ch05.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -367,7 +367,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch06.md` into ManualChapterPath
+        put `primer/ch06.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -375,7 +375,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch07.md` into ManualChapterPath
+        put `primer/ch07.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
@@ -383,7 +383,7 @@ RestoreFromLocation:
     begin
         gosub to ShowManualTab
         gosub to EnsureManualLoaded
-        put `content/ai-manual/chapters/ch08.md` into ManualChapterPath
+        put `primer/ch08.md` into ManualChapterPath
         gosub to LoadManualChapter
         return
     end
