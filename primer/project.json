@@ -51,7 +51,7 @@
     "$TitleText": {
       "#element": "div",
       "@id": "TitleText",
-      "#content": "Coding with AI",
+      "#content": "Coding with EasyCoder and AI",
       "font-size": "1.4em",
       "font-weight": "700",
       "letter-spacing": "0.02em",
