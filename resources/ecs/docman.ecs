@@ -58,14 +58,8 @@
   variable Content
   variable Item
   variable Name
-  variable Function
   variable Data
-  variable Pipe
-  variable ExMark
-  variable Display
   variable Versions
-  variable HasJS
-  variable HasPython
   variable LinkCount
   variable N
   variable P
@@ -379,43 +373,9 @@ dummy
     put property Group of Package into Keywords
     go to Groups
 
+! Decorator callback — m:, l:, q: are now handled by the showdown fallbackTransform
 Decorate:
-  put the payload of DecoratorCallback into Payload
-  put the position of `:` in Payload into P
-  put left P of Payload into Function
-  add 1 to P
-  put from P of Payload into Data
-
-  put the position of `|` in Data into Pipe
-  put the position of `!` in Data into ExMark
-  if ExMark is greater than 0
-  begin
-    add 1 to ExMark giving P
-    put from P of Data into Display
-    put left ExMark of Data into Data
-  end
-  else if Pipe is greater than 0 put left Pipe of Data into Display
-  else put Data into Display
-
-  if Function is `m` gosub to ProcessMono
-  else if Function is `q` gosub to ProcessQuote
-  else if Function is `l` gosub to ProcessLink
-  set the payload of DecoratorCallback to Payload
   stop
-
-ProcessMono:
-  put `<span style="color:#800;font-family:Courier New">` cat Data cat `</span>` into Payload
-  return
-
-ProcessQuote:
-  put `<span style="color:#800">` cat Data cat `</span>` into Payload
-  return
-
-ProcessLink:
-  put `<a href="#" id="ec-docman-` cat LinkCount cat `" data-docmanid="` cat Data cat `">`
-    cat Display cat `</a>` into Payload
-  add 1 to LinkCount
-  return
 
 SelectViewKeyword:
   put KeywordList into Keyword
