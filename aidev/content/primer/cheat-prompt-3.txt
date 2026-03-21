@@ -1,2 +1,0 @@
-This is too easy for the human because the computer is choosing cells at random. Please add a basic strategy that chooses cells which lead to a complete row, column or diagonal.
-Also add some explanatory comments to tictactoe.ecs, for the benefit of human novices.

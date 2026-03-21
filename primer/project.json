@@ -1,0 +1,310 @@
+{
+  "#doc": "EasyCoder Primer page rendered via Webson",
+  "#element": "div",
+  "@id": "PrimerPage",
+  "position": "relative",
+  "width": "100%",
+  "height": "100%",
+  "min-height": "100%",
+  "box-sizing": "border-box",
+  "display": "flex",
+  "flex-direction": "column",
+  "background": "#0f1424",
+  "color": "#eaf0ff",
+  "font-family": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  "font-size": "16px",
+  "line-height": "1.5",
+  "overflow-y": "auto",
+  "padding": "0.9em",
+  "gap": "0.9em",
+  "#": [
+    "$TabBar",
+    "$StartContainer",
+    "$ExampleContainer",
+    "$ManualContainer"
+  ],
+
+  "$TabBar": {
+    "#element": "div",
+    "@id": "TabBar",
+    "display": "flex",
+    "gap": "0.5em",
+    "margin-bottom": "0.1em",
+    "#": [
+      "$TabStart",
+      "$TabExample",
+      "$TabManual"
+    ],
+
+    "$TabStart": {
+      "#element": "button",
+      "@id": "TabStart",
+      "#content": "Start",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabExample": {
+      "#element": "button",
+      "@id": "TabExample",
+      "#content": "Example",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    },
+
+    "$TabManual": {
+      "#element": "button",
+      "@id": "TabManual",
+      "#content": "AI Manual",
+      "background": "#0d1220",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.55em 0.9em",
+      "font-weight": "600",
+      "cursor": "pointer"
+    }
+  },
+
+  "$StartContainer": {
+    "#element": "div",
+    "@id": "StartContainer",
+    "display": "flex",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$StartCard"
+    ],
+
+    "$StartCard": {
+      "#element": "div",
+      "@id": "StartCard",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff"
+    }
+  },
+
+  "$ExampleContainer": {
+    "#element": "div",
+    "@id": "ExampleContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$ExampleCard"
+    ],
+
+    "$ExampleCard": {
+      "#element": "div",
+      "@id": "ExampleCard",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff"
+    }
+  },
+
+  "$ManualContainer": {
+    "#element": "div",
+    "@id": "ManualContainer",
+    "display": "none",
+    "flex-direction": "column",
+    "gap": "0.6em",
+    "#": [
+      "$ManualStatus",
+      "$RetryManualButton",
+      "$ManualChapterList",
+      "$ManualBackButton",
+      "$ManualBody"
+    ],
+
+    "$ManualStatus": {
+      "#element": "div",
+      "@id": "ManualStatus",
+      "#content": "",
+      "color": "#b8c2df"
+    },
+
+    "$RetryManualButton": {
+      "#element": "button",
+      "@id": "RetryManualButton",
+      "#content": "Retry load",
+      "display": "none",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.5em 0.8em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-bottom": "0.2em",
+      "width": "fit-content"
+    },
+
+    "$ManualChapterList": {
+      "#element": "div",
+      "@id": "ManualChapterList",
+      "display": "flex",
+      "flex-direction": "column",
+      "gap": "0.35em",
+      "margin-bottom": "0.35em",
+      "#": [
+        "$ManualChapter1",
+        "$ManualChapter2",
+        "$ManualChapter3",
+        "$ManualChapter4",
+        "$ManualChapter5",
+        "$ManualChapter6",
+        "$ManualChapter7",
+        "$ManualChapter8"
+      ],
+
+      "$ManualChapter1": {
+        "#element": "button",
+        "@id": "ManualChapter1",
+        "#content": "Chapter 1 — AI-Native Webapp Development",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter2": {
+        "#element": "button",
+        "@id": "ManualChapter2",
+        "#content": "Chapter 2 — Decision Framework",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter3": {
+        "#element": "button",
+        "@id": "ManualChapter3",
+        "#content": "Chapter 3 — Delivery Workflow",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter4": {
+        "#element": "button",
+        "@id": "ManualChapter4",
+        "#content": "Chapter 4 — Troubleshooting and Stabilization",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter5": {
+        "#element": "button",
+        "@id": "ManualChapter5",
+        "#content": "Chapter 5 — From MVP to Production Habits",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter6": {
+        "#element": "button",
+        "@id": "ManualChapter6",
+        "#content": "Chapter 6 — Team Playbook",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter7": {
+        "#element": "button",
+        "@id": "ManualChapter7",
+        "#content": "Chapter 7 — Prompt Engineering",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      },
+
+      "$ManualChapter8": {
+        "#element": "button",
+        "@id": "ManualChapter8",
+        "#content": "Chapter 8 — Structured vs Vibe Coding",
+        "background": "#0d1220",
+        "color": "#9cc5ff",
+        "border": "1px solid #2b3555",
+        "border-radius": "9px",
+        "padding": "0.5em 0.7em",
+        "text-align": "left",
+        "cursor": "pointer"
+      }
+    },
+
+    "$ManualBackButton": {
+      "#element": "button",
+      "@id": "ManualBackButton",
+      "#content": "Back",
+      "display": "none",
+      "background": "#23345e",
+      "color": "#eaf0ff",
+      "border": "1px solid #2b3555",
+      "border-radius": "9px",
+      "padding": "0.5em 0.8em",
+      "font-weight": "600",
+      "cursor": "pointer",
+      "margin-bottom": "0.2em",
+      "width": "fit-content"
+    },
+
+    "$ManualBody": {
+      "#element": "div",
+      "@id": "ManualBody",
+      "@data-markdown": "1",
+      "background": "#161d34",
+      "border": "1px solid #2b3555",
+      "border-radius": "14px",
+      "padding": "1em",
+      "color": "#eaf0ff"
+    }
+  }
+}

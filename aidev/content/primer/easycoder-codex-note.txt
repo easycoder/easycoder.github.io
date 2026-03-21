@@ -1,3 +1,0 @@
-EasyCoder is a high-level coding language that works with AI to deliver code that can be checked by humans, not just taken on trust. Before starting your first project, go to the <a href="https://easycoder.github.io/codex.html">Codex</a>. This is a combined tutorial, reference manual and programmer's playground and will very quickly get you accustomed to the kind of output that will be delivered by AI.
-
-Contact: <a href="mailto:easycoder.ai@gmail.com">easycoder.ai@gmail.com</a>
