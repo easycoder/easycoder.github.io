@@ -2362,8 +2362,12 @@ class Core(Handler):
 
     def v_arg(self, v):
         index = self.textify(v.index)
+        if not hasattr(self.program, 'argv') or self.program.argv is None:
+            RuntimeError(self.program, 'No command-line arguments were provided')
+            return ECValue(type=str, content='')
         if index >= len(self.program.argv):
-            RuntimeError(self.program, 'Index exceeds # of args')
+            RuntimeError(self.program, f'Argument index {index} out of range (only {len(self.program.argv)} args provided)')
+            return ECValue(type=str, content='')
         return ECValue(type=str, content=self.program.argv[index])
 
     def v_bool(self, v):

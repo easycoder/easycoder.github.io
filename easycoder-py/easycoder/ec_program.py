@@ -54,10 +54,14 @@ class Program:
 		if arg in ['-v', '--version']: return
 		if arg[0:6] == 'debug ':
 			print('Debug mode requested')
-			self.scriptName = arg[6:]
+			parts = arg[6:].split()
+			self.scriptName = parts[0]
+			self.argv = parts[1:]
 			self.debugging = True
 		else:
-			self.scriptName = arg
+			parts = arg.split()
+			self.scriptName = parts[0]
+			self.argv = parts[1:]
 			self.debugging = False
 
 		f = open(self.scriptName, 'r')
