@@ -2120,7 +2120,7 @@ class Core(Handler):
                 return value
             return None
 
-        if token in ['now', 'today', 'newline', 'tab', 'empty']:
+        if token in ['now', 'today', 'newline', 'tab', 'empty', 'cwd']:
             return value
 
         if token in ['stringify', 'prettify', 'json', 'lowercase', 'uppercase', 'hash', 'random', float, 'integer', 'encode', 'decode']:
@@ -2574,6 +2574,9 @@ class Core(Handler):
 
     def v_newline(self, v):
         return ECValue(type=str, content='\n')
+
+    def v_cwd(self, v):
+        return ECValue(type=str, content=os.getcwd())
 
     def v_now(self, v):
         return ECValue(type=int, content=int(time.time() * 1000))

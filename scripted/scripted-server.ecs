@@ -1,16 +1,17 @@
-!   editor_server.ecs
+!   scripted-server.ecs
 !   File server for the scripted editor.
-!   Usage: easycoder tests/editor_server.ecs
+!   Usage: easycoder scripted-server.ecs <port>
 !
-!   Routes (all paths absolute on the local filesystem):
-!     GET  /read<path>  →  returns file contents
-!     POST /write<path> →  writes request body to file; returns OK
-!     GET  /list<path>  →  returns JSON array of filenames in directory
+!   Routes (paths are relative to the server's working directory):
+!     GET  /list        →  returns JSON array of .ecs filenames in the working directory
+!     GET  /read/<file> →  returns contents of <file>
+!     POST /write/<file> → writes request body to <file>; returns OK
 
-    script EditorServer
+    script ScriptedServer
 
     use server
 
+    variable BaseDir
     variable FullPath
     variable FilePath
     variable Content
@@ -18,37 +19,51 @@
     variable Port
     server Files
 
-    set Port to 17348
+    put cwd into BaseDir
+    put arg 1 into Port
+    if Port is empty
+    begin
+        print `Usage: easycoder scripted-server.ecs <port>`
+        stop
+    end
+
     start Files on port Port
 
-    print `Editor file server running on port ` cat Port
+    print `Scripted file server running on port ` cat Port
+    print `Serving files from ` cat BaseDir
     print `Press Ctrl+C to stop`
 
     on Files request
     begin
         set FullPath to Files path
 
-        if FullPath starts with `/read`
+        if FullPath is `/list`
+        begin
+            set FileList to files in BaseDir
+            return FileList to Files
+        end
+        else if FullPath starts with `/read/`
         begin
             put FullPath into FilePath
-            replace `/read` with `` in FilePath
-            load Content from FilePath
+            replace `/read/` with `` in FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
+            load Content from BaseDir cat `/` cat FilePath
             return Content to Files
         end
-        else if FullPath starts with `/write`
+        else if FullPath starts with `/write/`
         begin
             put FullPath into FilePath
-            replace `/write` with `` in FilePath
+            replace `/write/` with `` in FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
             get Content from Files
-            save Content to FilePath
+            save Content to BaseDir cat `/` cat FilePath
             return `OK` to Files
-        end
-        else if FullPath starts with `/list`
-        begin
-            put FullPath into FilePath
-            replace `/list` with `` in FilePath
-            set FileList to files in FilePath
-            return FileList to Files
         end
         else
         begin
