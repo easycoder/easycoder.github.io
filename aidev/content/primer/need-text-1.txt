@@ -1,1 +1,0 @@
-If you are starting from zero, begin in VS Code (the only fully validated environment so far). Otherwise, your mileage may vary.
