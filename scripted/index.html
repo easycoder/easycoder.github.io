@@ -41,6 +41,16 @@
     "gap": "2px",
     "overflow-x": "auto"
   },
+  "$PlusBtn": {
+    "#element": "img",
+    "@id": "se-plusbtn",
+    "@src": "https://easycoder.github.io/resources/icon/plus.png",
+    "width": "20px",
+    "height": "20px",
+    "cursor": "pointer",
+    "padding": "4px",
+    "flex-shrink": "0"
+  },
   "$StatusSpan": {
     "#element": "span",
     "@id": "se-status",
@@ -59,7 +69,7 @@
     "background": "#2d2d2d",
     "padding": "4px",
     "gap": "4px",
-    "#": ["$PortBtn", "$OpenBtn", "$TabBar", "$StatusSpan"]
+    "#": ["$PortBtn", "$OpenBtn", "$TabBar", "$PlusBtn", "$StatusSpan"]
   },
   "$ContentEditor": {
     "#element": "textarea",
@@ -143,6 +153,7 @@
     button OpenBtn
     button PortBtn
     button CloseBtn
+    img PlusBtn
     img TabClose
     a FileName
     pre UIPre
@@ -159,7 +170,7 @@
     variable FileList      ! scratch: JSON array of filenames from /list
     variable N
     variable M
-    variable Item          ! scratch: JSON array used in browser and loops
+    variable Item          ! scratch: single filename or JSON array
     variable File          ! scratch: single filename
     variable FileCount
     variable TabItem
@@ -176,6 +187,7 @@
     attach StatusSpan to `se-status`
     attach OpenBtn to `se-open`
     attach PortBtn to `se-portbtn`
+    attach PlusBtn to `se-plusbtn`
     attach Overlay to `se-overlay`
     attach Scroller to `se-scroller`
     attach CloseBtn to `se-closebtn`
@@ -193,6 +205,7 @@
 !   ── Handlers ─────────────────────────────────────────────────────────────────
     on click PortBtn go to SetPort
     on click OpenBtn go to ShowBrowser
+    on click PlusBtn go to NewFile
 
 !   ── Start background loops ───────────────────────────────────────────────────
     fork to AutoSave
@@ -218,6 +231,25 @@ UpdateServerBase:
     put `http://localhost:` cat Port into ServerBase
     return
 
+!   ── New empty tab ────────────────────────────────────────────────────────────
+NewFile:
+    put TabCount into N
+    add 1 to TabCount
+    set the elements of TabPath to TabCount
+    set the elements of TabName to TabCount
+    set the elements of TabSaved to TabCount
+    set the elements of TabBtn to TabCount
+    set the elements of TabLabel to TabCount
+    set the elements of TabClose to TabCount
+    index TabPath to N
+    put `` into TabPath
+    index TabName to N
+    put `new` into TabName
+    index TabSaved to N
+    put `` into TabSaved
+    put N into ActiveTab
+    go to ActivateTab
+
 !   ── Auto-save loop ───────────────────────────────────────────────────────────
 AutoSave:
     wait 500 millis
@@ -231,6 +263,26 @@ AutoSave:
     if Content is not TabSaved
     begin
         index TabPath to ActiveTab
+        if TabPath is empty
+        begin
+            if Content is empty
+            begin
+                fork to AutoSave
+                stop
+            end
+            put prompt `Save as (filename without .ecs):` into File
+            if File is empty
+            begin
+                fork to AutoSave
+                stop
+            end
+            put File cat `.ecs` into File
+            index TabPath to ActiveTab
+            put File into TabPath
+            index TabName to ActiveTab
+            put File into TabName
+            gosub to RebuildTabBar
+        end
         rest post Content to ServerBase cat `/write/` cat TabPath or go SaveFailed
         index TabSaved to ActiveTab
         put Content into TabSaved
@@ -255,6 +307,7 @@ PollFile:
         stop
     end
     index TabPath to ActiveTab
+    if TabPath is empty go to PollNext
     rest get FileContent from ServerBase cat `/read/` cat TabPath or go PollNext
     codemirror get content of ContentEditor into Content
     index TabSaved to ActiveTab
@@ -419,7 +472,8 @@ CloseTab:
 ActivateTab:
     index TabSaved to ActiveTab
     codemirror set content of ContentEditor to TabSaved
-    go to RebuildTabBar
+    gosub to RebuildTabBar
+    stop
 
 !   ── Rebuild tab bar ──────────────────────────────────────────────────────────
 RebuildTabBar:
@@ -449,7 +503,7 @@ RebuildTabBar:
         on click TabClose go to CloseTab
         add 1 to N
     end
-    stop
+    return
 
 !   ── Utilities ────────────────────────────────────────────────────────────────
 ClearStatus:
