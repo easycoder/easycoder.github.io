@@ -63,6 +63,9 @@
   variable Pipe
   variable ExMark
   variable Display
+  variable Versions
+  variable HasJS
+  variable HasPython
   variable LinkCount
   variable N
   variable P
@@ -290,6 +293,20 @@ Viewer:
   json set KeywordList from KeywordKeys
   set the default of KeywordList to Keyword
   on change KeywordList go to SelectViewKeyword
+
+  put property `versions` of Record into Versions
+  put `Version(s): ` into Value
+  if Versions includes `js`
+    put Value cat `&#9745; JS` into Value
+  else
+    put Value cat `&#9744; JS` into Value
+  if Versions includes `python`
+    put Value cat ` &nbsp; &#9745; Python` into Value
+  else
+    put Value cat ` &nbsp; &#9744; Python` into Value
+  create RowDiv in ContentDiv
+  set the style of RowDiv to `margin:0.5em 0;color:#555;font-size:0.9em`
+  set the content of RowDiv to Value
 
   create TitleDiv in ContentDiv
   set the style of TitleDiv to `margin-top:1em;font-weight:bold`
