@@ -2361,7 +2361,7 @@ class Core(Handler):
         return ECValue(type=str, content=json.dumps(self.program.argv))
 
     def v_arg(self, v):
-        index = self.textify(v['index'])
+        index = self.textify(v.index)
         if index >= len(self.program.argv):
             RuntimeError(self.program, 'Index exceeds # of args')
         return ECValue(type=str, content=self.program.argv[index])
@@ -2373,8 +2373,8 @@ class Core(Handler):
         return self.v_bool(v)
 
     def v_cos(self, v):
-        angle = self.textify(v['angle'])
-        radius = self.textify(v['radius'])
+        angle = self.textify(v.angle)
+        radius = self.textify(v.radius)
         return ECValue(type=int, content=round(math.cos(angle * 0.01745329) * radius))
 
     def v_count(self, v):
@@ -2563,7 +2563,7 @@ class Core(Handler):
         return ECValue(type=str, content=self.program.message)
 
     def v_modification(self, v):
-        fileName = self.textify(v['fileName'])
+        fileName = self.textify(v.fileName)
         ts = int(os.stat(self.resolveLocalPath(fileName)).st_mtime)
         return ECValue(type=int, content=ts)
 
@@ -2645,8 +2645,8 @@ class Core(Handler):
         return ECValue(type=str, content='\t')
 
     def v_tan(self, v):
-        angle = self.textify(v['angle'])
-        radius = self.textify(v['radius'])
+        angle = self.textify(v.angle)
+        radius = self.textify(v.radius)
         return ECValue(type=int, content=round(math.tan(angle * 0.01745329) * radius))
 
     def v_ticker(self, v):
@@ -2676,7 +2676,7 @@ class Core(Handler):
 
     def v_type(self, v):
         value = ECValue(type=str)
-        val = self.textify(v['value'])
+        val = self.textify(v.value)
         if val is None:
             value.setContent('none')
         elif type(val) is str:
