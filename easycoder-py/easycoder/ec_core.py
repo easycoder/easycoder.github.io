@@ -2815,6 +2815,7 @@ class Core(Handler):
                 return condition
 
         if token == 'includes':
+            self.nextToken()
             condition.value2 = self.nextValue() # type: ignore
             return condition
 
