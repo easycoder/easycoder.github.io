@@ -9,9 +9,18 @@ Start up the server:
 easycoder scripted-server.ecs {port}
 ```
 
-where {port} is a port number such as 5500,
+where {port} is a port number such as 5500, then run
 
-and point your browser to http://localhost:{port}/index.html
+● Linux:
+  chromium "file:///path/to/scripted/index.html?port={port}"  
+
+● Windows:                                                                                        
+  start chromium "file:///C:/path/to/scripted/index.html?port={port}"
+                                                                                                  
+● Mac:
+  open -a "Chromium" "file:///path/to/scripted/index.html?port={port}"                             
+                                                                     
+  (Replace Chromium with Google Chrome or whatever browser is installed.)                         
 
 This should start the editor.
 
