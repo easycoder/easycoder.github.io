@@ -18,11 +18,46 @@
   "padding": "0.9em",
   "gap": "0.9em",
   "#": [
+    "$TitleBar",
     "$TabBar",
     "$StartContainer",
     "$ExampleContainer",
     "$ManualContainer"
   ],
+
+  "$TitleBar": {
+    "#element": "div",
+    "@id": "TitleBar",
+    "display": "flex",
+    "align-items": "center",
+    "gap": "0.7em",
+    "padding": "0.4em 0.2em",
+    "border-bottom": "1px solid #2b3555",
+    "margin-bottom": "0.2em",
+    "#": [
+      "$TitleLogo",
+      "$TitleText"
+    ],
+
+    "$TitleLogo": {
+      "#element": "img",
+      "@id": "TitleLogo",
+      "@src": "https://easycoder.github.io/resources/icon/duckthink.jpg",
+      "width": "40px",
+      "height": "40px",
+      "border-radius": "8px"
+    },
+
+    "$TitleText": {
+      "#element": "div",
+      "@id": "TitleText",
+      "#content": "Coding with AI",
+      "font-size": "1.4em",
+      "font-weight": "700",
+      "letter-spacing": "0.02em",
+      "color": "#9cc5ff"
+    }
+  },
 
   "$TabBar": {
     "#element": "div",
