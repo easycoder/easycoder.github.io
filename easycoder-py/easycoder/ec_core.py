@@ -2291,6 +2291,9 @@ class Core(Handler):
             token = self.nextToken()
             if token in ['in', 'of']:
                 value.target = self.nextValue() # type: ignore
+                if self.peek() == 'type':
+                    self.nextToken()
+                    value.filter = self.nextValue() # type: ignore
                 return value
             return None
 
@@ -2457,7 +2460,13 @@ class Core(Handler):
 
     def v_files(self, v):
         path = self.textify(v.target)
-        return ECValue(type=str, content=json.dumps(os.listdir(path)))
+        filter_ext = self.textify(v.filter) if v.filter else None
+        entries = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        if filter_ext:
+            exts = {e.strip().lstrip('.') for e in filter_ext.split(',')}
+            entries = [f for f in entries if os.path.splitext(f)[1].lstrip('.').lower() in exts]
+        entries.sort()
+        return ECValue(type=str, content=json.dumps(entries))
 
     def v_float(self, v):
         val = self.textify(v.getContent())

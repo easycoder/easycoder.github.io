@@ -39,7 +39,7 @@
 
         if FullPath is `/list`
         begin
-            set FileList to files in BaseDir
+            set FileList to files in BaseDir type `ecs,md,txt,json,html,css,js`
             return FileList to Files
         end
         else if FullPath starts with `/read/`
