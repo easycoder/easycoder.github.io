@@ -103,7 +103,10 @@
   append `float.json` to Content
   append `gmap.json` to Content
   append `json.json` to Content
+  append `mqttpy.json` to Content
+  append `psutil.json` to Content
   append `rest.json` to Content
+  append `server.json` to Content
   append `showdown.json` to Content
   append `svg.json` to Content
   append `ui.json` to Content
