@@ -20,7 +20,7 @@
     server Files
 
     put cwd into BaseDir
-    put arg 1 into Port
+    put arg 0 into Port
     if Port is empty
     begin
         print `Usage: easycoder scripted-server.ecs <port>`
