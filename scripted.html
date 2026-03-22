@@ -37,9 +37,9 @@
     "#element": "div",
     "@id": "se-tabbar",
     "display": "flex",
-    "flex": "1",
     "gap": "2px",
-    "overflow-x": "auto"
+    "overflow-x": "auto",
+    "min-width": "0"
   },
   "$PlusBtn": {
     "#element": "img",
@@ -49,6 +49,23 @@
     "height": "20px",
     "cursor": "pointer",
     "padding": "4px",
+    "flex-shrink": "0"
+  },
+  "$TabGroup": {
+    "#element": "div",
+    "@id": "se-tabgroup",
+    "display": "flex",
+    "flex": "1",
+    "align-items": "center",
+    "min-width": "0",
+    "#": ["$TabBar", "$PlusBtn"]
+  },
+  "$FindBtn": {
+    "#element": "button",
+    "@id": "se-findbtn",
+    "#content": "Find",
+    "padding": "4px 12px",
+    "cursor": "pointer",
     "flex-shrink": "0"
   },
   "$StatusSpan": {
@@ -69,7 +86,7 @@
     "background": "#2d2d2d",
     "padding": "4px",
     "gap": "4px",
-    "#": ["$PortBtn", "$OpenBtn", "$TabBar", "$PlusBtn", "$StatusSpan"]
+    "#": ["$PortBtn", "$OpenBtn", "$TabGroup", "$StatusSpan", "$FindBtn"]
   },
   "$ContentEditor": {
     "#element": "textarea",
@@ -152,6 +169,7 @@
     span TabLabel
     button OpenBtn
     button PortBtn
+    button FindBtn
     button CloseBtn
     img PlusBtn
     img TabClose
@@ -189,6 +207,7 @@
     attach PortBtn to `se-portbtn`
     attach PlusBtn to `se-plusbtn`
     attach Overlay to `se-overlay`
+    attach FindBtn to `se-findbtn`
     attach Scroller to `se-scroller`
     attach CloseBtn to `se-closebtn`
 
@@ -206,6 +225,7 @@
     on click PortBtn go to SetPort
     on click OpenBtn go to ShowBrowser
     on click PlusBtn go to NewFile
+    on click FindBtn go to DoFind
 
 !   ── Start background loops ───────────────────────────────────────────────────
     fork to AutoSave
@@ -504,6 +524,11 @@ RebuildTabBar:
         add 1 to N
     end
     return
+
+!   ── Find ─────────────────────────────────────────────────────────────────────
+DoFind:
+    codemirror find in ContentEditor
+    stop
 
 !   ── Utilities ────────────────────────────────────────────────────────────────
 ClearStatus:

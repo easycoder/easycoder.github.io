@@ -15,6 +15,7 @@ class ECServer(ECObject):
         self.response_event = threading.Event()
         self.response_value = None
         self.response_status = 200
+        self.response_content_type = None
 
     def setup(self, program, port):
         self.program = program
@@ -40,6 +41,7 @@ class ECServer(ECObject):
             self.response_event.clear()
             self.response_value = None
             self.response_status = 200
+            self.response_content_type = None
 
             if self.onRequestPC is not None:
                 self.program.queueIntent(self.onRequestPC)
@@ -55,6 +57,8 @@ class ECServer(ECObject):
 
             bottle_response.headers['Access-Control-Allow-Origin'] = '*'
             bottle_response.status = self.response_status
+            if self.response_content_type:
+                bottle_response.content_type = self.response_content_type
             return self.response_value or ''
 
         t = threading.Thread(
@@ -74,9 +78,10 @@ class ECServer(ECObject):
     def getBody(self):
         return self.current_request['body'] if self.current_request else ''
 
-    def setResponse(self, value, status=200):
+    def setResponse(self, value, status=200, content_type=None):
         self.response_value = value
         self.response_status = status
+        self.response_content_type = content_type
         self.response_event.set()
 
 ###############################################################################
@@ -187,10 +192,15 @@ class Server(Handler):
             self.checkObjectType(record, ECServer)
             command['server'] = record['name']
             command['status'] = 200
-            if self.peek() == 'with':
+            command['type'] = None
+            while self.peek() == 'with':
                 self.nextToken()
-                self.skip('status')
-                command['status'] = self.nextValue()
+                if self.peek() == 'status':
+                    self.nextToken()
+                    command['status'] = self.nextValue()
+                elif self.peek() == 'type':
+                    self.nextToken()
+                    command['type'] = self.nextValue()
             self.add(command)
             return True
         return False
@@ -200,7 +210,8 @@ class Server(Handler):
         server = self.getObject(record)
         value = self.textify(command['value'])
         status = int(self.textify(command['status'])) if isinstance(command['status'], ECValue) else command['status']
-        server.setResponse(value, status)
+        content_type = self.textify(command['type']) if isinstance(command['type'], ECValue) else command['type']
+        server.setResponse(value, status, content_type)
         return self.nextPC()
 
     #############################################################################

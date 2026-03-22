@@ -1,10 +1,10 @@
 !   scripted.ecs
 !   Tabbed script editor with auto-save and external change detection.
-!   Requires editor_server.ecs running locally on port 17348.
+!   Served by scripted-server.ecs locally, or any web server with /list, /read, /write routes.
 
     script ScriptEditor
 
-!   ── DOM ──────────────────────────────────────────────────────────────────────
+!   -- DOM --
     div Body
     div TabBar
     div TabBtn
@@ -15,13 +15,14 @@
     span StatusSpan
     span TabLabel
     button OpenBtn
+    button FindBtn
     button CloseBtn
+    img PlusBtn
     img TabClose
     a FileName
     pre UIPre
 
-!   ── State ────────────────────────────────────────────────────────────────────
-    variable ServerBase
+!   -- State --
     variable TabPath       ! array: full file path per tab
     variable TabName       ! array: display name (basename) per tab
     variable TabSaved      ! array: last content saved to server per tab
@@ -32,21 +33,13 @@
     variable FileList      ! scratch: JSON array of filenames from /list
     variable N
     variable M
-    variable Item          ! scratch: JSON array used in browser and loops
+    variable Item          ! scratch: single filename or JSON array
     variable File          ! scratch: single filename
     variable FileCount
-    variable DirPath
     variable TabItem
-    variable Port
     variable UIWebson
 
-    set Port to 17348
-
-    set ServerBase to `http://localhost:` cat Port
-    put 0 into TabCount
-    put 0 into ActiveTab
-
-!   ── Build UI ─────────────────────────────────────────────────────────────────
+!   -- Build UI --
     attach Body to body
     attach UIPre to `scripted-ui`
     put the content of UIPre into UIWebson
@@ -55,22 +48,47 @@
     attach ContentEditor to `se-textarea`
     attach StatusSpan to `se-status`
     attach OpenBtn to `se-open`
+    attach FindBtn to `se-findbtn`
+    attach PlusBtn to `se-plusbtn`
     attach Overlay to `se-overlay`
     attach Scroller to `se-scroller`
     attach CloseBtn to `se-closebtn`
 
-!   ── CodeMirror ───────────────────────────────────────────────────────────────
+!   -- CodeMirror --
     codemirror attach to ContentEditor
 
-!   ── Handlers ─────────────────────────────────────────────────────────────────
-    on click OpenBtn go to ShowBrowser
+    put 0 into TabCount
+    put 0 into ActiveTab
 
-!   ── Start background loops ───────────────────────────────────────────────────
+!   -- Handlers --
+    on click OpenBtn go to ShowBrowser
+    on click PlusBtn go to NewFile
+
+!   -- Start background loops --
     fork to AutoSave
     fork to PollFile
     stop
 
-!   ── Auto-save loop ───────────────────────────────────────────────────────────
+!   -- New empty tab --
+NewFile:
+    put TabCount into N
+    add 1 to TabCount
+    set the elements of TabPath to TabCount
+    set the elements of TabName to TabCount
+    set the elements of TabSaved to TabCount
+    set the elements of TabBtn to TabCount
+    set the elements of TabLabel to TabCount
+    set the elements of TabClose to TabCount
+    index TabPath to N
+    put `` into TabPath
+    index TabName to N
+    put `new` into TabName
+    index TabSaved to N
+    put `` into TabSaved
+    put N into ActiveTab
+    go to ActivateTab
+
+!   -- Auto-save loop --
 AutoSave:
     wait 500 millis
     if TabCount is 0
@@ -83,7 +101,27 @@ AutoSave:
     if Content is not TabSaved
     begin
         index TabPath to ActiveTab
-        rest post Content to ServerBase cat `/write` cat TabPath or go SaveFailed
+        if TabPath is empty
+        begin
+            if Content is empty
+            begin
+                fork to AutoSave
+                stop
+            end
+            put prompt `Save as (filename without .ecs):` into File
+            if File is empty
+            begin
+                fork to AutoSave
+                stop
+            end
+            put File cat `.ecs` into File
+            index TabPath to ActiveTab
+            put File into TabPath
+            index TabName to ActiveTab
+            put File into TabName
+            gosub to RebuildTabBar
+        end
+        rest post Content to `/write/` cat TabPath or go SaveFailed
         index TabSaved to ActiveTab
         put Content into TabSaved
         set the content of StatusSpan to `Saved`
@@ -98,7 +136,7 @@ SaveFailed:
     fork to AutoSave
     stop
 
-!   ── External change polling ──────────────────────────────────────────────────
+!   -- External change polling --
 PollFile:
     wait 3 seconds
     if TabCount is 0
@@ -107,14 +145,15 @@ PollFile:
         stop
     end
     index TabPath to ActiveTab
-    rest get FileContent from ServerBase cat `/read` cat TabPath or go PollNext
+    if TabPath is empty go to PollNext
+    rest get FileContent from `/read/` cat TabPath or go PollNext
     codemirror get content of ContentEditor into Content
     index TabSaved to ActiveTab
     if FileContent is not TabSaved
     begin
         if Content is TabSaved
         begin
-            ! Editor is clean — silently reload
+            ! Editor is clean -- silently reload
             put FileContent into TabSaved
             codemirror set content of ContentEditor to FileContent
             set the content of StatusSpan to `Reloaded`
@@ -129,21 +168,10 @@ PollNext:
     fork to PollFile
     stop
 
-!   ── File browser ─────────────────────────────────────────────────────────────
+!   -- File browser --
 ShowBrowser:
-    set DirPath to `/home/graham/dev/easycoder.github.io/resources/ecs`
-    rest get FileList from ServerBase cat `/list` cat DirPath or go BrowserError
+    rest get FileList from `/list` or go BrowserError
     put the json count of FileList into FileCount
-    ! Filter for .ecs files only
-    put empty into Item
-    put 0 into N
-    while N is less than FileCount
-    begin
-        put element N of FileList into File
-        if File ends with `.ecs` json add File to Item
-        add 1 to N
-    end
-    put the json count of Item into FileCount
     if FileCount is 0
     begin
         set the content of StatusSpan to `No .ecs files found`
@@ -156,7 +184,7 @@ ShowBrowser:
     put 0 into N
     while N is less than FileCount
     begin
-        put element N of Item into File
+        put element N of FileList into File
         index FileRow to N
         create FileRow in Scroller
         set the style of FileRow to `padding:2px 0`
@@ -176,11 +204,11 @@ BrowserError:
     fork to ClearStatus
     stop
 
-!   ── File selected in browser ─────────────────────────────────────────────────
+!   -- File selected in browser --
 SelectFile:
     index FileName to the index of FileName
     put the content of FileName into File
-    put DirPath cat `/` cat File into TabItem
+    put File into TabItem
     set style `display` of Overlay to `none`
     go to OpenFile
 
@@ -188,7 +216,7 @@ CloseBrowser:
     set style `display` of Overlay to `none`
     stop
 
-!   ── Open a file (TabItem=path, File=basename) ────────────────────────────────
+!   -- Open a file (TabItem=filename) --
 OpenFile:
     ! Check if already open in a tab
     put 0 into N
@@ -202,9 +230,9 @@ OpenFile:
         end
         add 1 to N
     end
-    ! Not open — load from server and create a new tab
+    ! Not open -- load from server and create a new tab
     ! (N now equals old TabCount, which is the index for the new tab)
-    rest get Content from ServerBase cat `/read` cat TabItem or go BrowserError
+    rest get Content from `/read/` cat TabItem or go BrowserError
     add 1 to TabCount
     set the elements of TabPath to TabCount
     set the elements of TabName to TabCount
@@ -221,12 +249,12 @@ OpenFile:
     put N into ActiveTab
     go to ActivateTab
 
-!   ── Switch to an existing tab ────────────────────────────────────────────────
+!   -- Switch to an existing tab --
 SwitchTab:
     put the index of TabLabel into ActiveTab
     go to ActivateTab
 
-!   ── Close a tab ──────────────────────────────────────────────────────────────
+!   -- Close a tab --
 CloseTab:
     put the index of TabClose into M
     ! Shift elements above M down by one
@@ -276,9 +304,10 @@ CloseTab:
 ActivateTab:
     index TabSaved to ActiveTab
     codemirror set content of ContentEditor to TabSaved
-    go to RebuildTabBar
+    gosub to RebuildTabBar
+    stop
 
-!   ── Rebuild tab bar ──────────────────────────────────────────────────────────
+!   -- Rebuild tab bar --
 RebuildTabBar:
     set the content of TabBar to ``
     put 0 into N
@@ -301,14 +330,14 @@ RebuildTabBar:
         on click TabLabel go to SwitchTab
         index TabClose to N
         create TabClose in TabBtn
-        set attribute `src` of TabClose to `resources/icon/stop.png`
+        set attribute `src` of TabClose to `https://easycoder.github.io/resources/icon/stop.png`
         set the style of TabClose to `width:12px;height:12px;opacity:0.6;cursor:pointer`
         on click TabClose go to CloseTab
         add 1 to N
     end
-    stop
+    return
 
-!   ── Utilities ────────────────────────────────────────────────────────────────
+!   -- Utilities --
 ClearStatus:
     wait 3 seconds
     set the content of StatusSpan to ``
