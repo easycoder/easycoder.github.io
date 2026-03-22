@@ -65,6 +65,22 @@ const EasyCoder_CodeMirror = {
 					}
 				}
 				break;
+			case `find`:
+				if (compiler.nextTokenIs(`in`)) {
+					if (compiler.nextIsSymbol()) {
+						const editor = compiler.getSymbolRecord();
+						compiler.next();
+						compiler.addCommand({
+							domain: `codemirror`,
+							keyword: `codemirror`,
+							lino,
+							action: `find`,
+							editor: editor.name
+						});
+						return true;
+					}
+				}
+				return false;
 			case `close`:
 				if (compiler.nextIsSymbol()) {
 					const editor = compiler.getSymbolRecord();
@@ -149,6 +165,10 @@ const EasyCoder_CodeMirror = {
 				editor = program.getSymbolRecord(command.editor);
 				const value = program.getValue(command.value);
 				editor.editor.setValue(value);
+				break;
+			case `find`:
+				editor = program.getSymbolRecord(command.editor);
+				editor.editor.execCommand(`find`);
 				break;
 			case `close`:
 				editor = program.getSymbolRecord(command.editor);
