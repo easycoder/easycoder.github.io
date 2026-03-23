@@ -397,7 +397,7 @@ EasyCoder is not a general-purpose replacement for Python or JavaScript. It occu
 ## Comparing Approaches
 
 | | Vibe Coding (mainstream) | EasyCoder + Claude Code | Traditional Development |
-|-|--------------------------|-------------------------|------------------------|
+|---|--------------------------|-------------------------|------------------------|
 | **Time to first working app** | Minutes (but fragile) | Minutes (and readable) | Hours to days |
 | **AI error rate** | High (complex syntax) | Low (simple syntax) | n/a |
 | **Code readability** | Low | High | Varies |
