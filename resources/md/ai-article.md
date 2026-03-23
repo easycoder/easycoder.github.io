@@ -91,10 +91,10 @@ end
 pip install easycoder
 ```
 
-This installs the `ec` command. Test it:
+This installs the `easycoder` command. Test it:
 
 ```bash
-ec --version
+easycoder
 ```
 
 ### For browser applications
@@ -102,12 +102,15 @@ ec --version
 No installation needed. Add a single script tag to your HTML:
 
 ```html
-<script src="https://easycoder.github.io/dist/easycoder.js"></script>
+<script src="https://easycoder.github.io/dist/easycoder-min.js"></script>
 ```
 
 Then embed your EasyCoder script in a `<pre>` element with `id="easycoder-script"`:
 
 ```html
+<button id="my-button">Click me</button>
+<span id="my-output"></span>
+
 <pre id="easycoder-script" style="display:none">
     script MyApp
 
@@ -159,7 +162,7 @@ Let's walk through building a simple note-taking application.
 <html>
 <head>
     <title>Notes</title>
-    <script src="https://easycoder.github.io/dist/easycoder.js"></script>
+    <script src="https://easycoder.github.io/dist/easycoder-min.js"></script>
 </head>
 <body>
     <h1>My Notes</h1>
@@ -261,7 +264,7 @@ Here's a simple file-line counter:
 Run it:
 
 ```bash
-ec line-counter.ecs mydata.csv
+easycoder line-counter.ecs mydata.csv
 ```
 
 Ask Claude Code to add filtering, CSV parsing, summary statistics, or output to a file. The script stays readable throughout.
@@ -290,7 +293,7 @@ Copy these files from the [EasyCoder repository](https://github.com/easycoder/ea
 ### Start the server
 
 ```bash
-ec scripted-server.ecs 8080
+easycoder scripted-server.ecs 8080
 ```
 
 You should see:
