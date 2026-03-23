@@ -392,12 +392,19 @@ EasyCoder is not a general-purpose replacement for Python or JavaScript. It occu
 - **Kiosk and display applications** — single-purpose browser apps with predictable, contained state
 - **Glue code** — connecting APIs together, transforming data between formats
 
+**Scaling up with scripts and plugins:**
+
+EasyCoder applications are not limited to single scripts. A script can call other scripts, which can call further scripts, covering as large a domain as needed. This "script-calls-script" architecture means there is no practical upper limit on application complexity — only each individual script needs to be simple and readable.
+
+Beyond this, EasyCoder supports **plugins** — extension modules that add specialised vocabulary for domains where the core language would be verbose or awkward. A plugin wraps complex functionality behind simple, English-like commands, much as the word "laser" lets you refer to a complex physical process without describing it every time. For example, an SVG plugin lets you write `svg circle` rather than manually constructing SVG DOM elements.
+
+Plugins can be written by AI agents on an as-needed basis. They don't need central approval or registration — if your application needs a new capability, Claude Code can write a plugin for it and your scripts can load it immediately.
+
 **Less suitable for:**
 
 - High-performance computing or real-time systems
 - Complex UI component trees (React/Vue-style architectures)
 - Applications requiring deep OS integration
-- Large collaborative codebases with many developers
 
 ---
 
@@ -412,7 +419,7 @@ EasyCoder is not a general-purpose replacement for Python or JavaScript. It occu
 | **Ongoing maintenance** | Difficult | Easy | Depends on skill |
 | **Dependencies** | Many | None | Many |
 | **Build step required** | Often | Never | Usually |
-| **Suitable for production** | Yes (with care) | Small to medium apps | Yes |
+| **Suitable for production** | Yes (with care) | Yes (scales via scripts + plugins) | Yes |
 
 ---
 
@@ -426,11 +433,13 @@ Together, they represent a practical middle path: not the complexity of full-sta
 
 **Where to start:**
 
-- [EasyCoder website](https://easycoder.github.io)
 - [EasyCoder Codex](https://easycoder.github.io/codex.html) — interactive 20-part tutorial
+- [EasyCoder Primer](/aidev/agent-primer-js.md) — practical reference for AI agents and developers
 - [Claude Code](https://claude.ai/claude-code) — Anthropic's agentic CLI tool
 - [Scripted editor](https://github.com/easycoder/easycoder.github.io/tree/master/scripted) — local development setup
+- [EasyCoder website](https://easycoder.github.io) — overview and documentation
 
----
+**Get in touch:**
 
-*Questions or feedback? Find the EasyCoder community via the website above.*
+- [Discord](https://discord.gg/AhaJkJHr) — join the EasyCoder community
+- Email: easycoder.ai@gmail.com
