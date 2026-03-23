@@ -3,7 +3,7 @@
 import importlib
 import math
 
-__version__ = "260322.1"
+__version__ = "260323.1"
 
 from .ec_classes import *
 from .ec_compiler import *

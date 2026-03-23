@@ -1006,32 +1006,35 @@ class Core(Handler):
     # Open a file
     # open {file} for reading/writing/appending
     def k_open(self, command):
-        if self.nextIsSymbol():
-            record = self.getSymbolRecord()
-            command['target'] = record['name']
-            command['path'] = self.nextValue()
-            if record['keyword'] == 'file':
-                if self.peek() == 'for':
-                    self.nextToken()
-                    token = self.nextToken()
-                    if token == 'appending':
-                        mode = 'a'
-                    elif token == 'reading':
-                        mode = 'r'
-                    elif token == 'writing':
-                        mode = 'w'
+        # open <filename> as <file-variable> for reading/writing/appending
+        command['path'] = self.nextValue()
+        if self.peek() == 'as':
+            self.nextToken()
+            if self.nextIsSymbol():
+                record = self.getSymbolRecord()
+                if record['keyword'] == 'file':
+                    command['target'] = record['name']
+                    if self.peek() == 'for':
+                        self.nextToken()
+                        token = self.nextToken()
+                        if token == 'appending':
+                            mode = 'a'
+                        elif token == 'reading':
+                            mode = 'r'
+                        elif token == 'writing':
+                            mode = 'w'
+                        else:
+                            FatalError(self.compiler, f'Unknown file open mode "{token}"')
+                            return False
+                        command['mode'] = mode
                     else:
-                        FatalError(self.compiler, 'Unknown file open mode {self.getToken()}')
-                        return False
-                    command['mode'] = mode
+                        command['mode'] = 'r'
+                    self.add(command)
+                    return True
                 else:
-                    command['mode'] = 'r'
-                self.add(command)
-                return True
+                    FatalError(self.compiler, f'Variable "{record["name"]}" is not a file')
             else:
-                FatalError(self.compiler, f'Variable "{self.getToken()}" is not a file')
-        else:
-            self.warning(f'Core.open: Variable "{self.getToken()}" not declared')
+                self.warning(f'Core.open: Variable "{self.getToken()}" not declared')
         return False
 
     def r_open(self, command):
@@ -1232,7 +1235,10 @@ class Core(Handler):
         line = command['line']
         file = fileRecord['file']
         if file.mode == 'r':
-            content = file.readline().split('\n')[0] if line else file.read()
+            if line:
+                content = file.readline().split('\n')[0]
+            else:
+                content = file.readline().rstrip('\n')
             value = ECValue(type=str, content=content)
             self.putSymbolValue(record, value)
         return self.nextPC()
@@ -2734,9 +2740,27 @@ class Core(Handler):
         token = self.getToken()
 
         if token == 'not':
-            condition.type = 'not' # type: ignore
-            condition.value = self.nextValue() # type: ignore
-            return condition
+            # Check if this is 'not at end of <file>'
+            if self.peek() == 'at':
+                self.nextToken()
+                condition.negate = True # type: ignore
+                token = 'at'
+            else:
+                condition.type = 'not' # type: ignore
+                condition.value = self.nextValue() # type: ignore
+                return condition
+
+        if token == 'at':
+            # at end of <file>
+            if self.nextIs('end'):
+                if self.nextIs('of'):
+                    if self.nextIsSymbol():
+                        record = self.getSymbolRecord()
+                        if record['keyword'] == 'file':
+                            condition.type = 'atEndOf' # type: ignore
+                            condition.target = record['name'] # type: ignore
+                            return condition
+            return None
 
         elif token == 'error':
             self.nextToken()
@@ -2883,6 +2907,19 @@ class Core(Handler):
     
     def c_boolean(self, condition):
         return self.c_bool(condition)
+
+    def c_atEndOf(self, condition):
+        record = self.getVariable(condition.target)
+        f = record.get('file')
+        if f is None:
+            return True
+        ch = f.read(1)
+        if ch == '':
+            result = True
+        else:
+            f.seek(f.tell() - 1)
+            result = False
+        return not result if condition.negate else result
 
     def c_debugging(self, condition):
         return self.program.debugging

@@ -242,6 +242,7 @@ Here's a simple file-line counter:
     script LineCounter
 
     variable FileName
+    file Lines
     variable Line
     variable Count
 
@@ -253,7 +254,7 @@ Here's a simple file-line counter:
     end
 
     put 0 into Count
-    open FileName for reading as Lines
+    open FileName as Lines for reading
     while not at end of Lines
     begin
         read Line from Lines
@@ -262,7 +263,7 @@ Here's a simple file-line counter:
     close Lines
 
     print FileName cat ` contains ` cat Count cat ` lines`
-    stop
+    exit
 ```
 
 Run it:
