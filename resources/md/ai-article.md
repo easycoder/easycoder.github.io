@@ -403,9 +403,10 @@ Plugins can be written by AI agents on an as-needed basis. They don't need centr
 
 **Less suitable for:**
 
-- High-performance computing or real-time systems
 - Complex UI component trees (React/Vue-style architectures)
 - Applications requiring deep OS integration
+
+Note that performance-critical work can be handled by plugins. EasyCoder scripts manage the human-level logic — the flow, the decisions, the user interaction — while plugins encapsulate the messy detail in optimised native code. At the ridiculous extreme, an entire application could be reduced to a single command `doit`, but in practice the split falls naturally: readable scripts for the parts humans need to understand, plugins for the parts that need raw speed or complex low-level integration.
 
 ---
 
