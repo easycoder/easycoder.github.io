@@ -99,33 +99,37 @@ easycoder
 
 ### For browser applications
 
-No installation needed. Add a single script tag to your HTML:
+No installation needed. Here is a complete working page:
 
 ```html
-<script src="https://easycoder.github.io/dist/easycoder-min.js"></script>
-```
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My App</title>
+    <script src="https://easycoder.github.io/dist/easycoder-min.js"></script>
+</head>
+<body>
+    <button id="my-button">Click me</button>
+    <span id="my-output"></span>
 
-Then embed your EasyCoder script in a `<pre>` element with `id="easycoder-script"`:
+    <pre id="easycoder-script" style="display:none">
+        script MyApp
 
-```html
-<button id="my-button">Click me</button>
-<span id="my-output"></span>
+        button ClickMe
+        span Output
 
-<pre id="easycoder-script" style="display:none">
-    script MyApp
+        attach ClickMe to `my-button`
+        attach Output to `my-output`
 
-    button ClickMe
-    span Output
-
-    attach ClickMe to `my-button`
-    attach Output to `my-output`
-
-    on click ClickMe
-    begin
-        set the content of Output to `Hello, World!`
-    end
-    stop
-</pre>
+        on click ClickMe
+        begin
+            set the content of Output to `Hello, World!`
+        end
+        stop
+    </pre>
+</body>
+</html>
 ```
 
 ---
