@@ -83,6 +83,37 @@ end
 
 ---
 
+## What EasyCoder Is Best Suited For
+
+EasyCoder is not a general-purpose replacement for Python or JavaScript. It occupies a specific and valuable niche.
+
+**Ideal use cases:**
+
+- **Internal tools and dashboards** — forms, data viewers, admin panels, status pages
+- **Personal productivity apps** — note-taking, task lists, habit trackers, timers
+- **Prototyping** — turn a concept into a working demo quickly, before committing to a full implementation
+- **Educational applications** — where the goal is learning, and complexity in the tooling is a distraction
+- **Automation scripts** — file processing, report generation, data transformation
+- **Kiosk and display applications** — single-purpose browser apps with predictable, contained state
+- **Glue code** — connecting APIs together, transforming data between formats
+
+**Scaling up with scripts and plugins:**
+
+EasyCoder applications are not limited to single scripts. A script can call other scripts, which can call further scripts, covering as large a domain as needed. This "script-calls-script" architecture means there is no practical upper limit on application complexity — only each individual script needs to be simple and readable.
+
+Beyond this, EasyCoder supports **plugins** — extension modules that add specialised vocabulary for domains where the core language would be verbose or awkward. A plugin wraps complex functionality behind simple, English-like commands, much as the word "laser" lets you refer to a complex physical process without describing it every time. For example, an SVG plugin lets you write `svg circle` rather than manually constructing SVG DOM elements.
+
+Plugins can be written by AI agents on an as-needed basis. They don't need central approval or registration — if your application needs a new capability, Claude Code can write a plugin for it and your scripts can load it immediately.
+
+**Less suitable for:**
+
+- Complex UI component trees (React/Vue-style architectures)
+- Applications requiring deep OS integration
+
+Note that performance-critical work can be handled by plugins. EasyCoder scripts manage the human-level logic — the flow, the decisions, the user interaction — while plugins encapsulate the messy detail in optimised native code. At the ridiculous extreme, an entire application could be reduced to a single command `doit`, but in practice the split falls naturally: readable scripts for the parts humans need to understand, plugins for the parts that need raw speed or complex low-level integration.
+
+---
+
 ## Getting Started
 
 ### Install the Python runtime (for CLI applications)
@@ -376,37 +407,6 @@ For applications that need to read from or write to the server (rather than just
 ```
 
 The `or` clause runs if the request fails — for any reason. No try/catch, no promise chains, no error callback functions.
-
----
-
-## What EasyCoder Is Best Suited For
-
-EasyCoder is not a general-purpose replacement for Python or JavaScript. It occupies a specific and valuable niche.
-
-**Ideal use cases:**
-
-- **Internal tools and dashboards** — forms, data viewers, admin panels, status pages
-- **Personal productivity apps** — note-taking, task lists, habit trackers, timers
-- **Prototyping** — turn a concept into a working demo quickly, before committing to a full implementation
-- **Educational applications** — where the goal is learning, and complexity in the tooling is a distraction
-- **Automation scripts** — file processing, report generation, data transformation
-- **Kiosk and display applications** — single-purpose browser apps with predictable, contained state
-- **Glue code** — connecting APIs together, transforming data between formats
-
-**Scaling up with scripts and plugins:**
-
-EasyCoder applications are not limited to single scripts. A script can call other scripts, which can call further scripts, covering as large a domain as needed. This "script-calls-script" architecture means there is no practical upper limit on application complexity — only each individual script needs to be simple and readable.
-
-Beyond this, EasyCoder supports **plugins** — extension modules that add specialised vocabulary for domains where the core language would be verbose or awkward. A plugin wraps complex functionality behind simple, English-like commands, much as the word "laser" lets you refer to a complex physical process without describing it every time. For example, an SVG plugin lets you write `svg circle` rather than manually constructing SVG DOM elements.
-
-Plugins can be written by AI agents on an as-needed basis. They don't need central approval or registration — if your application needs a new capability, Claude Code can write a plugin for it and your scripts can load it immediately.
-
-**Less suitable for:**
-
-- Complex UI component trees (React/Vue-style architectures)
-- Applications requiring deep OS integration
-
-Note that performance-critical work can be handled by plugins. EasyCoder scripts manage the human-level logic — the flow, the decisions, the user interaction — while plugins encapsulate the messy detail in optimised native code. At the ridiculous extreme, an entire application could be reduced to a single command `doit`, but in practice the split falls naturally: readable scripts for the parts humans need to understand, plugins for the parts that need raw speed or complex low-level integration.
 
 ---
 
