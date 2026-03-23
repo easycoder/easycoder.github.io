@@ -143,7 +143,7 @@ npm install -g @anthropic-ai/claude-code
 claude
 ```
 
-[SCREENSHOT: Claude Code terminal session showing a conversation about an EasyCoder script]
+![Claude Code terminal session](/ai-article/1%20claude-session.png)
 
 When you give Claude Code a task, it reads your existing files, writes or modifies code, and explains what it did. For EasyCoder projects, a typical session might look like:
 
@@ -208,7 +208,7 @@ Let's walk through building a simple note-taking application.
 </html>
 ```
 
-[SCREENSHOT: The notes application running in the browser]
+![The notes application running in the browser](/ai-article/2%20note-taking-app.png)
 
 **Step 2: Ask Claude Code to extend it.**
 
@@ -279,7 +279,9 @@ Ask Claude Code to add filtering, CSV parsing, summary statistics, or output to 
 
 For writing and editing EasyCoder scripts, there is a dedicated web-based editor called **Scripted**. It provides syntax highlighting, a file browser, multiple tabs, and auto-save — all running in your browser against a local file server.
 
-[SCREENSHOT: Scripted editor showing syntax-highlighted EasyCoder code with the file browser open]
+![Scripted editor with a file open and the file browser popup displayed](/ai-article/3%20scripted.png)
+
+The screenshot above shows a script open in the editor — note the syntax highlighting — with the file browser popup in front, listing the available `.ecs` files in the working directory.
 
 ### Setup: Four Files
 
@@ -316,8 +318,6 @@ Navigate to:
 ```
 http://localhost:8080/scripted.html
 ```
-
-[SCREENSHOT: Browser showing the Scripted editor with a file open]
 
 Click the folder icon to browse your `.ecs` files and open them for editing. Changes are auto-saved every half second.
 
