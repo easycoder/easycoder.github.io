@@ -1,0 +1,20 @@
+!   ai-article.ecs
+!   Standalone article: Building Applications with EasyCoder and Claude Code
+
+    script Article
+
+    div Container
+    module ShowdownModule
+    variable Script
+
+    create Container in body
+    set the style of Container to `max-width:800px;margin:2em auto;padding:0 2em`
+
+    require js `dist/plugins/showdown.js`
+
+    rest get Script from `/resources/ecs/showdown.ecs?v=` cat now
+    run Script with Container as ShowdownModule
+
+    rest get Script from `/resources/md/ai-article.md?v=` cat now
+    send Script to ShowdownModule
+    stop

@@ -46,11 +46,7 @@ class MQTTClient():
         self.client.on_message = self.on_message
 
     def on_connect(self, client, userdata, flags, reason_code, properties):
-        # Only process connection logic once to avoid duplicate subscriptions and handlers
-        if self.connected:
-            # print(f"Client {self.clientID} reconnected (ignored)")
-            return
-            
+        is_first_connect = not self.connected
         self.connected = True
         print(f"Client {self.clientID} connected")
         for item in self.topics:
@@ -58,7 +54,7 @@ class MQTTClient():
             self.client.subscribe(topic.getName(), qos=topic.getQoS())
             print(f"Subscribed to topic: {topic.getName().strip()} with QoS {topic.getQoS()}")
 
-        if self.onConnectPC is not None:
+        if is_first_connect and self.onConnectPC is not None:
             self.program.queueIntent(self.onConnectPC)
     
     def on_message(self, client, userdata, msg):
