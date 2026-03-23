@@ -210,15 +210,15 @@ class ECTopic(ECObject):
             return ""
         if v is None:
             return ""
-        return v.name
-    
+        return v["name"]
+
     def getQoS(self):
         v = self.getValue()
         if v is None:
             return 0
         if v is None:
             return 0
-        return int(v.qos)
+        return int(v["qos"])
     
     def textify(self):
         v = self.getValue()

@@ -9754,14 +9754,17 @@ const EasyCoder_REST = {
 			if (!url.startsWith(`http`)) {
 				if (url[0] == `/`) {
 					if (command.request === `post`) {
-						const error = `REST POST to same-origin endpoints is disabled in static hosting mode`;
-						if (command.onError) {
-							program.errorMessage = error;
-							program.run(command.onError);
+						const hostname = window.location.hostname;
+						if (hostname !== `localhost` && hostname !== `127.0.0.1`) {
+							const error = `REST POST to same-origin endpoints is disabled in static hosting mode`;
+							if (command.onError) {
+								program.errorMessage = error;
+								program.run(command.onError);
+								return 0;
+							}
+							program.runtimeError(command.lino, error);
 							return 0;
 						}
-						program.runtimeError(command.lino, error);
-						return 0;
 					}
 					path = `${window.location.origin}${url}`;
 				} else {
