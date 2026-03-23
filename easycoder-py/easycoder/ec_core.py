@@ -850,7 +850,6 @@ class Core(Handler):
             filename = self.textify(command['file'])
             try:
                 path = self.resolveLocalPath(filename)
-                print(path)
                 with open(path) as f: content = f.read()
             except:
                 errorReason = f'Unable to read from {filename}'

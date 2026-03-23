@@ -12,18 +12,9 @@ Start up the server:
 
 `easycoder scripted-server.ecs {port}`
 
-where {port} is a port number such as 5500, then run
+where {port} is a port number such as 8080, then open the editor in your browser at:
 
-● Linux:
-  chromium "file:///path/to/scripted/scripted.html?port={port}"  
-
-● Windows:  
-  start chromium "file:///C:/path/to/scripted/scripted.html?port={port}"
-                                                                                                  
-● Mac:__
-  open -a "Chromium" "file:///path/to/scripted/scripted.html?port={port}"  
-                                                                     
-  (Replace Chromium with Google Chrome or whatever browser is installed.)  
+`http://localhost:{port}/scripted.html`
 
 This should start the editor.
 

@@ -63,6 +63,7 @@
 !   -- Handlers --
     on click OpenBtn go to ShowBrowser
     on click PlusBtn go to NewFile
+    on click FindBtn go to DoFind
 
 !   -- Start background loops --
     fork to AutoSave
@@ -336,6 +337,11 @@ RebuildTabBar:
         add 1 to N
     end
     return
+
+!   -- Find --
+DoFind:
+    codemirror find in ContentEditor
+    stop
 
 !   -- Utilities --
 ClearStatus:
