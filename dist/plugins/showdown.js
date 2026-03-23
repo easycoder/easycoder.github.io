@@ -221,7 +221,8 @@ const EasyCoder_Showdown = {
 
 		get: (program, value) => {
 			const converter = new showdown.Converter({
-				extensions: [`Extension`]
+				extensions: [`Extension`],
+				tables: true
 			});
 			switch (value.type) {
 			case `decode`:
