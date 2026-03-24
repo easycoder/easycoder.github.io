@@ -3,9 +3,11 @@
 !   Usage: easycoder scripted-server.ecs <port>
 !
 !   Routes (paths are relative to the server's working directory):
-!     GET  /list        →  returns JSON array of .ecs filenames in the working directory
-!     GET  /read/<file> →  returns contents of <file>
-!     POST /write/<file> → writes request body to <file>; returns OK
+!     GET  /list         →  returns JSON array of filenames in the working directory
+!     GET  /read/<file>  →  returns contents of <file>
+!     POST /write/<file> →  writes request body to <file>; returns OK
+!     GET  /version      →  checks for updates from the repo; returns OK or updated
+!     GET  /restart      →  restarts the server process
 
     script ScriptedServer
 
@@ -18,7 +20,12 @@
     variable FileList
     variable Port
     variable MimeType
+    variable RepoBase
+    variable RemoteVersion
+    variable LocalVersion
     server Files
+
+    put `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/scripted/` into RepoBase
 
     put cwd into BaseDir
     put arg 0 into Port
@@ -26,6 +33,12 @@
     begin
         print `Usage: easycoder scripted-server.ecs <port>`
         stop
+    end
+
+    ! Ensure .version exists
+    if file BaseDir cat `/.version` does not exist
+    begin
+        save `0` to BaseDir cat `/.version`
     end
 
     start Files on port Port
@@ -38,7 +51,40 @@
     begin
         set FullPath to Files path
 
-        if FullPath is `/list`
+        if FullPath is `/version`
+        begin
+            get RemoteVersion from url RepoBase cat `version` or begin
+                return `error` to Files with status 500
+            end
+            replace ` ` with `` in RemoteVersion
+            replace newline with `` in RemoteVersion
+            load LocalVersion from BaseDir cat `/.version` or begin
+                put `0` into LocalVersion
+            end
+            replace ` ` with `` in LocalVersion
+            replace newline with `` in LocalVersion
+            if RemoteVersion is LocalVersion
+            begin
+                return `OK` to Files
+            end
+            ! New version available — download all scripted files
+            print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
+            download RepoBase cat `scripted.html` to BaseDir cat `/scripted.html`
+            download RepoBase cat `scripted.ecs` to BaseDir cat `/scripted.ecs`
+            download RepoBase cat `scripted.json` to BaseDir cat `/scripted.json`
+            download RepoBase cat `scripted-server.ecs` to BaseDir cat `/scripted-server.ecs`
+            save RemoteVersion to BaseDir cat `/.version`
+            print `Update complete`
+            return `updated` to Files
+        end
+        else if FullPath is `/restart`
+        begin
+            print `Restart requested`
+            system background `sleep 2 && easycoder scripted-server.ecs ` cat Port
+            return `OK` to Files
+            exit
+        end
+        else if FullPath is `/list`
         begin
             set FileList to files in BaseDir type `ecs,md,txt,json,html,css,js`
             return FileList to Files
