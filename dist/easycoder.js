@@ -9486,28 +9486,31 @@ const EasyCoder_MQTT = {
 
             const topicName = topic.getName();
             // EasyCoder.writeToDebugConsole(`MQTT Publish to ${topicName} with QoS ${qos}: ${JSON.stringify(payload)}`);
-            program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024)
-                .then((ok) => {
-                    if (command.giving) {
+            if (command.giving) {
+                // Async: wait for broker acknowledgment
+                program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024)
+                    .then((ok) => {
                         const target = program.getSymbolRecord(command.giving);
                         target.value[target.index] = {
                             type: 'boolean',
                             content: ok
                         };
-                    }
-                    program.run(command.pc + 1);
-                })
-                .catch(() => {
-                    if (command.giving) {
+                        program.run(command.pc + 1);
+                    })
+                    .catch(() => {
                         const target = program.getSymbolRecord(command.giving);
                         target.value[target.index] = {
                             type: 'boolean',
                             content: false
                         };
-                    }
-                    program.run(command.pc + 1);
-                });
-            return 0;
+                        program.run(command.pc + 1);
+                    });
+                return 0;
+            } else {
+                // Fire-and-forget: don't wait for PUBACK
+                program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024);
+                return command.pc + 1;
+            }
         }
     },
 
