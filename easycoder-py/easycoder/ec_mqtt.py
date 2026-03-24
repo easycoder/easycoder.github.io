@@ -21,8 +21,11 @@ class MQTTClient():
         self.onConnectPC = None
         self.onMessagePC = None
         self.timeout = False
+        self.message = None
         self.messages = {}
         self.chunked_messages = {}  # Store incoming chunked messages {topic: {part_num: data}}
+        self.message_queue = []     # Queue of received messages to prevent overwrite race
+        self.message_lock = threading.Lock()
         self.confirmation_lock = threading.Lock()
         self.chunk_size = 1024  # Default chunk size
         self.last_send_time = None  # Time taken for last message transmission (seconds)
@@ -115,14 +118,35 @@ class MQTTClient():
                         # Confirmation is now handled at the EasyCoder level
                         # print(f"All chunks received for topic {topic} ({len(complete_message)} bytes total).")
                         try:
-                            self.message = json.loads(complete_message)
+                            msg_obj = json.loads(complete_message)
                         except:
-                            self.message = complete_message
+                            msg_obj = complete_message
                         try:
-                            self.message['message'] = json.loads(self.message['message']) # type: ignore
+                            msg_obj['message'] = json.loads(msg_obj['message']) # type: ignore
                         except:
                             pass
-                        
+                        with self.message_lock:
+                            self.message_queue.append(msg_obj)
+
+                        # If the sender requested confirmation, send one back immediately
+                        try:
+                            if isinstance(msg_obj, dict):
+                                confirm_id = msg_obj.get('_confirmId')
+                                sender = msg_obj.get('sender')
+                                if confirm_id and sender:
+                                    sender_name = sender.get('name') if isinstance(sender, dict) else None
+                                    if not sender_name and isinstance(sender, str):
+                                        try:
+                                            sender_name = json.loads(sender).get('name')
+                                        except:
+                                            pass
+                                    if sender_name:
+                                        ack = json.dumps({'action': 'confirm', '_confirmId': confirm_id})
+                                        ack_bytes = f"!last!1 {ack}".encode('utf-8')
+                                        self.client.publish(sender_name, ack_bytes, qos=1)
+                        except Exception as e:
+                            print(f"Error sending confirmation: {e}")
+
                         if self.onMessagePC is not None:
                             # print(f'Calling onMessagePC callback: {self.onMessagePC}')
                             self.program.queueIntent(self.onMessagePC)
@@ -137,6 +161,9 @@ class MQTTClient():
         return self.message.topic # type: ignore
     
     def getReceivedMessage(self):
+        with self.message_lock:
+            if self.message_queue:
+                self.message = self.message_queue.pop(0)
         return self.message
 
     def onMessage(self, pc):
@@ -497,12 +524,12 @@ class MQTT(Handler):
     # Value handlers
 
     def v_message(self, v):
-        return self.program.mqttClient.message
-    
+        return self.program.mqttClient.getReceivedMessage()
+
     def v_mqtt(self, v):
         content = v.getContent()
         if content == 'message':
-            return self.program.mqttClient.message
+            return self.program.mqttClient.getReceivedMessage()
         return None
 
     def v_topic(self, v):
