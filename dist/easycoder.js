@@ -8864,10 +8864,7 @@ const EasyCoder_MQTT = {
         }
 
         onConnect() {
-            if (this.connected) {
-                return;
-            }
-
+            const isFirstConnect = !this.connected;
             this.connected = true;
             EasyCoder.writeToDebugConsole(`Client ${this.clientID} connected`);
 
@@ -8880,7 +8877,9 @@ const EasyCoder_MQTT = {
                 EasyCoder.writeToDebugConsole(`Subscribed to topic: ${topic.getName()} with QoS ${qos}`);
             }
 
-            this._queueProgramCallback(this.onConnectPC);
+            if (isFirstConnect) {
+                this._queueProgramCallback(this.onConnectPC);
+            }
         }
 
         onMessage(topic, payload) {
@@ -9013,13 +9012,15 @@ const EasyCoder_MQTT = {
 
             // EasyCoder.writeToDebugConsole(`Sending message (${messageLen} bytes) in ${numChunks} chunks of size ${chunkSize} to topic ${topic} with QoS ${qos}`);
 
-            this._sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks);
-
-            this.lastSendTime = (Date.now() - sendStart) / 1000;
-            // EasyCoder.writeToDebugConsole(`Message transmission complete in ${this.lastSendTime.toFixed(3)} seconds`);
+            return this._sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks)
+                .then((ok) => {
+                    this.lastSendTime = (Date.now() - sendStart) / 1000;
+                    return ok;
+                });
         }
 
         _sendRapidFire(topic, messageBytes, qos, chunkSize, numChunks) {
+            const promises = [];
             for (let i = 0; i < numChunks; i++) {
                 const start = i * chunkSize;
                 const end = Math.min(start + chunkSize, messageBytes.length);
@@ -9034,9 +9035,17 @@ const EasyCoder_MQTT = {
 
                 const headerBytes = new TextEncoder().encode(header);
                 const chunkMsg = this._concatBytes([headerBytes, chunkData]);
-                this.client.publish(topic, chunkMsg, { qos });
+                promises.push(new Promise((resolve, reject) => {
+                    const timer = setTimeout(() => reject(new Error('PUBACK timeout')), 5000);
+                    this.client.publish(topic, chunkMsg, { qos }, (err) => {
+                        clearTimeout(timer);
+                        if (err) reject(err);
+                        else resolve(true);
+                    });
+                }));
                 // EasyCoder.writeToDebugConsole(`Sent chunk ${i}/${numChunks - 1} to topic ${topic} with QoS ${qos}: ${chunkMsg.byteLength} bytes`);
             }
+            return Promise.all(promises).then(() => true).catch(() => false);
         }
 
         _toUint8Array(value) {
@@ -9376,7 +9385,8 @@ const EasyCoder_MQTT = {
                     while (true) {
                         const token = compiler.getToken();
                         if (token === 'sender' || token === 'action' ||
-                            token === 'qos' || token === 'message') {
+                            token === 'qos' || token === 'message' ||
+                            token === 'giving') {
 
                             if (token === 'sender') {
                                 if (compiler.nextIsSymbol()) {
@@ -9390,6 +9400,12 @@ const EasyCoder_MQTT = {
                                 command.qos = compiler.getNextValue();
                             } else if (token === 'message') {
                                 command.message = compiler.getNextValue();
+                            } else if (token === 'giving') {
+                                if (compiler.nextIsSymbol()) {
+                                    const rec = compiler.getSymbolRecord();
+                                    command.giving = rec.name;
+                                    compiler.next();
+                                }
                             }
                         } else {
                             break;
@@ -9434,7 +9450,6 @@ const EasyCoder_MQTT = {
 
         run: program => {
             const command = program[program.pc];
-
             if (!program.mqttClient) {
                 program.runtimeError(command.lino, 'No MQTT client defined');
             }
@@ -9471,9 +9486,28 @@ const EasyCoder_MQTT = {
 
             const topicName = topic.getName();
             // EasyCoder.writeToDebugConsole(`MQTT Publish to ${topicName} with QoS ${qos}: ${JSON.stringify(payload)}`);
-            program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024);
-
-            return command.pc + 1;
+            program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024)
+                .then((ok) => {
+                    if (command.giving) {
+                        const target = program.getSymbolRecord(command.giving);
+                        target.value[target.index] = {
+                            type: 'boolean',
+                            content: ok
+                        };
+                    }
+                    program.run(command.pc + 1);
+                })
+                .catch(() => {
+                    if (command.giving) {
+                        const target = program.getSymbolRecord(command.giving);
+                        target.value[target.index] = {
+                            type: 'boolean',
+                            content: false
+                        };
+                    }
+                    program.run(command.pc + 1);
+                });
+            return 0;
         }
     },
 
