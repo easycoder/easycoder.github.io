@@ -70,6 +70,7 @@ const EasyCoder_Markdown = {
 		let inCodeBlock = false;
 		let inBlockquote = false;
 		let listType = ``;
+		let tableRows = [];
 		const closeList = () => {
 			if (listType) {
 				out.push(`</${listType}>`);
@@ -82,6 +83,45 @@ const EasyCoder_Markdown = {
 				out.push(`</blockquote>`);
 				inBlockquote = false;
 			}
+		};
+		const parseTableRow = (line) => {
+			return line.replace(/^\|/, ``).replace(/\|$/, ``).split(`|`).map(c => c.trim());
+		};
+		const flushTable = () => {
+			if (tableRows.length === 0) return;
+			const hasHeader = tableRows.length >= 2 && /^[\s|:-]+$/.test(tableRows[1]);
+			out.push(`<table style="border-collapse:collapse;border:1px solid #ccc;">`);
+			if (hasHeader) {
+				const headers = parseTableRow(tableRows[0]);
+				out.push(`<thead><tr>`);
+				for (const cell of headers) {
+					out.push(`<th style="border:1px solid #ccc;padding:4px 8px;">${parseInline(cell)}</th>`);
+				}
+				out.push(`</tr></thead>`);
+				out.push(`<tbody>`);
+				for (let i = 2; i < tableRows.length; i++) {
+					const cells = parseTableRow(tableRows[i]);
+					out.push(`<tr>`);
+					for (const cell of cells) {
+						out.push(`<td style="border:1px solid #ccc;padding:4px 8px;">${parseInline(cell)}</td>`);
+					}
+					out.push(`</tr>`);
+				}
+				out.push(`</tbody>`);
+			} else {
+				out.push(`<tbody>`);
+				for (const row of tableRows) {
+					const cells = parseTableRow(row);
+					out.push(`<tr>`);
+					for (const cell of cells) {
+						out.push(`<td style="border:1px solid #ccc;padding:4px 8px;">${parseInline(cell)}</td>`);
+					}
+					out.push(`</tr>`);
+				}
+				out.push(`</tbody>`);
+			}
+			out.push(`</table>`);
+			tableRows = [];
 		};
 
 		for (const rawLine of source.split(`\n`)) {
@@ -102,6 +142,14 @@ const EasyCoder_Markdown = {
 				out.push(`${EasyCoder_Markdown.escapeHtml(line)}\n`);
 				continue;
 			}
+
+			if (line.trim().startsWith(`|`)) {
+				closeBlockquote();
+				closeList();
+				tableRows.push(line.trim());
+				continue;
+			}
+			flushTable();
 
 			if (line.trim() === ``) {
 				closeBlockquote();
@@ -155,6 +203,7 @@ const EasyCoder_Markdown = {
 			out.push(`<p>${parseInline(line)}</p>`);
 		}
 
+		flushTable();
 		closeList();
 		closeBlockquote();
 		if (inCodeBlock) {
