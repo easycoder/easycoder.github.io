@@ -509,7 +509,7 @@ class Core(Handler):
         local_path = self.resolveLocalPath(path)
         with open(local_path, mode) as f:
             for chunk in response.iter_content(chunk_size=8192):
-                if chunk: f.write(chunk)
+                if chunk: f.write(chunk if binary else chunk.decode('utf-8'))
         return self.nextPC()
 
     # Match a begin
