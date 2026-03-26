@@ -38,6 +38,7 @@
     variable FileCount
     variable TabItem
     variable UIWebson
+    variable VersionResult
 
 !   -- Build UI --
     attach Body to body
@@ -59,6 +60,22 @@
 
     put 0 into TabCount
     put 0 into ActiveTab
+
+!   -- Check for updates --
+    rest get VersionResult from `/version` or go VersionDone
+    if VersionResult is `updated`
+    begin
+        if confirm `Scripted has been updated. Restart to apply changes?`
+        begin
+            rest get VersionResult from `/restart` or begin
+                alert `Please restart the server manually.`
+                go VersionDone
+            end
+            wait 3 seconds
+            location the location
+        end
+    end
+VersionDone:
 
 !   -- Handlers --
     on click OpenBtn go to ShowBrowser

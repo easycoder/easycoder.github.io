@@ -63,7 +63,7 @@ class ECServer(ECObject):
 
         t = threading.Thread(
             target=run,
-            kwargs={'app': self.app, 'host': 'localhost', 'port': self.port, 'quiet': True},
+            kwargs={'app': self.app, 'host': '0.0.0.0', 'port': self.port, 'quiet': True},
             daemon=True,
         )
         t.start()

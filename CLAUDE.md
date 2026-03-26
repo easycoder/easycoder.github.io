@@ -64,9 +64,7 @@ Version numbers are date-based (e.g. `250824` = 24 Aug 2025). The current versio
 
 ## AI Development
 
-- `/aidev/agent-primer-js.md` — primer for AI agents working on the JS implementation
-- `/aidev/agent-primer-python.md` — primer for AI agents working on the Python implementation
-- Read the relevant primer before making substantive changes to either implementation
+Use `/ecs-js` for JS dialect context and `/ecs-python` for Python dialect context before making substantive changes to either implementation. Use `/ecs-review` to check `.ecs` files for syntax correctness.
 
 ## Commit Style
 
