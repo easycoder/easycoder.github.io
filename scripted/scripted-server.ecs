@@ -67,11 +67,9 @@
             begin
                 return `OK` to Files
             end
-            ! New version available — download all scripted files
+            ! New version available — download local files (ecs/json now served from repo)
             print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
             download RepoBase cat `scripted.html` to BaseDir cat `/scripted.html`
-            download RepoBase cat `scripted.ecs` to BaseDir cat `/scripted.ecs`
-            download RepoBase cat `scripted.json` to BaseDir cat `/scripted.json`
             download RepoBase cat `scripted-server.ecs` to BaseDir cat `/scripted-server.ecs`
             save RemoteVersion to BaseDir cat `/.version`
             print `Update complete`

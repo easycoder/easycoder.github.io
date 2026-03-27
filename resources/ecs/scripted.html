@@ -14,9 +14,10 @@
 
 <script>
 (async function() {
-	const ui = await fetch('scripted.json').then(r => r.text());
+	const repoBase = 'https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/scripted/';
+	const ui = await fetch(repoBase + 'scripted.json').then(r => r.text());
 	document.getElementById('scripted-ui').textContent = ui;
-	const ecs = await fetch('scripted.ecs').then(r => r.text());
+	const ecs = await fetch(repoBase + 'scripted.ecs').then(r => r.text());
 	document.getElementById('easycoder-script').textContent = ecs;
 
 	const scripts = [
