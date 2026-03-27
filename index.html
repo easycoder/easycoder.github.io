@@ -5,7 +5,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>EasyCoder - coding made simple</title>
     <link rel='stylesheet' href='resources/css/styles.css' type='text/css' media='all' />
+	<link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#ffffff">
 	<script src='dist/easycoder.js?ver=2.7.12'></script>
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/sw.js');
+		}
+	</script>
 </head>
 
 <body>
