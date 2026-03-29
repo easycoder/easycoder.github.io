@@ -307,38 +307,35 @@ Ask Claude Code to add filtering, CSV parsing, summary statistics, or output to 
 
 ---
 
-## The Scripted Editor
+## The EC Editor
 
-For writing and editing EasyCoder scripts, there is a dedicated web-based editor called **Scripted**. It provides syntax highlighting, a file browser, multiple tabs, and auto-save — all running in your browser against a local file server.
+For writing and editing EasyCoder scripts, there is a dedicated web-based editor called **ecedit**. It provides syntax highlighting, a file browser with directory navigation, multiple tabs, and auto-save — all running in your browser against a local file server.
 
-![Scripted editor with a file open and the file browser popup displayed](/ai-article/3%20scripted.png)
+![ecedit editor with a file open and the file browser popup displayed](/ai-article/3%20scripted.png)
 
-The screenshot above shows a script open in the editor — note the syntax highlighting — with the file browser popup in front, listing the available `.ecs` files in the working directory.
+The screenshot above shows a script open in the editor — note the syntax highlighting — with the file browser popup in front, listing the available files in the project.
 
-### Setup: Four Files
+### Setup: Two Files
 
-Setting up Scripted requires copying just four files into your working directory:
+Setting up ecedit requires copying just two files into the root of your project:
 
 | File | Purpose |
 |------|---------|
-| `scripted.html` | The editor web page |
-| `scripted.ecs` | The editor application script |
-| `scripted.json` | The editor UI layout definition |
-| `scripted-server.ecs` | The local file server script |
+| `ecedit.html` | The editor web page |
+| `ecedit-server.ecs` | The local file server script |
 
-Copy these files from the [EasyCoder repository](https://github.com/easycoder/easycoder.github.io/tree/master/scripted) into whichever directory holds your `.ecs` files.
+Copy these files from the [EasyCoder repository](https://github.com/easycoder/easycoder.github.io/tree/master/ecedit) into your project root. The editor script and UI definition are fetched automatically from GitHub when you open the page.
 
 ### Start the server
 
 ```bash
-easycoder scripted-server.ecs 8080
+easycoder ecedit-server.ecs 8080
 ```
 
 You should see:
 
 ```
-EasyCoder version 260322.1
-Scripted file server running on port 8080
+ecedit file server running on port 8080
 Serving files from /your/project/directory
 Press Ctrl+C to stop
 ```
@@ -348,33 +345,33 @@ Press Ctrl+C to stop
 Navigate to:
 
 ```
-http://localhost:8080/scripted.html
+http://localhost:8080/ecedit.html
 ```
 
-Click the folder icon to browse your `.ecs` files and open them for editing. Changes are auto-saved every half second.
+Click **Open** to browse your project files and directories. Navigate into subdirectories, open files for editing. Changes are auto-saved every half second.
 
-### Working with Claude Code alongside Scripted
+### Working with Claude Code alongside ecedit
 
 The recommended workflow is:
 
 1. **Claude Code** handles larger changes — creating new scripts, adding features, restructuring logic
-2. **Scripted** handles smaller edits — tweaking values, fixing typos, reading through the code
+2. **ecedit** handles smaller edits — tweaking values, fixing typos, reading through the code
 
-Because both work on the same files on disk, they complement each other naturally. Claude Code saves a change, Scripted picks it up and reloads automatically.
+Because both work on the same files on disk, they complement each other naturally. Claude Code saves a change, ecedit picks it up and reloads automatically.
 
 ---
 
 ## Setting Up a Client/Server Application
 
-For applications that need to read from or write to the server (rather than just using browser localStorage), you need a server that provides `/read/` and `/write/` routes. The `scripted-server.ecs` already provides exactly this — it acts as both the editor's file server and as a general-purpose backend for your applications.
+For applications that need to read from or write to the server (rather than just using browser localStorage), you need a server that provides `/read/` and `/write/` routes. The `ecedit-server.ecs` already provides exactly this — it acts as both the editor's file server and as a general-purpose backend for your applications.
 
 ### Routes provided
 
 | Route | Method | Description |
 |-------|--------|-------------|
-| `/list` | GET | Returns a JSON array of filenames in the working directory |
-| `/read/<filename>` | GET | Returns the contents of a file |
-| `/write/<filename>` | POST | Writes the request body to the file |
+| `/list/<path>` | GET | Returns a JSON array of entries (files and directories) at the given path |
+| `/read/<path>` | GET | Returns the contents of a file |
+| `/write/<path>` | POST | Writes the request body to the file |
 
 ### Saving data from the browser
 
@@ -438,7 +435,7 @@ Together, they represent a practical middle path: not the complexity of full-sta
 - [EasyCoder Codex](https://easycoder.github.io/codex.html) — interactive 20-part tutorial
 - [EasyCoder Primer](/aidev/agent-primer-js.md) — practical reference for AI agents and developers
 - [Claude Code](https://claude.ai/claude-code) — Anthropic's agentic CLI tool
-- [Scripted editor](https://github.com/easycoder/easycoder.github.io/tree/master/scripted) — local development setup
+- [EC Editor](https://github.com/easycoder/easycoder.github.io/tree/master/ecedit) — local development setup
 - [EasyCoder website](https://easycoder.github.io) — overview and documentation
 
 **Get in touch:**
