@@ -6,6 +6,9 @@ ecedit.html__
 ecedit.ecs__
 ecedit.json__
 README.md (this file)__
+
+Copy ecedit-server.ecs and ecedit.html to the root of your project.
+
 Run the server from your project root:
 
 `easycoder ecedit-server.ecs {port}`

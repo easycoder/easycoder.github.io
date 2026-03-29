@@ -68,4 +68,4 @@ Use `/ecs-js` for JS dialect context and `/ecs-python` for Python dialect contex
 
 ## Commit Style
 
-Commits in this repo use date-based messages (e.g. `260319.1`, `260319.2`). Follow this pattern unless the user specifies otherwise.
+Commits in this repo use date-based messages (e.g. `26031901`, `26031902`). Follow this pattern unless the user specifies otherwise.
