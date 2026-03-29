@@ -1813,7 +1813,7 @@ class Core(Handler):
         value = self.textify(command['value'])
         if value != None:
             if command['background']:
-                subprocess.Popen(["sh",value,"&"])
+                subprocess.Popen(["sh", "-c", value])
             else:
                 os.system(value)
             return self.nextPC()
