@@ -2296,6 +2296,7 @@ class Core(Handler):
             token = self.nextToken()
             if token in ['in', 'of']:
                 value.target = self.nextValue() # type: ignore
+                self.skip('of')
                 if self.peek() == 'type':
                     self.nextToken()
                     value.filter = self.nextValue() # type: ignore
@@ -2306,6 +2307,7 @@ class Core(Handler):
             token = self.nextToken()
             if token in ['in', 'of']:
                 value.target = self.nextValue() # type: ignore
+                self.skip('of')
                 if self.peek() == 'type':
                     self.nextToken()
                     value.filter = self.nextValue() # type: ignore
