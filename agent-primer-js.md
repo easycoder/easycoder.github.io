@@ -259,15 +259,21 @@ Rules:
 - Child definitions are sibling keys prefixed with `$`.
 - Style properties go directly on element objects (no nested `style` object).
 
-## 3) Minimal project layout
+## 3) Project layout
+
+A web UI project has three files:
 
 ```text
-index.html   - loader only
+index.html   - loader only (rarely changes)
 project.ecs  - behavior and state
-project.json - Webson UI
+project.json - Webson UI layout
 ```
 
-Minimal loader pattern:
+When starting a new project, use the templates below as your starting point. They provide a responsive layout that works on both mobile phones and desktop browsers.
+
+## 4) Starter template
+
+### `index.html`
 
 ```html
 <!doctype html>
@@ -278,7 +284,7 @@ Minimal loader pattern:
     <title>Project</title>
     <script src="https://easycoder.github.io/dist/easycoder.js"></script>
 </head>
-<body id="app-root">
+<body>
     <pre id="easycoder-script" style="display:none">
         script Loader
         variable Script
@@ -289,49 +295,141 @@ Minimal loader pattern:
 </html>
 ```
 
-## 4) Minimal Hello World
+### `project.json`
 
-`project.ecs`:
-
-```text
-script Project
-
-    div Body
-    variable ScreenJson
-
-    attach Body to body
-    rest get ScreenJson from `project.json`
-        or stop
-    render ScreenJson in Body
-```
-
-`project.json`:
+This Webson layout gives a full-viewport app with a header bar and a scrollable content area. It works on mobile and desktop.
 
 ```json
 {
     "#element": "div",
     "@id": "app",
     "display": "flex",
-    "alignItems": "center",
-    "justifyContent": "center",
-    "minHeight": "100vh",
-    "fontFamily": "sans-serif",
-    "#": ["$Message"],
-    "$Message": {
-        "#element": "h1",
-        "@id": "message",
-        "#content": "Hello, World!"
+    "flex-direction": "column",
+    "height": "100vh",
+    "margin": "0",
+    "font-family": "sans-serif",
+    "background": "#f5f5f5",
+    "#": ["$Header", "$Content"],
+    "$Header": {
+        "#element": "div",
+        "@id": "header",
+        "display": "flex",
+        "align-items": "center",
+        "padding": "0.5em 1em",
+        "background": "#2d2d2d",
+        "color": "white",
+        "font-size": "1.2em",
+        "flex-shrink": "0",
+        "#": ["$Title", "$Status"],
+        "$Title": {
+            "#element": "div",
+            "@id": "title",
+            "#content": "My App",
+            "flex": "1"
+        },
+        "$Status": {
+            "#element": "span",
+            "@id": "status",
+            "font-size": "0.75em",
+            "color": "#aaa"
+        }
+    },
+    "$Content": {
+        "#element": "div",
+        "@id": "content",
+        "flex": "1",
+        "overflow-y": "auto",
+        "padding": "1em",
+        "#": ["$Message"],
+        "$Message": {
+            "#element": "div",
+            "@id": "message",
+            "#content": "App is running.",
+            "padding": "1em",
+            "background": "white",
+            "border-radius": "4px"
+        }
     }
 }
 ```
 
-Run example:
+### `project.ecs`
+
+```text
+    script Project
+
+    div Body
+    div Content
+    div Header
+    span Title
+    span Status
+    div Message
+    variable ScreenJson
+
+    attach Body to body
+    rest get ScreenJson from `project.json`
+        or stop
+    render ScreenJson in Body
+
+    attach Header to `header`
+    attach Title to `title`
+    attach Status to `status`
+    attach Content to `content`
+    attach Message to `message`
+
+    set the content of Message to `Ready. Add your UI here.`
+    stop
+```
+
+### Run
+
+If using ecedit, the server already serves static files:
+
+```bash
+easycoder ecedit-server.ecs 8080
+```
+
+Open `http://localhost:8080/index.html`.
+
+Otherwise, any static server works:
 
 ```bash
 python3 -m http.server 5500
 ```
 
 Open `http://localhost:5500/`.
+
+### Building from the template
+
+To add UI elements, add them to `project.json` (with `@id` attributes) and attach them in `project.ecs`. For example, to add a button below the message:
+
+In `project.json`, add to the `$Content` children:
+
+```json
+"$ActionBtn": {
+    "#element": "button",
+    "@id": "action-btn",
+    "#content": "Do Something",
+    "margin-top": "1em",
+    "padding": "0.5em 1em",
+    "cursor": "pointer"
+}
+```
+
+and update `"#": ["$Message", "$ActionBtn"]`.
+
+In `project.ecs`, declare, attach, and handle:
+
+```text
+    button ActionBtn
+
+    attach ActionBtn to `action-btn`
+
+    on click ActionBtn
+    begin
+        set the content of Message to `Button clicked!`
+    end
+```
 
 ## 5) Working model for responses
 

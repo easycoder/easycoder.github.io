@@ -140,13 +140,117 @@ Example:
 }
 ```
 
-## 3) Minimal file pattern
+## 3) Starter template
+
+A web UI project has three files. Use these as your starting point for new projects.
+
+`index.html` (loader — rarely changes):
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project</title>
+    <script src="https://easycoder.github.io/dist/easycoder.js"></script>
+</head>
+<body>
+    <pre id="easycoder-script" style="display:none">
+        script Loader
+        variable Script
+        rest get Script from `project.ecs`
+        run Script
+    </pre>
+</body>
+</html>
+```
+
+`project.json` (responsive layout — works on mobile and desktop):
+
+```json
+{
+    "#element": "div",
+    "@id": "app",
+    "display": "flex",
+    "flex-direction": "column",
+    "height": "100vh",
+    "margin": "0",
+    "font-family": "sans-serif",
+    "background": "#f5f5f5",
+    "#": ["$Header", "$Content"],
+    "$Header": {
+        "#element": "div",
+        "@id": "header",
+        "display": "flex",
+        "align-items": "center",
+        "padding": "0.5em 1em",
+        "background": "#2d2d2d",
+        "color": "white",
+        "font-size": "1.2em",
+        "flex-shrink": "0",
+        "#": ["$Title", "$Status"],
+        "$Title": {
+            "#element": "div",
+            "@id": "title",
+            "#content": "My App",
+            "flex": "1"
+        },
+        "$Status": {
+            "#element": "span",
+            "@id": "status",
+            "font-size": "0.75em",
+            "color": "#aaa"
+        }
+    },
+    "$Content": {
+        "#element": "div",
+        "@id": "content",
+        "flex": "1",
+        "overflow-y": "auto",
+        "padding": "1em",
+        "#": ["$Message"],
+        "$Message": {
+            "#element": "div",
+            "@id": "message",
+            "#content": "App is running.",
+            "padding": "1em",
+            "background": "white",
+            "border-radius": "4px"
+        }
+    }
+}
+```
+
+`project.ecs` (behavior — attach elements, add logic):
 
 ```text
-index.html   - loader only
-project.ecs  - behavior/state
-project.json - Webson UI
+    script Project
+
+    div Body
+    div Content
+    div Header
+    span Title
+    span Status
+    div Message
+    variable ScreenJson
+
+    attach Body to body
+    rest get ScreenJson from `project.json`
+        or stop
+    render ScreenJson in Body
+
+    attach Header to `header`
+    attach Title to `title`
+    attach Status to `status`
+    attach Content to `content`
+    attach Message to `message`
+
+    set the content of Message to `Ready. Add your UI here.`
+    stop
 ```
+
+Add UI elements to `project.json` (with `@id`), then declare, attach, and handle them in `project.ecs`.
 
 ## 4) Response policy
 

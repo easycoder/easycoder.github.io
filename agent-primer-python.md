@@ -29,18 +29,43 @@ easycoder project.ecs
 
 If `easycoder` is not on `PATH`, use full path (often under `~/.local/bin`).
 
-## 4) Script Structure Baseline
+## 4) Starter template
 
-Use this starter shape:
+When starting a new CLI project, use this as your starting point:
 
 ```text
 !   project.ecs
+!   Description: (what this script does)
+!   Usage: easycoder project.ecs
 
     script Project
 
     variable Message
+
     put `Hello, world!` into Message
-    log Message
+    print Message
+    exit
+```
+
+For scripts that take command-line arguments:
+
+```text
+!   project.ecs
+!   Usage: easycoder project.ecs <filename>
+
+    script Project
+
+    variable FileName
+
+    put arg 0 into FileName
+    if FileName is empty
+    begin
+        print `Usage: easycoder project.ecs <filename>`
+        exit
+    end
+
+    print `Processing ` cat FileName
+    ! Add your logic here
     exit
 ```
 
