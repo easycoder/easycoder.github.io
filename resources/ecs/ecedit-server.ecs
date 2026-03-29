@@ -1,0 +1,143 @@
+!   ecedit-server.ecs
+!   File server for the ecedit editor.
+!   Usage: easycoder ecedit-server.ecs <port>
+!
+!   Routes (paths are relative to the server's working directory):
+!     GET  /list/<path>   →  returns JSON array of {name,type} entries in <path>
+!     GET  /list          →  returns entries in the root directory
+!     GET  /read/<file>   →  returns contents of <file>
+!     POST /write/<file>  →  writes request body to <file>; returns OK
+!     GET  /version       →  checks for updates from the repo; returns OK or updated
+!     GET  /restart       →  restarts the server process
+
+    script EceditServer
+
+    use server
+
+    variable BaseDir
+    variable FullPath
+    variable FilePath
+    variable Content
+    variable FileList
+    variable Port
+    variable MimeType
+    variable RepoBase
+    variable RemoteVersion
+    variable LocalVersion
+    server Files
+
+    put `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/ecedit/` into RepoBase
+
+    put cwd into BaseDir
+    put arg 0 into Port
+    if Port is empty
+    begin
+        print `Usage: easycoder ecedit-server.ecs <port>`
+        stop
+    end
+
+    ! Ensure .version exists
+    if file BaseDir cat `/.version` does not exist
+    begin
+        save `0` to BaseDir cat `/.version`
+    end
+
+    start Files on port Port
+
+    print `ecedit file server running on port ` cat Port
+    print `Serving files from ` cat BaseDir
+    print `Press Ctrl+C to stop`
+
+    on Files request
+    begin
+        set FullPath to Files path
+
+        if FullPath is `/version`
+        begin
+            get RemoteVersion from url RepoBase cat `version` or begin
+                return `error` to Files with status 500
+            end
+            replace ` ` with `` in RemoteVersion
+            replace newline with `` in RemoteVersion
+            load LocalVersion from BaseDir cat `/.version` or begin
+                put `0` into LocalVersion
+            end
+            replace ` ` with `` in LocalVersion
+            replace newline with `` in LocalVersion
+            if RemoteVersion is LocalVersion
+            begin
+                return `OK` to Files
+            end
+            ! New version available — download local files
+            print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
+            download RepoBase cat `ecedit.html` to BaseDir cat `/ecedit.html`
+            download RepoBase cat `ecedit-server.ecs` to BaseDir cat `/ecedit-server.ecs`
+            save RemoteVersion to BaseDir cat `/.version`
+            print `Update complete`
+            return `updated` to Files
+        end
+        else if FullPath is `/restart`
+        begin
+            print `Restart requested`
+            system background `sleep 2 && easycoder ecedit-server.ecs ` cat Port
+            return `OK` to Files
+            exit
+        end
+        else if FullPath is `/list` or FullPath starts with `/list/`
+        begin
+            put FullPath into FilePath
+            replace `/list` with `` in FilePath
+            if left 1 of FilePath is `/` put from 1 of FilePath into FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
+            if FilePath is empty
+                set FileList to entries in BaseDir type `ecs,md,txt,json,html,css,js`
+            else
+                set FileList to entries in BaseDir cat `/` cat FilePath type `ecs,md,txt,json,html,css,js`
+            return FileList to Files
+        end
+        else if FullPath starts with `/read/`
+        begin
+            put FullPath into FilePath
+            replace `/read/` with `` in FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
+            load Content from BaseDir cat `/` cat FilePath
+            return Content to Files
+        end
+        else if FullPath starts with `/write/`
+        begin
+            put FullPath into FilePath
+            replace `/write/` with `` in FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
+            get Content from Files
+            save Content to BaseDir cat `/` cat FilePath
+            return `OK` to Files
+        end
+        else
+        begin
+            ! Static file serving
+            put from 1 of FullPath into FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
+            if FilePath ends with `.html` put `text/html` into MimeType
+            else if FilePath ends with `.json` put `application/json` into MimeType
+            else if FilePath ends with `.ecs` put `text/plain` into MimeType
+            else if FilePath ends with `.js` put `application/javascript` into MimeType
+            else if FilePath ends with `.css` put `text/css` into MimeType
+            else put `text/plain` into MimeType
+            load Content from BaseDir cat `/` cat FilePath or begin
+                return `Not found` to Files with status 404
+            end
+            return Content to Files with type MimeType
+        end
+    end
