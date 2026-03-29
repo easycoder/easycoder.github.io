@@ -23,22 +23,25 @@
     pre UIPre
 
 !   -- State --
-    variable TabPath       ! array: full file path per tab
+    variable TabPath       ! array: full file path per tab (relative to project root)
     variable TabName       ! array: display name (basename) per tab
     variable TabSaved      ! array: last content saved to server per tab
     variable TabCount
     variable ActiveTab
     variable Content       ! scratch: current editor content
     variable FileContent   ! scratch: content fetched from server
-    variable FileList      ! scratch: JSON array of filenames from /list
+    variable FileList      ! scratch: JSON array from /list
     variable N
     variable M
-    variable Item          ! scratch: single filename or JSON array
+    variable Item          ! scratch: single entry object from list
     variable File          ! scratch: single filename
     variable FileCount
     variable TabItem
     variable UIWebson
     variable VersionResult
+    variable CurrentPath   ! current directory being browsed (relative, no leading /)
+    variable EntryName
+    variable EntryType
 
 !   -- Build UI --
     attach Body to body
@@ -60,6 +63,7 @@
 
     put 0 into TabCount
     put 0 into ActiveTab
+    put `` into CurrentPath
 
 !   -- Check for updates --
     rest get VersionResult from `/version` or go VersionDone
@@ -133,6 +137,9 @@ AutoSave:
                 stop
             end
             put File cat `.ecs` into File
+            ! Save into the currently browsed directory
+            if CurrentPath is not empty
+                put CurrentPath cat `/` cat File into File
             index TabPath to ActiveTab
             put File into TabPath
             index TabName to ActiveTab
@@ -186,55 +193,108 @@ PollNext:
     fork to PollFile
     stop
 
-!   -- File browser --
+!   -- File browser with directory navigation --
 ShowBrowser:
-    rest get FileList from `/list` or go BrowserError
+    rest get FileList from `/list/` cat CurrentPath or go BrowserError
     put the json count of FileList into FileCount
-    if FileCount is 0
-    begin
-        set the content of StatusSpan to `No .ecs files found`
-        fork to ClearStatus
-        stop
-    end
     set the elements of FileRow to FileCount
     set the elements of FileName to FileCount
     set the content of Scroller to ``
+
+    ! Show current path at top
+    create FileRow in Scroller
+    set the style of FileRow to `padding:4px 8px;font-size:0.85em;color:#666;border-bottom:1px solid #ddd`
+    if CurrentPath is empty
+        set the content of FileRow to `/ (project root)`
+    else
+        set the content of FileRow to `/` cat CurrentPath
+
+    ! Show "back" row if inside a subdirectory
+    if CurrentPath is not empty
+    begin
+        create FileRow in Scroller
+        set the style of FileRow to `padding:4px 8px;cursor:pointer;background:#f0f0ff`
+        set the content of FileRow to `.. (up one level)`
+        on click FileRow go to GoUp
+    end
+
+    if FileCount is 0
+    begin
+        create FileRow in Scroller
+        set the style of FileRow to `padding:4px 8px;color:#999`
+        set the content of FileRow to `(empty directory)`
+    end
+
     put 0 into N
     while N is less than FileCount
     begin
-        put element N of FileList into File
+        put element N of FileList into Item
+        put property `name` of Item into EntryName
+        put property `type` of Item into EntryType
         index FileRow to N
         create FileRow in Scroller
-        set the style of FileRow to `padding:2px 0`
+        set the style of FileRow to `padding:3px 8px;cursor:pointer`
         index FileName to N
         create FileName in FileRow
-        set the style of FileName to `display:block;padding:3px 0;cursor:pointer`
-        set the content of FileName to File
-        on click FileName go to SelectFile
+        if EntryType is `dir`
+        begin
+            set the style of FileName to `display:block;padding:3px 0;cursor:pointer;font-weight:bold`
+            set the content of FileName to `📁 ` cat EntryName
+        end
+        else
+        begin
+            set the style of FileName to `display:block;padding:3px 0;cursor:pointer`
+            set the content of FileName to EntryName
+        end
+        on click FileName go to SelectEntry
         add 1 to N
     end
     on click CloseBtn go to CloseBrowser
     set style `display` of Overlay to `block`
     stop
 
+GoUp:
+    put the position of the last `/` in CurrentPath into N
+    if N is less than 0
+        put `` into CurrentPath
+    else
+        put left N of CurrentPath into CurrentPath
+    go to ShowBrowser
+
 BrowserError:
     set the content of StatusSpan to `Cannot connect to server`
     fork to ClearStatus
     stop
 
-!   -- File selected in browser --
-SelectFile:
-    index FileName to the index of FileName
-    put the content of FileName into File
-    put File into TabItem
+!   -- Entry selected in browser --
+SelectEntry:
+    put the index of FileName into N
+    put element N of FileList into Item
+    put property `name` of Item into EntryName
+    put property `type` of Item into EntryType
+    if EntryType is `dir`
+    begin
+        ! Navigate into directory
+        if CurrentPath is empty
+            put EntryName into CurrentPath
+        else
+            put CurrentPath cat `/` cat EntryName into CurrentPath
+        go to ShowBrowser
+    end
+    ! Build full relative path and open file
+    if CurrentPath is empty
+        put EntryName into TabItem
+    else
+        put CurrentPath cat `/` cat EntryName into TabItem
     set style `display` of Overlay to `none`
+    put EntryName into File
     go to OpenFile
 
 CloseBrowser:
     set style `display` of Overlay to `none`
     stop
 
-!   -- Open a file (TabItem=filename) --
+!   -- Open a file (TabItem=relative path, File=display name) --
 OpenFile:
     ! Check if already open in a tab
     put 0 into N
@@ -249,7 +309,6 @@ OpenFile:
         add 1 to N
     end
     ! Not open -- load from server and create a new tab
-    ! (N now equals old TabCount, which is the index for the new tab)
     rest get Content from `/read/` cat TabItem or go BrowserError
     add 1 to TabCount
     set the elements of TabPath to TabCount

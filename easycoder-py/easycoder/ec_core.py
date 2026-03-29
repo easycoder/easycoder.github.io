@@ -2292,6 +2292,16 @@ class Core(Handler):
                     value.format = self.nextValue() # type: ignore
             return value
 
+        if token == 'entries':
+            token = self.nextToken()
+            if token in ['in', 'of']:
+                value.target = self.nextValue() # type: ignore
+                if self.peek() == 'type':
+                    self.nextToken()
+                    value.filter = self.nextValue() # type: ignore
+                return value
+            return None
+
         if token == 'files':
             token = self.nextToken()
             if token in ['in', 'of']:
@@ -2462,6 +2472,25 @@ class Core(Handler):
             record = self.getVariable(v.name)
             value.setValue(type=str, content=record['error'] if 'error' in record else '')
         return value
+
+    def v_entries(self, v):
+        path = self.textify(v.target)
+        filter_ext = self.textify(v.filter) if v.filter else None
+        result = []
+        for name in sorted(os.listdir(path)):
+            full = os.path.join(path, name)
+            if name.startswith('.'):
+                continue
+            if os.path.isdir(full):
+                result.append({"name": name, "type": "dir"})
+            elif os.path.isfile(full):
+                if filter_ext:
+                    ext = os.path.splitext(name)[1].lstrip('.').lower()
+                    exts = {e.strip().lstrip('.') for e in filter_ext.split(',')}
+                    if ext not in exts:
+                        continue
+                result.append({"name": name, "type": "file"})
+        return ECValue(type=str, content=json.dumps(result))
 
     def v_files(self, v):
         path = self.textify(v.target)

@@ -3,11 +3,12 @@
 !   Usage: easycoder scripted-server.ecs <port>
 !
 !   Routes (paths are relative to the server's working directory):
-!     GET  /list         →  returns JSON array of filenames in the working directory
-!     GET  /read/<file>  →  returns contents of <file>
-!     POST /write/<file> →  writes request body to <file>; returns OK
-!     GET  /version      →  checks for updates from the repo; returns OK or updated
-!     GET  /restart      →  restarts the server process
+!     GET  /list/<path>   →  returns JSON array of {name,type} entries in <path>
+!     GET  /list          →  returns entries in the root directory
+!     GET  /read/<file>   →  returns contents of <file>
+!     POST /write/<file>  →  writes request body to <file>; returns OK
+!     GET  /version       →  checks for updates from the repo; returns OK or updated
+!     GET  /restart       →  restarts the server process
 
     script ScriptedServer
 
@@ -82,9 +83,19 @@
             return `OK` to Files
             exit
         end
-        else if FullPath is `/list`
+        else if FullPath is `/list` or FullPath starts with `/list/`
         begin
-            set FileList to files in BaseDir type `ecs,md,txt,json,html,css,js`
+            put FullPath into FilePath
+            replace `/list` with `` in FilePath
+            if left 1 of FilePath is `/` put from 1 of FilePath into FilePath
+            if FilePath includes `..`
+            begin
+                return `Forbidden` to Files with status 403
+            end
+            if FilePath is empty
+                set FileList to entries in BaseDir type `ecs,md,txt,json,html,css,js`
+            else
+                set FileList to entries in BaseDir cat `/` cat FilePath type `ecs,md,txt,json,html,css,js`
             return FileList to Files
         end
         else if FullPath starts with `/read/`
