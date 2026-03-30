@@ -1099,6 +1099,29 @@ const EasyCoder_Core = {
 		}
 	},
 
+	No: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			if (compiler.nextTokenIs(`cache`)) {
+				compiler.next();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `no`,
+					lino
+				});
+				return true;
+			}
+			return false;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			EasyCoder.noCache = true;
+			return command.pc + 1;
+		}
+	},
+
 	On: {
 
 		compile: compiler => {
@@ -2451,6 +2474,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Multiply;
 		case `negate`:
 			return EasyCoder_Core.Negate;
+		case `no`:
+			return EasyCoder_Core.No;
 		case `on`:
 			return EasyCoder_Core.On;
 		case `pop`:
@@ -9868,6 +9893,12 @@ const EasyCoder_REST = {
 				}
 			}
 
+			// Cache-busting for GET requests (helps Android WebView)
+			if (command.request === `get` && EasyCoder.noCache) {
+				const separator = path.includes(`?`) ? `&` : `?`;
+				path += `${separator}_ec=${Date.now()}`;
+			}
+
 			const request = EasyCoder_REST.Rest.createCORSRequest(command.request, path);
 			if (!request) {
 				program.runtimeError(command.lino, `CORS not supported`);
@@ -11122,9 +11153,13 @@ const EasyCoder = {
 	},
 
 	require: function(type, src, cb) {
-		const resolvedSrc = src[0] === `/`
+		let resolvedSrc = src[0] === `/`
 			? `${window.location.origin}${src}`
 			: src;
+		if (EasyCoder.noCache) {
+			const separator = resolvedSrc.includes(`?`) ? `&` : `?`;
+			resolvedSrc += `${separator}_ec=${Date.now()}`;
+		}
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
 		case `css`:
@@ -11347,6 +11382,7 @@ const EasyCoder = {
 
 	start: function(source) {
 		EasyCoder.restPath = `.`;
+		EasyCoder.noCache = false;
 		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);

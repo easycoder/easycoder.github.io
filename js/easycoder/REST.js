@@ -198,6 +198,12 @@ const EasyCoder_REST = {
 				}
 			}
 
+			// Cache-busting for GET requests (helps Android WebView)
+			if (command.request === `get` && EasyCoder.noCache) {
+				const separator = path.includes(`?`) ? `&` : `?`;
+				path += `${separator}_ec=${Date.now()}`;
+			}
+
 			const request = EasyCoder_REST.Rest.createCORSRequest(command.request, path);
 			if (!request) {
 				program.runtimeError(command.lino, `CORS not supported`);

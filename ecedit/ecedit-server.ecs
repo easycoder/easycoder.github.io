@@ -48,6 +48,29 @@
     print `Serving files from ` cat BaseDir
     print `Press Ctrl+C to stop`
 
+    ! Check for updates at startup
+    get RemoteVersion from url RepoBase cat `version` or begin
+        print `Warning: could not check for updates`
+    end
+    if RemoteVersion is not empty
+    begin
+        replace ` ` with `` in RemoteVersion
+        replace newline with `` in RemoteVersion
+        load LocalVersion from BaseDir cat `/.version` or begin
+            put `0` into LocalVersion
+        end
+        replace ` ` with `` in LocalVersion
+        replace newline with `` in LocalVersion
+        if RemoteVersion is not LocalVersion
+        begin
+            print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
+            download RepoBase cat `ecedit.html` to BaseDir cat `/ecedit.html`
+            download RepoBase cat `ecedit-server.ecs` to BaseDir cat `/ecedit-server.ecs`
+            save RemoteVersion to BaseDir cat `/.version`
+            print `Update complete`
+        end
+    end
+
     on Files request
     begin
         set FullPath to Files path
@@ -65,16 +88,9 @@
             replace ` ` with `` in LocalVersion
             replace newline with `` in LocalVersion
             if RemoteVersion is LocalVersion
-            begin
                 return `OK` to Files
-            end
-            ! New version available — download local files
-            print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
-            download RepoBase cat `ecedit.html` to BaseDir cat `/ecedit.html`
-            download RepoBase cat `ecedit-server.ecs` to BaseDir cat `/ecedit-server.ecs`
-            save RemoteVersion to BaseDir cat `/.version`
-            print `Update complete`
-            return `updated` to Files
+            else
+                return `updated` to Files
         end
         else if FullPath is `/restart`
         begin

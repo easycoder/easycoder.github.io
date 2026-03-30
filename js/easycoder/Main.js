@@ -263,9 +263,13 @@ const EasyCoder = {
 	},
 
 	require: function(type, src, cb) {
-		const resolvedSrc = src[0] === `/`
+		let resolvedSrc = src[0] === `/`
 			? `${window.location.origin}${src}`
 			: src;
+		if (EasyCoder.noCache) {
+			const separator = resolvedSrc.includes(`?`) ? `&` : `?`;
+			resolvedSrc += `${separator}_ec=${Date.now()}`;
+		}
 		const element = document.createElement(type === `css` ? `link` : `script`);
 		switch (type) {
 		case `css`:
@@ -488,6 +492,7 @@ const EasyCoder = {
 
 	start: function(source) {
 		EasyCoder.restPath = `.`;
+		EasyCoder.noCache = false;
 		
 		EasyCoder.scriptIndex = 0;
 		const script = source.split(`\n`);

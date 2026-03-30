@@ -2715,8 +2715,7 @@ class Core(Handler):
         return value
 
     def v_today(self, v):
-        return ECValue(type=int, content=(int(time.time() // 86400)) * 86400 * 1000)
-        # return ECValue(type=int, content=int(datetime.combine(datetime.now().date(),datetime.min.time()).timestamp()) * 1000)
+        return ECValue(type=int, content=int(datetime.combine(datetime.now().date(),datetime.min.time()).timestamp()) * 1000)
 
     def v_trim(self, v):
         content = v.getContent()
@@ -2840,6 +2839,10 @@ class Core(Handler):
         if token == 'has':
             self.nextToken()
             token = self.nextToken()
+            negate = False
+            if token == 'no':
+                negate = True
+                token = self.nextToken()
             if token in ('entry', 'property'):
                 value = self.nextValue()
                 if token == 'entry':
@@ -2848,6 +2851,8 @@ class Core(Handler):
                 elif token == 'property:':
                     condition.type = 'hasProperty' # type: ignore
                     condition.property = value # type: ignore
+                if negate:
+                    condition.negate = not condition.negate # type: ignore
                 return condition
             return None
 

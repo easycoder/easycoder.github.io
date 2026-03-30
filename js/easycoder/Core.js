@@ -1099,6 +1099,29 @@ const EasyCoder_Core = {
 		}
 	},
 
+	No: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			if (compiler.nextTokenIs(`cache`)) {
+				compiler.next();
+				compiler.addCommand({
+					domain: `core`,
+					keyword: `no`,
+					lino
+				});
+				return true;
+			}
+			return false;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			EasyCoder.noCache = true;
+			return command.pc + 1;
+		}
+	},
+
 	On: {
 
 		compile: compiler => {
@@ -2451,6 +2474,8 @@ const EasyCoder_Core = {
 			return EasyCoder_Core.Multiply;
 		case `negate`:
 			return EasyCoder_Core.Negate;
+		case `no`:
+			return EasyCoder_Core.No;
 		case `on`:
 			return EasyCoder_Core.On;
 		case `pop`:
