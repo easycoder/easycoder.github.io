@@ -1344,6 +1344,15 @@ const EasyCoder_Browser = {
 					return compiler.completeHandler();
 				}
 				return false;
+			case `resume`:
+				compiler.next();
+				compiler.addCommand({
+					domain: `browser`,
+					keyword: `on`,
+					lino,
+					action
+				});
+				return compiler.completeHandler();
 			case `drag`:
 			case `drop`:
 				compiler.next();
@@ -1618,6 +1627,15 @@ const EasyCoder_Browser = {
 				break;
 			case `browserBack`:
 				program.onBrowserBack = command.pc + 2;
+				break;
+			case `resume`:
+				program.onResume = command.pc + 2;
+				document.addEventListener(`visibilitychange`, function () {
+					if (!document.hidden && program.running) {
+						EasyCoder.timestamp = Date.now();
+						program.run(program.onResume);
+					}
+				});
 				break;
 			case `leave`:
 				window.addEventListener(`beforeunload`, function () {
