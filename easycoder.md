@@ -2,9 +2,9 @@
 
 ## First-time setup
 
-When you open this project, check whether a file called `.easycoder-init` exists in this directory.
+> **Beginner tip:** If nothing happens when you start Claude, type **go**.
 
-**If `.easycoder-init` does NOT exist**, you MUST run the initialisation process below before doing anything else. Do not skip any step.
+**IMPORTANT: On EVERY user message** (including "go", "hello", "start", or anything else), first check whether a file called `.easycoder-init` exists in this directory. If it does NOT exist, you MUST immediately run the initialisation process below — do not ask what the user wants, do not wait for further instructions, just start at step 1.
 
 ### Initialisation process
 
@@ -15,15 +15,33 @@ When you open this project, check whether a file called `.easycoder-init` exists
 3. **Create the project files** based on the answer:
 
    - **Command-line**: Create `<project>.ecs` from the CLI template below.
-   - **GUI**: Create `index.html` from the GUI template below.
-   - **Both**: Create both files.
+   - **GUI**: Create `<project>.html`, `<project>-main.ecs`, and `<project>.json` from the GUI templates below.
+   - **Both**: Create all four files.
 
 4. **Create `.easycoder-init`** containing the project name and type (cli/gui/both) so this setup is not repeated.
 
 5. **Explain to the user how to run their project:**
 
-   - **CLI**: Run with `easycoder <project>.ecs` (requires the `easycoder` pip package).
-   - **GUI**: Start a local server with `python3 -m http.server 8080` then open `http://localhost:8080` in a browser. The EasyCoder runtime is loaded from `https://easycoder.github.io/dist/easycoder.js`.
+   - **CLI**: First install EasyCoder with `pip install -U easycoder`, then run with `easycoder <project>.ecs`. If the `easycoder` command is not found after installing, the user may need to add their Python scripts directory to their PATH (pip will usually show a warning about this).
+   - **GUI**: Start a local server with `python3 -m http.server 8080` then open `http://localhost:8080/<project>.html` in a browser. The EasyCoder runtime is loaded from `https://easycoder.github.io/dist/easycoder.js`.
+
+6. **Walk the user through how the files work together.** For GUI projects, explain:
+
+   - The HTML file is just a launcher — it loads the EasyCoder runtime and runs a tiny bootstrap script that fetches the main `.ecs` file.
+   - The `.ecs` file is the program logic. It creates a body element, fetches the `.json` layout, and uses `render` to turn the JSON into real page elements. It then `attach`es to those elements by their `@id` to interact with them.
+   - The `.json` file defines the page layout using Webson — a JSON format where keys like `#element` create HTML elements, `@id` sets attributes, `#content` sets text, `$Name` defines named components, `#` lists children, and any other key (like `padding` or `color`) is a CSS style.
+   - This separation means the layout can be changed without touching the code, and vice versa. It also makes the JSON easy for AI to generate and modify.
+
+   For CLI projects, explain that the `.ecs` file is a standalone script run from the terminal, and walk through what each line does.
+
+7. **Offer the companion editor.** Ask: "Would you like to install the EasyCoder editor? It gives you color-coded syntax highlighting for `.ecs` scripts in your browser." If the user says yes:
+
+   - Copy `ecedit-server.ecs` and `ecedit.html` from `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/ecedit/` into the project directory. (Use curl, wget, or any available method.)
+   - Explain how to use it:
+     1. Run `easycoder ecedit-server.ecs 8080` (or any free port) from the project directory. This starts a local file server.
+     2. Open `http://localhost:8080/ecedit.html` in a browser.
+     3. The editor lets you open, edit, and save `.ecs`, `.json`, `.html` and other project files with syntax highlighting. It fetches its UI from the EasyCoder repo automatically so only the two local files are needed.
+     4. The server also serves the project files, so you can test GUI projects at `http://localhost:8080/<project>.html` on the same port.
 
 ---
 
@@ -47,40 +65,85 @@ When you open this project, check whether a file called `.easycoder-init` exists
 
 ## GUI template
 
+A GUI project uses three files:
+
+- **`<project>.html`** — minimal HTML launcher
+- **`<project>-main.ecs`** — EasyCoder script (code)
+- **`<project>.json`** — Webson layout (UI definition as JSON)
+
+This separation keeps code and layout independent, and the JSON format is easy for AI to generate and modify.
+
+### `<project>.html`
+
 ```html
-<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><Project></title>
-    <style>
-        body { font-family: sans-serif; margin: 2em; }
-        #display { padding: 1em; border: 1px solid #ccc; min-height: 4em; }
-    </style>
+    <script type='text/javascript' src='https://easycoder.github.io/dist/easycoder.js'></script>
 </head>
 <body>
-    <div id="display"></div>
-
     <pre id="easycoder-script" style="display:none">
+    variable Script
+    rest get Script from `<project>-main.ecs`
+    run Script
+    </pre>
+</body>
+</html>
+```
 
-!   <Project>
+### `<project>-main.ecs`
+
+```
+!   <project>-main.ecs
 
     script <Project>
+
+    div Body
+    variable Layout
+
+    create Body
+    rest get Layout from `<project>.json`
+    render Layout in Body
 
     div Display
     attach Display to `display`
     set the content of Display to `Hello from <Project>`
 
     stop
-
-    </pre>
-    <script src="https://easycoder.github.io/dist/easycoder.js"></script>
-</body>
-</html>
 ```
 
-In both templates, replace `<project>` with the project name (lowercase for filenames) and `<Project>` with the capitalised project name.
+### `<project>.json`
+
+```json
+{
+    "#doc": "<Project> layout",
+    "#element": "div",
+    "@id": "page",
+    "font-family": "sans-serif",
+    "margin": "2em",
+    "#": ["$Display"],
+
+    "$Display": {
+        "#element": "div",
+        "@id": "display",
+        "padding": "1em",
+        "border": "1px solid #ccc",
+        "min-height": "4em"
+    }
+}
+```
+
+**Webson keys:**
+- `#element` — HTML element type (`div`, `button`, `img`, etc.)
+- `@id`, `@src`, etc. — HTML attributes
+- `#content` — inner text/HTML
+- `#` — array of child element references
+- `$Name` — named component definition
+- All other keys are CSS styles
+
+In all templates, replace `<project>` with the project name (lowercase for filenames) and `<Project>` with the capitalised project name.
 
 ---
 

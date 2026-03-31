@@ -1,98 +1,49 @@
-# Build Software, Not Just Prompts
+# Code Without Coding
 
-This project is for people who want to become stronger programmers in the AI era.
-No shortcuts, no “overnight success” claims — just practical learning through real product work.
+You've probably heard about vibe coding — tell an AI what you want and it writes the software. It sounds like magic, and sometimes it is. But there's a catch: the code it produces is in languages like JavaScript or Python, and unless you already know those languages, you have no way to tell whether the AI did a good job. You're flying blind, and when something breaks — which it will — you're stuck.
 
-## What you learn
+At the other end, traditional coding means months of learning before you build anything useful. Most people don't have that kind of time.
 
- - How to structure a real smartphone webapp.
- - How to work effectively with an AI coding agent.
- - How to review and understand each change.
+EasyCoder sits in the middle. It's a scripting language designed to read like English, so when AI writes code for you, you can follow what it's doing. You stay in control without needing a computer science degree.
 
-This is a guided route into software work.
+## What does that look like?
 
-## What are EasyCoder and Codex?
+Here's a real snippet:
 
-EasyCoder is a high-level coding language that works with AI to deliver code that can be checked by humans, not just taken on trust. Before starting your first project, go to the [Codex](https://easycoder.github.io/codex.html). This is a combined tutorial, reference manual and programmer's playground and will very quickly get you accustomed to the kind of output that will be delivered by AI.
+```
+    attach Display to `greeting`
+    put `Hello!` into Message
+    set the content of Display to Message
+```
 
-Contact: [easycoder.ai@gmail.com](mailto:easycoder.ai@gmail.com)
+No brackets, no semicolons, no mystery. If you can read a sentence, you can read EasyCoder.
 
-EasyCoder is used to create 
+## Not a toy
 
- - Python-based desktop applications 
- - JavaScript-based web applications
- - Any combination of the two.
+EasyCoder builds real software. Web apps with interactive pages and styled layouts. Command-line tools that talk to APIs, process data and manage files. Multi-screen applications with navigation, forms and user input. Live connections using REST and MQTT. It runs in any browser (the JavaScript version) or from the terminal (the Python version) — or both together.
 
-The Python and JS variants are similar versions of the same coding language. 
+The secret is that AI doesn't care what language it writes in. Give it a capable high-level language and it delivers the same functionality as it would in JavaScript — but in a form you can actually read, check and modify.
 
-## Why use high-level scripting?
+## How to get started
 
-EasyCoder is far simpler for inexperienced software developers (or even non-programmers) to understand than either Python or JavaScript, yet equally capable of building substantial software products. This is thanks to the way AI is agnostic when it comes to programming languages; able to code with anything that can provide the necessary functionality. What this means in practice is people can validate the code being produced without first becoming coding gurus. This is in contrast to 'vibe coding', where you have to trust AI to do the right job. With EasyCoder, _you_ are in control all the way.
+The fastest route is **EasyCoder + Claude Code**. Claude Code is an AI coding agent that runs in your terminal. Combined with our starter pack, it will set up a working project for you in under five minutes — complete with an explanation of every file it creates.
 
-See the **AI Manual** tab on this page for a full exposition of this subject. 
+Here's all you do:
 
-## The primer prompt
+1. Install Claude Code (see [claude.ai/code](https://claude.ai/code)).
+2. Create an empty folder for your project.
+3. Download our [starter file](https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/easycoder.md) and save it into that folder as `CLAUDE.md`.
+4. Open a terminal in that folder and type `claude`.
+5. When Claude starts, type **go**.
 
-Development can proceed using either a cloud-based agent or a local LLM hosted by yourself and accessed via Open WebUI. In either case, once you are set up, your first step will be to provide a "primer prompt" that will get your agent familiar with EasyCoder. You can ask a cloud-based agent to read this from a URL, but for a local LLM you will have to open the URL yourself, copy its content and paste this as the primer prompt.
+Claude will ask you a couple of questions, create your project files, and walk you through how everything fits together. From there, just tell it what you want to build.
 
-For the Python version the URL is
-[https://easycoder.github.io/agent-primer-python.md](https://easycoder.github.io/agent-primer-python.md)
+## Learn more
 
-For JavaScript it is
-[https://easycoder.github.io/agent-primer-js.md](https://easycoder.github.io/agent-primer-js.md])
+- **Example tab** — a step-by-step guided build to see the workflow in action.
+- **AI Manual tab** — the full case for structured AI development vs vibe coding.
+- **[Codex](https://easycoder.github.io/codex.html)** — an interactive tutorial, reference and playground for the EasyCoder language.
 
-Include either or both of these according to the needs of your project.
+## Questions?
 
-Follow these with an outline of your project; what will it do, is it command-line or browser, how does it communicate, what special terminology will you be using, etc. The more you give, the better the agent will understand your needs.
-
-Once you have given the primer prompt you can start asking your agent to write some code. Start with something simple to get familiar with how it works. (If you'd like some examples, see the note at the bottom of this screen about [Codex](https://easycoder.github.io/codex.html).)
-
-## Building and running your script
-
-A command-line app is very different from a browser-based webapp.
-
-### Python version
-To run a Python-based script, first install EasyCoder:
-
-`pip install -U easycoder`
-
-If EasyCoder is already installed, this will update you to the latest version, which you might need to do from time to time as it's still under development and new features are regularly being added. Note that on some Linux systems, EasyCoder will not be installed on your $PATH, so either give the full path (usually ~/.local/bin/easycoder) or set up a symbolic link. To check the version number, use
-
-`easycoder`
-
-and to run your script, use
-
-`easycoder project.ecs`
-
-Ask your agent to start building a script for you.
-
-### JavaScript version
-
-For development of a webapp, set up a simple Python local server in your project folder:
-
-`python3 -m http.server 5500` (or whatever port you prefer)
-
-Copy 3 files:
-
- [https://easycoder.github.io/primer/index.html](https://easycoder.github.io/primer/index.html) 
- [https://easycoder.github.io/primer/project.ecs](https://easycoder.github.io/primer/project.ecs) 
- [https://easycoder.github.io/primer/project.json](https://easycoder.github.io/primer/project.json)
-
-to your project folder.
-
-Aim your browser at `http://localhost:5500/index.html`.
-
-Tell your agent what you want to do next.
-
-## Testing and debugging
-
-To test any program you need a debugger. If you are doing cloud-based development you may be using an AI-powered editor such as VS Code. You can set up its tooling to provide full debugging support for either version of EasyCoder or both simultaneously. This can be complicated for the JS version, so ask your agent to do this for you.
-
-Both versions of EasyCoder have a minimal debugger; a built-in tracer that lets you stop a script at any point, examine variables and single-step or run.
-
-## Teach yourself EasyCoder 
-You can get some familiarity with many features of EasyCoder by starting with our [Codex](https://easycoder.github.io/codex.html). This is an integrated tutorial, reference manual and programmer's playground for the scripting language.
-
-And that's it! If you have questions you can email us at [easycoder.ai@gmail.com](mailto:easycoder.ai@gmail.com). 
-
-
+Contact us at [easycoder.ai@gmail.com](mailto:easycoder.ai@gmail.com).
