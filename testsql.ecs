@@ -1,0 +1,68 @@
+!   testsql.ecs
+    
+    use plugin SQL from easycoder/easycoder-py/plugins/sql.py
+
+    script TestSQL
+
+    table UserTable
+    table BlogTable
+    table PostTable
+    table CategoryTable
+    table UserBlogTable
+    table BlogPostTable
+    table PostCategoryTable
+    variable Text
+
+    create UserTable `user`
+        key `uuid` primary uuid
+        key `name` required string default `guest`
+        key `password` required text
+        key `created_at` auto datetime
+
+    create BlogTable `blog`
+        key `name` secondary string
+        key `created_at` auto datetime
+    
+    create PostTable `post`
+        key `title` required string
+        key `text` string
+        key `created_at` auto datetime
+        key `likes` required u64 check `likes > 0`
+    
+    create CategoryTable `category`
+        key `name` required string
+    
+    create UserBlogTable `user_blog`
+        include `user`
+        include `blog`
+    
+    create BlogPostTable `blog_post`
+        include `blog`
+        include `post`
+    
+    create PostCategoryTable `post_category`
+        include `post`
+        include `category`
+    
+    get Text from UserTable as sql
+    print Text cat newline
+    
+    get Text from BlogTable as sql
+    print Text cat newline
+    
+    get Text from PostTable as sql
+    print Text cat newline
+    
+    get Text from CategoryTable as sql
+    print Text cat newline
+    
+    get Text from UserBlogTable as sql
+    print Text cat newline
+    
+    get Text from BlogPostTable as sql
+    print Text cat newline
+    
+    get Text from PostCategoryTable as sql
+    print Text cat newline
+
+    exit
