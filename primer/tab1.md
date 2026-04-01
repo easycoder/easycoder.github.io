@@ -30,11 +30,12 @@ The fastest route is **EasyCoder + Claude Code**. Claude Code is an AI coding ag
 
 Here's all you do:
 
-1. Install Claude Code (see [claude.ai/code](https://claude.ai/code)).
-2. Create an empty folder for your project.
-3. Download our [starter file](https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/easycoder.md) and save it into that folder as `CLAUDE.md`.
-4. Open a terminal in that folder and type `claude`.
-5. When Claude starts, type **go**.
+1. Create an empty folder for your project.
+2. Download [code.zip](https://easycoder.github.io/code.zip) and unzip it into that folder.
+3. Install EasyCoder: `pip install -U easycoder`
+4. Install Claude Code (see [claude.ai/code](https://claude.ai/code)).
+5. Open a terminal in that folder and type `claude`.
+6. When Claude starts, type **go**.
 
 Claude will ask you a couple of questions, create your project files, and walk you through how everything fits together. From there, just tell it what you want to build.
 

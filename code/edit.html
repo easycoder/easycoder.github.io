@@ -14,7 +14,7 @@
 
 <script>
 (async function() {
-	const repoBase = 'https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/ecedit/';
+	const repoBase = 'https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/code/';
 	const ui = await fetch(repoBase + 'ecedit.json').then(r => r.text());
 	document.getElementById('ecedit-ui').textContent = ui;
 	const ecs = await fetch(repoBase + 'ecedit.ecs').then(r => r.text());

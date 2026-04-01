@@ -1,6 +1,6 @@
 !   ecedit.ecs
 !   Tabbed script editor with auto-save and external change detection.
-!   Served by ecedit-server.ecs locally, or any web server with /list, /read, /write routes.
+!   Served by code.ecs locally, or any web server with /list, /read, /write routes.
 
     script ECEditor
 

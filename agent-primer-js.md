@@ -383,19 +383,13 @@ This Webson layout gives a full-viewport app with a header bar and a scrollable 
 
 ### Run
 
-If using ecedit, the server already serves static files:
+The dev server already serves static files:
 
 ```bash
-easycoder ecedit-server.ecs 8080
+easycoder code.ecs 8080
 ```
 
 Open `http://localhost:8080/index.html`.
-
-Otherwise, any static server works:
-
-```bash
-python3 -m http.server 5500
-```
 
 Open `http://localhost:5500/`.
 

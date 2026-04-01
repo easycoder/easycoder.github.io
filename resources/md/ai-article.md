@@ -309,33 +309,26 @@ Ask Claude Code to add filtering, CSV parsing, summary statistics, or output to 
 
 ## The EC Editor
 
-For writing and editing EasyCoder scripts, there is a dedicated web-based editor called **ecedit**. It provides syntax highlighting, a file browser with directory navigation, multiple tabs, and auto-save — all running in your browser against a local file server.
+For writing and editing EasyCoder scripts, there is a dedicated web-based editor included in the starter pack. It provides syntax highlighting, a file browser with directory navigation, multiple tabs, and auto-save — all running in your browser against a local file server.
 
 ![ecedit editor with a file open and the file browser popup displayed](/ai-article/3%20scripted.png)
 
 The screenshot above shows a script open in the editor — note the syntax highlighting — with the file browser popup in front, listing the available files in the project.
 
-### Setup: Two Files
+### Setup
 
-Setting up ecedit requires copying just two files into the root of your project:
-
-| File | Purpose |
-|------|---------|
-| `ecedit.html` | The editor web page |
-| `ecedit-server.ecs` | The local file server script |
-
-Copy these files from the [EasyCoder repository](https://github.com/easycoder/easycoder.github.io/tree/master/ecedit) into your project root. The editor script and UI definition are fetched automatically from GitHub when you open the page.
+The editor files (`edit.html` and `code.ecs`) are included in the [starter pack](https://easycoder.github.io/code.zip). Unzip into your project root. The editor script and UI definition are fetched automatically from GitHub when you open the page.
 
 ### Start the server
 
 ```bash
-easycoder ecedit-server.ecs 8080
+easycoder code.ecs 8080
 ```
 
 You should see:
 
 ```
-ecedit file server running on port 8080
+EasyCoder dev server running on port 8080
 Serving files from /your/project/directory
 Press Ctrl+C to stop
 ```
@@ -345,25 +338,25 @@ Press Ctrl+C to stop
 Navigate to:
 
 ```
-http://localhost:8080/ecedit.html
+http://localhost:8080/edit.html
 ```
 
 Click **Open** to browse your project files and directories. Navigate into subdirectories, open files for editing. Changes are auto-saved every half second.
 
-### Working with Claude Code alongside ecedit
+### Working with Claude Code alongside the editor
 
 The recommended workflow is:
 
 1. **Claude Code** handles larger changes — creating new scripts, adding features, restructuring logic
-2. **ecedit** handles smaller edits — tweaking values, fixing typos, reading through the code
+2. **The editor** handles smaller edits — tweaking values, fixing typos, reading through the code
 
-Because both work on the same files on disk, they complement each other naturally. Claude Code saves a change, ecedit picks it up and reloads automatically.
+Because both work on the same files on disk, they complement each other naturally. Claude Code saves a change, the editor picks it up and reloads automatically.
 
 ---
 
 ## Setting Up a Client/Server Application
 
-For applications that need to read from or write to the server (rather than just using browser localStorage), you need a server that provides `/read/` and `/write/` routes. The `ecedit-server.ecs` already provides exactly this — it acts as both the editor's file server and as a general-purpose backend for your applications.
+For applications that need to read from or write to the server (rather than just using browser localStorage), you need a server that provides `/read/` and `/write/` routes. The `code.ecs` server already provides exactly this — it acts as both the editor's file server and as a general-purpose backend for your applications.
 
 ### Routes provided
 
@@ -435,7 +428,7 @@ Together, they represent a practical middle path: not the complexity of full-sta
 - [EasyCoder Codex](https://easycoder.github.io/codex.html) — interactive 20-part tutorial
 - [EasyCoder Primer](/aidev/agent-primer-js.md) — practical reference for AI agents and developers
 - [Claude Code](https://claude.ai/claude-code) — Anthropic's agentic CLI tool
-- [EC Editor](https://github.com/easycoder/easycoder.github.io/tree/master/ecedit) — local development setup
+- [Starter pack](https://easycoder.github.io/code.zip) — download, unzip, and start coding
 - [EasyCoder website](https://easycoder.github.io) — overview and documentation
 
 **Get in touch:**

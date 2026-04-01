@@ -1,16 +1,22 @@
-!   ecedit-server.ecs
-!   File server for the ecedit editor.
-!   Usage: easycoder ecedit-server.ecs <port>
+!   code.ecs
+!   EasyCoder development server.
+!   Usage: easycoder code.ecs [port]    (default: 8080)
 !
-!   Routes (paths are relative to the server's working directory):
+!   Serves two purposes:
+!     1. Hosts the EasyCoder editor at localhost:<port>/edit.html
+!     2. Serves project files at localhost:<port>/<project>.html
+!        (replaces the need for python3 -m http.server)
+!
+!   API routes (paths are relative to the server's working directory):
 !     GET  /list/<path>   →  returns JSON array of {name,type} entries in <path>
 !     GET  /list          →  returns entries in the root directory
 !     GET  /read/<file>   →  returns contents of <file>
 !     POST /write/<file>  →  writes request body to <file>; returns OK
 !     GET  /version       →  checks for updates from the repo; returns OK or updated
 !     GET  /restart       →  restarts the server process
+!     GET  /<file>        →  serves static files (HTML, JS, CSS, JSON, ECS)
 
-    script EceditServer
+    script CodeServer
 
     use server
 
@@ -26,27 +32,47 @@
     variable LocalVersion
     server Files
 
-    put `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/ecedit/` into RepoBase
+    put `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/code/` into RepoBase
 
     put cwd into BaseDir
     put arg 0 into Port
     if Port is empty
-    begin
-        print `Usage: easycoder ecedit-server.ecs <port>`
-        stop
-    end
+        put `8080` into Port
 
-    ! Ensure .version exists
-    if file BaseDir cat `/.version` does not exist
+    ! Ensure .code-version exists
+    if file BaseDir cat `/.code-version` does not exist
     begin
-        save `0` to BaseDir cat `/.version`
+        save `0` to BaseDir cat `/.code-version`
     end
 
     start Files on port Port
 
-    print `ecedit file server running on port ` cat Port
+    print `EasyCoder dev server running on port ` cat Port
     print `Serving files from ` cat BaseDir
     print `Press Ctrl+C to stop`
+
+    ! Check for updates at startup
+    get RemoteVersion from url RepoBase cat `code-version` or begin
+        print `Warning: could not check for updates`
+    end
+    if RemoteVersion is not empty
+    begin
+        replace ` ` with `` in RemoteVersion
+        replace newline with `` in RemoteVersion
+        load LocalVersion from BaseDir cat `/.code-version` or begin
+            put `0` into LocalVersion
+        end
+        replace ` ` with `` in LocalVersion
+        replace newline with `` in LocalVersion
+        if RemoteVersion is not LocalVersion
+        begin
+            print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
+            download RepoBase cat `edit.html` to BaseDir cat `/edit.html`
+            download RepoBase cat `code.ecs` to BaseDir cat `/code.ecs`
+            save RemoteVersion to BaseDir cat `/.code-version`
+            print `Update complete`
+        end
+    end
 
     on Files request
     begin
@@ -54,32 +80,25 @@
 
         if FullPath is `/version`
         begin
-            get RemoteVersion from url RepoBase cat `version` or begin
+            get RemoteVersion from url RepoBase cat `code-version` or begin
                 return `error` to Files with status 500
             end
             replace ` ` with `` in RemoteVersion
             replace newline with `` in RemoteVersion
-            load LocalVersion from BaseDir cat `/.version` or begin
+            load LocalVersion from BaseDir cat `/.code-version` or begin
                 put `0` into LocalVersion
             end
             replace ` ` with `` in LocalVersion
             replace newline with `` in LocalVersion
             if RemoteVersion is LocalVersion
-            begin
                 return `OK` to Files
-            end
-            ! New version available — download local files
-            print `Updating from version ` cat LocalVersion cat ` to ` cat RemoteVersion
-            download RepoBase cat `ecedit.html` to BaseDir cat `/ecedit.html`
-            download RepoBase cat `ecedit-server.ecs` to BaseDir cat `/ecedit-server.ecs`
-            save RemoteVersion to BaseDir cat `/.version`
-            print `Update complete`
-            return `updated` to Files
+            else
+                return `updated` to Files
         end
         else if FullPath is `/restart`
         begin
             print `Restart requested`
-            system background `sleep 2 && easycoder ecedit-server.ecs ` cat Port
+            system background `sleep 2 && easycoder code.ecs ` cat Port
             return `OK` to Files
             exit
         end

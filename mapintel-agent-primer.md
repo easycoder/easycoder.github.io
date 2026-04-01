@@ -306,7 +306,7 @@ Environment-dependent options:
 
 In this repo, a common option is:
 
-- `python3 -m http.server 5500`
+- `easycoder code.ecs 5500`
 
 Then open `http://localhost:5500/` in a browser.
 

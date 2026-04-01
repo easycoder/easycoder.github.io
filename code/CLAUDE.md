@@ -8,24 +8,32 @@
 
 ### Initialisation process
 
-1. **Ask the user for the project name.** This will be used as the script name and in filenames.
+1. **Check EasyCoder is installed.** The user should already have run `pip install -U easycoder` before reaching this point. Verify by running `easycoder --version`. If it is not installed, tell the user to run:
 
-2. **Ask whether this is a command-line project, a GUI project, or both.**
+   ```
+   pip install -U easycoder
+   ```
 
-3. **Create the project files** based on the answer:
+   If the `easycoder` command is not found after installing, the user may need to add their Python scripts directory to their PATH (pip will usually show a warning about this).
+
+2. **Ask the user for the project name.** This will be used as the script name and in filenames.
+
+3. **Ask whether this is a command-line project, a GUI project, or both.**
+
+4. **Create the project files** based on the answer:
 
    - **Command-line**: Create `<project>.ecs` from the CLI template below.
    - **GUI**: Create `<project>.html`, `<project>-main.ecs`, and `<project>.json` from the GUI templates below.
    - **Both**: Create all four files.
 
-4. **Create `.easycoder-init`** containing the project name and type (cli/gui/both) so this setup is not repeated.
+5. **Create `.easycoder-init`** containing the project name and type (cli/gui/both) so this setup is not repeated.
 
-5. **Explain to the user how to run their project:**
+6. **Explain to the user how to run their project:**
 
-   - **CLI**: First install EasyCoder with `pip install -U easycoder`, then run with `easycoder <project>.ecs`. If the `easycoder` command is not found after installing, the user may need to add their Python scripts directory to their PATH (pip will usually show a warning about this).
-   - **GUI**: Start a local server with `python3 -m http.server 8080` then open `http://localhost:8080/<project>.html` in a browser. The EasyCoder runtime is loaded from `https://easycoder.github.io/dist/easycoder.js`.
+   - **CLI**: Run with `easycoder <project>.ecs`.
+   - **GUI**: Start the dev server with `easycoder code.ecs 8080` (or any free port), then open `http://localhost:8080/<project>.html` in a browser. The EasyCoder runtime is loaded from `https://easycoder.github.io/dist/easycoder.js`.
 
-6. **Walk the user through how the files work together.** For GUI projects, explain:
+7. **Walk the user through how the files work together.** For GUI projects, explain:
 
    - The HTML file is just a launcher — it loads the EasyCoder runtime and runs a tiny bootstrap script that fetches the main `.ecs` file.
    - The `.ecs` file is the program logic. It creates a body element, fetches the `.json` layout, and uses `render` to turn the JSON into real page elements. It then `attach`es to those elements by their `@id` to interact with them.
@@ -34,14 +42,12 @@
 
    For CLI projects, explain that the `.ecs` file is a standalone script run from the terminal, and walk through what each line does.
 
-7. **Offer the companion editor.** Ask: "Would you like to install the EasyCoder editor? It gives you color-coded syntax highlighting for `.ecs` scripts in your browser." If the user says yes:
+8. **Explain the included editor.** The project directory includes `edit.html` and `code.ecs`, which provide a browser-based editor with syntax highlighting:
 
-   - Copy `ecedit-server.ecs` and `ecedit.html` from `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/ecedit/` into the project directory. (Use curl, wget, or any available method.)
-   - Explain how to use it:
-     1. Run `easycoder ecedit-server.ecs 8080` (or any free port) from the project directory. This starts a local file server.
-     2. Open `http://localhost:8080/ecedit.html` in a browser.
-     3. The editor lets you open, edit, and save `.ecs`, `.json`, `.html` and other project files with syntax highlighting. It fetches its UI from the EasyCoder repo automatically so only the two local files are needed.
-     4. The server also serves the project files, so you can test GUI projects at `http://localhost:8080/<project>.html` on the same port.
+   - The dev server (`easycoder code.ecs 8080`) is already running from step 6.
+   - Open `http://localhost:8080/edit.html` in a browser.
+   - The editor lets you open, edit, and save `.ecs`, `.json`, `.html` and other project files with colour-coded syntax highlighting. It fetches its UI from the EasyCoder repo automatically so only the two local files are needed.
+   - The same server also serves the project files, so you can test GUI projects at `http://localhost:8080/<project>.html` on the same port.
 
 ---
 
