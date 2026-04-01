@@ -2184,7 +2184,7 @@ class Core(Handler):
         token = self.getToken()
         value.setType(token)
 
-        if token in ['args', 'message', 'sender', 'uuid', 'weekday']:
+        if token in ['argc', 'args', 'message', 'sender', 'uuid', 'weekday']:
             return value
 
         if token in ('items', 'elements'):
@@ -2376,6 +2376,10 @@ class Core(Handler):
 
     #############################################################################
     # Value handlers
+
+    def v_argc(self, v):
+        argv = self.program.argv if hasattr(self.program, 'argv') and self.program.argv else []
+        return ECValue(type=int, content=len(argv))
 
     def v_args(self, v):
         return ECValue(type=str, content=json.dumps(self.program.argv))

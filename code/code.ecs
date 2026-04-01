@@ -35,9 +35,9 @@
     put `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/code/` into RepoBase
 
     put cwd into BaseDir
-    put arg 0 into Port
-    if Port is empty
-        put `8080` into Port
+    put `8080` into Port
+    if argc is greater than 0
+        put arg 0 into Port
 
     ! Ensure .code-version exists
     if file BaseDir cat `/.code-version` does not exist
