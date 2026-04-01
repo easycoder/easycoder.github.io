@@ -62,6 +62,47 @@ Version numbers are date-based (e.g. `250824` = 24 Aug 2025). The current versio
 - Language commands are defined in `Core.js` (general) and `Browser.js` (DOM/UI)
 - Each plugin follows the plugin contract defined in `/spec/easycoder-plugin-contract.md`
 
+## Error Handling
+
+EasyCoder supports two levels of error handling, available in both JS and Python implementations.
+
+### Per-command `or`
+
+Append `or` after a command to catch its failure. Follows with `begin ... end` or `go to Label`:
+
+```
+rest get Data from Url or begin
+  put the error message into Status
+end
+
+attach MyDiv to `missing-id` or go to Fallback
+open `data.txt` as DataFile for reading or go to NoFile
+```
+
+**Commands supporting `or`:** `attach`, `create`, `rest get`, `rest post`, `load`, `save`, `append`, `filter`, `sort`, `index`, `json` sub-commands (`set`, `sort`, `shuffle`, `format`, `delete`, `rename`, `add`, `replace`), `add`, `divide`, `multiply`, `open`, `read`, `write`, `pop`.
+
+### Block-scoped `try` / `or handle`
+
+Wraps multiple commands — catches errors from any command in the block:
+
+```
+try
+  divide Total by Count
+  put property `name` of Data into Name
+  rest get Items from Url
+or handle
+  put the error message into Status
+end
+```
+
+Blocks can be nested. On success, the handler is skipped. On error, execution jumps to `or handle`.
+
+### `the error` / `the error message`
+
+Returns the most recent error text. Available in both `or` handlers and `or handle` blocks. Both forms are equivalent.
+
+**Python additionally supports:** `the error code` (HTTP status) and `the error reason` (HTTP reason phrase).
+
 ## AI Development
 
 Use `/ecs-js` for JS dialect context and `/ecs-python` for Python dialect context before making substantive changes to either implementation. Use `/ecs-review` to check `.ecs` files for syntax correctness.

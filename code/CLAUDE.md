@@ -195,6 +195,27 @@ DoWork:
     return
 ```
 
+### Error handling
+
+```text
+! Per-command: catch a single command's failure
+rest get Data from `/api` or begin
+  put the error message into Status
+end
+
+open `data.txt` as F for reading or go to NoFile
+
+! Block-scoped: catch any error in the block
+try
+  divide Total by Count
+  put property `name` of Data into Name
+or handle
+  put the error message into Status
+end
+```
+
+`the error` and `the error message` return the most recent error text inside any handler.
+
 ### CLI-specific (Python)
 
 ```text
