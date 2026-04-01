@@ -35,8 +35,10 @@
     put `https://raw.githubusercontent.com/easycoder/easycoder.github.io/master/code/` into RepoBase
 
     put cwd into BaseDir
+    variable ArgCount
+    put argc into ArgCount
     put `8080` into Port
-    if argc is greater than 0
+    if ArgCount is greater than 0
         put arg 0 into Port
 
     ! Ensure .code-version exists
