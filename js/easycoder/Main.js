@@ -101,6 +101,11 @@ const EasyCoder = {
 
 	runtimeError: function (lino, message) {
 		this.lino = lino;
+		if (this.program && this.program.onError) {
+			this.program.errorMessage = message;
+			this.program.run(this.program.onError);
+			return;
+		}
 		this.reportError({
 			message: `Line ${(lino >= 0) ? lino : ``}: ${message}`
 		}, this.program);

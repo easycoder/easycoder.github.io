@@ -2356,6 +2356,81 @@ const EasyCoder_Core = {
 		}
 	},
 
+	Try: {
+
+		compile: compiler => {
+			const lino = compiler.getLino();
+			compiler.next();
+			// Add the try command (handlerPC will be fixed up later)
+			const tryPC = compiler.getPc();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `try`,
+				lino,
+				handlerPC: 0
+			});
+			// Compile the try body up to 'or'
+			compiler.compileFromHere([`or`]);
+			// Expect 'handle' after 'or'
+			if (!compiler.tokenIs(`handle`)) {
+				throw new Error(`Expected 'handle' after 'or' in try block`);
+			}
+			compiler.next();
+			// Add a goto to skip the handler on success
+			const skipPC = compiler.getPc();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `goto`,
+				lino,
+				goto: 0
+			});
+			// Fix up the try command's handlerPC
+			compiler.getCommandAt(tryPC).handlerPC = compiler.getPc();
+			// Compile the handler body up to 'end'
+			compiler.compileFromHere([`end`]);
+			// Add the endTry command
+			const endPC = compiler.getPc();
+			compiler.addCommand({
+				domain: `core`,
+				keyword: `endTry`,
+				lino
+			});
+			// Fix up the skip goto
+			compiler.getCommandAt(skipPC).goto = endPC;
+			return true;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			// Save current onError and set up the try handler
+			if (!program.onErrorStack) {
+				program.onErrorStack = [];
+			}
+			program.onErrorStack.push(program.onError);
+			program.onError = command.handlerPC;
+			return command.pc + 1;
+		}
+	},
+
+	EndTry: {
+
+		compile: compiler => {
+			// This is compiled inline by Try, not as a standalone keyword
+			return true;
+		},
+
+		run: program => {
+			const command = program[program.pc];
+			// Restore onError from the stack
+			if (program.onErrorStack && program.onErrorStack.length > 0) {
+				program.onError = program.onErrorStack.pop();
+			} else {
+				program.onError = 0;
+			}
+			return command.pc + 1;
+		}
+	},
+
 	Variable: {
 
 		compile: compiler => {
@@ -2563,6 +2638,10 @@ const EasyCoder_Core = {
 			return EasyCoder-Core.Test;
 		case `toggle`:
 			return EasyCoder_Core.Toggle;
+		case `try`:
+			return EasyCoder_Core.Try;
+		case `endTry`:
+			return EasyCoder_Core.EndTry;
 		case `variable`:
 			return EasyCoder_Core.Variable;
 		case `wait`:
@@ -11160,6 +11239,11 @@ const EasyCoder = {
 
 	runtimeError: function (lino, message) {
 		this.lino = lino;
+		if (this.program && this.program.onError) {
+			this.program.errorMessage = message;
+			this.program.run(this.program.onError);
+			return;
+		}
 		this.reportError({
 			message: `Line ${(lino >= 0) ? lino : ``}: ${message}`
 		}, this.program);

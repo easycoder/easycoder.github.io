@@ -59,6 +59,9 @@ class RuntimeError(BaseException):
 	def __init__(self, program, message):
 		if program == None:
 			sys.exit(f'Runtime Error: {message}')
+		elif program.onError:
+			program.errorMessage = message
+			program.run(program.onError)
 		else:
 			code = program.code[program.pc]
 			lino = code['lino']

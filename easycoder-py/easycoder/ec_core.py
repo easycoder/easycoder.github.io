@@ -2147,6 +2147,66 @@ class Core(Handler):
                 return command['or']
             RuntimeError(self.program, msg)
 
+    # Try/or handle block
+    # try ... or handle ... end
+    def k_try(self, command):
+        # Add the try command (handlerPC will be fixed up)
+        tryPC = self.getCodeSize()
+        command['handlerPC'] = 0
+        self.add(command)
+        # Compile the try body up to 'or'
+        self.nextToken()
+        while self.getToken() != 'or':
+            self.compileOne()
+            self.nextToken()
+        # Expect 'handle' after 'or'
+        if self.peek() != 'handle':
+            FatalError(self.compiler, 'Expected "handle" after "or" in try block')
+        self.nextToken()
+        self.nextToken()
+        # Add a gotoPC to skip the handler on success
+        skipPC = self.getCodeSize()
+        cmd = {}
+        cmd['lino'] = command['lino']
+        cmd['domain'] = 'core'
+        cmd['keyword'] = 'gotoPC'
+        cmd['goto'] = 0
+        cmd['debug'] = False
+        self.add(cmd)
+        # Fix up the try command's handlerPC
+        self.getCommandAt(tryPC)['handlerPC'] = self.getCodeSize()
+        # Compile the handler body up to 'end'
+        while self.getToken() != 'end':
+            self.compileOne()
+            self.nextToken()
+        # Add the endTry command
+        endPC = self.getCodeSize()
+        cmd = {}
+        cmd['lino'] = command['lino']
+        cmd['domain'] = 'core'
+        cmd['keyword'] = 'endTry'
+        cmd['debug'] = False
+        self.add(cmd)
+        # Fix up the skip goto
+        self.getCommandAt(skipPC)['goto'] = endPC
+        return True
+
+    def r_try(self, command):
+        # Save current onError and set up the try handler
+        if not hasattr(self.program, 'onErrorStack'):
+            self.program.onErrorStack = []
+        self.program.onErrorStack.append(self.program.onError)
+        self.program.onError = command['handlerPC']
+        return self.nextPC()
+
+    def r_endTry(self, command):
+        # Restore onError from the stack
+        if hasattr(self.program, 'onErrorStack') and len(self.program.onErrorStack) > 0:
+            self.program.onError = self.program.onErrorStack.pop()
+        else:
+            self.program.onError = 0
+        return self.nextPC()
+
     #############################################################################
     # Support functions
 
