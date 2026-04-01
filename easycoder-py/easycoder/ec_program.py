@@ -75,6 +75,7 @@ class Program:
 		self.pc = 0
 		self.symbols = {}
 		self.onError = 0
+		self.errorMessage = ''
 		self.debugStep = False
 		self.debugSkip = False
 		self.stack = []

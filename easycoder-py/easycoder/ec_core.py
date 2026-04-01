@@ -89,13 +89,15 @@ class Core(Handler):
                     record = self.getSymbolRecord()
                     self.checkObjectType(record, ECVariable)
                     command['target'] = record['name']
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
             else:
                 # Here the variable is the target
                 command['target'] = record['name']
                 if self.getObject(record).isMutable():
-                    self.add(command)
+                    orPC = self.getCodeSize()
+                    self.processOr(command, orPC)
                     return True
         else:
             # Here we have 2 values so 'giving' must come next
@@ -105,26 +107,30 @@ class Core(Handler):
                     record = self.getSymbolRecord()
                     self.checkObjectType(record, ECVariable)
                     command['target'] = record['name']
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
             # raise FatalError(self.compiler, 'Cannot add values: target variable expected')
         return False
 
     def r_add(self, command):
-        value1 = self.textify(command['value1'])
-        value2 = self.textify(command['value2']) if 'value2' in command else None
-        target = self.getVariable(command['target'])
-        # Check that the target variable is mutable. If not, it's not an arithmetic add
-        # If value2 exists, we are adding two values and storing the result in target
-        if value2 != None:
-            # add X to Y giving Z
-            targetValue = ECValue(type=int, content=int(value1) + int(value2))
-        else:
-            # add X to Y
-            targetValue = self.getSymbolValue(target)
-            targetValue.setContent(int(targetValue.getContent()) + int(value1))
-        self.putSymbolValue(target, targetValue)
-        return self.nextPC()
+        try:
+            value1 = self.textify(command['value1'])
+            value2 = self.textify(command['value2']) if 'value2' in command else None
+            target = self.getVariable(command['target'])
+            if value2 != None:
+                targetValue = ECValue(type=int, content=int(value1) + int(value2))
+            else:
+                targetValue = self.getSymbolValue(target)
+                targetValue.setContent(int(targetValue.getContent()) + int(value1))
+            self.putSymbolValue(target, targetValue)
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Arithmetic error in add: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # Append a value to a list or a queue
     # append {value} to {list/queue}
@@ -461,32 +467,37 @@ class Core(Handler):
                 self.checkObjectType(record, ECVariable)
                 command['target'] = record['name']
                 command['value1'] = value1
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
         else:
             # Here the first variable is the target
             if variable1 != None:
                 command['target'] = variable1
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
         return False
 
     def r_divide(self, command):
-        value1 = self.textify(command['value1']) if 'value1' in command else None
-        value2 = self.textify(command['value2'])
-        target = self.getVariable(command['target'])
-        # Check that the target variable can hold a value
-        self.checkObjectType(target, ECVariable)
-        # If value1 exists, we are adding two values and storing the result in target
-        if value1 != None:
-            # divide X by Y giving Z
-            targetValue = ECValue(type=int, content=int(value1) // int(value2))
-        else:
-            # divide X by Y
-            targetValue = self.getSymbolValue(target)
-            targetValue.setContent(int(targetValue.getContent()) // int(value2))
-        self.putSymbolValue(target, targetValue)
-        return self.nextPC()
+        try:
+            value1 = self.textify(command['value1']) if 'value1' in command else None
+            value2 = self.textify(command['value2'])
+            target = self.getVariable(command['target'])
+            self.checkObjectType(target, ECVariable)
+            if value1 != None:
+                targetValue = ECValue(type=int, content=int(value1) // int(value2))
+            else:
+                targetValue = self.getSymbolValue(target)
+                targetValue.setContent(int(targetValue.getContent()) // int(value2))
+            self.putSymbolValue(target, targetValue)
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Arithmetic error in divide: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # download [binary] {url} to {path}
     def k_download(self, command):
@@ -594,16 +605,18 @@ class Core(Handler):
             if response.status_code >= 400:
                 errorCode = response.status_code
                 errorReason = response.reason
+                self.program.errorMessage = f'Error code {errorCode}: {errorReason}'
                 if command['or'] != None:
                     return command['or']
                 else:
-                    RuntimeError(self.program, f'Error code {errorCode}: {errorReason}')
+                    RuntimeError(self.program, self.program.errorMessage)
         except Exception as e:
             errorReason = str(e)
+            self.program.errorMessage = f'Error: {errorReason}'
             if command['or'] != None:
                 return command['or']
             else:
-                RuntimeError(self.program, f'Error: {errorReason}')
+                RuntimeError(self.program, self.program.errorMessage)
         retval.setContent(response.text) # type: ignore
         self.program.putSymbolValue(target, retval)
         return self.nextPC()
@@ -757,15 +770,23 @@ class Core(Handler):
             if self.nextToken() == 'to':
                 # get the value
                 command['value'] = self.nextValue()
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
         return False
 
     def r_index(self, command):
-        value = self.textify(command['value'])
-        record = self.getVariable(command['target'])
-        self.getObject(record).setIndex(value)
-        return self.nextPC()
+        try:
+            value = self.textify(command['value'])
+            record = self.getVariable(command['target'])
+            self.getObject(record).setIndex(value)
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Index error: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # Input a value from the terminal
     # input {variable} [with {prompt}]
@@ -841,6 +862,7 @@ class Core(Handler):
                 with sftp.open(path, 'r') as remote_file: content = remote_file.read().decode()
             except:
                 errorReason = f'Unable to read from {path}'
+                self.program.errorMessage = errorReason
                 if command['or'] != None:
                     print(f'Exception "{errorReason}": Running the "or" clause')
                     return command['or']
@@ -855,6 +877,7 @@ class Core(Handler):
                 errorReason = f'Unable to read from {filename}'
 
         if errorReason:
+            self.program.errorMessage = errorReason
             if command['or'] != None:
                 print(f'Exception "{errorReason}": Running the "or" clause')
                 return command['or']
@@ -922,32 +945,37 @@ class Core(Handler):
                 self.checkObjectType(record, ECVariable)
                 command['target'] = record['name']
                 command['value1'] = value1
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
         else:
             # Here the first variable is the target
             if variable1 != None:
                 command['target'] = variable1
-                self.add(command)
+                orPC = self.getCodeSize()
+                self.processOr(command, orPC)
                 return True
         return False
 
     def r_multiply(self, command):
-        value1 = self.textify(command['value1']) if 'value1' in command else None
-        value2 = self.textify(command['value2'])
-        target = self.getVariable(command['target'])
-        # Check that the target variable can hold a value
-        self.checkObjectType(target, ECVariable)
-        # If value1 exists, we are adding two values and storing the result in target
-        if value1 != None:
-            # multiply X by Y giving Z
-            targetValue = ECValue(type=int, content=int(value1) * int(value2))
-        else:
-            # multiply X by Y
-            targetValue = self.getSymbolValue(target)
-            targetValue.setContent(int(targetValue.getContent()) * int(value2))
-        self.putSymbolValue(target, targetValue)
-        return self.nextPC()
+        try:
+            value1 = self.textify(command['value1']) if 'value1' in command else None
+            value2 = self.textify(command['value2'])
+            target = self.getVariable(command['target'])
+            self.checkObjectType(target, ECVariable)
+            if value1 != None:
+                targetValue = ECValue(type=int, content=int(value1) * int(value2))
+            else:
+                targetValue = self.getSymbolValue(target)
+                targetValue.setContent(int(targetValue.getContent()) * int(value2))
+            self.putSymbolValue(target, targetValue)
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Arithmetic error in multiply: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # Negate a variable
     def k_negate(self, command):
@@ -1029,7 +1057,8 @@ class Core(Handler):
                         command['mode'] = mode
                     else:
                         command['mode'] = 'r'
-                    self.add(command)
+                    orPC = self.getCodeSize()
+                    self.processOr(command, orPC)
                     return True
                 else:
                     FatalError(self.compiler, f'Variable "{record["name"]}" is not a file')
@@ -1041,10 +1070,17 @@ class Core(Handler):
         record = self.getVariable(command['target'])
         path = self.textify(command['path'])
         file_path = self.resolveLocalPath(path)
-        if command['mode'] == 'r' and os.path.exists(file_path) or command['mode'] != 'r':
+        try:
+            if command['mode'] == 'r' and not os.path.exists(file_path):
+                raise FileNotFoundError(f"File {path} does not exist")
             record['file'] = open(file_path, command['mode'])
             return self.nextPC()
-        RuntimeError(self.program, f"File {path} does not exist")
+        except Exception as e:
+            msg = str(e)
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # Dummy command to hit a debugger breakpoint
     def k_pass(self, command):
@@ -1067,16 +1103,24 @@ class Core(Handler):
                     record = self.getSymbolRecord()
                     self.checkObjectType(record, (ECStack, ECQueue))
                     command['from'] = record['name']
-                    self.add(command)
+                    orPC = self.getCodeSize()
+                    self.processOr(command, orPC)
                     return True
         return False
 
     def r_pop(self, command):
-        record = self.getVariable(command['target'])
-        stackRecord = self.getVariable(command['from'])
-        value = stackRecord['object'].pop()
-        self.putSymbolValue(record, value)
-        return self.nextPC()
+        try:
+            record = self.getVariable(command['target'])
+            stackRecord = self.getVariable(command['from'])
+            value = stackRecord['object'].pop()
+            self.putSymbolValue(record, value)
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Pop failed: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # Perform an HTTP POST
     # post {value} to {url} [giving {variable}] [or {command}]
@@ -1109,18 +1153,20 @@ class Core(Handler):
             if response.status_code >= 400:
                 errorCode = response.status_code
                 errorReason = response.reason
+                self.program.errorMessage = f'Error code {errorCode}: {errorReason}'
                 if command['or'] != None:
                     print(f'Error {errorCode} {errorReason}: Running the "or" clause')
                     return command['or']
                 else:
-                    RuntimeError(self.program, f'Error code {errorCode}: {errorReason}')
+                    RuntimeError(self.program, self.program.errorMessage)
         except Exception as e:
             errorReason = str(e)
+            self.program.errorMessage = f'Error: {errorReason}'
             if command['or'] != None:
                 print(f'Exception "{errorReason}": Running the "or" clause')
                 return command['or']
             else:
-                RuntimeError(self.program, f'Error: {errorReason}')
+                RuntimeError(self.program, self.program.errorMessage)
         if command['result'] != None:
             result = self.getVariable(command['result'])
             self.program.putSymbolValue(result, retval)
@@ -1223,25 +1269,33 @@ class Core(Handler):
                     self.checkObjectType(fileRecord['object'], ECFile)
                     command['target'] = record['name']
                     command['file'] = fileRecord['name']
-                    self.add(command)
+                    orPC = self.getCodeSize()
+                    self.processOr(command, orPC)
                     return True
             return False
         FatalError(self.compiler, f'Symbol "{self.getToken()}" has not been declared')
         return False
 
     def r_read(self, command):
-        record = self.getVariable(command['target'])
-        fileRecord = self.getVariable(command['file'])
-        line = command['line']
-        file = fileRecord['file']
-        if file.mode == 'r':
-            if line:
-                content = file.readline().split('\n')[0]
-            else:
-                content = file.readline().rstrip('\n')
-            value = ECValue(type=str, content=content)
-            self.putSymbolValue(record, value)
-        return self.nextPC()
+        try:
+            record = self.getVariable(command['target'])
+            fileRecord = self.getVariable(command['file'])
+            line = command['line']
+            file = fileRecord['file']
+            if file.mode == 'r':
+                if line:
+                    content = file.readline().split('\n')[0]
+                else:
+                    content = file.readline().rstrip('\n')
+                value = ECValue(type=str, content=content)
+                self.putSymbolValue(record, value)
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Read error: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     # Release the parent script
     def k_release(self, command):
@@ -1389,6 +1443,7 @@ class Core(Handler):
                 with sftp.open(path, 'w') as remote_file: remote_file.write(content)
             except:
                 errorReason = 'Unable to write to {path}'
+                self.program.errorMessage = errorReason
                 if command['or'] != None:
                     print(f'Exception "{errorReason}": Running the "or" clause')
                     return command['or']
@@ -1409,6 +1464,7 @@ class Core(Handler):
                 errorReason = f'Unable to write to {filename}: {str(e)}'
 
         if errorReason:
+            self.program.errorMessage = errorReason
             if command['or'] != None:
                 print(f'Exception "{errorReason}": Running the "or" clause')
                 return command['or']
@@ -2069,19 +2125,27 @@ class Core(Handler):
                 fileRecord = self.getSymbolRecord()
                 if fileRecord['keyword'] == 'file':
                     command['file'] = fileRecord['name']
-                    self.add(command)
+                    orPC = self.getCodeSize()
+                    self.processOr(command, orPC)
                     return True
         return False
 
     def r_write(self, command):
-        value = self.textify(command['value'])
-        fileRecord = self.getVariable(command['file'])
-        file = fileRecord['file']
-        if file.mode in ['w', 'w+', 'a', 'a+']:
-            file.write(f'{value}')
-            if command['line']:
-                file.write('\n')
-        return self.nextPC()
+        try:
+            value = self.textify(command['value'])
+            fileRecord = self.getVariable(command['file'])
+            file = fileRecord['file']
+            if file.mode in ['w', 'w+', 'a', 'a+']:
+                file.write(f'{value}')
+                if command['line']:
+                    file.write('\n')
+            return self.nextPC()
+        except Exception as e:
+            msg = f'Write error: {str(e)}'
+            self.program.errorMessage = msg
+            if command.get('or') != None:
+                return command['or']
+            RuntimeError(self.program, msg)
 
     #############################################################################
     # Support functions
@@ -2324,6 +2388,10 @@ class Core(Handler):
                 self.nextToken()
                 value.item = 'errorReason' # type: ignore
                 return value
+            elif token == 'message':
+                self.nextToken()
+                value.item = 'errorMessage' # type: ignore
+                return value
             elif token in ['in', 'of']:
                 self.nextToken()
                 if self.nextIsSymbol():
@@ -2332,7 +2400,9 @@ class Core(Handler):
                         value.item = 'sshError' # type: ignore
                         value.name = record['name'] # type: ignore
                         return value
-            return None
+            # Unqualified 'the error' returns errorMessage (same as JS)
+            value.item = 'errorMessage' # type: ignore
+            return value
 
         if token == 'type':
             if self.nextIs('of'):
@@ -2474,6 +2544,8 @@ class Core(Handler):
             value.setValue(type=int, content=errorCode)
         elif item == 'errorReason':
             value.setValue(type=str, content=errorReason)
+        elif item == 'errorMessage':
+            value.setValue(type=str, content=getattr(self.program, 'errorMessage', ''))
         elif item == 'sshError':
             record = self.getVariable(v.name)
             value.setValue(type=str, content=record['error'] if 'error' in record else '')

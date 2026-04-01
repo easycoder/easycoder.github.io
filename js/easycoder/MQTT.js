@@ -177,6 +177,7 @@ const EasyCoder_MQTT = {
                 if (!this.errorFired) {
                     this.errorFired = true;
                     this.lastError = error.message || String(error);
+                    this.program.errorMessage = this.lastError;
                     this.client.end(true);
                     this._queueProgramCallback(this.onErrorPC);
                 }

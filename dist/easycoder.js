@@ -163,13 +163,20 @@ const EasyCoder_Core = {
 					const symbolRecord = compiler.getSymbolRecord();
 					if (symbolRecord.isVHolder) {
 						compiler.next();
+						const pc = compiler.getPc();
 						compiler.addCommand({
 							domain: `core`,
 							keyword: `append`,
 							lino,
 							value,
-							select: symbolRecord.name
+							select: symbolRecord.name,
+							onError: 0
 						});
+						if (compiler.tokenIs(`or`)) {
+							compiler.next();
+							compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+							compiler.completeHandler();
+						}
 						return true;
 					}
 				}
@@ -194,6 +201,11 @@ const EasyCoder_Core = {
 				item.content = JSON.stringify(a);
 				return command.pc + 1;
 			} catch (err) {
+				if (command.onError) {
+					program.errorMessage = `JSON: Unable to parse value`;
+					program.run(command.onError);
+					return 0;
+				}
 				program.runtimeError(command.lino, `JSON: Unable to parse value`);
 				return false;
 			}
@@ -677,13 +689,20 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`with`)) {
 					const func = compiler.nextToken();
 					compiler.next();
+					const pc = compiler.getPc();
 					compiler.addCommand({
 						domain: `core`,
 						keyword: `filter`,
 						lino,
 						array: arrayRecord.name,
-						func
+						func,
+						onError: 0
 					});
+					if (compiler.tokenIs(`or`)) {
+						compiler.next();
+						compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+						compiler.completeHandler();
+					}
 					return true;
 				}
 			}
@@ -704,6 +723,11 @@ const EasyCoder_Core = {
 				});
 				variable.value[variable.index].content = JSON.stringify(result);
 			} catch (err) {
+				if (command.onError) {
+					program.errorMessage = `Can't parse this array`;
+					program.run(command.onError);
+					return 0;
+				}
 				program.runtimeError(command.lino, `Can't parse this array`);
 			}
 			return command.pc + 1;
@@ -913,13 +937,20 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`to`)) {
 					// get the value
 					const value = compiler.getNextValue();
+					const pc = compiler.getPc();
 					compiler.addCommand({
 						domain: `core`,
 						keyword: `index`,
 						lino,
 						symbol,
-						value
+						value,
+						onError: 0
 					});
+					if (compiler.tokenIs(`or`)) {
+						compiler.next();
+						compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+						compiler.completeHandler();
+					}
 					return true;
 				}
 			}
@@ -931,8 +962,13 @@ const EasyCoder_Core = {
 			const symbol = program.getSymbolRecord(command.symbol);
 			const index = program.getValue(command.value);
 			if (index >= symbol.elements) {
-				program.runtimeError(command.lino,
-					`Array index ${index} is out of range for '${symbol.name}'`);
+				const msg = `Array index ${index} is out of range for '${symbol.name}'`;
+				if (command.onError) {
+					program.errorMessage = msg;
+					program.run(command.onError);
+					return 0;
+				}
+				program.runtimeError(command.lino, msg);
 			}
 			symbol.index = index;
 			if (symbol.imported) {
@@ -2016,13 +2052,20 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`with`)) {
 					const func = compiler.nextToken();
 					compiler.next();
+					const pc = compiler.getPc();
 					compiler.addCommand({
 						domain: `core`,
 						keyword: `sort`,
 						lino,
 						array: arrayRecord.name,
-						func
+						func,
+						onError: 0
 					});
+					if (compiler.tokenIs(`or`)) {
+						compiler.next();
+						compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+						compiler.completeHandler();
+					}
 					return true;
 				}
 			}
@@ -2044,6 +2087,11 @@ const EasyCoder_Core = {
 				});
 				variable.value[variable.index].content = JSON.stringify(array);
 			} catch (err) {
+				if (command.onError) {
+					program.errorMessage = `Can't parse this array`;
+					program.run(command.onError);
+					return 0;
+				}
 				program.runtimeError(command.lino, `Can't parse this array`);
 			}
 			return command.pc + 1;
@@ -2934,10 +2982,19 @@ const EasyCoder_Core = {
 				break;
 			case `message`:
 			case `sender`:
-			case `error`:
 			case `millisecond`:
 			case `time`:
 				compiler.next();
+				return {
+					domain: `core`,
+					type
+				};
+			case `error`:
+				compiler.next();
+				// Accept both 'the error' and 'the error message'
+				if (compiler.tokenIs(`message`)) {
+					compiler.next();
+				}
 				return {
 					domain: `core`,
 					type
@@ -3991,6 +4048,7 @@ const EasyCoder_Browser = {
 				const elapsed = Math.round(EasyCoder_Browser.Attach.nowMs() - trace.startedAt);
 				EasyCoder_Browser.Attach.reportTiming(`[AttachTiming] FAILED id='${id}' symbol='${trace.symbol}' type='${trace.type}' attempts=${trace.lookupAttempts} elapsed=${elapsed}ms waitLimit=${trace.waitMs}ms`);
 				if (command.onError) {
+					program.errorMessage = `No such element: '${id}'`;
 					program.run(command.onError);
 				} else {
 					program.runtimeError(command.lino, `No such element: '${id}'`);
@@ -4334,13 +4392,20 @@ const EasyCoder_Browser = {
 						if (compiler.isSymbol()) {
 							const parentRecord = compiler.getSymbolRecord();
 							compiler.next();
+							const pc = compiler.getPc();
 							compiler.addCommand({
 								domain: `browser`,
 								keyword: `create`,
 								lino,
 								name: symbolRecord.name,
-								parent: parentRecord.name
+								parent: parentRecord.name,
+								onError: 0
 							});
+							if (compiler.tokenIs(`or`)) {
+								compiler.next();
+								compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+								compiler.completeHandler();
+							}
 							return true;
 						}
 					} else {
@@ -4387,7 +4452,13 @@ const EasyCoder_Browser = {
 					const p = command.imported ? EasyCoder.scripts[program.parent] : program;
 					const parentRecord = p.getSymbolRecord(command.parent);
 					if (!parentRecord.element[parentRecord.index]) {
-						program.runtimeError(command.pc, `Element ${parentRecord.name} does not exist.`);
+						const msg = `Element ${parentRecord.name} does not exist.`;
+						if (command.onError) {
+							program.errorMessage = msg;
+							program.run(command.onError);
+							return 0;
+						}
+						program.runtimeError(command.pc, msg);
 					}
 					parent = parentRecord.element[parentRecord.index];
 				}
@@ -8178,6 +8249,15 @@ const EasyCoder_JSON = {
 		return EasyCoder_JSON.normalizeComparable(left) === EasyCoder_JSON.normalizeComparable(right);
 	},
 
+	// Helper to add or-handling after a json command
+	addOrHandling: (compiler, pc) => {
+		if (compiler.tokenIs(`or`)) {
+			compiler.next();
+			compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+			compiler.completeHandler();
+		}
+	},
+
 	Json: {
 
 		compile: (compiler) => {
@@ -8215,6 +8295,7 @@ const EasyCoder_JSON = {
 									if (compiler.nextTokenIs(`as`)) {
 										display = compiler.getNextValue();
 									}
+									const pc = compiler.getPc();
 									compiler.addCommand({
 										domain: `json`,
 										keyword: `json`,
@@ -8222,8 +8303,10 @@ const EasyCoder_JSON = {
 										request: `setList`,
 										target: targetRecord.name,
 										source: sourceRecord.name,
-										display
+										display,
+										onError: 0
 									});
+									EasyCoder_JSON.addOrHandling(compiler, pc);
 									return true;
 								}
 							}
@@ -8239,13 +8322,16 @@ const EasyCoder_JSON = {
 					const targetRecord = compiler.getSymbolRecord();
 					if (targetRecord.keyword === `variable`) {
 						compiler.next();
+						const pc = compiler.getPc();
 						compiler.addCommand({
 							domain: `json`,
 							keyword: `json`,
 							lino,
 							request,
-							target: targetRecord.name
+							target: targetRecord.name,
+							onError: 0
 						});
+						EasyCoder_JSON.addOrHandling(compiler, pc);
 						return true;
 					}
 				}
@@ -8281,6 +8367,7 @@ const EasyCoder_JSON = {
 							const targetRecord = compiler.getSymbolRecord();
 							if (targetRecord.keyword === `variable`) {
 								compiler.next();
+								const pc = compiler.getPc();
 								compiler.addCommand({
 									domain: `json`,
 									keyword: `json`,
@@ -8288,8 +8375,10 @@ const EasyCoder_JSON = {
 									request,
 									what,
 									value,
-									target: targetRecord.name
+									target: targetRecord.name,
+									onError: 0
 								});
+								EasyCoder_JSON.addOrHandling(compiler, pc);
 								return true;
 							}
 						}
@@ -8305,6 +8394,7 @@ const EasyCoder_JSON = {
 							const targetRecord = compiler.getSymbolRecord();
 							if (targetRecord.keyword === `variable`) {
 								compiler.next();
+								const pc = compiler.getPc();
 								compiler.addCommand({
 									domain: `json`,
 									keyword: `json`,
@@ -8312,8 +8402,10 @@ const EasyCoder_JSON = {
 									request,
 									oldName,
 									newName,
-									target: targetRecord.name
+									target: targetRecord.name,
+									onError: 0
 								});
+								EasyCoder_JSON.addOrHandling(compiler, pc);
 								return true;
 							}
 						}
@@ -8327,14 +8419,17 @@ const EasyCoder_JSON = {
 						const targetRecord = compiler.getSymbolRecord();
 						if (targetRecord.keyword === `variable`) {
 							compiler.next();
+							const pc = compiler.getPc();
 							compiler.addCommand({
 								domain: `json`,
 								keyword: `json`,
 								lino,
 								request,
 								item,
-								target: targetRecord.name
+								target: targetRecord.name,
+								onError: 0
 							});
+							EasyCoder_JSON.addOrHandling(compiler, pc);
 							return true;
 						}
 					}
@@ -8374,6 +8469,7 @@ const EasyCoder_JSON = {
 							if (targetRecord.keyword === `variable`) {
 								if ([`by`, `with`].includes(compiler.nextToken())) {
 									const value = compiler.getNextValue();
+									const pc = compiler.getPc();
 									compiler.addCommand({
 										domain: `json`,
 										keyword: `json`,
@@ -8381,8 +8477,10 @@ const EasyCoder_JSON = {
 										request,
 										target: targetRecord.name,
 										index,
-										value
+										value,
+										onError: 0
 									});
+									EasyCoder_JSON.addOrHandling(compiler, pc);
 									return true;
 								}
 							}
@@ -8420,6 +8518,11 @@ const EasyCoder_JSON = {
 				try {
 					itemArray = JSON.parse(sourceData);
 				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `Can't parse JSON`;
+						program.run(command.onError);
+						return 0;
+					}
 					program.runtimeError(command.lino, `Can't parse JSON`);
 					return 0;
 				}
@@ -8443,35 +8546,65 @@ const EasyCoder_JSON = {
 				break;
 			case `sort`:
 				targetRecord = program.getSymbolRecord(command.target);
-				const list = program.getValue(targetRecord.value[targetRecord.index]);
-				content = list ? JSON.stringify(JSON.parse(list).sort()) : null;
-				targetRecord.value[targetRecord.index] = {
-					type: `constant`,
-					numeric: false,
-					content
-				};
+				try {
+					const list = program.getValue(targetRecord.value[targetRecord.index]);
+					content = list ? JSON.stringify(JSON.parse(list).sort()) : null;
+					targetRecord.value[targetRecord.index] = {
+						type: `constant`,
+						numeric: false,
+						content
+					};
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `Can't parse JSON for sort`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `Can't parse JSON for sort`);
+					return 0;
+				}
 				break;
 			case `shuffle`:
 				targetRecord = program.getSymbolRecord(command.target);
-				array = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
-				for (let i = array.length - 1; i > 0; i--) {
-					const j = Math.floor(Math.random() * (i + 1));
-					[array[i], array[j]] = [array[j], array[i]];
+				try {
+					array = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
+					for (let i = array.length - 1; i > 0; i--) {
+						const j = Math.floor(Math.random() * (i + 1));
+						[array[i], array[j]] = [array[j], array[i]];
+					}
+					targetRecord.value[targetRecord.index] = {
+						type: `constant`,
+						numeric: false,
+						content: JSON.stringify(array)
+					};
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `Can't parse JSON for shuffle`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `Can't parse JSON for shuffle`);
+					return 0;
 				}
-				targetRecord.value[targetRecord.index] = {
-					type: `constant`,
-					numeric: false,
-					content: JSON.stringify(array)
-				};
 				break;
 			case `format`:
 				targetRecord = program.getSymbolRecord(command.target);
-				const val = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
-				targetRecord.value[targetRecord.index] = {
-					type: `constant`,
-					numeric: false,
-					content: JSON.stringify(val, null, 2)
-				};
+				try {
+					const val = JSON.parse(program.getValue(targetRecord.value[targetRecord.index]));
+					targetRecord.value[targetRecord.index] = {
+						type: `constant`,
+						numeric: false,
+						content: JSON.stringify(val, null, 2)
+					};
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `Can't parse JSON for format`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `Can't parse JSON for format`);
+					return 0;
+				}
 				break;
 			case `parse`:
 				var source = program.getValue(command.source);
@@ -8510,44 +8643,74 @@ const EasyCoder_JSON = {
 				};
 				break;
 			case `delete`:
-				switch (command.what) {
-				case `property`:
-					const name = program.getValue(command.value);
-					targetRecord = program.getSymbolRecord(command.target);
-					record = JSON.parse(targetRecord.value[targetRecord.index].content);
-					delete record[name];
-					targetRecord.value[targetRecord.index].content = JSON.stringify(record);
-					break;
-				case `element`:
-					const element = program.getValue(command.value);
-					targetRecord = program.getSymbolRecord(command.target);
-					record = JSON.parse(targetRecord.value[targetRecord.index].content);
-					record.splice(element, 1);
-					targetRecord.value[targetRecord.index].content = JSON.stringify(record);
-					break;
+				try {
+					switch (command.what) {
+					case `property`:
+						const name = program.getValue(command.value);
+						targetRecord = program.getSymbolRecord(command.target);
+						record = JSON.parse(targetRecord.value[targetRecord.index].content);
+						delete record[name];
+						targetRecord.value[targetRecord.index].content = JSON.stringify(record);
+						break;
+					case `element`:
+						const element = program.getValue(command.value);
+						targetRecord = program.getSymbolRecord(command.target);
+						record = JSON.parse(targetRecord.value[targetRecord.index].content);
+						record.splice(element, 1);
+						targetRecord.value[targetRecord.index].content = JSON.stringify(record);
+						break;
+					}
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `JSON delete failed: ${err.message}`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `JSON delete failed: ${err.message}`);
+					return 0;
 				}
 				break;
 			case `rename`:
-				const oldName = program.getValue(command.oldName);
-				const newName = program.getValue(command.newName);
-				targetRecord = program.getSymbolRecord(command.target);
-				record = JSON.parse(targetRecord.value[targetRecord.index].content);
-				content = record[oldName];
-				delete record[oldName];
-				record[newName] = content;
-				targetRecord.value[targetRecord.index].content = JSON.stringify(record);
+				try {
+					const oldName = program.getValue(command.oldName);
+					const newName = program.getValue(command.newName);
+					targetRecord = program.getSymbolRecord(command.target);
+					record = JSON.parse(targetRecord.value[targetRecord.index].content);
+					content = record[oldName];
+					delete record[oldName];
+					record[newName] = content;
+					targetRecord.value[targetRecord.index].content = JSON.stringify(record);
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `JSON rename failed: ${err.message}`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `JSON rename failed: ${err.message}`);
+					return 0;
+				}
 				break;
 			case `add`:
-				content = program.getValue(command.item);
-				targetRecord = program.getSymbolRecord(command.target);
-				const existing = targetRecord.value[targetRecord.index].content;
-				record = existing ? JSON.parse(existing) : [];
-				record.push(program.isJsonString(content) ? JSON.parse(content) :content);
-				targetRecord.value[targetRecord.index] = {
-					type: `constant`,
-					numeric: false,
-					content: JSON.stringify(record)
-				};
+				try {
+					content = program.getValue(command.item);
+					targetRecord = program.getSymbolRecord(command.target);
+					const existing = targetRecord.value[targetRecord.index].content;
+					record = existing ? JSON.parse(existing) : [];
+					record.push(program.isJsonString(content) ? JSON.parse(content) :content);
+					targetRecord.value[targetRecord.index] = {
+						type: `constant`,
+						numeric: false,
+						content: JSON.stringify(record)
+					};
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `JSON add failed: ${err.message}`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `JSON add failed: ${err.message}`);
+					return 0;
+				}
 				break;
 			case `split`:
 				content = program.getValue(command.item);
@@ -8567,16 +8730,26 @@ const EasyCoder_JSON = {
 				};
 				break;
 			case `replace`:
-				targetRecord = program.getSymbolRecord(command.target);
-				const index = program.getValue(command.index);
-				const value = program.getValue(command.value);
-				const current = targetRecord.value[targetRecord.index].content;
-				record = current ? JSON.parse(current) : [];
-				if (index > record.length - 1) {
-					program.runtimeError(command.lino, `Index out of range`);
+				try {
+					targetRecord = program.getSymbolRecord(command.target);
+					const index = program.getValue(command.index);
+					const value = program.getValue(command.value);
+					const current = targetRecord.value[targetRecord.index].content;
+					record = current ? JSON.parse(current) : [];
+					if (index > record.length - 1) {
+						throw new Error(`Index out of range`);
+					}
+					record[index] = value;
+					targetRecord.value[targetRecord.index].content = JSON.stringify(record);
+				} catch (err) {
+					if (command.onError) {
+						program.errorMessage = `JSON replace failed: ${err.message}`;
+						program.run(command.onError);
+						return 0;
+					}
+					program.runtimeError(command.lino, `JSON replace failed: ${err.message}`);
+					return 0;
 				}
-				record[index] = value;
-				targetRecord.value[targetRecord.index].content = JSON.stringify(record);
 				break;
 			}
 			return command.pc + 1;
@@ -8899,6 +9072,7 @@ const EasyCoder_MQTT = {
                 if (!this.errorFired) {
                     this.errorFired = true;
                     this.lastError = error.message || String(error);
+                    this.program.errorMessage = this.lastError;
                     this.client.end(true);
                     this._queueProgramCallback(this.onErrorPC);
                 }
@@ -11206,10 +11380,12 @@ const EasyCoder = {
 		} catch (err) {
 			EasyCoder.reportError(err, program, program.source);
 			if (program.onError) {
+				program.errorMessage = err.message || String(err);
 				program.run(program.onError);
 			} else {
 				let parent = EasyCoder.scripts[program.parent];
 				if (parent && parent.onError) {
+					parent.errorMessage = err.message || String(err);
 					parent.run(parent.onError);
 				}
 			}
@@ -11354,6 +11530,7 @@ const EasyCoder = {
 				let parentRecord = EasyCoder.scripts[parent];
 				this.reportError(err, parentRecord, source);
 				if (parentRecord && parentRecord.onError) {
+					parentRecord.errorMessage = err.message || String(err);
 					parentRecord.run(parentRecord.onError);
 				}
 				// Remove this script

@@ -321,10 +321,12 @@ const EasyCoder = {
 		} catch (err) {
 			EasyCoder.reportError(err, program, program.source);
 			if (program.onError) {
+				program.errorMessage = err.message || String(err);
 				program.run(program.onError);
 			} else {
 				let parent = EasyCoder.scripts[program.parent];
 				if (parent && parent.onError) {
+					parent.errorMessage = err.message || String(err);
 					parent.run(parent.onError);
 				}
 			}
@@ -469,6 +471,7 @@ const EasyCoder = {
 				let parentRecord = EasyCoder.scripts[parent];
 				this.reportError(err, parentRecord, source);
 				if (parentRecord && parentRecord.onError) {
+					parentRecord.errorMessage = err.message || String(err);
 					parentRecord.run(parentRecord.onError);
 				}
 				// Remove this script

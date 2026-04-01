@@ -204,6 +204,7 @@ const EasyCoder_Browser = {
 				const elapsed = Math.round(EasyCoder_Browser.Attach.nowMs() - trace.startedAt);
 				EasyCoder_Browser.Attach.reportTiming(`[AttachTiming] FAILED id='${id}' symbol='${trace.symbol}' type='${trace.type}' attempts=${trace.lookupAttempts} elapsed=${elapsed}ms waitLimit=${trace.waitMs}ms`);
 				if (command.onError) {
+					program.errorMessage = `No such element: '${id}'`;
 					program.run(command.onError);
 				} else {
 					program.runtimeError(command.lino, `No such element: '${id}'`);
@@ -547,13 +548,20 @@ const EasyCoder_Browser = {
 						if (compiler.isSymbol()) {
 							const parentRecord = compiler.getSymbolRecord();
 							compiler.next();
+							const pc = compiler.getPc();
 							compiler.addCommand({
 								domain: `browser`,
 								keyword: `create`,
 								lino,
 								name: symbolRecord.name,
-								parent: parentRecord.name
+								parent: parentRecord.name,
+								onError: 0
 							});
+							if (compiler.tokenIs(`or`)) {
+								compiler.next();
+								compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+								compiler.completeHandler();
+							}
 							return true;
 						}
 					} else {
@@ -600,7 +608,13 @@ const EasyCoder_Browser = {
 					const p = command.imported ? EasyCoder.scripts[program.parent] : program;
 					const parentRecord = p.getSymbolRecord(command.parent);
 					if (!parentRecord.element[parentRecord.index]) {
-						program.runtimeError(command.pc, `Element ${parentRecord.name} does not exist.`);
+						const msg = `Element ${parentRecord.name} does not exist.`;
+						if (command.onError) {
+							program.errorMessage = msg;
+							program.run(command.onError);
+							return 0;
+						}
+						program.runtimeError(command.pc, msg);
 					}
 					parent = parentRecord.element[parentRecord.index];
 				}

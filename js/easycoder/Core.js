@@ -163,13 +163,20 @@ const EasyCoder_Core = {
 					const symbolRecord = compiler.getSymbolRecord();
 					if (symbolRecord.isVHolder) {
 						compiler.next();
+						const pc = compiler.getPc();
 						compiler.addCommand({
 							domain: `core`,
 							keyword: `append`,
 							lino,
 							value,
-							select: symbolRecord.name
+							select: symbolRecord.name,
+							onError: 0
 						});
+						if (compiler.tokenIs(`or`)) {
+							compiler.next();
+							compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+							compiler.completeHandler();
+						}
 						return true;
 					}
 				}
@@ -194,6 +201,11 @@ const EasyCoder_Core = {
 				item.content = JSON.stringify(a);
 				return command.pc + 1;
 			} catch (err) {
+				if (command.onError) {
+					program.errorMessage = `JSON: Unable to parse value`;
+					program.run(command.onError);
+					return 0;
+				}
 				program.runtimeError(command.lino, `JSON: Unable to parse value`);
 				return false;
 			}
@@ -677,13 +689,20 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`with`)) {
 					const func = compiler.nextToken();
 					compiler.next();
+					const pc = compiler.getPc();
 					compiler.addCommand({
 						domain: `core`,
 						keyword: `filter`,
 						lino,
 						array: arrayRecord.name,
-						func
+						func,
+						onError: 0
 					});
+					if (compiler.tokenIs(`or`)) {
+						compiler.next();
+						compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+						compiler.completeHandler();
+					}
 					return true;
 				}
 			}
@@ -704,6 +723,11 @@ const EasyCoder_Core = {
 				});
 				variable.value[variable.index].content = JSON.stringify(result);
 			} catch (err) {
+				if (command.onError) {
+					program.errorMessage = `Can't parse this array`;
+					program.run(command.onError);
+					return 0;
+				}
 				program.runtimeError(command.lino, `Can't parse this array`);
 			}
 			return command.pc + 1;
@@ -913,13 +937,20 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`to`)) {
 					// get the value
 					const value = compiler.getNextValue();
+					const pc = compiler.getPc();
 					compiler.addCommand({
 						domain: `core`,
 						keyword: `index`,
 						lino,
 						symbol,
-						value
+						value,
+						onError: 0
 					});
+					if (compiler.tokenIs(`or`)) {
+						compiler.next();
+						compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+						compiler.completeHandler();
+					}
 					return true;
 				}
 			}
@@ -931,8 +962,13 @@ const EasyCoder_Core = {
 			const symbol = program.getSymbolRecord(command.symbol);
 			const index = program.getValue(command.value);
 			if (index >= symbol.elements) {
-				program.runtimeError(command.lino,
-					`Array index ${index} is out of range for '${symbol.name}'`);
+				const msg = `Array index ${index} is out of range for '${symbol.name}'`;
+				if (command.onError) {
+					program.errorMessage = msg;
+					program.run(command.onError);
+					return 0;
+				}
+				program.runtimeError(command.lino, msg);
 			}
 			symbol.index = index;
 			if (symbol.imported) {
@@ -2016,13 +2052,20 @@ const EasyCoder_Core = {
 				if (compiler.nextTokenIs(`with`)) {
 					const func = compiler.nextToken();
 					compiler.next();
+					const pc = compiler.getPc();
 					compiler.addCommand({
 						domain: `core`,
 						keyword: `sort`,
 						lino,
 						array: arrayRecord.name,
-						func
+						func,
+						onError: 0
 					});
+					if (compiler.tokenIs(`or`)) {
+						compiler.next();
+						compiler.getCommandAt(pc).onError = compiler.getPc() + 1;
+						compiler.completeHandler();
+					}
 					return true;
 				}
 			}
@@ -2044,6 +2087,11 @@ const EasyCoder_Core = {
 				});
 				variable.value[variable.index].content = JSON.stringify(array);
 			} catch (err) {
+				if (command.onError) {
+					program.errorMessage = `Can't parse this array`;
+					program.run(command.onError);
+					return 0;
+				}
 				program.runtimeError(command.lino, `Can't parse this array`);
 			}
 			return command.pc + 1;
@@ -2934,10 +2982,19 @@ const EasyCoder_Core = {
 				break;
 			case `message`:
 			case `sender`:
-			case `error`:
 			case `millisecond`:
 			case `time`:
 				compiler.next();
+				return {
+					domain: `core`,
+					type
+				};
+			case `error`:
+				compiler.next();
+				// Accept both 'the error' and 'the error message'
+				if (compiler.tokenIs(`message`)) {
+					compiler.next();
+				}
 				return {
 					domain: `core`,
 					type
