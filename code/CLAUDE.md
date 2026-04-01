@@ -240,6 +240,14 @@ on click Btn gosub HandleClick
 rest get Var from `/api/data`
 ```
 
+## Development philosophy
+
+EasyCoder uses an **AI-writes, human-reviews** workflow. The AI generates `.ecs` code; the human checks that it reads sensibly and questions anything unclear. This means:
+
+- **Use the full language.** Don't avoid a command because it might be unfamiliar to a beginner — the human only needs to read it, not write it from memory. Favour the most expressive and readable form available.
+- **Readability over brevity.** EasyCoder code should read as close to plain English as possible. If a longer form is clearer, prefer it.
+- **Flag friction.** If you find yourself working around a missing language construct — repeating boilerplate, doing manual string surgery, etc. — note it. These are candidates for new commands.
+
 ## Learn as you go
 
 Whenever you spend significant effort researching something — scanning EasyCoder scripts, reading source files, figuring out how a command works, discovering a pattern or convention — **capture what you learned** so it doesn't need to be rediscovered next time. Do this proactively, not only when asked.

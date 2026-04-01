@@ -103,6 +103,16 @@ Returns the most recent error text. Available in both `or` handlers and `or hand
 
 **Python additionally supports:** `the error code` (HTTP status) and `the error reason` (HTTP reason phrase).
 
+## Development Philosophy
+
+EasyCoder's primary development workflow is **AI-assisted**: the AI writes the `.ecs` code and the human reviews it. This has an important consequence for language design:
+
+- **Readability matters more than learnability.** A human reviewing AI-generated code needs to understand what each line does, but does not need to memorise the syntax well enough to write it from scratch.
+- **A richer syntax is acceptable.** Previously, new commands were added sparingly to avoid overwhelming beginners with documentation. With AI doing the writing, the language can offer more expressive constructs — the human only needs to recognise them, not recall them.
+- **When in doubt, favour clarity.** If a new construct reads naturally as English and reduces boilerplate, it is worth adding even if it increases the total command count. The cost of a larger language is low when the AI handles composition.
+
+Pending language enhancements are tracked in `/TODO.md`.
+
 ## AI Development
 
 Use `/ecs-js` for JS dialect context and `/ecs-python` for Python dialect context before making substantive changes to either implementation. Use `/ecs-review` to check `.ecs` files for syntax correctness.
