@@ -2253,6 +2253,8 @@ class Core(Handler):
             return value
 
         if token in ['stringify', 'prettify', 'json', 'lowercase', 'uppercase', 'hash', 'random', float, 'integer', 'encode', 'decode']:
+            if self.peek() == 'of':
+                self.nextToken()
             value.setContent(self.nextValue())
             return value
 
