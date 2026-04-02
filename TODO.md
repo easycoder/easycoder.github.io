@@ -4,27 +4,24 @@ Items identified during real project work. Each should be implemented in both JS
 
 ## High priority
 
-### 1. String split by delimiter
-Repeatedly needed for parsing delimited messages (e.g. `topic|subject|author|body`).
-
-**Proposed syntax:**
+### 1. ~~String split by delimiter~~ ✓ Done
+Implemented in both JS and Python. The `split` command now accepts `by` in addition to `on`:
 ```
 split MessageText by `|` into Parts
 put element 0 of Parts into TopicName
 ```
-Or a targeted single-field form:
+New value expression for single-field extraction:
 ```
 put field 0 of MessageText delimited by `|` into TopicName
 ```
 
-### 2. Append to JSON array in file
-The pattern of loading a JSON file, parsing, appending, re-serializing, and saving is fragile and repetitive.
+### 2. ~~Append to JSON array in file~~ ✓ Done (Python only)
+Implemented in Python. Creates `[]` if the file doesn't exist. Supports `or` error handling.
 
-**Proposed syntax:**
 ```
 append `{"name":"test"}` to json file `data/topics.json`
 ```
-Should create `[]` if the file doesn't exist and handle commas correctly.
+JS not applicable — browser file writes use `rest post` to a server; the existing in-memory `append` command covers the JS use case.
 
 ## Medium priority
 

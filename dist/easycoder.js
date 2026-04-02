@@ -2112,7 +2112,7 @@ const EasyCoder_Core = {
 				numeric: false,
 				content: `\n`
 			};
-			if (compiler.tokenIs(`on`)) {
+			if (compiler.tokenIs(`on`) || compiler.tokenIs(`by`)) {
 				on = compiler.getNextValue();
 			}
 			if ([`giving`, `into`].includes(compiler.getToken())) {
@@ -2831,6 +2831,25 @@ const EasyCoder_Core = {
 					value
 				};
 			}
+			if (token === `field`) {
+				const index = compiler.getNextValue();
+				if (compiler.tokenIs(`of`)) {
+					const value = compiler.getNextValue();
+					if (compiler.tokenIs(`delimited`)) {
+						if (compiler.nextTokenIs(`by`)) {
+							const delimiter = compiler.getNextValue();
+							return {
+								domain: `core`,
+								type: `field`,
+								index,
+								value,
+								delimiter
+							};
+						}
+					}
+				}
+				return null;
+			}
 			if (token === `element`) {
 				const element = compiler.getNextValue();
 				if (compiler.tokenIs(`of`)) {
@@ -3414,6 +3433,16 @@ const EasyCoder_Core = {
 					type: `constant`,
 					numeric: true,
 					content: hash
+				};
+			case `field`:
+				const fieldIndex = parseInt(program.getValue(value.index));
+				const fieldStr = program.getValue(value.value);
+				const delimiter = program.getValue(value.delimiter);
+				const fields = fieldStr.split(delimiter);
+				return {
+					type: `constant`,
+					numeric: false,
+					content: (fieldIndex >= 0 && fieldIndex < fields.length) ? fields[fieldIndex] : ``
 				};
 			case `element`:
 				const element = program.getValue(value.element);

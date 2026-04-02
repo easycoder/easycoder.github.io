@@ -137,6 +137,16 @@ class Core(Handler):
     def k_append(self, command):
         command['value'] = self.nextValue()
         if self.nextIs('to'):
+            if self.peek() == 'json':
+                self.nextToken()
+                if self.nextIs('file'):
+                    command['file'] = self.nextValue()
+                    command['jsonFile'] = True
+                    command['or'] = None
+                    save = self.getCodeSize()
+                    self.processOr(command, save)
+                    return True
+                return False
             if self.nextIsSymbol():
                 record = self.getSymbolRecord()
                 self.program.checkObjectType(self.getObject(record), (ECList, ECQueue))
@@ -146,6 +156,35 @@ class Core(Handler):
         return False
 
     def r_append(self, command):
+        if command.get('jsonFile'):
+            value = self.textify(command['value'])
+            filename = self.textify(command['file'])
+            path = self.resolveLocalPath(filename)
+            try:
+                if isinstance(value, str) and value.startswith(('{', '[')):
+                    value = json.loads(value)
+            except:
+                pass
+            try:
+                if os.path.exists(path):
+                    with open(path, 'r') as f:
+                        array = json.loads(f.read())
+                else:
+                    array = []
+                if not isinstance(array, list):
+                    raise ValueError('File does not contain a JSON array')
+                array.append(value)
+                with open(path, 'w') as f:
+                    f.write(json.dumps(array, indent=2))
+            except Exception as e:
+                errorReason = f'Unable to append to JSON file {filename}: {str(e)}'
+                self.program.errorMessage = errorReason
+                if command['or'] != None:
+                    print(f'Exception "{errorReason}": Running the "or" clause')
+                    return command['or']
+                else:
+                    RuntimeError(self.program, f'Error: {errorReason}')
+            return self.nextPC()
         value = self.textify(command['value'])
         target = self.getObject(self.getVariable(command['target']))
         target.append(value)
@@ -1796,7 +1835,7 @@ class Core(Handler):
                 command['target'] = record['name']
                 value = ECValue(type=str, content='\n')
                 command['on'] = value
-                if self.peek() == 'on':
+                if self.peek() in ['on', 'by']:
                     self.nextToken()
                     if self.peek() == 'tab':
                         value.setContent('\t')
@@ -2376,6 +2415,18 @@ class Core(Handler):
                 return value
             return None
 
+        if token == 'field':
+            value.setType('field')
+            value.index = self.nextValue() # type: ignore
+            if self.nextToken() == 'of':
+                value.setContent(self.nextValue())
+                if self.peek() == 'delimited':
+                    self.nextToken()
+                    self.skip('by')
+                    value.delimiter = self.nextValue() # type: ignore
+                    return value
+            return None
+
         if token in ['left', 'right']:
             value.count = self.nextValue() # type: ignore
             if self.nextToken() == 'of':
@@ -2651,6 +2702,15 @@ class Core(Handler):
             RuntimeWarning(self.program, f'Value cannot be parsed as floating-point')
             value.setContent(0.0)
         return value
+
+    def v_field(self, v):
+        index = int(self.textify(v.index))
+        content = self.textify(v.getContent())
+        delimiter = self.textify(v.delimiter)
+        fields = content.split(delimiter)
+        if index >= 0 and index < len(fields):
+            return ECValue(type=str, content=fields[index])
+        return ECValue(type=str, content='')
 
     def v_from(self, v):
         content = self.textify(v.getContent())
