@@ -29,7 +29,7 @@ class ECServer(ECObject):
         @self.app.route('/', method=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'])
         @self.app.route('/<path:path>', method=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'])
         def handle(path=''):
-            print(f'Request: {bottle_request.method} /{path}')
+            # print(f'Request: {bottle_request.method} /{path}')
             if bottle_request.method == 'GET' and any(path.lower().endswith(ext) for ext in binary_exts):
                 print(f'Static file request: {path} from {os.getcwd()}')
                 return static_file(path, root=os.getcwd())

@@ -125,10 +125,21 @@ class MQTTClient():
                             msg_obj['message'] = json.loads(msg_obj['message']) # type: ignore
                         except:
                             pass
+
+                        # Check if this is a confirmation ack we're waiting for
+                        if isinstance(msg_obj, dict) and msg_obj.get('action') == 'confirm':
+                            ack_id = msg_obj.get('_confirmId')
+                            if ack_id and hasattr(self, 'pending_confirms'):
+                                with self.confirmation_lock:
+                                    event = self.pending_confirms.get(ack_id)
+                                if event:
+                                    event.set()
+                                    return
+
                         with self.message_lock:
                             self.message_queue.append(msg_obj)
 
-                        # If the sender requested confirmation, send one back immediately
+                        # If the sender requested confirmation, send ack and deduplicate
                         try:
                             if isinstance(msg_obj, dict):
                                 confirm_id = msg_obj.get('_confirmId')
@@ -141,9 +152,20 @@ class MQTTClient():
                                         except:
                                             pass
                                     if sender_name:
+                                        # Send ack back to sender
                                         ack = json.dumps({'action': 'confirm', '_confirmId': confirm_id})
                                         ack_bytes = f"!last!1 {ack}".encode('utf-8')
                                         self.client.publish(sender_name, ack_bytes, qos=1)
+                                    # Deduplicate: skip if we've already seen this confirm_id
+                                    if not hasattr(self, '_seen_confirms'):
+                                        self._seen_confirms = set()
+                                    if confirm_id in self._seen_confirms:
+                                        # print(f"Duplicate message skipped: {confirm_id}")
+                                        return
+                                    self._seen_confirms.add(confirm_id)
+                                    # Keep the set bounded
+                                    if len(self._seen_confirms) > 1000:
+                                        self._seen_confirms = set(list(self._seen_confirms)[-500:])
                         except Exception as e:
                             print(f"Error sending confirmation: {e}")
 
@@ -420,7 +442,7 @@ class MQTT(Handler):
                 command['to'] = record['name']
                 while True:
                     token = self.peek()
-                    if token in ('sender', 'action', 'message', 'qos'):
+                    if token in ('sender', 'action', 'message', 'qos', 'confirm'):
                         self.nextToken()
                         if token == 'sender':
                             if self.nextIsSymbol():
@@ -433,6 +455,8 @@ class MQTT(Handler):
                             command['qos'] = self.nextValue()
                         elif token == 'message':
                             command['message'] = self.nextValue()
+                        elif token == 'confirm':
+                            command['confirm'] = True
                     else:
                         break
                 self.add(command)
@@ -476,12 +500,35 @@ class MQTT(Handler):
             requires = self.requires[action]
             for item in requires:
                 if payload[item] is None:
-                    raise RuntimeError(self.program, f'MQTT send command missing required field: {item}')  
+                    raise RuntimeError(self.program, f'MQTT send command missing required field: {item}')
         topicDict = self.getInnerObject(self.getObject(topic))
         topicName = topicDict['name']
-#        print(json.dumps(payload))
-        # print(f'Sending to topic {topicName} with QoS {qos}: {json.dumps(payload)[:20]}...')
-        self.program.mqttClient.sendMessage(topicName, json.dumps(payload), qos, chunk_size=1024)  
+
+        # If confirm requested, add a unique confirmation ID and wait for ack
+        if command.get('confirm'):
+            import uuid
+            confirm_id = str(uuid.uuid4())
+            payload['_confirmId'] = confirm_id
+            client = self.program.mqttClient
+            # Set up a confirmation event
+            confirmed = threading.Event()
+            with client.confirmation_lock:
+                if not hasattr(client, 'pending_confirms'):
+                    client.pending_confirms = {}
+                client.pending_confirms[confirm_id] = confirmed
+            client.sendMessage(topicName, json.dumps(payload), qos, chunk_size=1024)
+            # Wait up to 5 seconds for confirmation
+            if not confirmed.wait(timeout=5.0):
+                print(f'Warning: confirmation timeout for {action} to {topicName}')
+                with client.confirmation_lock:
+                    client.pending_confirms.pop(confirm_id, None)
+                self.program.mqttClient.timeout = True
+                return 0
+            with client.confirmation_lock:
+                client.pending_confirms.pop(confirm_id, None)
+        else:
+            self.program.mqttClient.sendMessage(topicName, json.dumps(payload), qos, chunk_size=1024)
+
         if self.program.mqttClient.timeout:
             return 0
         return self.nextPC()

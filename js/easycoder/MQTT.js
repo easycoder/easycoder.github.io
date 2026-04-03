@@ -284,17 +284,27 @@ const EasyCoder_MQTT = {
             const message = this._decodeUtf8(payloadBytes);
 
             // Regular non-chunked message
+            let parsed;
             try {
-                this.message = JSON.parse(message);
+                parsed = JSON.parse(message);
                 try {
-                    this.message.message = JSON.parse(this.message.message);
+                    parsed.message = JSON.parse(parsed.message);
                 } catch (e) {
                     // Leave message as string
                 }
             } catch (e) {
-                this.message = message;
+                parsed = message;
             }
 
+            // Check if this is a confirmation ack
+            if (parsed && typeof parsed === 'object' && parsed.action === 'confirm' && parsed._confirmId) {
+                if (this.pendingConfirms && this.pendingConfirms[parsed._confirmId]) {
+                    this.pendingConfirms[parsed._confirmId]();
+                }
+                return;
+            }
+
+            this.message = parsed;
             this._queueProgramCallback(this.onMessagePC);
         }
 
@@ -708,7 +718,7 @@ const EasyCoder_MQTT = {
                         const token = compiler.getToken();
                         if (token === 'sender' || token === 'action' ||
                             token === 'qos' || token === 'message' ||
-                            token === 'giving') {
+                            token === 'giving' || token === 'confirm') {
 
                             if (token === 'sender') {
                                 if (compiler.nextIsSymbol()) {
@@ -728,6 +738,9 @@ const EasyCoder_MQTT = {
                                     command.giving = rec.name;
                                     compiler.next();
                                 }
+                            } else if (token === 'confirm') {
+                                command.confirm = true;
+                                compiler.nextToken();
                             }
                         } else {
                             break;
@@ -808,7 +821,28 @@ const EasyCoder_MQTT = {
 
             const topicName = topic.getName();
             // EasyCoder.writeToDebugConsole(`MQTT Publish to ${topicName} with QoS ${qos}: ${JSON.stringify(payload)}`);
-            if (command.giving) {
+
+            if (command.confirm) {
+                // Add a unique confirmation ID and wait for ack from receiver
+                const confirmId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+                payload._confirmId = confirmId;
+                if (!program.mqttClient.pendingConfirms) {
+                    program.mqttClient.pendingConfirms = {};
+                }
+                const timeoutMs = 5000;
+                const timer = setTimeout(() => {
+                    delete program.mqttClient.pendingConfirms[confirmId];
+                    console.warn(`MQTT confirm timeout for ${payload.action} to ${topicName}`);
+                    program.run(command.pc + 1);
+                }, timeoutMs);
+                program.mqttClient.pendingConfirms[confirmId] = () => {
+                    clearTimeout(timer);
+                    delete program.mqttClient.pendingConfirms[confirmId];
+                    program.run(command.pc + 1);
+                };
+                program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024);
+                return 0;
+            } else if (command.giving) {
                 // Async: wait for broker acknowledgment
                 program.mqttClient.sendMessage(topicName, JSON.stringify(payload), qos, 1024)
                     .then((ok) => {
