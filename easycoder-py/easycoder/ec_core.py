@@ -844,8 +844,8 @@ class Core(Handler):
 
     def r_input(self, command):
         record = self.getVariable(command['target'])
-        prompt = command['prompt'].getValue()
-        value = ECValue(type=str, content=prompt+input(prompt))
+        prompt = self.textify(command['prompt'])
+        value = ECValue(type=str, content=input(prompt))
         self.putSymbolValue(record, value)
         return self.nextPC()
 
@@ -2059,6 +2059,8 @@ class Core(Handler):
                 return self.program.usePSUtil()
             elif token == 'server':
                 return self.program.useServer()
+            elif token == 'email':
+                return self.program.useEmail()
         return False
     
     # Unused

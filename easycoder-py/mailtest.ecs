@@ -1,0 +1,33 @@
+!   mailtest.ecs
+
+    script MailTest
+
+    use email
+
+    variable Host
+    variable User
+    variable Pass
+    variable From
+    variable To
+    variable Subject
+    variable Body
+    variable Error
+
+    input Host with `SMTP host (e.g. mail.dreamhost.com): `
+    input User with `SMTP user: `
+    input Pass with `SMTP password: `
+    input From with `From address: `
+    input To with `To address: `
+    input Subject with `Subject: `
+    input Body with `Message body: `
+
+    log `Sending...`
+    send email to To from From subject Subject body Body via Host user User password Pass
+        or begin
+            put the error message into Error
+            log `Send failed: ` cat Error
+            exit
+        end
+
+    log `Message sent successfully`
+    exit

@@ -3,12 +3,13 @@
 import importlib
 import math
 
-__version__ = "260402.1"
+__version__ = "260403.1"
 
 from .ec_classes import *
 from .ec_compiler import *
 from .ec_condition import *
 from .ec_core import *
+from .ec_email import *
 from .ec_handler import *
 from .ec_mqtt import *
 from .ec_program import *

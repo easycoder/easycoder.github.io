@@ -88,6 +88,7 @@ class Program:
 		self.mqtt = None
 		self.psutil = None
 		self.server = None
+		self.email = None
 		self.useClass(Core)
 		self.ticker = 0
 		self.graphicsRunning = False
@@ -209,6 +210,15 @@ class Program:
 			from .ec_psutil import PSUtil
 			self.psutil = PSUtil
 			self.useClass(PSUtil)
+		return True
+
+	# Use the email module
+	def useEmail(self):
+		if self.email == None:
+			print('Loading email module')
+			from .ec_email import Email
+			self.email = Email
+			self.useClass(Email)
 		return True
 
 	# Indicate that graphics are running

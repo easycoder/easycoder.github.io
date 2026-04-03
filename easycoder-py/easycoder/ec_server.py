@@ -1,4 +1,4 @@
-from bottle import Bottle, request as bottle_request, response as bottle_response, run
+from bottle import Bottle, request as bottle_request, response as bottle_response, run, static_file
 import threading
 from easycoder import Handler, ECObject, ECValue, RuntimeError
 
@@ -22,9 +22,17 @@ class ECServer(ECObject):
         self.port = port
         self.app = Bottle()
 
+        # Serve binary files (images, fonts, etc.) directly via Bottle
+        import os
+        binary_exts = ('.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf')
+
         @self.app.route('/', method=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'])
         @self.app.route('/<path:path>', method=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'])
         def handle(path=''):
+            print(f'Request: {bottle_request.method} /{path}')
+            if bottle_request.method == 'GET' and any(path.lower().endswith(ext) for ext in binary_exts):
+                print(f'Static file request: {path} from {os.getcwd()}')
+                return static_file(path, root=os.getcwd())
             # Handle CORS preflight
             if bottle_request.method == 'OPTIONS':
                 bottle_response.headers['Access-Control-Allow-Origin'] = '*'
