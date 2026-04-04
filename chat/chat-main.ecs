@@ -94,7 +94,7 @@
     variable RPreview
     variable CurrentDepth
 
-!    debug step
+    debug step
 
 	set the tracer rows to 10
 
