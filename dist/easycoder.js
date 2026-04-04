@@ -10178,30 +10178,6 @@ const EasyCoder_REST = {
 			return false;
 		},
 
-		createCORSRequest: (method, url) => {
-			var xhr = new XMLHttpRequest();
-			if (`withCredentials` in xhr) {
-		
-				// Check if the XMLHttpRequest object has a "withCredentials" property.
-				// "withCredentials" only exists on XMLHTTPRequest2 objects.
-				xhr.open(method, url, true);
-		
-			} else if (typeof XDomainRequest != `undefined`) {
-		
-				// Otherwise, check if XDomainRequest.
-				// XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-				xhr = new XDomainRequest();
-				xhr.open(method, url);
-		
-			} else {
-		
-				// Otherwise, CORS is not supported by the browser.
-				xhr = null;
-		
-			}
-			return xhr;
-		},		
-
 		run: (program) => {
 			const command = program[program.pc];
 			if (command.request == `path`) {
@@ -10227,68 +10203,80 @@ const EasyCoder_REST = {
 				path += `${separator}_ec=${Date.now()}`;
 			}
 
-			const request = EasyCoder_REST.Rest.createCORSRequest(command.request, path);
-			if (!request) {
-				program.runtimeError(command.lino, `CORS not supported`);
-				return;
-			}
-			request.script = program.script;
-			request.program = program;
-			request.pc = program.pc;
+			const scriptId = program.script;
+			const pc = program.pc;
 
-			request.onload = function () {
-				let s = request.script;
-				let p = EasyCoder.scripts[s];
-				let pc = request.pc;
-				let c = p[pc];
-				if (200 <= request.status && request.status < 400) {
-					var content = request.responseText.trim();
-					if (c.target) {
-						const targetRecord = program.getSymbolRecord(command.target);
-						targetRecord.value[targetRecord.index] = {
-							type: `constant`,
-							numeric: false,
-							content
-						};
-						targetRecord.used = true;
-					}
-					p.run(c.pc + 1);
-				} else {
-					const error = `${request.status} ${request.statusText}`;
-					if (c.onError) {
-						p.errorMessage = `Exception trapped: ${error}`;
-						p.run(c.onError);
-					} else {
-						p.runtimeError(c.lino, `Error: ${error}`);
-					}
+			const onSuccess = (content) => {
+				const p = EasyCoder.scripts[scriptId];
+				if (!p) return;
+				const c = p[pc];
+				if (c.target) {
+					const targetRecord = p.getSymbolRecord(command.target);
+					targetRecord.value[targetRecord.index] = {
+						type: `constant`,
+						numeric: false,
+						content
+					};
+					targetRecord.used = true;
 				}
+				p.run(c.pc + 1);
 			};
 
-			request.onerror = function () {
-				if (command.onError) {
-					program.errorMessage = this.responseText;
-					request.program.run(command.onError);
+			const onFailure = (error) => {
+				const p = EasyCoder.scripts[scriptId];
+				if (!p) return;
+				const c = p[pc];
+				if (c.onError) {
+					p.errorMessage = `Exception trapped: ${error}`;
+					p.run(c.onError);
 				} else {
-					const error = this.responseText;
-					request.program.runtimeError(command.lino, error);
+					p.runtimeError(c.lino, `Error: ${error}`);
 				}
 			};
 
 			switch (command.request) {
 			case `get`:
-				// console.log(`GET from ${path}`);
-				request.send();
+				fetch(path)
+					.then(response => {
+						if (response.ok) {
+							return response.text().then(text => onSuccess(text.trim()));
+						} else {
+							onFailure(`${response.status} ${response.statusText}`);
+						}
+					})
+					.catch(err => {
+						onFailure(err.message || String(err));
+					});
 				break;
 			case `post`:
-				const value = program.getValue(command.value);
+				const postValue = program.getValue(command.value);
 				EasyCoder.writeToDebugConsole(`POST to ${path}`);
-				//console.log(`value=${value}`);
-				request.setRequestHeader(`Content-type`, `application/json; charset=UTF-8`);
-				for (key of Object.keys(command.args)) {
-					const argval = request.program.getValue(command.args[key]);
-					request.setRequestHeader (key, argval);
+				const headers = {
+					'Content-type': `application/json; charset=UTF-8`
+				};
+				for (const key of Object.keys(command.args)) {
+					headers[key] = program.getValue(command.args[key]);
 				}
-				request.send(value);
+				fetch(path, {
+					method: `POST`,
+					headers,
+					body: postValue
+				})
+					.then(response => {
+						if (response.ok) {
+							if (command.target) {
+								return response.text().then(text => onSuccess(text.trim()));
+							} else {
+								const p = EasyCoder.scripts[scriptId];
+								if (p) p.run(p[pc].pc + 1);
+							}
+						} else {
+							onFailure(`${response.status} ${response.statusText}`);
+						}
+					})
+					.catch(err => {
+						onFailure(err.message || String(err));
+					});
 				break;
 			}
 			return 0;

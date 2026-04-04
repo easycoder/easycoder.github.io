@@ -94,13 +94,13 @@
     variable RPreview
     variable CurrentDepth
 
-    debug step
+!    debug step
 
 	set the tracer rows to 10
 
     ! Build the UI
     create Body
-    rest get Layout from `chat/chat.json`
+    rest get Layout from `chat.json`
     render Layout in Body
 
     attach Status to `status`
