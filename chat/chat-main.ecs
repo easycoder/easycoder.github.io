@@ -1,0 +1,820 @@
+!   chat-main.ecs - Chat client with login, topics, and posts
+
+    script Chat
+
+    div Body
+    variable Layout
+
+    div Status
+    div LoginPanel
+    input UsernameInput
+    input PasswordInput
+    button LoginButton
+    button ShowRegisterLink
+    div LoginMessage
+    div RegisterPanel
+    input RegUsernameInput
+    input RegPasswordInput
+    button RegisterButton
+    button ShowLoginLink
+    div RegisterMessage
+    div ChatPanel
+    button ShowTopicsButton
+    button NewTopicToggle
+    div TopicListPanel
+    div NewTopicPanel
+    input NewTopicName
+    input NewTopicDesc
+    button CreateTopicButton
+    button CancelTopicButton
+    div NewTopicMessage
+    div PostsPanel
+    button BackToTopicsButton
+    div PostsTopicTitle
+    button NewPostToggle
+    div PostListPanel
+    div NewPostPanel
+    input NewPostSubject
+    textarea NewPostBody
+    button SubmitPostButton
+    button CancelPostButton
+    div NewPostMessage
+    button TopicItem
+    button PostItem
+    div PostViewPanel
+    button BackToPostsButton
+    button ReplyToggle
+    div PostViewSubject
+    div PostViewMeta
+    div PostViewBody
+    div PostRepliesPanel
+    div ReplyPanel
+    textarea ReplyBodyInput
+    button SubmitReplyButton
+    button CancelReplyButton
+    div ReplyMessage
+
+    topic MyTopic
+    topic ServerTopic
+    variable MyID
+    variable Broker
+    variable MqttUsername
+    variable MqttPassword
+    variable SystemID
+    variable Action
+    variable MessageText
+    variable ReceivedMessage
+    variable WaitCount
+    variable ChatUsername
+    variable ChatPassword
+    variable Pos
+    variable ReplyStatus
+    variable ReplyBody
+    variable TopicsJson
+    variable TopicMarkup
+    variable N
+    variable Count
+    variable TName
+    variable TDesc
+    variable TEntry
+    variable CurrentTopic
+    variable PostsJson
+    variable PostMarkup
+    variable PSubject
+    variable PAuthor
+    variable PEntry
+    variable PBody
+    variable CurrentPostId
+    variable PostData
+    variable PostObj
+    variable RepliesJson
+    variable RepliesMarkup
+    variable REntry
+    variable RAuthor
+    variable RPreview
+    variable CurrentDepth
+
+!    debug step
+
+	set the tracer rows to 10
+
+    ! Build the UI
+    create Body
+    rest get Layout from `chat.json`
+    render Layout in Body
+
+    attach Status to `status`
+    attach LoginPanel to `login-panel`
+    attach UsernameInput to `username-input`
+    attach PasswordInput to `password-input`
+    attach LoginButton to `login-button`
+    attach ShowRegisterLink to `show-register-link`
+    attach LoginMessage to `login-message`
+    attach RegisterPanel to `register-panel`
+    attach RegUsernameInput to `reg-username-input`
+    attach RegPasswordInput to `reg-password-input`
+    attach RegisterButton to `register-button`
+    attach ShowLoginLink to `show-login-link`
+    attach RegisterMessage to `register-message`
+    attach ChatPanel to `chat-panel`
+    attach ShowTopicsButton to `show-topics-button`
+    attach NewTopicToggle to `new-topic-toggle`
+    attach TopicListPanel to `topic-list-panel`
+    attach NewTopicPanel to `new-topic-panel`
+    attach NewTopicName to `new-topic-name`
+    attach NewTopicDesc to `new-topic-desc`
+    attach CreateTopicButton to `create-topic-button`
+    attach CancelTopicButton to `cancel-topic-button`
+    attach NewTopicMessage to `new-topic-message`
+    attach PostsPanel to `posts-panel`
+    attach BackToTopicsButton to `back-to-topics`
+    attach PostsTopicTitle to `posts-topic-title`
+    attach NewPostToggle to `new-post-toggle`
+    attach PostListPanel to `post-list-panel`
+    attach NewPostPanel to `new-post-panel`
+    attach NewPostSubject to `new-post-subject`
+    attach NewPostBody to `new-post-body`
+    attach SubmitPostButton to `submit-post-button`
+    attach CancelPostButton to `cancel-post-button`
+    attach NewPostMessage to `new-post-message`
+    attach PostViewPanel to `post-view-panel`
+    attach BackToPostsButton to `back-to-posts`
+    attach ReplyToggle to `reply-toggle`
+    attach PostViewSubject to `post-view-subject`
+    attach PostViewMeta to `post-view-meta`
+    attach PostViewBody to `post-view-body`
+    attach PostRepliesPanel to `post-replies-panel`
+    attach ReplyPanel to `reply-panel`
+    attach ReplyBodyInput to `reply-body`
+    attach SubmitReplyButton to `submit-reply-button`
+    attach CancelReplyButton to `cancel-reply-button`
+    attach ReplyMessage to `reply-message`
+
+    ! Get Credentials from server
+    variable Credentials
+    rest get Credentials from `../credentials` or rest get Credentials from `../credentials.php`
+        or go to AbandonShip
+!    log Credentials
+    put element `broker` of Credentials into Broker
+    put element `username` of Credentials into MqttUsername
+    put element `password` of Credentials into MqttPassword
+    if Broker is empty go to NoCredentials
+    
+    rest get SystemID from `chat-id`
+    put trim SystemID into SystemID
+    put SystemID cat `/chat` into SystemID
+    log `The system ID is ` cat SystemID
+
+    ! Set up MQTT
+    put `Chat-` cat random 999999 into MyID
+
+    init ServerTopic
+        name SystemID
+        qos 1
+
+    init MyTopic
+        name MyID
+        qos 1
+
+    mqtt
+        token MqttUsername MqttPassword
+        id MyID
+        broker Broker
+        port 443
+        subscribe MyTopic
+
+    ! Load saved chat credentials
+    get ChatUsername from storage as `chat-user`
+    if ChatUsername is `null` put empty into ChatUsername
+    if ChatUsername is `undefined` put empty into ChatUsername
+    get ChatPassword from storage as `chat-pass`
+    if ChatPassword is `null` put empty into ChatPassword
+    if ChatPassword is `undefined` put empty into ChatPassword
+
+    on mqtt connect
+    begin
+        set the content of Status to `Connected to broker. Checking server...`
+        set style `color` of Status to `#880`
+        go to CheckServer
+    end
+
+    on mqtt message
+    begin
+        put the mqtt message into ReceivedMessage
+    end
+
+    on mqtt error
+    begin
+        alert `MQTT connection failed. Check credentials and try again.`
+    end
+
+    stop
+
+! ---- Server check ----
+
+CheckServer:
+    put `ping` into Action
+    put empty into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of Status to `Connected to broker. Chat server not responding.`
+        set style `color` of Status to `#800`
+        stop
+    end
+    put empty into ReceivedMessage
+    set the content of Status to `Connected to broker. Connected to chat server.`
+    set style `color` of Status to `#080`
+    log `Chat user name is ` cat ChatUsername
+    if ChatUsername is not empty go to AutoLogin
+    go to ShowLogin
+
+! ---- Login ----
+
+AutoLogin:
+    set the content of Status to `Logging in as ` cat ChatUsername cat `...`
+    put empty into ReceivedMessage
+    put `login` into Action
+    put ChatUsername cat `|` cat ChatPassword into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty go to ShowLogin
+    put position of `|` in ReceivedMessage into Pos
+    put left Pos of ReceivedMessage into ReplyStatus
+    add 1 to Pos
+    put from Pos of ReceivedMessage into ReplyBody
+    put empty into ReceivedMessage
+    if ReplyStatus is `ok`
+    begin
+        put ReplyBody into ChatUsername
+        put ChatUsername into storage as `chat-user`
+        put ChatPassword into storage as `chat-pass`
+        go to EnterChat
+    end
+    put empty into ChatUsername
+    put empty into ChatPassword
+    put empty into storage as `chat-user`
+    put empty into storage as `chat-pass`
+    go to ShowLogin
+
+ShowLogin:
+    set the text of UsernameInput to ChatUsername
+    set the content of LoginMessage to ``
+    set style `display` of LoginPanel to `flex`
+    set style `display` of RegisterPanel to `none`
+    disable LoginButton
+    gosub CheckLoginFields
+    on click LoginButton go to DoLogin
+    on click ShowRegisterLink go to ShowRegister
+    on key gosub CheckLoginFields
+    stop
+
+ShowRegister:
+    set the content of RegisterMessage to ``
+    set style `display` of LoginPanel to `none`
+    set style `display` of RegisterPanel to `flex`
+    disable RegisterButton
+    gosub CheckRegisterFields
+    on click RegisterButton go to DoRegister
+    on click ShowLoginLink go to ShowLogin
+    on key gosub CheckRegisterFields
+    stop
+
+DoLogin:
+    put the text of UsernameInput into ChatUsername
+    put the text of PasswordInput into ChatPassword
+    disable LoginButton
+    set the content of LoginMessage to `Logging in...`
+    set style `color` of LoginMessage to `#888`
+    put empty into ReceivedMessage
+    put `login` into Action
+    put ChatUsername cat `|` cat ChatPassword into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        gosub CheckLoginFields
+        set the content of LoginMessage to `No reply from server`
+        set style `color` of LoginMessage to `#800`
+        stop
+    end
+    put position of `|` in ReceivedMessage into Pos
+    put left Pos of ReceivedMessage into ReplyStatus
+    add 1 to Pos
+    put from Pos of ReceivedMessage into ReplyBody
+    put empty into ReceivedMessage
+    if ReplyStatus is `ok`
+    begin
+        put ReplyBody into ChatUsername
+        put ChatUsername into storage as `chat-user`
+        put ChatPassword into storage as `chat-pass`
+        go to EnterChat
+    end
+    gosub CheckLoginFields
+    set the content of LoginMessage to ReplyBody
+    set style `color` of LoginMessage to `#800`
+    put empty into ChatUsername
+    put empty into ChatPassword
+    put empty into storage as `chat-user`
+    put empty into storage as `chat-pass`
+    stop
+
+DoRegister:
+    put the text of RegUsernameInput into ChatUsername
+    put the text of RegPasswordInput into ChatPassword
+    disable RegisterButton
+    set the content of RegisterMessage to `Registering...`
+    set style `color` of RegisterMessage to `#888`
+    put empty into ReceivedMessage
+    put `register` into Action
+    put ChatUsername cat `|` cat ChatPassword into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        gosub CheckRegisterFields
+        set the content of RegisterMessage to `No reply from server`
+        set style `color` of RegisterMessage to `#800`
+        stop
+    end
+    put position of `|` in ReceivedMessage into Pos
+    put left Pos of ReceivedMessage into ReplyStatus
+    add 1 to Pos
+    put from Pos of ReceivedMessage into ReplyBody
+    put empty into ReceivedMessage
+    if ReplyStatus is `ok`
+    begin
+        put ReplyBody into ChatUsername
+        put ChatUsername into storage as `chat-user`
+        put ChatPassword into storage as `chat-pass`
+        go to EnterChat
+    end
+    gosub CheckRegisterFields
+    set the content of RegisterMessage to ReplyBody
+    set style `color` of RegisterMessage to `#800`
+    put empty into ChatUsername
+    put empty into ChatPassword
+    stop
+
+! ---- Chat main screen ----
+
+EnterChat:
+    set the content of Status to `Logged in as ` cat ChatUsername
+    set style `display` of LoginPanel to `none`
+    set style `display` of RegisterPanel to `none`
+    set style `display` of ChatPanel to `flex`
+    on click ShowTopicsButton gosub LoadTopics
+    on click NewTopicToggle gosub ToggleNewTopic
+    on click CreateTopicButton gosub CreateTopic
+    on click CancelTopicButton gosub HideNewTopic
+    on click BackToTopicsButton gosub BackToTopics
+    on click NewPostToggle gosub ToggleNewPost
+    on click SubmitPostButton gosub SubmitPost
+    on click CancelPostButton gosub HideNewPost
+    on click BackToPostsButton gosub BackToPosts
+    on click ReplyToggle gosub ToggleReply
+    on click SubmitReplyButton gosub SubmitReply
+    on click CancelReplyButton gosub HideReply
+    stop
+
+! ---- Topics ----
+
+LoadTopics:
+    set the content of TopicListPanel to `Loading topics...`
+    put `topics` into Action
+    put `` into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of TopicListPanel to `No reply from server`
+        return
+    end
+    put ReceivedMessage into TopicsJson
+    put empty into ReceivedMessage
+    gosub RenderTopics
+    return
+
+RenderTopics:
+    put the json count of TopicsJson into Count
+    if Count is 0
+    begin
+        set the content of TopicListPanel to `No topics yet. Click 'New Topic' to create one.`
+        return
+    end
+    put `` into TopicMarkup
+    put 0 into N
+    while N is less than Count
+    begin
+        put element N of TopicsJson into TEntry
+        put element `name` of TEntry into TName
+        put element `description` of TEntry into TDesc
+        if TDesc is empty put `(no description)` into TDesc
+        put TopicMarkup cat `<button id="TopicItem-` cat N
+            cat `" style="display:block;width:100%;text-align:left;padding:0.4em;margin-bottom:0.3em;cursor:pointer">`
+            cat `<strong>` cat TName cat `</strong> &mdash; ` cat TDesc
+            cat `</button>` into TopicMarkup
+        add 1 to N
+    end
+    set the content of TopicListPanel to TopicMarkup
+    ! Attach click handlers to topic buttons
+    set the elements of TopicItem to Count
+    put 0 into N
+    while N is less than Count
+    begin
+        index TopicItem to N
+        attach TopicItem to `TopicItem-` cat N
+        add 1 to N
+    end
+    on click TopicItem go to TopicClick
+    return
+
+TopicClick:
+    put the index of TopicItem into N
+    put element N of TopicsJson into TEntry
+    put element `name` of TEntry into CurrentTopic
+    gosub ShowPosts
+    stop
+
+ToggleNewTopic:
+    set style `display` of NewTopicPanel to `flex`
+    return
+
+HideNewTopic:
+    set style `display` of NewTopicPanel to `none`
+    set the content of NewTopicMessage to ``
+    return
+
+CreateTopic:
+    put the text of NewTopicName into TName
+    if TName is empty
+    begin
+        set the content of NewTopicMessage to `Please enter a topic name`
+        set style `color` of NewTopicMessage to `#800`
+        return
+    end
+    put the text of NewTopicDesc into TDesc
+    if TDesc is empty
+    begin
+        set the content of NewTopicMessage to `Please enter a description`
+        set style `color` of NewTopicMessage to `#800`
+        return
+    end
+    set the content of NewTopicMessage to `Creating topic...`
+    set style `color` of NewTopicMessage to `#888`
+    put `new-topic` into Action
+    put ChatUsername cat `|` cat TName cat `|` cat TDesc into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of NewTopicMessage to `No reply from server`
+        set style `color` of NewTopicMessage to `#800`
+        return
+    end
+    put position of `|` in ReceivedMessage into Pos
+    put left Pos of ReceivedMessage into ReplyStatus
+    add 1 to Pos
+    put from Pos of ReceivedMessage into ReplyBody
+    put empty into ReceivedMessage
+    if ReplyStatus is `ok`
+    begin
+        gosub HideNewTopic
+        set the content of NewTopicName to ``
+        set the content of NewTopicDesc to ``
+        gosub LoadTopics
+    end
+    else
+    begin
+        set the content of NewTopicMessage to ReplyBody
+        set style `color` of NewTopicMessage to `#800`
+    end
+    return
+
+! ---- Posts ----
+
+ShowPosts:
+    set the content of PostsTopicTitle to CurrentTopic
+    set style `display` of TopicListPanel to `none`
+    set style `display` of NewTopicPanel to `none`
+    set style `display` of PostsPanel to `flex`
+    set the content of PostListPanel to `Loading posts...`
+    put `posts` into Action
+    put CurrentTopic into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of PostListPanel to `No reply from server`
+        return
+    end
+    put ReceivedMessage into PostsJson
+    put empty into ReceivedMessage
+    gosub RenderPosts
+    return
+
+RenderPosts:
+    put the json count of PostsJson into Count
+    if Count is 0
+    begin
+        set the content of PostListPanel to `No posts yet. Click 'New Post' to start a discussion.`
+        return
+    end
+    put `` into PostMarkup
+    put 0 into N
+    while N is less than Count
+    begin
+        put element N of PostsJson into PEntry
+        put element `subject` of PEntry into PSubject
+        put element `author` of PEntry into PAuthor
+        put PostMarkup cat `<button id="PostItem-` cat N
+            cat `" style="display:block;width:100%;text-align:left;padding:0.4em;margin-bottom:0.3em;cursor:pointer">`
+            cat `<strong>` cat PSubject cat `</strong> &mdash; ` cat PAuthor
+            cat `</button>` into PostMarkup
+        add 1 to N
+    end
+    set the content of PostListPanel to PostMarkup
+    ! Attach click handlers to post buttons
+    set the elements of PostItem to Count
+    put 0 into N
+    while N is less than Count
+    begin
+        index PostItem to N
+        attach PostItem to `PostItem-` cat N
+        add 1 to N
+    end
+    on click PostItem go to PostClick
+    return
+
+PostClick:
+    put the index of PostItem into N
+    put element N of PostsJson into PEntry
+    put element `id` of PEntry into CurrentPostId
+    put 0 into CurrentDepth
+    gosub ViewPost
+    stop
+
+ViewPost:
+    set style `display` of PostListPanel to `none`
+    set style `display` of NewPostPanel to `none`
+    set style `display` of PostsPanel to `flex`
+    set style `display` of PostsTopicTitle to `none`
+    set style `display` of NewPostToggle to `none`
+    set style `display` of BackToTopicsButton to `none`
+    set style `display` of PostViewPanel to `flex`
+    set the content of PostViewSubject to `Loading...`
+    set the content of PostViewMeta to ``
+    set the content of PostViewBody to ``
+    set the content of PostRepliesPanel to ``
+    put `view` into Action
+    put CurrentTopic cat `|` cat CurrentPostId into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of PostViewSubject to `No reply from server`
+        return
+    end
+    put ReceivedMessage into PostData
+    put empty into ReceivedMessage
+    put element `post` of PostData into PostObj
+    put element `subject` of PostObj into PSubject
+    put element `author` of PostObj into PAuthor
+    put element `body` of PostObj into PBody
+    set the content of PostViewSubject to PSubject
+    set the content of PostViewMeta to `by ` cat PAuthor
+    set the content of PostViewBody to PBody
+    ! Show replies
+    put element `replies` of PostData into RepliesJson
+    gosub RenderReplies
+    return
+
+RenderReplies:
+    put the json count of RepliesJson into Count
+    if Count is 0
+    begin
+        set the content of PostRepliesPanel to ``
+        return
+    end
+    put `<div style="font-weight:bold;padding:0.3em 0">Replies:</div>` into RepliesMarkup
+    put 0 into N
+    while N is less than Count
+    begin
+        put element N of RepliesJson into REntry
+        put element `author` of REntry into RAuthor
+        put element `preview` of REntry into RPreview
+        put RepliesMarkup
+            cat `<div style="padding:0.3em 0 0.3em 1em;border-left:2px solid #ccc;margin-bottom:0.3em">`
+            cat `<strong>` cat RAuthor cat `:</strong> ` cat RPreview
+            cat `</div>` into RepliesMarkup
+        add 1 to N
+    end
+    set the content of PostRepliesPanel to RepliesMarkup
+    return
+
+BackToTopics:
+    set style `display` of PostsPanel to `none`
+    set style `display` of TopicListPanel to `block`
+    gosub HideNewPost
+    return
+
+ToggleNewPost:
+    set style `display` of NewPostPanel to `flex`
+    return
+
+HideNewPost:
+    set style `display` of NewPostPanel to `none`
+    set the content of NewPostMessage to ``
+    return
+
+SubmitPost:
+    put the text of NewPostSubject into PSubject
+    if PSubject is empty
+    begin
+        set the content of NewPostMessage to `Please enter a subject`
+        set style `color` of NewPostMessage to `#800`
+        return
+    end
+    if the text of NewPostBody is empty
+    begin
+        set the content of NewPostMessage to `Please write something`
+        set style `color` of NewPostMessage to `#800`
+        return
+    end
+    set the content of NewPostMessage to `Posting...`
+    set style `color` of NewPostMessage to `#888`
+    put `post` into Action
+    put CurrentTopic cat `|` cat PSubject cat `|` cat ChatUsername cat `|` cat the text of NewPostBody into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of NewPostMessage to `No reply from server`
+        set style `color` of NewPostMessage to `#800`
+        return
+    end
+    put position of `|` in ReceivedMessage into Pos
+    put left Pos of ReceivedMessage into ReplyStatus
+    add 1 to Pos
+    put from Pos of ReceivedMessage into ReplyBody
+    put empty into ReceivedMessage
+    if ReplyStatus is `ok`
+    begin
+        gosub HideNewPost
+        set the content of NewPostSubject to ``
+        set the content of NewPostBody to ``
+        gosub ShowPosts
+    end
+    else
+    begin
+        set the content of NewPostMessage to ReplyBody
+        set style `color` of NewPostMessage to `#800`
+    end
+    return
+
+! ---- Post view navigation ----
+
+BackToPosts:
+    set style `display` of PostViewPanel to `none`
+    set style `display` of PostListPanel to `block`
+    set style `display` of PostsTopicTitle to `block`
+    set style `display` of NewPostToggle to `inline-block`
+    set style `display` of BackToTopicsButton to `inline-block`
+    gosub HideReply
+    return
+
+ToggleReply:
+    set style `display` of ReplyPanel to `flex`
+    return
+
+HideReply:
+    set style `display` of ReplyPanel to `none`
+    set the content of ReplyMessage to ``
+    return
+
+SubmitReply:
+    if the text of ReplyBodyInput is empty
+    begin
+        set the content of ReplyMessage to `Please write something`
+        set style `color` of ReplyMessage to `#800`
+        return
+    end
+    set the content of ReplyMessage to `Posting reply...`
+    set style `color` of ReplyMessage to `#888`
+    put `reply` into Action
+    put CurrentTopic cat `|` cat CurrentPostId cat `|` cat CurrentDepth cat `|` cat ChatUsername cat `|` cat the text of ReplyBodyInput into MessageText
+    send to ServerTopic
+        sender MyTopic
+        action Action
+        message MessageText
+         ! confirm
+    gosub WaitForReply
+    if ReceivedMessage is empty
+    begin
+        set the content of ReplyMessage to `No reply from server`
+        set style `color` of ReplyMessage to `#800`
+        return
+    end
+    put position of `|` in ReceivedMessage into Pos
+    put left Pos of ReceivedMessage into ReplyStatus
+    add 1 to Pos
+    put from Pos of ReceivedMessage into ReplyBody
+    put empty into ReceivedMessage
+    if ReplyStatus is `ok`
+    begin
+        gosub HideReply
+        set the content of ReplyBodyInput to ``
+        gosub ViewPost
+    end
+    else
+    begin
+        set the content of ReplyMessage to ReplyBody
+        set style `color` of ReplyMessage to `#800`
+    end
+    return
+
+! ---- Shared ----
+
+WaitForReply:
+    put 0 into WaitCount
+WaitLoop:
+    if ReceivedMessage is not empty return
+    add 1 to WaitCount
+    if WaitCount is greater than 100
+    begin
+        return
+    end
+    wait 10 ticks
+    go to WaitLoop
+
+CheckLoginFields:
+    if UsernameInput is not empty
+    begin
+        if PasswordInput is not empty
+        begin
+            enable LoginButton
+            return
+        end
+    end
+    disable LoginButton
+    return
+
+CheckRegisterFields:
+    if RegUsernameInput is not empty
+    begin
+        if RegPasswordInput is not empty
+        begin
+            enable RegisterButton
+            return
+        end
+    end
+    disable RegisterButton
+    return
+
+NoCredentials:
+    set the content of Status to `No credentials provided`
+    stop
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! 	Warn the user and abandon this run
+AbandonShip:
+	alert `An error has occurred while communicating with the controller.`
+    	cat newline cat `Please refresh this browser page to restart.`
+    exit

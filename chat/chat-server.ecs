@@ -1,0 +1,489 @@
+!   chat-server.ecs - Chat server with user auth and topics
+
+    script ChatServer
+
+    use mqtt
+    use email
+
+    topic ServerTopic
+    topic SenderTopic
+    dictionary Sender
+    dictionary ReceivedMessage
+    queue MessageQueue
+    variable Credentials
+    variable Broker
+    variable MqttUsername
+    variable MqttPassword
+    variable SystemID
+    variable SenderName
+    variable SenderQoS
+    variable Action
+    variable MessageText
+    dictionary CredDict
+    variable Users
+    dictionary UsersDict
+    variable ReqUser
+    variable ReqPass
+    variable StoredPass
+    variable Reply
+    variable Pos
+    variable TopicName
+    variable TopicDesc
+    variable TopicPath
+    variable TopicMeta
+    variable TopicIndex
+    variable PostsPath
+    variable PostDirPath
+    variable PostContent
+    variable PostsIndex
+    variable PostId
+    variable PostSubject
+    variable PostAuthor
+    variable PostBody
+    variable PostMeta
+    variable TopicCreator
+    variable ReplyId
+    variable ParentPath
+    variable RepliesIndex
+    variable ReplyMeta
+    variable ReplyAuthor
+    variable ReplyBody2
+    variable Depth
+    variable Pos2
+    variable MailServer
+    variable MailLogin
+    variable MailPassword
+    variable MailFrom
+    variable MailTo
+    variable MailSubject
+    variable MailBody
+    variable Version
+    variable RemoteVersion
+
+    ! Load credentials
+	if file `credentials` exists load Credentials from `credentials`
+    else
+    begin
+	    get Credentials from url `https://chat.eclecity.net/credentials.php`
+    	    or go to NoCredentials
+    end
+    put json Credentials into CredDict
+!    log CredDict
+    put entry `broker` of CredDict into Broker
+    put entry `username` of CredDict into MqttUsername
+    put entry `password` of CredDict into MqttPassword
+    put entry `mail_server` of CredDict into MailServer
+    put entry `mail_login` of CredDict into MailLogin
+    put entry `mail_password` of CredDict into MailPassword
+    put entry `mail_from` of CredDict into MailFrom
+
+    load SystemID from `chat-id`
+    put trim SystemID into SystemID
+    put SystemID cat `/chat` into SystemID
+    log `System ID is ` cat SystemID
+    if SystemID is empty
+    begin
+        log `Unable to get my system ID`
+        exit
+    end
+
+    ! Check for a newer version
+    get RemoteVersion from url `https://raw.githubusercontent.com/easycoder/chat/main/chat/chat-version`
+        or print `Warning: could not check for updates`
+    if RemoteVersion is not empty
+    begin
+        replace ` ` with `` in RemoteVersion
+        replace newline with `` in RemoteVersion
+        if file `.chat-version` exists load Version from `.chat-version`
+        else put `0` into Version
+        replace ` ` with `` in Version
+        replace newline with `` in Version
+        if RemoteVersion is greater than Version
+        begin
+            print `Updating from version ` cat Version cat ` to ` cat RemoteVersion
+            download `https://raw.githubusercontent.com/easycoder/chat/main/chat-server.ecs` to `chat-server.ecs`
+            save RemoteVersion to `.chat-version`
+            print `Update complete. Restarting...`
+            system background `sleep 2 && easycoder chat-server.ecs`
+            exit
+        end
+        else print `Chat server version ` cat Version cat ` is up to date`
+    end
+
+    ! Load user database
+    if file `chat-users.json` exists
+    begin
+        load Users from `chat-users.json`
+        put json Users into UsersDict
+    end
+!    log UsersDict
+
+    ! Ensure data directory exists
+    create directory `chat-data`
+    create directory `chat-data/topics`
+
+    print `Chat server starting...`
+    print `Broker: ` cat Broker
+    print `Topic: ` cat SystemID
+
+    ! Set up MQTT
+    init ServerTopic
+        name SystemID
+        qos 1
+
+    mqtt
+        token MqttUsername MqttPassword
+        id uuid
+        broker Broker
+        port 8883
+        subscribe ServerTopic
+
+    print `Listening for messages...`
+
+    on mqtt message append the mqtt message to MessageQueue
+
+    while true
+    begin
+        wait 50 ticks
+        if MessageQueue is not empty
+        begin
+            pop ReceivedMessage from MessageQueue
+            if ReceivedMessage does not have entry `sender`
+            begin
+                print `Ignoring message: ` cat ReceivedMessage
+            end
+            else
+            begin
+                put entry `sender` of ReceivedMessage into Sender
+                put entry `action` of ReceivedMessage into Action
+                put entry `message` of ReceivedMessage into MessageText
+                put entry `name` of Sender into SenderName
+                put entry `qos` of Sender into SenderQoS
+
+                if Action is `ping` gosub to DoPing
+                else if Action is `register` gosub to DoRegister
+                else if Action is `login` gosub to DoLogin
+                else if Action is `topics` gosub to DoTopics
+                else if Action is `new-topic` gosub to DoNewTopic
+                else if Action is `view` gosub to DoView
+                else if Action is `posts` gosub to DoPosts
+                else if Action is `post` gosub to DoPost
+                else if Action is `reply` gosub to DoReply
+                else if Action is `sendemail` gosub to DoSendEmail
+                else print `Unknown action: ` cat Action
+            end
+        end
+    end
+    stop
+
+! ---- Ping ----
+
+DoPing:
+    put `pong` into Reply
+    gosub to SendReply
+    return
+
+! ---- User auth ----
+
+DoRegister:
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into ReqUser
+    add 1 to Pos
+    put from Pos of MessageText into ReqPass
+    print `Register request for: ` cat ReqUser  cat ` with password ` cat ReqPass
+    put hash ReqPass into ReqPass
+    if UsersDict has entry ReqUser
+    begin
+        put entry ReqUser of UsersDict into StoredPass
+        if StoredPass is ReqPass
+        begin
+            put `ok|` cat ReqUser into Reply
+            print `Re-register (duplicate): ` cat ReqUser
+        end
+        else
+        begin
+            put `error|Username already taken` into Reply
+        end
+    end
+    else
+    begin
+        set entry ReqUser of UsersDict to ReqPass
+        put UsersDict into Users
+        save Users to `chat-users.json`
+        put `ok|` cat ReqUser into Reply
+        print `Registered: ` cat ReqUser
+    end
+    gosub to SendReply
+    return
+
+DoLogin:
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into ReqUser
+    add 1 to Pos
+    put from Pos of MessageText into ReqPass
+    put hash ReqPass into ReqPass
+    print `Login request for: ` cat ReqUser
+    if UsersDict does not have entry ReqUser
+    begin
+        put `error|Unknown username` into Reply
+    end
+    else
+    begin
+        put entry ReqUser of UsersDict into StoredPass
+        if StoredPass is ReqPass
+        begin
+            put `ok|` cat ReqUser into Reply
+            print `Login OK: ` cat ReqUser
+        end
+        else
+        begin
+            put `error|Incorrect password` into Reply
+        end
+    end
+    gosub to SendReply
+    return
+
+! ---- Topics ----
+
+DoTopics:
+    print `Topics request from ` cat SenderName
+    if file `chat-data/topics.json` exists
+    begin
+        load Reply from `chat-data/topics.json`
+    end
+    else put `[]` into Reply
+    print `Sending topics: ` cat Reply
+    gosub to SendReply
+    return
+
+DoNewTopic:
+    ! MessageText is "username|name|description"
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into TopicCreator
+    add 1 to Pos
+    put from Pos of MessageText into MessageText
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into TopicName
+    add 1 to Pos
+    put from Pos of MessageText into TopicDesc
+    print `New topic request: ` cat TopicName cat ` by ` cat TopicCreator
+    put `chat-data/topics/` cat TopicName into TopicPath
+    if file TopicPath exists
+    begin
+        put `error|Topic already exists` into Reply
+        gosub to SendReply
+        return
+    end
+    create directory TopicPath
+    create directory TopicPath cat `/posts`
+    put `{"name":"` cat TopicName cat `","description":"` cat TopicDesc cat `","creator":"` cat TopicCreator cat `"}` into TopicMeta
+    save TopicMeta to TopicPath cat `/topic.json`
+    ! Update the topic index
+    if file `chat-data/topics.json` exists load TopicIndex from `chat-data/topics.json`
+    else put `[]` into TopicIndex
+    ! Remove trailing ] and append new entry
+    put the length of TopicIndex into Pos
+    take 1 from Pos
+    put left Pos of TopicIndex into TopicIndex
+    if TopicIndex is not `[` put TopicIndex cat `,` into TopicIndex
+    put TopicIndex cat `{"name":"` cat TopicName cat `","description":"` cat TopicDesc cat `"}]` into TopicIndex
+    save TopicIndex to `chat-data/topics.json`
+    put `ok|` cat TopicName into Reply
+    print `Created topic: ` cat TopicName
+    gosub to SendReply
+    return
+
+! ---- View post ----
+
+DoView:
+    ! MessageText is "topicname|postid"
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into TopicName
+    add 1 to Pos
+    put from Pos of MessageText into PostId
+    print `View post ` cat PostId cat ` in ` cat TopicName
+    put `chat-data/topics/` cat TopicName cat `/posts/` cat PostId cat `/post.json` into PostsPath
+    if file PostsPath does not exist
+    begin
+        put `error|Post not found` into Reply
+        gosub to SendReply
+        return
+    end
+    load PostContent from PostsPath
+    ! Check for replies
+    put `chat-data/topics/` cat TopicName cat `/posts/` cat PostId cat `/replies.json` into PostsPath
+    if file PostsPath exists
+    begin
+        load PostsIndex from PostsPath
+        put `{"post":` cat PostContent cat `,"replies":` cat PostsIndex cat `}` into Reply
+    end
+    else
+    begin
+        put `{"post":` cat PostContent cat `,"replies":[]}` into Reply
+    end
+    gosub to SendReply
+    return
+
+! ---- Posts ----
+
+DoPosts:
+    ! MessageText is the topic name
+    print `Posts request for topic: ` cat MessageText
+    put `chat-data/topics/` cat MessageText cat `/posts.json` into PostsPath
+    if file PostsPath exists
+    begin
+        load Reply from PostsPath
+    end
+    else put `[]` into Reply
+    gosub to SendReply
+    return
+
+DoPost:
+    ! MessageText is "topicname|subject|author|body"
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into TopicName
+    add 1 to Pos
+    put from Pos of MessageText into MessageText
+    put position of `|` in MessageText into Pos2
+    put left Pos2 of MessageText into PostSubject
+    add 1 to Pos2
+    put from Pos2 of MessageText into MessageText
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into PostAuthor
+    add 1 to Pos
+    put from Pos of MessageText into PostBody
+    print `New post in ` cat TopicName cat ` by ` cat PostAuthor cat `: ` cat PostSubject
+    put `chat-data/topics/` cat TopicName into TopicPath
+    if file TopicPath does not exist
+    begin
+        put `error|Topic not found` into Reply
+        gosub to SendReply
+        return
+    end
+    ! Generate a post ID from timestamp
+    put now into PostId
+    put TopicPath cat `/posts/` cat PostId into PostDirPath
+    create directory PostDirPath
+    ! Save the post
+    put `{"id":"` cat PostId
+        cat `","subject":"` cat PostSubject
+        cat `","author":"` cat PostAuthor
+        cat `","body":"` cat PostBody
+        cat `"}` into PostMeta
+    save PostMeta to PostDirPath cat `/post.json`
+    ! Update the posts index
+    put TopicPath cat `/posts.json` into PostsPath
+    if file PostsPath exists load PostsIndex from PostsPath
+    else put `[]` into PostsIndex
+    put the length of PostsIndex into Pos
+    take 1 from Pos
+    put left Pos of PostsIndex into PostsIndex
+    if PostsIndex is not `[` put PostsIndex cat `,` into PostsIndex
+    put PostsIndex cat `{"id":"` cat PostId
+        cat `","subject":"` cat PostSubject
+        cat `","author":"` cat PostAuthor
+        cat `"}]` into PostsIndex
+    save PostsIndex to PostsPath
+    put `ok|` cat PostId into Reply
+    print `Created post ` cat PostId cat ` in ` cat TopicName
+    gosub to SendReply
+    return
+
+! ---- Reply ----
+
+DoReply:
+    ! MessageText is "topicname|postid|depth|author|body"
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into TopicName
+    add 1 to Pos
+    put from Pos of MessageText into MessageText
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into PostId
+    add 1 to Pos
+    put from Pos of MessageText into MessageText
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into Depth
+    add 1 to Pos
+    put from Pos of MessageText into MessageText
+    put position of `|` in MessageText into Pos
+    put left Pos of MessageText into ReplyAuthor
+    add 1 to Pos
+    put from Pos of MessageText into ReplyBody2
+    print `Reply in ` cat TopicName cat `/` cat PostId cat ` by ` cat ReplyAuthor
+    ! Check depth limit
+    if Depth is not less than 3
+    begin
+        put `error|Maximum reply depth reached` into Reply
+        gosub to SendReply
+        return
+    end
+    ! Build parent path
+    put `chat-data/topics/` cat TopicName cat `/posts/` cat PostId into ParentPath
+    if file ParentPath does not exist
+    begin
+        put `error|Parent post not found` into Reply
+        gosub to SendReply
+        return
+    end
+    ! Create reply
+    put now into ReplyId
+    put ParentPath cat `/replies/` cat ReplyId into PostDirPath
+    create directory PostDirPath
+    add 1 to Depth
+    put `{"id":"` cat ReplyId
+        cat `","subject":"Re"`
+        cat `,"author":"` cat ReplyAuthor
+        cat `","body":"` cat ReplyBody2
+        cat `","depth":` cat Depth
+        cat `}` into ReplyMeta
+    save ReplyMeta to PostDirPath cat `/post.json`
+    ! Update replies index
+    put ParentPath cat `/replies.json` into PostsPath
+    if file PostsPath exists load RepliesIndex from PostsPath
+    else put `[]` into RepliesIndex
+    put the length of RepliesIndex into Pos
+    take 1 from Pos
+    put left Pos of RepliesIndex into RepliesIndex
+    if RepliesIndex is not `[` put RepliesIndex cat `,` into RepliesIndex
+    put RepliesIndex cat `{"id":"` cat ReplyId
+        cat `","author":"` cat ReplyAuthor
+        cat `","preview":"` cat left 50 of ReplyBody2
+        cat `","depth":` cat Depth
+        cat `}]` into RepliesIndex
+    save RepliesIndex to PostsPath
+    put `ok|` cat ReplyId into Reply
+    print `Created reply ` cat ReplyId
+    gosub to SendReply
+    return
+
+! ---- Send email ----
+
+DoSendEmail:
+    ! MessageText is JSON: {"to":"...","subject":"...","body":"..."}
+    put json MessageText into ReceivedMessage
+    put entry `to` of ReceivedMessage into MailTo
+    put entry `subject` of ReceivedMessage into MailSubject
+    put entry `body` of ReceivedMessage into MailBody
+    print `Email request: to ` cat MailTo cat ` subject ` cat MailSubject
+    send email to MailTo from MailFrom subject MailSubject body MailBody via MailServer user MailLogin password MailPassword
+        or begin
+            print `SendEmail: failed to send email to ` cat MailTo
+            put `error|Failed to send email` into Reply
+            gosub to SendReply
+            return
+        end
+    print `SendEmail: sent email to ` cat MailTo
+    put `ok|sent` into Reply
+    gosub to SendReply
+    return
+
+! ---- Send reply ----
+
+SendReply:
+    init SenderTopic
+        name SenderName
+        qos SenderQoS
+    send to SenderTopic
+        action Action
+        message Reply
+    return

@@ -1,0 +1,503 @@
+{
+    "#doc": "Chat client layout",
+    "#element": "div",
+    "@id": "page",
+    "font-family": "sans-serif",
+    "margin": "2em",
+    "max-width": "600px",
+    "#": ["$Title", "$Status", "$LoginPanel", "$RegisterPanel", "$ChatPanel"],
+
+    "$Title": {
+        "#element": "h2",
+        "@id": "title",
+        "#content": "Chat"
+    },
+
+    "$Status": {
+        "#element": "div",
+        "@id": "status",
+        "padding": "0.5em",
+        "margin-bottom": "1em",
+        "color": "#800",
+        "#content": "Connecting..."
+    },
+
+    "$LoginPanel": {
+        "#element": "div",
+        "@id": "login-panel",
+        "display": "none",
+        "flex-direction": "column",
+        "gap": "0.5em",
+        "#": ["$LoginTitle", "$UsernameInput", "$PasswordInput", "$LoginButton", "$ShowRegisterLink", "$LoginMessage"],
+
+        "$LoginTitle": {
+            "#element": "div",
+            "#content": "Log in",
+            "font-size": "1.2em",
+            "font-weight": "bold",
+            "padding-bottom": "0.3em"
+        },
+
+        "$UsernameInput": {
+            "#element": "input",
+            "@id": "username-input",
+            "@type": "text",
+            "@placeholder": "Username",
+            "padding": "0.5em",
+            "font-size": "1em"
+        },
+
+        "$PasswordInput": {
+            "#element": "input",
+            "@id": "password-input",
+            "@type": "password",
+            "@placeholder": "Password",
+            "padding": "0.5em",
+            "font-size": "1em"
+        },
+
+        "$LoginButton": {
+            "#element": "button",
+            "@id": "login-button",
+            "#content": "Log in",
+            "padding": "0.5em 1.5em",
+            "font-size": "1em",
+            "cursor": "pointer"
+        },
+
+        "$ShowRegisterLink": {
+            "#element": "button",
+            "@id": "show-register-link",
+            "#content": "Don't have an account? Register",
+            "font-size": "0.9em",
+            "color": "#06c",
+            "background": "none",
+            "border": "none",
+            "cursor": "pointer",
+            "padding": "0.3em 0 0 0",
+            "text-align": "left"
+        },
+
+        "$LoginMessage": {
+            "#element": "div",
+            "@id": "login-message",
+            "padding": "0.5em",
+            "min-height": "1.5em"
+        }
+    },
+
+    "$RegisterPanel": {
+        "#element": "div",
+        "@id": "register-panel",
+        "display": "none",
+        "flex-direction": "column",
+        "gap": "0.5em",
+        "#": ["$RegisterTitle", "$RegUsernameInput", "$RegPasswordInput", "$RegisterButton", "$ShowLoginLink", "$RegisterMessage"],
+
+        "$RegisterTitle": {
+            "#element": "div",
+            "#content": "Create an account",
+            "font-size": "1.2em",
+            "font-weight": "bold",
+            "padding-bottom": "0.3em"
+        },
+
+        "$RegUsernameInput": {
+            "#element": "input",
+            "@id": "reg-username-input",
+            "@type": "text",
+            "@placeholder": "Choose a username",
+            "padding": "0.5em",
+            "font-size": "1em"
+        },
+
+        "$RegPasswordInput": {
+            "#element": "input",
+            "@id": "reg-password-input",
+            "@type": "password",
+            "@placeholder": "Choose a password",
+            "padding": "0.5em",
+            "font-size": "1em"
+        },
+
+        "$RegisterButton": {
+            "#element": "button",
+            "@id": "register-button",
+            "#content": "Register",
+            "padding": "0.5em 1.5em",
+            "font-size": "1em",
+            "cursor": "pointer"
+        },
+
+        "$ShowLoginLink": {
+            "#element": "button",
+            "@id": "show-login-link",
+            "#content": "Already have an account? Log in",
+            "font-size": "0.9em",
+            "color": "#06c",
+            "background": "none",
+            "border": "none",
+            "cursor": "pointer",
+            "padding": "0.3em 0 0 0",
+            "text-align": "left"
+        },
+
+        "$RegisterMessage": {
+            "#element": "div",
+            "@id": "register-message",
+            "padding": "0.5em",
+            "min-height": "1.5em"
+        }
+    },
+
+    "$ChatPanel": {
+        "#element": "div",
+        "@id": "chat-panel",
+        "display": "none",
+        "flex-direction": "column",
+        "gap": "0.5em",
+        "#": ["$TopicBar", "$TopicListPanel", "$NewTopicPanel", "$PostsPanel"],
+
+        "$TopicBar": {
+            "#element": "div",
+            "@id": "topic-bar",
+            "display": "flex",
+            "gap": "0.5em",
+            "margin-bottom": "0.5em",
+            "#": ["$ShowTopicsButton", "$NewTopicToggle"],
+
+            "$ShowTopicsButton": {
+                "#element": "button",
+                "@id": "show-topics-button",
+                "#content": "Show Topics",
+                "padding": "0.5em 1.5em",
+                "font-size": "1em",
+                "cursor": "pointer"
+            },
+
+            "$NewTopicToggle": {
+                "#element": "button",
+                "@id": "new-topic-toggle",
+                "#content": "New Topic",
+                "padding": "0.5em 1.5em",
+                "font-size": "1em",
+                "cursor": "pointer"
+            }
+        },
+
+        "$TopicListPanel": {
+            "#element": "div",
+            "@id": "topic-list-panel",
+            "border": "1px solid #ccc",
+            "padding": "0.5em",
+            "min-height": "3em",
+            "background": "#f9f9f9",
+            "#content": "Click 'Show Topics' to load topics"
+        },
+
+        "$NewTopicPanel": {
+            "#element": "div",
+            "@id": "new-topic-panel",
+            "display": "none",
+            "flex-direction": "column",
+            "gap": "0.5em",
+            "border": "1px solid #ccc",
+            "padding": "0.5em",
+            "background": "#ffe",
+            "#": ["$NewTopicName", "$NewTopicDesc", "$NewTopicButtons", "$NewTopicMessage"],
+
+            "$NewTopicName": {
+                "#element": "input",
+                "@id": "new-topic-name",
+                "@type": "text",
+                "@placeholder": "Topic name (no spaces)",
+                "padding": "0.5em",
+                "font-size": "1em"
+            },
+
+            "$NewTopicDesc": {
+                "#element": "input",
+                "@id": "new-topic-desc",
+                "@type": "text",
+                "@placeholder": "Short description",
+                "padding": "0.5em",
+                "font-size": "1em"
+            },
+
+            "$NewTopicButtons": {
+                "#element": "div",
+                "@id": "new-topic-buttons",
+                "display": "flex",
+                "gap": "0.5em",
+                "#": ["$CreateTopicButton", "$CancelTopicButton"],
+
+                "$CreateTopicButton": {
+                    "#element": "button",
+                    "@id": "create-topic-button",
+                    "#content": "Create",
+                    "padding": "0.5em 1.5em",
+                    "font-size": "1em",
+                    "cursor": "pointer"
+                },
+
+                "$CancelTopicButton": {
+                    "#element": "button",
+                    "@id": "cancel-topic-button",
+                    "#content": "Cancel",
+                    "padding": "0.5em 1.5em",
+                    "font-size": "1em",
+                    "cursor": "pointer"
+                }
+            },
+
+            "$NewTopicMessage": {
+                "#element": "div",
+                "@id": "new-topic-message",
+                "padding": "0.5em",
+                "min-height": "1.5em"
+            }
+        },
+
+        "$PostsPanel": {
+            "#element": "div",
+            "@id": "posts-panel",
+            "display": "none",
+            "flex-direction": "column",
+            "gap": "0.5em",
+            "#": ["$PostsBar", "$PostListPanel", "$NewPostPanel", "$PostViewPanel"],
+
+            "$PostsBar": {
+                "#element": "div",
+                "@id": "posts-bar",
+                "display": "flex",
+                "gap": "0.5em",
+                "align-items": "center",
+                "#": ["$BackToTopicsButton", "$PostsTopicTitle", "$NewPostToggle"],
+
+                "$BackToTopicsButton": {
+                    "#element": "button",
+                    "@id": "back-to-topics",
+                    "#content": "Back",
+                    "padding": "0.5em 1.5em",
+                    "font-size": "1em",
+                    "cursor": "pointer"
+                },
+
+                "$PostsTopicTitle": {
+                    "#element": "div",
+                    "@id": "posts-topic-title",
+                    "font-weight": "bold",
+                    "flex": "1"
+                },
+
+                "$NewPostToggle": {
+                    "#element": "button",
+                    "@id": "new-post-toggle",
+                    "#content": "New Post",
+                    "padding": "0.5em 1.5em",
+                    "font-size": "1em",
+                    "cursor": "pointer"
+                }
+            },
+
+            "$PostListPanel": {
+                "#element": "div",
+                "@id": "post-list-panel",
+                "border": "1px solid #ccc",
+                "padding": "0.5em",
+                "min-height": "3em",
+                "background": "#f9f9f9",
+                "#content": "Loading posts..."
+            },
+
+            "$NewPostPanel": {
+                "#element": "div",
+                "@id": "new-post-panel",
+                "display": "none",
+                "flex-direction": "column",
+                "gap": "0.5em",
+                "border": "1px solid #ccc",
+                "padding": "0.5em",
+                "background": "#ffe",
+                "#": ["$NewPostSubject", "$NewPostBody", "$NewPostButtons", "$NewPostMessage"],
+
+                "$NewPostSubject": {
+                    "#element": "input",
+                    "@id": "new-post-subject",
+                    "@type": "text",
+                    "@placeholder": "Subject",
+                    "padding": "0.5em",
+                    "font-size": "1em"
+                },
+
+                "$NewPostBody": {
+                    "#element": "textarea",
+                    "@id": "new-post-body",
+                    "@placeholder": "Write your post...",
+                    "@rows": "5",
+                    "padding": "0.5em",
+                    "font-size": "1em",
+                    "width": "calc(100% - 1em)",
+                    "resize": "vertical"
+                },
+
+                "$NewPostButtons": {
+                    "#element": "div",
+                    "@id": "new-post-buttons",
+                    "display": "flex",
+                    "gap": "0.5em",
+                    "#": ["$SubmitPostButton", "$CancelPostButton"],
+
+                    "$SubmitPostButton": {
+                        "#element": "button",
+                        "@id": "submit-post-button",
+                        "#content": "Post",
+                        "padding": "0.5em 1.5em",
+                        "font-size": "1em",
+                        "cursor": "pointer"
+                    },
+
+                    "$CancelPostButton": {
+                        "#element": "button",
+                        "@id": "cancel-post-button",
+                        "#content": "Cancel",
+                        "padding": "0.5em 1.5em",
+                        "font-size": "1em",
+                        "cursor": "pointer"
+                    }
+                },
+
+                "$NewPostMessage": {
+                    "#element": "div",
+                    "@id": "new-post-message",
+                    "padding": "0.5em",
+                    "min-height": "1.5em"
+                }
+            },
+
+            "$PostViewPanel": {
+                "#element": "div",
+                "@id": "post-view-panel",
+                "display": "none",
+                "flex-direction": "column",
+                "gap": "0.5em",
+                "#": ["$PostViewBar", "$PostViewSubject", "$PostViewMeta", "$PostViewBody", "$PostRepliesPanel", "$ReplyPanel"],
+
+                "$PostViewBar": {
+                    "#element": "div",
+                    "@id": "post-view-bar",
+                    "display": "flex",
+                    "gap": "0.5em",
+                    "#": ["$BackToPostsButton", "$ReplyToggle"],
+
+                    "$BackToPostsButton": {
+                        "#element": "button",
+                        "@id": "back-to-posts",
+                        "#content": "Back",
+                        "padding": "0.5em 1.5em",
+                        "font-size": "1em",
+                        "cursor": "pointer"
+                    },
+
+                    "$ReplyToggle": {
+                        "#element": "button",
+                        "@id": "reply-toggle",
+                        "#content": "Reply",
+                        "padding": "0.5em 1.5em",
+                        "font-size": "1em",
+                        "cursor": "pointer"
+                    }
+                },
+
+                "$PostViewSubject": {
+                    "#element": "div",
+                    "@id": "post-view-subject",
+                    "font-weight": "bold",
+                    "font-size": "1.2em",
+                    "padding": "0.5em 0"
+                },
+
+                "$PostViewMeta": {
+                    "#element": "div",
+                    "@id": "post-view-meta",
+                    "color": "#666",
+                    "font-size": "0.9em",
+                    "padding-bottom": "0.5em",
+                    "border-bottom": "1px solid #ccc"
+                },
+
+                "$PostViewBody": {
+                    "#element": "div",
+                    "@id": "post-view-body",
+                    "padding": "1em 0",
+                    "white-space": "pre-wrap",
+                    "line-height": "1.5"
+                },
+
+                "$PostRepliesPanel": {
+                    "#element": "div",
+                    "@id": "post-replies-panel",
+                    "border-top": "1px solid #ccc",
+                    "padding-top": "0.5em"
+                },
+
+                "$ReplyPanel": {
+                    "#element": "div",
+                    "@id": "reply-panel",
+                    "display": "none",
+                    "flex-direction": "column",
+                    "gap": "0.5em",
+                    "border": "1px solid #ccc",
+                    "padding": "0.5em",
+                    "background": "#ffe",
+                    "margin-top": "0.5em",
+                    "#": ["$ReplyBody", "$ReplyButtons", "$ReplyMessage"],
+
+                    "$ReplyBody": {
+                        "#element": "textarea",
+                        "@id": "reply-body",
+                        "@placeholder": "Write your reply...",
+                        "@rows": "4",
+                        "padding": "0.5em",
+                        "font-size": "1em",
+                        "width": "calc(100% - 1em)",
+                        "resize": "vertical"
+                    },
+
+                    "$ReplyButtons": {
+                        "#element": "div",
+                        "@id": "reply-buttons",
+                        "display": "flex",
+                        "gap": "0.5em",
+                        "#": ["$SubmitReplyButton", "$CancelReplyButton"],
+
+                        "$SubmitReplyButton": {
+                            "#element": "button",
+                            "@id": "submit-reply-button",
+                            "#content": "Post Reply",
+                            "padding": "0.5em 1.5em",
+                            "font-size": "1em",
+                            "cursor": "pointer"
+                        },
+
+                        "$CancelReplyButton": {
+                            "#element": "button",
+                            "@id": "cancel-reply-button",
+                            "#content": "Cancel",
+                            "padding": "0.5em 1.5em",
+                            "font-size": "1em",
+                            "cursor": "pointer"
+                        }
+                    },
+
+                    "$ReplyMessage": {
+                        "#element": "div",
+                        "@id": "reply-message",
+                        "padding": "0.5em",
+                        "min-height": "1.5em"
+                    }
+                }
+            }
+        }
+    }
+}
