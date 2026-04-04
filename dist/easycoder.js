@@ -6303,6 +6303,20 @@ const EasyCoder_Browser = {
 							}
 						}
 					}
+				} else if (token === `tracer`) {
+					if (compiler.nextTokenIs(`rows`)) {
+						if (compiler.nextTokenIs(`to`)) {
+							const value = compiler.getNextValue();
+							compiler.addCommand({
+								domain: `browser`,
+								keyword: `set`,
+								lino,
+								type: `setTracerRows`,
+								value
+							});
+							return true;
+						}
+					}
 				}
 			}
 			compiler.addWarning(`Unrecognised syntax in 'set'`);
@@ -6544,6 +6558,9 @@ const EasyCoder_Browser = {
 				break;
 			case `setTitle`:
 				document.title = program.getValue(command.value);
+				break;
+			case `setTracerRows`:
+				program.tracerRows = parseInt(program.getValue(command.value));
 				break;
 			case `setDefault`:
 				selectRecord = program.getSymbolRecord(command.name);
@@ -10785,7 +10802,8 @@ const EasyCoder_Run = {
 							});
 							variables += `<hr>`;
 							var trace = ``;
-							for (var n = 5; n > 0; n--) {
+							const tracerRows = program.tracerRows || 5;
+							for (var n = tracerRows; n > 0; n--) {
 								if (displayLino && scriptLines[displayLino - n]) {
 									const text = scriptLines[displayLino - n].line.substr(minSpace);
 									trace += `<input type="text" name="${n}"` +

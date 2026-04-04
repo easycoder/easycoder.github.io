@@ -2351,6 +2351,20 @@ const EasyCoder_Browser = {
 							}
 						}
 					}
+				} else if (token === `tracer`) {
+					if (compiler.nextTokenIs(`rows`)) {
+						if (compiler.nextTokenIs(`to`)) {
+							const value = compiler.getNextValue();
+							compiler.addCommand({
+								domain: `browser`,
+								keyword: `set`,
+								lino,
+								type: `setTracerRows`,
+								value
+							});
+							return true;
+						}
+					}
 				}
 			}
 			compiler.addWarning(`Unrecognised syntax in 'set'`);
@@ -2592,6 +2606,9 @@ const EasyCoder_Browser = {
 				break;
 			case `setTitle`:
 				document.title = program.getValue(command.value);
+				break;
+			case `setTracerRows`:
+				program.tracerRows = parseInt(program.getValue(command.value));
 				break;
 			case `setDefault`:
 				selectRecord = program.getSymbolRecord(command.name);

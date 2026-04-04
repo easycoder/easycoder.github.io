@@ -151,7 +151,8 @@ const EasyCoder_Run = {
 							});
 							variables += `<hr>`;
 							var trace = ``;
-							for (var n = 5; n > 0; n--) {
+							const tracerRows = program.tracerRows || 5;
+							for (var n = tracerRows; n > 0; n--) {
 								if (displayLino && scriptLines[displayLino - n]) {
 									const text = scriptLines[displayLino - n].line.substr(minSpace);
 									trace += `<input type="text" name="${n}"` +
