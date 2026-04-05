@@ -6117,6 +6117,7 @@ const EasyCoder_Browser = {
 							case `span`:
 							case `label`:
 							case `legend`:
+							case `textarea`:
 								if (compiler.nextTokenIs(`to`)) {
 									const value = compiler.getNextValue();
 									compiler.addCommand({
@@ -6443,6 +6444,7 @@ const EasyCoder_Browser = {
 					target.innerHTML = value;
 					break;
 				case `input`:
+				case `textarea`:
 					target.value = value;
 					break;
 				default:
