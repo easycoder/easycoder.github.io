@@ -1,4 +1,4 @@
-import json, math, hashlib, threading, os, subprocess, time
+import json, math, hashlib, threading, os, shutil, subprocess, time
 import base64, binascii, random, requests, paramiko, uuid
 from copy import deepcopy
 from datetime import datetime
@@ -407,14 +407,15 @@ class Core(Handler):
     def r_decrement(self, command):
         return self.incdec(command, '-')
 
-    # Delete a file or a property
-    # delete file {filename}
+    # Delete a file, directory, or a property
+    # delete file {path}
+    # delete directory {path}
     # delete entry/item/property/element {name/number} of {variable}
     def k_delete(self, command):
         token = self.nextToken( )
         command['type'] = token
-        if token == 'file':
-            command['filename'] = self.nextValue()
+        if token in ('file', 'directory'):
+            command['path'] = self.nextValue()
             self.add(command)
             return True
         elif token in ('entry', 'item', 'property', 'element'):
@@ -431,16 +432,21 @@ class Core(Handler):
                 return True
             self.warning(f'Core.delete: variable expected; got {self.getToken()}')
         else:
-            self.warning(f'Core.delete: "file", "entry", "item", "property" or "element" expected; got {token}')
+            self.warning(f'Core.delete: "file", "directory", "entry", "item", "property" or "element" expected; got {token}')
         return False
 
     def r_delete(self, command):
         type = command['type']
         if type == 'file':
-            filename = self.textify(command['filename'])
-            if filename != None:
-                path = self.resolveLocalPath(filename)
-                if os.path.isfile(path): os.remove(path)
+            path = self.textify(command['path'])
+            if path != None:
+                local_path = self.resolveLocalPath(path)
+                if os.path.isfile(local_path): os.remove(local_path)
+        elif type == 'directory':
+            path = self.textify(command['path'])
+            if path != None:
+                local_path = self.resolveLocalPath(path)
+                if os.path.isdir(local_path): shutil.rmtree(local_path)
         elif type == 'entry':
             key = self.textify(command['key'])
             record = self.getVariable(command['variable'])

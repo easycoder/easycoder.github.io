@@ -168,6 +168,15 @@ Use `/ecs-js` for JS/browser dialect context and `/ecs-python` for Python/CLI di
 - No callable form `Name(...)` — use `gosub Label` and `return`.
 - Assignment: `put ... into Name`.
 - If unsure about a command, **ask before writing code**.
+- **No implicit precedence in `cat` chains.** EasyCoder has no brackets, so `put left Pos of A cat B cat C into X` applies `left` to the entire concatenation, not just `A`. Always break complex expressions into separate steps:
+  ```text
+  ! WRONG — left applies to the whole cat result
+  put left Pos of Index cat NewVal cat from Pos2 of Index into Index
+
+  ! RIGHT — isolate the left/from operations first
+  put left Pos of Index into Temp
+  put Temp cat NewVal cat from Pos2 of Index into Index
+  ```
 
 ### Quick reference
 
