@@ -61,6 +61,7 @@ class SQL(Handler):
     def k_get(self, command):
         if self.nextIsSymbol():
             record = self.getSymbolRecord()
+            print(record)
             if record['hasValue']:
                 command['target'] = record['name']
                 self.skip('from')

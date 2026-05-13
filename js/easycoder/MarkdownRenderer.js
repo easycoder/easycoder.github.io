@@ -130,7 +130,7 @@ const EasyCoder_Markdown = {
 				closeBlockquote();
 				closeList();
 				if (!inCodeBlock) {
-					out.push(`<pre><code>`);
+					out.push(`<pre style="background:#0a0a0a;color:#ffffff;padding:12px 16px;border-radius:6px;overflow-x:auto;margin:1em 0;line-height:1.35;"><code style="font-family:monospace;background:transparent;color:inherit;white-space:pre;">`);
 					inCodeBlock = true;
 				} else {
 					out.push(`</code></pre>`);
@@ -139,7 +139,7 @@ const EasyCoder_Markdown = {
 				continue;
 			}
 			if (inCodeBlock) {
-				out.push(`${EasyCoder_Markdown.escapeHtml(line)}\n`);
+				out.push(EasyCoder_Markdown.escapeHtml(line));
 				continue;
 			}
 

@@ -1,6 +1,6 @@
 !   testsql.ecs
     
-    use plugin SQL from easycoder/easycoder-py/plugins/sql.py
+    use plugin SQL from easycoder-py/plugins/ec_sql.py
 
     script TestSQL
 
